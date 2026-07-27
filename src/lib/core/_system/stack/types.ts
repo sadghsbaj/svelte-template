@@ -27,10 +27,12 @@ export interface StackEntry {
     priority: number;
     scope: string;
     createdAt: number;
+    sequence: number;
 }
 
-export const STACK_PRIORITY_MAP: Record<StackPriorityPreset, number> = {
+export const STACK_PRIORITY_MAP: Readonly<Record<StackPriorityPreset, number>> = Object.freeze({
     overlay: 100,
     subview: 50,
     root: 10,
-};
+});
+

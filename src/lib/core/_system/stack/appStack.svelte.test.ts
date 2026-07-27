@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, test, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 
 import { AppStackManager, stackAttach } from "./appStack.svelte";
 
@@ -7,6 +7,10 @@ describe("AppStackManager (Browser Client)", () => {
 
     beforeEach(() => {
         manager = new AppStackManager();
+    });
+
+    afterEach(() => {
+        manager.destroy();
     });
 
     describe("Registration & Priority Resolution", () => {
@@ -56,12 +60,47 @@ describe("AppStackManager (Browser Client)", () => {
             expect(firstExecuted).toBe(false);
         });
 
+        test("should resolve synchronous ties deterministically using monotonic sequence counter", () => {
+            const executionOrder: number[] = [];
+
+            manager.register(() => executionOrder.push(1), { priority: "overlay" });
+            manager.register(() => executionOrder.push(2), { priority: "overlay" });
+            manager.register(() => executionOrder.push(3), { priority: "overlay" });
+
+            manager.pop();
+            manager.pop();
+            manager.pop();
+
+            expect(executionOrder).toEqual([3, 2, 1]);
+        });
+
         test("should unregister action using returned cleanup function", () => {
             const unregister = manager.register(() => {}, { priority: "overlay" });
             expect(manager.size).toBe(1);
 
             unregister();
             expect(manager.size).toBe(0);
+        });
+
+        test("should unregister by function reference using LIFO order for duplicate actions", () => {
+            const action = () => {};
+            manager.register(action, { id: "first", priority: "overlay" });
+            manager.register(action, { id: "second", priority: "overlay" });
+
+            expect(manager.size).toBe(2);
+
+            // Unregistering by function reference should remove the most recent entry ("second")
+            const removed = manager.unregister(action);
+            expect(removed).toBe(true);
+            expect(manager.size).toBe(1);
+            expect(manager.entries[0].id).toBe("first");
+        });
+
+        test("should prevent empty string ID by falling back to auto-generated UUID", () => {
+            const unregister = manager.register(() => {}, { id: "" });
+            expect(manager.entries[0].id).not.toBe("");
+            expect(manager.entries[0].id.length).toBeGreaterThan(0);
+            unregister();
         });
     });
 
@@ -132,6 +171,17 @@ describe("AppStackManager (Browser Client)", () => {
             expect(statsExecuted).toBe(true);
         });
 
+        test("should report accurate scopeSize for specific and active scopes", () => {
+            manager.register(() => {}, { scope: "global" });
+            manager.register(() => {}, { scope: "home" });
+            manager.register(() => {}, { scope: "settings" });
+
+            manager.setScope("home");
+            expect(manager.size).toBe(3);
+            expect(manager.scopeSize()).toBe(2);
+            expect(manager.scopeSize("settings")).toBe(2);
+        });
+
         test("should trigger custom onRootPop callback when stack is empty", () => {
             const rootPopSpy = vi.fn();
             manager.onRootPop = rootPopSpy;
@@ -139,6 +189,49 @@ describe("AppStackManager (Browser Client)", () => {
             const result = manager.pop();
             expect(result).toBe(false);
             expect(rootPopSpy).toHaveBeenCalledTimes(1);
+        });
+
+        test("should clear all entries or scoped entries", () => {
+            manager.register(() => {}, { scope: "home" });
+            manager.register(() => {}, { scope: "settings" });
+            manager.register(() => {}, { scope: "home" });
+
+            expect(manager.size).toBe(3);
+            manager.clear("home");
+            expect(manager.size).toBe(1);
+            expect(manager.entries[0].scope).toBe("settings");
+
+            manager.clear();
+            expect(manager.size).toBe(0);
+        });
+    });
+
+    describe("Exception Resilience & Event Cleanup", () => {
+        test("should catch action execution errors without crashing manager", () => {
+            const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+            manager.register(() => {
+                throw new Error("Action failure test");
+            });
+
+            expect(manager.size).toBe(1);
+            const popped = manager.pop();
+
+            expect(popped).toBe(true);
+            expect(manager.size).toBe(0);
+            expect(consoleErrorSpy).toHaveBeenCalledWith("Error executing stack action:", expect.any(Error));
+
+            consoleErrorSpy.mockRestore();
+        });
+
+        test("should unbind popstate listener cleanly on destroy", () => {
+            const removeListenerSpy = vi.spyOn(window, "removeEventListener");
+
+            const tempManager = new AppStackManager();
+            tempManager.destroy();
+
+            expect(removeListenerSpy).toHaveBeenCalledWith("popstate", expect.any(Function));
+            removeListenerSpy.mockRestore();
         });
     });
 
@@ -159,5 +252,22 @@ describe("AppStackManager (Browser Client)", () => {
             // Simulate element unmounting
             cleanup();
         });
+
+        test("should support updating action reference without stale closure", () => {
+            let value = 1;
+            const attachFn = stackAttach(() => (value = 10), { priority: "overlay" }, manager);
+
+            const dummyElement = document.createElement("div");
+            const cleanup = attachFn(dummyElement);
+
+            // Update actionclosure
+            cleanup.update(() => (value = 20));
+
+            manager.pop();
+            expect(value).toBe(20);
+
+            cleanup();
+        });
     });
 });
+

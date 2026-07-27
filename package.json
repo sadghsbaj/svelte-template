@@ -1,0 +1,49 @@
+{
+    "name": "app",
+    "private": true,
+    "version": "0.0.0",
+    "type": "module",
+    "scripts": {
+        "dev": "vite",
+        "build": "npm run check && vite build",
+        "preview": "vite preview",
+        "check": "svelte-check --tsconfig ./tsconfig.app.json && tsc -p tsconfig.node.json",
+        "format": "prettier --write .",
+        "lint": "eslint .",
+        "test:unit": "vitest",
+        "test": "npm run test:unit -- --run",
+        "export": "./scripts/export.sh"
+    },
+    "devDependencies": {
+        "@eslint/js": "^10.0.1",
+        "@ianvs/prettier-plugin-sort-imports": "^4.7.1",
+        "@sveltejs/vite-plugin-svelte": "^7.1.2",
+        "@tsconfig/svelte": "^5.0.8",
+        "@types/node": "^24.13.2",
+        "@unocss/eslint-config": "^66.7.5",
+        "@unocss/preset-wind4": "^66.7.5",
+        "@unocss/svelte-scoped": "^66.7.5",
+        "@unocss/transformer-directives": "^66.7.5",
+        "@vitest/browser": "^4.1.10",
+        "@vitest/browser-playwright": "^4.1.10",
+        "eslint": "^10.6.0",
+        "eslint-plugin-svelte": "^3.20.0",
+        "globals": "^17.7.0",
+        "playwright": "^1.61.1",
+        "prettier": "^3.9.5",
+        "prettier-plugin-css-order": "^2.2.0",
+        "prettier-plugin-svelte": "^4.1.1",
+        "svelte": "^5.56.4",
+        "svelte-check": "^4.7.1",
+        "typescript": "~6.0.2",
+        "typescript-eslint": "^8.63.0",
+        "unocss": "^66.7.5",
+        "vite": "^8.1.1",
+        "vite-plugin-html": "^3.2.2",
+        "vitest": "^4.1.10",
+        "vitest-browser-svelte": "^3.0.0"
+    },
+    "dependencies": {
+        "@lucide/svelte": "^1.24.0"
+    }
+}

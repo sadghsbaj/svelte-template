@@ -1,0 +1,15 @@
+# Abhängigkeiten
+node_modules
+pnpm-lock.yaml
+
+# Build-Ordner (je nach Framework anpassen)
+dist
+build
+out
+.next
+.nuxt
+
+# Andere
+coverage
+.git
+.DS_Store

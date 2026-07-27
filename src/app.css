@@ -1,0 +1,54 @@
+@import "$styles/index.css";
+
+/* ==================================================== */
+/* Document & Root Layout */
+:where(html) {
+    color-scheme: light dark;
+    interpolate-size: allow-keywords;
+    -webkit-text-size-adjust: 100%;
+    overflow: hidden;
+    scroll-behavior: smooth;
+}
+
+:where(:disabled, [aria-disabled="true"], .disabled) {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+:where(body) {
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-tap-highlight-color: transparent;
+    display: flex;
+    flex-direction: column;
+    height: 100dvh;
+    overflow: hidden;
+    color: var(--color-text-strong);
+    font-family: var(--font-sans);
+    font-size: 100%;
+    -webkit-font-smoothing: antialiased;
+    line-height: var(--leading-normal);
+    background-color: var(--color-elevation-0);
+    caret-color: var(--color-accent-500);
+}
+
+#app {
+    height: 100%;
+}
+
+/**
+     * Polyfill Sync: LightningCSS compiles the native light-dark() function into custom variables
+     * (--lightningcss-light/dark) using space toggles. By default, they only respond to system
+     * media queries. This block manually overrides them to synchronize with the JS-driven
+     * .dark class status. Do not add values after the colons where empty.
+     */
+html.dark {
+    /* prettier-ignore */
+    --lightningcss-light: !important;
+    --lightningcss-dark: initial !important;
+}
+
+html:not(.dark) {
+    --lightningcss-light: initial !important;
+    /* prettier-ignore */
+    --lightningcss-dark: !important;
+}

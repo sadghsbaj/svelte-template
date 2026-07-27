@@ -1,0 +1,57 @@
+{
+    "extends": "@tsconfig/svelte/tsconfig.json",
+    "compilerOptions": {
+        "strict": true,
+        "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
+        "declarationDir": "./node_modules/.tmp/types",
+        "target": "es2024",
+        "module": "esnext",
+        "types": ["svelte", "vite/client"],
+        "allowArbitraryExtensions": true,
+        "noEmit": false,
+        "composite": true,
+        "emitDeclarationOnly": true,
+        /**
+         * Typecheck JS in `.svelte` and `.js` files by default.
+         * Disable checkJs if you'd like to use dynamic types in JS.
+         * Note that setting allowJs false does not prevent the use
+         * of JS in `.svelte` files.
+         */
+        "allowJs": true,
+        "checkJs": true,
+        "moduleDetection": "force",
+
+        "paths": {
+            "$lib": ["./src/lib"],
+            "$lib/*": ["./src/lib/*"],
+
+            "$core": ["./src/lib/core"],
+            "$core/*": ["./src/lib/core/*"],
+
+            "$views": ["./src/lib/views"],
+            "$views/*": ["./src/lib/views/*"],
+
+            "$features": ["./src/lib/features"],
+            "$features/*": ["./src/lib/features/*"],
+
+            "$components": ["./src/lib/shared/components"],
+            "$components/*": ["./src/lib/shared/components/*"],
+
+            "$utils": ["./src/lib/shared/utils"],
+            "$utils/*": ["./src/lib/shared/utils/*"],
+
+            "$styles": ["./src/lib/shared/styles"],
+            "$styles/*": ["./src/lib/shared/styles/*"],
+
+            "$transitions": ["./src/lib/shared/transitions"],
+            "$transitions/*": ["./src/lib/shared/transitions/*"],
+
+            "$types": ["./src/lib/shared/types"],
+            "$types/*": ["./src/lib/shared/types/*"],
+
+            "$attachments": ["./src/lib/shared/attachments"],
+            "$attachments/*": ["./src/lib/shared/attachments/*"]
+        }
+    },
+    "include": ["src/**/*.ts", "src/**/*.js", "src/**/*.svelte"]
+}

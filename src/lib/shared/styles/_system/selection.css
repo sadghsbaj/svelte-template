@@ -1,0 +1,30 @@
+/* ==========================================================================
+       SELECTION STYLES
+       ========================================================================== */
+
+:root {
+    --color-selection-bg: light-dark(
+        oklch(from var(--color-accent-500) l c h / 0.12),
+        oklch(from var(--color-accent-500) l c h / 0.12)
+    );
+    --color-selection-text: light-dark(var(--color-accent-600), var(--color-accent-500));
+}
+
+::selection {
+    color: var(--color-selection-text);
+    text-shadow: none;
+    background-color: var(--color-selection-bg);
+}
+
+pre ::selection,
+code ::selection {
+    color: inherit;
+    text-shadow: none;
+    background-color: var(--color-selection-bg);
+}
+
+img::selection,
+video::selection {
+    background-color: transparent;
+    filter: brightness(0.8) contrast(1.2);
+}

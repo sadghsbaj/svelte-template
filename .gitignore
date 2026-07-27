@@ -34,3 +34,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Personal Notes / Scratchpad
+z_SCRATCH.md
+z-*.md

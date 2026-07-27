@@ -64,6 +64,8 @@ rsync -a \
     --exclude 'pnpm-lock.yaml' \
     --exclude 'yarn.lock' \
     --exclude 'src/lib/previews' \
+    --exclude 'z_SCRATCH.md' \
+    --exclude 'z-*.md' \
     "$PROJECT_ROOT/" "$TMP_DIR/" || {
         log_error "Failed to sync files to temporary directory."
         exit 1

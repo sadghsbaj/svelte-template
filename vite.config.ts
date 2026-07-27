@@ -96,6 +96,7 @@ export default defineConfig({
                         enabled: true,
                         headless: true,
                         provider: playwright(),
+                        screenshotDirectory: ".vitest-attachments/screenshots",
                         instances: [{ browser: "chromium" }],
                     },
                 },

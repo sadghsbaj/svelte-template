@@ -19,9 +19,10 @@ dist-ssr
 .env.*
 !.env.example
 
-# Svelte / Vite / TypeScript Cache
+# Svelte / Vite / TypeScript Cache & Test Outputs
 .vite/
 *.tsbuildinfo
+.vitest-attachments/
 
 # Editor directories and files
 .vscode/*

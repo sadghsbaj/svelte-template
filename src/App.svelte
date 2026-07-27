@@ -22,4 +22,9 @@
     </AppViews>
 </AppStage>
 
-<AppLayers></AppLayers>
+<AppLayers>
+    <!-- Example usage: -->
+    <AppLayer z={0} layer="">
+        <!-- ...Host.svelte -->
+    </AppLayer>
+</AppLayers>

@@ -153,7 +153,7 @@ export class AppStackManager {
         return false;
     }
 
-    pop(targetScope: string = this._activeScope, isFromPopState: boolean = false): boolean {
+    pop(targetScope: string = this._activeScope, _isFromPopState: boolean = false): boolean {
         if (this._config.enabled === false) return false;
 
         let candidate: StackEntry | null = null;

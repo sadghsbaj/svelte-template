@@ -1,17 +1,11 @@
 <script lang="ts">
-    import { untrack } from "svelte";
     import {
         ArrowLeft,
         Box,
-        Check,
-        CornerDownLeft,
         Database,
         Layers,
-        Maximize2,
         PanelRight,
         Plus,
-        RotateCcw,
-        Shield,
         Sliders,
         Terminal,
         Trash2,

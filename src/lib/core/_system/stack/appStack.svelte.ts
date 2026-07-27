@@ -1,3 +1,4 @@
+import { untrack } from "svelte";
 import { SvelteSet } from "svelte/reactivity";
 
 import { uuid } from "$utils/_system";
@@ -67,6 +68,7 @@ export class AppStackManager {
     scopeSize(scope: string = this._activeScope): number {
         return this._entries.filter(
             (entry) =>
+                entry &&
                 (entry.scope === "global" || entry.scope === scope) &&
                 this.isPriorityAllowed(entry.priority)
         ).length;
@@ -76,6 +78,7 @@ export class AppStackManager {
         if (this._config.enabled === false) return false;
         return this._entries.some(
             (entry) =>
+                entry &&
                 (entry.scope === "global" || entry.scope === this._activeScope) &&
                 this.isPriorityAllowed(entry.priority)
         );
@@ -123,7 +126,21 @@ export class AppStackManager {
             sequence: ++this.sequenceCounter,
         };
 
-        this._entries.push(entry);
+        untrack(() => {
+            this._entries.push(entry);
+        });
+
+        if (
+            typeof window !== "undefined" &&
+            this._config.enabled !== false &&
+            this._config.interceptBrowserBack !== false
+        ) {
+            try {
+                window.history.pushState({ appStack: true, id }, "");
+            } catch {
+                // Safe fallthrough in restricted history environments
+            }
+        }
 
         return () => {
             this.unregister(id);
@@ -133,11 +150,13 @@ export class AppStackManager {
     unregister(idOrAction: string | (() => void)): boolean {
         const index =
             typeof idOrAction === "string"
-                ? this._entries.findIndex((entry) => entry.id === idOrAction)
-                : this._entries.findLastIndex((entry) => entry.action === idOrAction);
+                ? this._entries.findIndex((entry) => entry?.id === idOrAction)
+                : this._entries.findLastIndex((entry) => entry?.action === idOrAction);
 
         if (index !== -1) {
-            this._entries.splice(index, 1);
+            untrack(() => {
+                this._entries.splice(index, 1);
+            });
             return true;
         }
 
@@ -152,6 +171,7 @@ export class AppStackManager {
         for (let i = 0; i < this._entries.length; i++) {
             const entry = this._entries[i];
             if (
+                entry &&
                 (entry.scope === "global" || entry.scope === targetScope) &&
                 this.isPriorityAllowed(entry.priority)
             ) {
@@ -171,6 +191,7 @@ export class AppStackManager {
         }
 
         this.unregister(candidate.id);
+
         try {
             candidate.action();
         } catch (error) {
@@ -180,11 +201,13 @@ export class AppStackManager {
     }
 
     clear(scope?: string): void {
-        if (!scope) {
-            this._entries = [];
-        } else {
-            this._entries = this._entries.filter((entry) => entry.scope !== scope);
-        }
+        untrack(() => {
+            if (!scope) {
+                this._entries = [];
+            } else {
+                this._entries = this._entries.filter((entry) => entry?.scope !== scope);
+            }
+        });
     }
 
     setScope(scope: string): void {
@@ -203,7 +226,11 @@ export class AppStackManager {
 
     private handlePopState = (_e: PopStateEvent): void => {
         if (this._config.enabled !== false && this._config.interceptBrowserBack !== false) {
-            this.pop(this._activeScope, true);
+            if (this.canGoBack) {
+                this.pop(this._activeScope, true);
+            } else {
+                this.handleRootPop(true);
+            }
         }
     };
 
@@ -249,16 +276,13 @@ export function stackAttach(
         const cleanup = () => {
             unregister();
         };
+
         cleanup.update = (newAction: () => void) => {
             currentAction = newAction;
         };
-        return cleanup;
-    };
 
-    attachment.update = (newAction: () => void) => {
-        currentAction = newAction;
+        return cleanup;
     };
 
     return attachment;
 }
-

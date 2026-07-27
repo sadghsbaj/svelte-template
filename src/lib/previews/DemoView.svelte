@@ -1,10 +1,11 @@
 <script lang="ts">
-    import { Activity, Keyboard, Palette } from "@lucide/svelte";
+    import { Activity, Keyboard, Layers, Palette } from "@lucide/svelte";
     import AppShortcutManager from "./AppShortcutManager.svelte";
+    import AppStackManager from "./AppStackManager.svelte";
     import MotionManager from "./MotionManager.svelte";
     import ThemeManager from "./ThemeManager.svelte";
 
-    type PreviewTab = "shortcut" | "theme" | "motion";
+    type PreviewTab = "shortcut" | "stack" | "theme" | "motion";
     let activeTab = $state<PreviewTab>("shortcut");
 </script>
 
@@ -23,6 +24,15 @@
             >
                 <Keyboard size={16} />
                 <span>AppShortcutManager</span>
+            </button>
+
+            <button
+                class="nav-tab"
+                class:active={activeTab === "stack"}
+                onclick={() => (activeTab = "stack")}
+            >
+                <Layers size={16} />
+                <span>AppStackManager</span>
             </button>
 
             <button
@@ -49,6 +59,8 @@
     <div class="preview-viewport">
         {#if activeTab === "shortcut"}
             <AppShortcutManager />
+        {:else if activeTab === "stack"}
+            <AppStackManager />
         {:else if activeTab === "theme"}
             <ThemeManager />
         {:else if activeTab === "motion"}

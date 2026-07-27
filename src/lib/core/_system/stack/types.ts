@@ -2,8 +2,6 @@ export type StackPriorityPreset = "overlay" | "subview" | "root";
 
 export type StackPriority = StackPriorityPreset | number;
 
-export type OnRootPopAction = "none" | "exit" | (() => void);
-
 export interface AppStackConfig {
     /** Whether the back-stack system is active (default: true) */
     enabled?: boolean;
@@ -35,4 +33,3 @@ export const STACK_PRIORITY_MAP: Readonly<Record<StackPriorityPreset, number>> =
     subview: 50,
     root: 10,
 });
-

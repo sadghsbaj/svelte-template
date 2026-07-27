@@ -20,7 +20,6 @@ class AppStackManager {
     readonly size: number; // Total raw entries across all scopes
     readonly canGoBack: boolean; // Svelte 5 Rune-derived boolean for active scope
     readonly config: AppStackConfig;
-    onRootPop: OnRootPopAction; // 'none' | 'exit' | (() => void)
 
     // Methods
     configure(newConfig: Partial<AppStackConfig>): void;

@@ -129,13 +129,6 @@
         isAttachBoxMounted = false;
         log("{@attach stackAttach} Action Executed ➔ Attached element popped!", "warning");
     }
-
-    // Set Root Pop Logging Callback
-    $effect(() => {
-        appStack.onRootPop = () => {
-            log("Root Pop Triggered ➔ No entries remaining in active scope!", "danger");
-        };
-    });
 </script>
 
 <div class="stack-demo">

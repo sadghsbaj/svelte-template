@@ -5,7 +5,6 @@ import { uuid } from "$utils/_system";
 
 import type {
     AppStackConfig,
-    OnRootPopAction,
     StackEntry,
     StackPriority,
     StackRegisterOptions,
@@ -15,7 +14,6 @@ import { STACK_PRIORITY_MAP } from "./types";
 export class AppStackManager {
     private _entries = $state<StackEntry[]>([]);
     private _activeScope = $state<string>("global");
-    private _onRootPop = $state<OnRootPopAction>("none");
     private _config = $state<AppStackConfig>({
         enabled: true,
         interceptBrowserBack: true,
@@ -39,14 +37,6 @@ export class AppStackManager {
 
     get activeScope(): string {
         return this._activeScope;
-    }
-
-    get onRootPop(): OnRootPopAction {
-        return this._onRootPop;
-    }
-
-    set onRootPop(value: OnRootPopAction) {
-        this._onRootPop = value;
     }
 
     get config(): AppStackConfig {
@@ -186,7 +176,6 @@ export class AppStackManager {
         }
 
         if (!candidate) {
-            this.handleRootPop(isFromPopState);
             return false;
         }
 
@@ -214,22 +203,10 @@ export class AppStackManager {
         this._activeScope = scope;
     }
 
-    private handleRootPop(isFromPopState: boolean = false): void {
-        if (typeof this._onRootPop === "function") {
-            this._onRootPop();
-        } else if (this._onRootPop === "exit" && typeof window !== "undefined") {
-            if (!isFromPopState) {
-                window.history.back();
-            }
-        }
-    }
-
     private handlePopState = (_e: PopStateEvent): void => {
         if (this._config.enabled !== false && this._config.interceptBrowserBack !== false) {
             if (this.canGoBack) {
                 this.pop(this._activeScope, true);
-            } else {
-                this.handleRootPop(true);
             }
         }
     };

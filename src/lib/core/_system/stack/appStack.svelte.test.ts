@@ -182,15 +182,6 @@ describe("AppStackManager (Browser Client)", () => {
             expect(manager.scopeSize("settings")).toBe(2);
         });
 
-        test("should trigger custom onRootPop callback when stack is empty", () => {
-            const rootPopSpy = vi.fn();
-            manager.onRootPop = rootPopSpy;
-
-            const result = manager.pop();
-            expect(result).toBe(false);
-            expect(rootPopSpy).toHaveBeenCalledTimes(1);
-        });
-
         test("should clear all entries or scoped entries", () => {
             manager.register(() => {}, { scope: "home" });
             manager.register(() => {}, { scope: "settings" });

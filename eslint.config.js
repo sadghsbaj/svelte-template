@@ -64,6 +64,13 @@ export default defineConfig([
     },
 
     {
+        files: ["**/*.svelte"],
+        rules: {
+            "prefer-const": "off",
+        },
+    },
+
+    {
         files: ["**/*.ts", "**/*.js", "**/*.svelte"],
         rules: {
             "no-restricted-imports": [

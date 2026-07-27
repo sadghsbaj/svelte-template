@@ -10,7 +10,6 @@
         children?: Snippet;
     }
 
-    // eslint-disable-next-line prefer-const
     let { layer, z = 0, inertApp = false, children }: AppLayerProps = $props();
 
     let activeCount = $state(0);

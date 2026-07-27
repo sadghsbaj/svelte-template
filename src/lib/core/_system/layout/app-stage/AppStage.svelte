@@ -8,7 +8,7 @@
         as?: T;
     };
 
-    const { children, as = "div" as T, class: className = "", ...restProps }: Props = $props();
+    let { children, as = "div" as T, class: className = "", ...restProps }: Props = $props();
 </script>
 
 <svelte:element

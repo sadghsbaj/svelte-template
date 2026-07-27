@@ -3,7 +3,7 @@
 
     import type { ViewState } from "./viewState.svelte";
 
-    const { viewState, children }: { viewState: ViewState<T>; children?: Snippet } = $props();
+    let { viewState, children }: { viewState: ViewState<T>; children?: Snippet } = $props();
 
     setContext("VIEW_STATE", () => viewState);
 </script>

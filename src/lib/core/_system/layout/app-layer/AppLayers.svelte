@@ -5,6 +5,7 @@
         children?: Snippet;
     }
 
+    // eslint-disable-next-line prefer-const
     let { children }: Props = $props();
 </script>
 
@@ -13,6 +14,11 @@
 </div>
 
 <style>
+    /*
+     * AppLayers container and AppLayer wrapper elements set pointer-events: none
+     * to prevent empty layer wrappers from blocking interactions with lower DOM elements.
+     * Interactive children rendered inside AppLayer must explicitly set `pointer-events: auto`.
+     */
     [data-layout="app-layers"] {
         pointer-events: none;
 

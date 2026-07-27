@@ -7,6 +7,11 @@
 import { getContext } from "svelte";
 
 /**
+ * Context key symbol for layer state management to prevent string key collisions.
+ */
+export const LAYER_CONTEXT_KEY = Symbol("layer");
+
+/**
  * Context interface provided by a Layer component to track active child content.
  */
 export interface LayerContext {
@@ -14,6 +19,8 @@ export interface LayerContext {
 }
 
 let blockCounter = $state(0);
+let savedPaddingRight = "";
+let savedOverflow = "";
 
 /**
  * Global reactive state manager for coordinating background inertness and body scroll locks
@@ -27,6 +34,9 @@ export const appInertState = {
         blockCounter++;
 
         if (blockCounter === 1 && typeof window !== "undefined") {
+            savedPaddingRight = document.body.style.paddingRight;
+            savedOverflow = document.body.style.overflow;
+
             const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
 
             if (scrollbarWidth > 0) {
@@ -37,11 +47,15 @@ export const appInertState = {
         }
     },
     unblock() {
-        blockCounter--;
+        if (blockCounter > 0) {
+            blockCounter--;
 
-        if (blockCounter === 0 && typeof window !== "undefined") {
-            document.body.style.paddingRight = "";
-            document.body.style.overflow = "";
+            if (blockCounter === 0 && typeof window !== "undefined") {
+                document.body.style.paddingRight = savedPaddingRight;
+                document.body.style.overflow = savedOverflow;
+                savedPaddingRight = "";
+                savedOverflow = "";
+            }
         }
     },
 };
@@ -52,10 +66,15 @@ export const appInertState = {
  * @param isActive - A getter function returning the active state of the component.
  */
 export function syncLayerState(isActive: () => boolean) {
-    const layer = getContext<LayerContext>("layer");
+    const layer = getContext<LayerContext>(LAYER_CONTEXT_KEY);
     if (!layer) return;
 
     $effect(() => {
-        layer.setContextActive(isActive());
+        const active = isActive();
+        layer.setContextActive(active);
+        return () => {
+            if (active) layer.setContextActive(false);
+        };
     });
 }
+

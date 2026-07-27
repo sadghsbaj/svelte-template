@@ -1,3 +1,4 @@
+import { SvelteSet } from "svelte/reactivity";
 import { appShortcut } from "$core/_system/shortcut/appShortcut.svelte";
 import { appStack } from "$core/_system/stack/appStack.svelte";
 
@@ -207,7 +208,7 @@ export class ViewState<T extends string> {
     }
 
     getRootView(view: T = this.activeView): T {
-        const visited = new Set<T>();
+        const visited = new SvelteSet<T>();
         let current: T = view;
         while (current) {
             if (visited.has(current)) {

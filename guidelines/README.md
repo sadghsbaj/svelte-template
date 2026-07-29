@@ -15,6 +15,11 @@ This directory contains strict engineering guidelines for maintaining clean, sca
 - **[Styling & Scoping](file:///home/colin/Main/01_programming/01_projects/01_current_projects/svelte-template/guidelines/svelte/styling.md)**: Class bindings, inline styles, scoped `<style>` blocks, `:global()`, and CSS custom properties.
 - **[Component Structure & Order](file:///home/colin/Main/01_programming/01_projects/01_current_projects/svelte-template/guidelines/svelte/component_structure.md)**: Layout order inside `<script lang="ts">` and co-location strategies.
 
-### 2. Architecture & Imports (`guidelines/architecture/`)
+### 2. TypeScript Rules (`guidelines/ts/`)
+- **[TypeScript Guidelines](file:///home/colin/Main/01_programming/01_projects/01_current_projects/svelte-template/guidelines/ts/typescript.md)**: Zero `any` policy and non-null assertion `!` prohibition.
+
+### 3. Architecture & Verification (`guidelines/architecture/`)
 - **[Imports & Path Aliases](file:///home/colin/Main/01_programming/01_projects/01_current_projects/svelte-template/guidelines/architecture/imports_and_aliases.md)**: Path alias enforcement (`$core`, `$utils`, etc.) and layer boundary rules.
 - **[Project & Layer Structure](file:///home/colin/Main/01_programming/01_projects/01_current_projects/svelte-template/guidelines/architecture/project_structure.md)**: Responsibilities of `$core`, `$shared`, `$views`, `$features`, and `_system/`.
+- **[Naming Conventions](file:///home/colin/Main/01_programming/01_projects/01_current_projects/svelte-template/guidelines/architecture/naming.md)**: Casing rules, boolean verb prefixes, and file/directory extension standards.
+- **[Empirical Verification](file:///home/colin/Main/01_programming/01_projects/01_current_projects/svelte-template/guidelines/architecture/verification.md)**: Quality checks (`npm run test`, `npm run check`, `npx eslint .`).

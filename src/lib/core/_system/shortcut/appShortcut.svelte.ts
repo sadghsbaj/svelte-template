@@ -898,6 +898,59 @@ export function matchEventToCombo(
     return matchEventToComboStep(event, normalizedCombo, useCode);
 }
 
+const PHYSICAL_CODE_MAP: Record<string, string[]> = {
+    ESCAPE: ["ESCAPE"],
+    ESC: ["ESCAPE"],
+    ENTER: ["ENTER", "NUMPADENTER"],
+    RETURN: ["ENTER", "NUMPADENTER"],
+    SPACE: ["SPACE"],
+    TAB: ["TAB"],
+    BACKSPACE: ["BACKSPACE"],
+    DELETE: ["DELETE"],
+    SLASH: ["SLASH", "NUMPADDIVIDE"],
+    "+": ["EQUAL", "NUMPADADD"],
+    "=": ["EQUAL", "NUMPADADD"],
+    "-": ["MINUS", "NUMPADSUBTRACT"],
+    MINUS: ["MINUS", "NUMPADSUBTRACT"],
+    ",": ["COMMA"],
+    COMMA: ["COMMA"],
+    ".": ["PERIOD", "NUMPADDECIMAL"],
+    PERIOD: ["PERIOD", "NUMPADDECIMAL"],
+    ";": ["SEMICOLON"],
+    SEMICOLON: ["SEMICOLON"],
+    "'": ["QUOTE"],
+    QUOTE: ["QUOTE"],
+    "`": ["BACKQUOTE"],
+    BACKQUOTE: ["BACKQUOTE"],
+    "[": ["BRACKETLEFT"],
+    BRACKETLEFT: ["BRACKETLEFT"],
+    "]": ["BRACKETRIGHT"],
+    BRACKETRIGHT: ["BRACKETRIGHT"],
+    "\\": ["BACKSLASH"],
+    BACKSLASH: ["BACKSLASH"],
+};
+
+const LOGICAL_KEY_MAP: Record<string, (eventKey: string, rawEvent: KeyboardEvent) => boolean> = {
+    "+": (_k, e) => e.key === "+" || e.key === "=",
+    "=": (_k, e) => e.key === "+" || e.key === "=",
+    ESCAPE: (k) => k === "ESCAPE",
+    ESC: (k) => k === "ESCAPE",
+    ENTER: (k) => k === "ENTER",
+    RETURN: (k) => k === "ENTER",
+    SPACE: (k) => k === " " || k === "SPACE",
+    TAB: (k) => k === "TAB",
+    BACKSPACE: (k) => k === "BACKSPACE",
+    DELETE: (k) => k === "DELETE",
+    UP: (k) => k === "ARROWUP",
+    ARROWUP: (k) => k === "ARROWUP",
+    DOWN: (k) => k === "ARROWDOWN",
+    ARROWDOWN: (k) => k === "ARROWDOWN",
+    LEFT: (k) => k === "ARROWLEFT",
+    ARROWLEFT: (k) => k === "ARROWLEFT",
+    RIGHT: (k) => k === "ARROWRIGHT",
+    ARROWRIGHT: (k) => k === "ARROWRIGHT",
+};
+
 export function matchEventKeyToStepMainKey(
     event: KeyboardEvent,
     stepOrNormalizedString: ParsedComboStep | string,
@@ -913,77 +966,19 @@ export function matchEventKeyToStepMainKey(
     }
 
     const eventKey = event.key.toUpperCase();
-
-    if (mainKey === "+" || mainKey === "=") return event.key === "+" || event.key === "=";
-    if (mainKey === "ESCAPE" || mainKey === "ESC") return eventKey === "ESCAPE";
-    if (mainKey === "ENTER" || mainKey === "RETURN") return eventKey === "ENTER";
-    if (mainKey === "SPACE") return eventKey === " " || eventKey === "SPACE";
-    if (mainKey === "TAB") return eventKey === "TAB";
-    if (mainKey === "BACKSPACE") return eventKey === "BACKSPACE";
-    if (mainKey === "DELETE") return eventKey === "DELETE";
-    if (mainKey === "UP" || mainKey === "ARROWUP") return eventKey === "ARROWUP";
-    if (mainKey === "DOWN" || mainKey === "ARROWDOWN") return eventKey === "ARROWDOWN";
-    if (mainKey === "LEFT" || mainKey === "ARROWLEFT") return eventKey === "ARROWLEFT";
-    if (mainKey === "RIGHT" || mainKey === "ARROWRIGHT") return eventKey === "ARROWRIGHT";
+    const matcher = LOGICAL_KEY_MAP[mainKey];
+    if (matcher) {
+        return matcher(eventKey, event);
+    }
 
     return eventKey === mainKey;
 }
 
 function matchPhysicalCode(eventCode: string, mainKey: string): boolean {
-    if (mainKey === "ESCAPE" || mainKey === "ESC") {
-        return eventCode === "ESCAPE";
-    }
-    if (mainKey === "ENTER" || mainKey === "RETURN") {
-        return eventCode === "ENTER" || eventCode === "NUMPADENTER";
-    }
-    if (mainKey === "SPACE") {
-        return eventCode === "SPACE";
-    }
-    if (mainKey === "TAB") {
-        return eventCode === "TAB";
-    }
-    if (mainKey === "BACKSPACE") {
-        return eventCode === "BACKSPACE";
-    }
-    if (mainKey === "DELETE") {
-        return eventCode === "DELETE";
-    }
-    if (mainKey === "SLASH") {
-        return eventCode === "SLASH" || eventCode === "NUMPADDIVIDE";
-    }
-    if (mainKey === "+" || mainKey === "=") {
-        return eventCode === "EQUAL" || eventCode === "NUMPADADD";
-    }
-    if (mainKey === "-" || mainKey === "MINUS") {
-        return eventCode === "MINUS" || eventCode === "NUMPADSUBTRACT";
-    }
-    if (mainKey === "," || mainKey === "COMMA") {
-        return eventCode === "COMMA";
-    }
-    if (mainKey === "." || mainKey === "PERIOD") {
-        return eventCode === "PERIOD" || eventCode === "NUMPADDECIMAL";
-    }
-    if (mainKey === ";" || mainKey === "SEMICOLON") {
-        return eventCode === "SEMICOLON";
-    }
-    if (mainKey === "'" || mainKey === "QUOTE") {
-        return eventCode === "QUOTE";
-    }
-    if (mainKey === "`" || mainKey === "BACKQUOTE") {
-        return eventCode === "BACKQUOTE";
-    }
-    if (mainKey === "[" || mainKey === "BRACKETLEFT") {
-        return eventCode === "BRACKETLEFT";
-    }
-    if (mainKey === "]" || mainKey === "BRACKETRIGHT") {
-        return eventCode === "BRACKETRIGHT";
-    }
-    if (mainKey === "\\" || mainKey === "BACKSLASH") {
-        return eventCode === "BACKSLASH";
+    const targets = PHYSICAL_CODE_MAP[mainKey];
+    if (targets) {
+        return targets.includes(eventCode);
     }
 
-    if (eventCode === mainKey) return true;
-    if (eventCode === `KEY${mainKey}`) return true;
-    if (eventCode === `DIGIT${mainKey}`) return true;
-    return false;
+    return [mainKey, `KEY${mainKey}`, `DIGIT${mainKey}`].includes(eventCode);
 }

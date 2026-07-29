@@ -21,6 +21,19 @@ export const restrictedImportsConfig = [
             "no-restricted-imports": [
                 "error",
                 {
+                    paths: [
+                        {
+                            name: "svelte/action",
+                            message:
+                                "Imports from 'svelte/action' are forbidden. Use Svelte 5 attachments or element functionsinstead.",
+                        },
+                        {
+                            name: "svelte",
+                            importNames: ["setContext", "getContext"],
+                            message:
+                                "Raw 'setContext' and 'getContext' are forbidden. Use 'createContext' from 'svelte'instead.",
+                        },
+                    ],
                     patterns: [
                         {
                             regex: String.raw`^\.\./`,

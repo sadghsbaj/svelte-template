@@ -1,7 +1,8 @@
 <script lang="ts">
-    import { setContext, type Snippet } from "svelte";
+    import type { Snippet } from "svelte";
 
-    import { appInertState, LAYER_CONTEXT_KEY, type LayerContext } from "./layer.svelte";
+    import { setLayerContext } from "./layer.context";
+    import { appInertState } from "./layer.svelte";
 
     export interface AppLayerProps {
         layer: string;
@@ -14,7 +15,7 @@
 
     let activeCount = $state(0);
 
-    setContext<LayerContext>(LAYER_CONTEXT_KEY, {
+    setLayerContext({
         setContextActive: (active: boolean) => {
             if (active) {
                 activeCount++;

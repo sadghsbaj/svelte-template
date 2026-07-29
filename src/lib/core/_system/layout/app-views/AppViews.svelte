@@ -1,11 +1,12 @@
 <script lang="ts" generics="T extends string">
-    import { setContext, type Snippet } from "svelte";
+    import type { Snippet } from "svelte";
 
+    import { setViewStateContext } from "./view.context";
     import type { ViewState } from "./viewState.svelte";
 
     let { viewState, children }: { viewState: ViewState<T>; children?: Snippet } = $props();
 
-    setContext("VIEW_STATE", () => viewState);
+    setViewStateContext(() => viewState as unknown as ViewState<string>);
 </script>
 
 <div data-layout="app-views">

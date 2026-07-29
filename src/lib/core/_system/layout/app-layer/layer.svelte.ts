@@ -4,19 +4,9 @@
  * inertness and scroll blocking for modal overlays.
  */
 
-import { getContext } from "svelte";
+import { getLayerContext } from "./layer.context";
 
-/**
- * Context key symbol for layer state management to prevent string key collisions.
- */
-export const LAYER_CONTEXT_KEY = Symbol("layer");
-
-/**
- * Context interface provided by a Layer component to track active child content.
- */
-export interface LayerContext {
-    setContextActive: (active: boolean) => void;
-}
+export { getLayerContext, setLayerContext, LAYER_CONTEXT_KEY, type LayerContext } from "./layer.context";
 
 let blockCounter = $state(0);
 let savedPaddingRight = "";
@@ -66,7 +56,7 @@ export const appInertState = {
  * @param isActive - A getter function returning the active state of the component.
  */
 export function syncLayerState(isActive: () => boolean) {
-    const layer = getContext<LayerContext>(LAYER_CONTEXT_KEY);
+    const layer = getLayerContext();
     if (!layer) return;
 
     $effect(() => {
@@ -77,4 +67,3 @@ export function syncLayerState(isActive: () => boolean) {
         };
     });
 }
-

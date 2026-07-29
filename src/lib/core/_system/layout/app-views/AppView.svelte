@@ -1,8 +1,8 @@
 <script lang="ts">
-    import { getContext, type Snippet } from "svelte";
+    import type { Snippet } from "svelte";
     import type { Attachment } from "svelte/attachments";
 
-    import type { ViewState } from "./viewState.svelte";
+    import { getViewStateContext } from "./view.context";
 
     interface Props {
         view: string;
@@ -11,7 +11,7 @@
 
     let { view, children }: Props = $props();
 
-    const getViewState = getContext<(() => ViewState<string>) | undefined>("VIEW_STATE");
+    const getViewState = getViewStateContext();
     if (!getViewState) {
         throw new Error("AppView must be rendered within an AppViews container");
     }

@@ -30,6 +30,11 @@ export const svelteConfig = [
                     message:
                         "Direct DOM queries on 'document' are forbidden in .svelte components. Use 'bind:this', Svelte5 attachments, or element parameters instead.",
                 },
+                {
+                    selector: "SvelteConstTag",
+                    message:
+                        "The legacy '{@const}' tag is deprecated. Use Svelte 5 '{const ...}' or '{let ...}' declaration tags instead.",
+                },
             ],
         },
     },

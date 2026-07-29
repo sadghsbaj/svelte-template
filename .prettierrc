@@ -1,7 +1,7 @@
 {
     "plugins": [
-        "@ianvs/prettier-plugin-sort-imports",
         "prettier-plugin-svelte",
+        "@ianvs/prettier-plugin-sort-imports",
         "prettier-plugin-css-order"
     ],
     "semi": true,
@@ -17,17 +17,26 @@
         "^svelte",
         "<THIRD_PARTY_MODULES>",
         "",
-        "^\\$app/(.*)$",
-        "^\\$env/(.*)$",
+        "^\\$core/(.*)$",
+        "^\\$views/(.*)$",
+        "^\\$features/(.*)$",
         "",
-        "^\\$lib/components/(.*)$",
-        "^\\$lib/stores/(.*)$",
-        "^\\$lib/utils/(.*)$",
+        "^\\$components/(.*)$",
+        "^\\$utils/(.*)$",
+        "^\\$styles/(.*)$",
+        "^\\$transitions/(.*)$",
+        "^\\$types/(.*)$",
+        "^\\$attachments/(.*)$",
+        "",
         "^\\$lib/(.*)$",
         "",
-        "^[../]",
         "^[./]"
     ],
+
+    "svelteSortOrder": "options-scripts-markup-styles",
+    "svelteIndentScriptAndStyle": true,
+    "svelteAllowShorthand": true,
+
     "importOrderTypeScriptVersion": "5.0.0",
     "cssDeclarationSorterCustomOrder": [
         "all",

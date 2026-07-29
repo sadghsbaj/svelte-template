@@ -32,13 +32,23 @@ export default defineConfig({
                 removeScriptTypeAttributes: true,
                 removeStyleLinkTypeAttributes: true,
             },
-        }).map((plugin) => (plugin && typeof plugin === "object" && "name" in plugin ? { ...plugin, apply: "build" } : plugin)),
+        }).map((plugin) =>
+            plugin && typeof plugin === "object" && "name" in plugin
+                ? { ...plugin, apply: "build" }
+                : plugin
+        ),
         UnoCSS({
             injectReset: "@unocss/reset/tailwind.css",
             combine: true,
             cssFileTransformers: [transformerDirectives()],
         }),
-        svelte(),
+        svelte({
+            dynamicCompileOptions({ filename, compileOptions }) {
+                if (!filename.includes("node_modules") && !compileOptions.runes) {
+                    return { runes: true };
+                }
+            },
+        }),
     ],
 
     resolve: {

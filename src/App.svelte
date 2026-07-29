@@ -1,4 +1,7 @@
 <script lang="ts">
+    import { onMount } from "svelte";
+
+    import { initPreload } from "$core/_system";
     import AppLayer from "$core/_system/layout/app-layer/AppLayer.svelte";
     import AppLayers from "$core/_system/layout/app-layer/AppLayers.svelte";
     import AppStage from "$core/_system/layout/app-stage/AppStage.svelte";
@@ -10,6 +13,10 @@
     import DemoView from "$lib/previews/DemoView.svelte";
 
     // @template-remove-end
+
+    onMount(() => {
+        return initPreload();
+    });
 </script>
 
 <AppStage>

@@ -52,7 +52,7 @@ function appendParams(urlStr: string, params: HttpRequestOptions["params"]): str
     if (!params) return urlStr;
 
     const isRelative = !/^[a-z]+:\/\//i.test(urlStr) && !urlStr.startsWith("//");
-    const dummyBase = "http://dummy.local";
+    const dummyBase = "https://dummy.local";
     const url = new URL(urlStr, isRelative ? dummyBase : undefined);
 
     for (const [key, value] of Object.entries(params)) {
@@ -64,7 +64,7 @@ function appendParams(urlStr: string, params: HttpRequestOptions["params"]): str
     if (isRelative) {
         return url.pathname + url.search + url.hash;
     }
-    return url.toString();
+    return url.href;
 }
 
 /**

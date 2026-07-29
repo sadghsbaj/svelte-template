@@ -108,7 +108,6 @@ describe("MotionManager (Browser Client)", () => {
         const customManager = new MotionManager();
         customManager.set("reduce");
 
-        const dummyTransition = () => ({ duration: 300, delay: 0 });
         const guarded = withMotionGuard(dummyTransition, customManager);
         const dummyNode = document.createElement("div");
 
@@ -118,4 +117,8 @@ describe("MotionManager (Browser Client)", () => {
         customManager.destroy();
     });
 });
+
+function dummyTransition() {
+    return { duration: 300, delay: 0 };
+}
 

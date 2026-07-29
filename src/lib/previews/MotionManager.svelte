@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Activity, Laptop, Pause, Play, Shield, Sliders, Sparkles, Zap, ZapOff } from "@lucide/svelte";
+    import { Activity, Laptop, Pause, Play, Shield, Sliders, Zap, ZapOff } from "@lucide/svelte";
     import { motionPreference, type MotionPreference } from "$core/_system/motion";
 
     function selectPreference(pref: MotionPreference) {

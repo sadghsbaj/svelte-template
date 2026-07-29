@@ -351,7 +351,7 @@
                             <span>Stack is currently empty</span>
                         </div>
                     {:else}
-                        {#each [...appStack.entries].reverse() as entry (entry.id)}
+                        {#each appStack.entries.toReversed() as entry (entry.id)}
                             <div class="entry-row">
                                 <div class="entry-meta">
                                     <span class="entry-prio">Prio: {entry.priority}</span>

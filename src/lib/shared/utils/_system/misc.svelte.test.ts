@@ -32,17 +32,11 @@ describe("Misc Utilities", () => {
         });
 
         test("should return true if ontouchstart exists in window", () => {
-            const originalOntouchstart = window.ontouchstart;
-            window.ontouchstart = () => {};
+            vi.stubGlobal("ontouchstart", () => {});
 
             expect(isTouchDevice()).toBe(true);
 
-            // Restore
-            if (originalOntouchstart === undefined) {
-                delete (window as unknown as Record<string, unknown>).ontouchstart;
-            } else {
-                window.ontouchstart = originalOntouchstart;
-            }
+            vi.unstubAllGlobals();
         });
     });
 
@@ -95,26 +89,23 @@ describe("Misc Utilities", () => {
             });
 
             // Mock document.execCommand
-            const originalExecCommand = document.execCommand;
-            document.execCommand = vi.fn().mockReturnValue(true);
+            const spy = vi.spyOn(document, "execCommand").mockReturnValue(true);
 
             const success = await copyToClipboard("fallback text");
             expect(success).toBe(true);
-            expect(document.execCommand).toHaveBeenCalledWith("copy");
+            expect(spy).toHaveBeenCalledWith("copy");
 
-            // Restore
-            document.execCommand = originalExecCommand;
+            spy.mockRestore();
         });
     });
 
     describe("Online Status", () => {
         test("should subscribe to online changes and run checks", async () => {
             // Mock fetch to simulate internet access check
-            const originalFetch = window.fetch;
-            window.fetch = vi.fn().mockResolvedValue({
+            vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
                 ok: true,
                 status: 200,
-            });
+            }));
 
             const statusUpdates: boolean[] = [];
             const unsubscribe = listenOnlineStatus((online) => {
@@ -145,7 +136,7 @@ describe("Misc Utilities", () => {
             await new Promise((resolve) => setTimeout(resolve, 50));
 
             unsubscribe();
-            window.fetch = originalFetch;
+            vi.unstubAllGlobals();
 
             expect(statusUpdates.length).toBeGreaterThanOrEqual(2);
             // First item (initial) or subsequent items should reflect states

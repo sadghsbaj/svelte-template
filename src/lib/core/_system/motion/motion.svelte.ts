@@ -84,12 +84,12 @@ export class MotionManager {
         media.addEventListener("change", this.#mediaListener);
 
         this.#storageListener = (event: StorageEvent) => {
-            if (event.key === "ui-motion-preference") {
-                const newPreference = parseMotionPreference(event.newValue);
-                if (newPreference !== this.#preference) {
-                    this.#preference = newPreference;
-                    this.apply();
-                }
+            if (event.key !== "ui-motion-preference") return;
+
+            const newPreference = parseMotionPreference(event.newValue);
+            if (newPreference !== this.#preference) {
+                this.#preference = newPreference;
+                this.apply();
             }
         };
         window.addEventListener("storage", this.#storageListener);
@@ -148,9 +148,10 @@ export class MotionManager {
 
         const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
         const shouldBeReduced = this.#preference === "reduce" || (this.#preference === "system" && prefersReduced);
+        const isCurrentlyReduced = this.#resolved === "reduce";
 
         // Skip DOM modifications if the visual state is already correct
-        if (!this.#isInitial && shouldBeReduced === (this.#resolved === "reduce")) {
+        if (!this.#isInitial && shouldBeReduced === isCurrentlyReduced) {
             return;
         }
 

@@ -25,10 +25,10 @@
     });
 
     $effect(() => {
-        if (inertApp && activeCount > 0) {
-            appInertState.block();
-            return () => appInertState.unblock();
-        }
+        if (!inertApp || activeCount <= 0) return;
+
+        appInertState.block();
+        return () => appInertState.unblock();
     });
 </script>
 

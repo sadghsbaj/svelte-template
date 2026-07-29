@@ -191,11 +191,9 @@ export class AppStackManager {
 
     clear(scope?: string): void {
         untrack(() => {
-            if (!scope) {
-                this._entries = [];
-            } else {
-                this._entries = this._entries.filter((entry) => entry?.scope !== scope);
-            }
+            this._entries = scope
+                ? this._entries.filter((entry) => entry?.scope !== scope)
+                : [];
         });
     }
 

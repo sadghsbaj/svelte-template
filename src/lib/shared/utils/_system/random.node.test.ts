@@ -26,7 +26,7 @@ describe("Random Utilities", () => {
         test("should return integers within range (inclusive)", () => {
             for (let i = 0; i < 100; i++) {
                 const val = randomInt(5, 10);
-                expect(Number.isInteger(val)).toBe(true);
+                expect(Number.isSafeInteger(val)).toBe(true);
                 expect(val).toBeGreaterThanOrEqual(5);
                 expect(val).toBeLessThanOrEqual(10);
             }

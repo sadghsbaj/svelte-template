@@ -24,7 +24,7 @@ export default defineConfig([
     js.configs.recommended,
     ...ts.configs.recommended,
 
-    ...svelteConfig,
+    baseRulesConfig,
     ...unicornConfig,
     unocss,
 
@@ -37,7 +37,7 @@ export default defineConfig([
         },
     },
 
-    baseRulesConfig,
+    ...svelteConfig,
     ...restrictedImportsConfig,
 
     prettier,

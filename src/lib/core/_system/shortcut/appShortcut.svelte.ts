@@ -267,7 +267,7 @@ export class AppShortcutManager {
             const index = this.entries.findIndex(
                 (entry) =>
                     Boolean(entry) &&
-                    (typeof idOrAction === "string" ? entry.id === idOrAction : entry.action === idOrAction)
+                    (typeof idOrAction === "string" ? entry.id : entry.action) === idOrAction
             );
 
             if (index !== -1) {
@@ -303,9 +303,7 @@ export class AppShortcutManager {
 
                 // Only reset the pending sequence if it belonged to a removed entry
                 if (this.pendingSequence !== null) {
-                    const hasActiveSequenceInRemoved =
-                        removed.length > 0 &&
-                        removed.some((entry) => {
+                    const hasActiveSequenceInRemoved = removed.some((entry) => {
                             // Check if the pending sequence buffer matches any removed entry's steps
                             const bufferLen = this.sequenceBuffer.length;
                             if (bufferLen === 0) return false;
@@ -539,26 +537,38 @@ export const appShortcut = new AppShortcutManager();
  * focus/blur, or hover/leave, and automatically unregister on cleanup.
  */
 export function shortcutAttach(
+    node: Element,
+    actionOrOptions?: ShortcutDescriptor | ShortcutDescriptor[],
+    sharedOpts?: ShortcutRegisterOptions,
+    mgr?: AppShortcutManager
+): { destroy: () => void };
+export function shortcutAttach(
+    comboOrDescriptors: string | ShortcutDescriptor[],
+    actionOrOptions?: ((event: KeyboardEvent) => void) | ShortcutRegisterOptions,
+    optionsOrManager?: ShortcutRegisterOptions | AppShortcutManager,
+    targetShortcutArg?: AppShortcutManager
+): (node: Element) => () => void;
+export function shortcutAttach(
     nodeOrCombo: Element | string | ShortcutDescriptor[],
     actionOrOptions?: ((event: KeyboardEvent) => void) | ShortcutRegisterOptions | ShortcutDescriptor | ShortcutDescriptor[],
     optionsOrManager?: ShortcutRegisterOptions | AppShortcutManager,
     targetShortcutArg?: AppShortcutManager
-): any {
+): ((node: Element) => () => void) | { destroy: () => void } {
     if (
         typeof nodeOrCombo !== "string" &&
         !Array.isArray(nodeOrCombo) &&
-        typeof (nodeOrCombo as any)?.nodeType === "number"
+        typeof (nodeOrCombo as unknown as Node)?.nodeType === "number"
     ) {
         const node = nodeOrCombo as Element;
-        const params = actionOrOptions as any;
+        const params = actionOrOptions as ShortcutDescriptor | ShortcutDescriptor[];
         return attachElementInternal(node, params);
     }
 
     const descriptorsOrCombo = nodeOrCombo as string | ShortcutDescriptor[];
-    const actionOrOpt = actionOrOptions as any;
+    const actionOrOpt = actionOrOptions as unknown;
 
     return (node: Element) => {
-        let descriptors: ShortcutDescriptor[] = [];
+        let descriptors: ShortcutDescriptor[];
         let sharedOptions: ShortcutRegisterOptions | undefined;
         let manager = appShortcut;
 
@@ -593,7 +603,7 @@ export function shortcutAttach(
 
 function attachElementInternal(
     node: Element,
-    descriptorsOrParams: any,
+    descriptorsOrParams: unknown,
     sharedOpts?: ShortcutRegisterOptions,
     mgr: AppShortcutManager = appShortcut
 ) {
@@ -602,14 +612,15 @@ function attachElementInternal(
     let manager = mgr;
 
     if (Array.isArray(descriptorsOrParams)) {
-        descriptors = descriptorsOrParams;
+        descriptors = descriptorsOrParams as ShortcutDescriptor[];
     } else if (
         typeof descriptorsOrParams === "object" &&
         descriptorsOrParams !== null &&
         "combo" in descriptorsOrParams
     ) {
-        descriptors = [descriptorsOrParams];
-        options = descriptorsOrParams.options ?? sharedOpts;
+        const descObj = descriptorsOrParams as ShortcutDescriptor;
+        descriptors = [descObj];
+        options = descObj.options ?? sharedOpts;
     }
 
     const attachOn: ShortcutAttachTrigger =
@@ -646,8 +657,8 @@ function attachElementInternal(
         const onFocus = () => registerAll();
         const onBlur = () => unregisterAll();
 
-        node.addEventListener("focus", onFocus, true);
-        node.addEventListener("blur", onBlur, true);
+        node.addEventListener("focus", onFocus, { capture: true });
+        node.addEventListener("blur", onBlur, { capture: true });
 
         if (
             typeof document !== "undefined" &&
@@ -658,8 +669,8 @@ function attachElementInternal(
 
         return {
             destroy() {
-                node.removeEventListener("focus", onFocus, true);
-                node.removeEventListener("blur", onBlur, true);
+                node.removeEventListener("focus", onFocus, { capture: true });
+                node.removeEventListener("blur", onBlur, { capture: true });
                 unregisterAll();
             },
         };
@@ -763,7 +774,7 @@ export function parseComboStep(normalizedStep: string): ParsedComboStep {
     } else {
         const parts = normalizedStep.split("+");
         mainKey = parts[parts.length - 1];
-        modifiers = parts.slice(0, parts.length - 1);
+        modifiers = parts.slice(0, -1);
     }
 
     return {
@@ -790,8 +801,8 @@ export function normalizeComboStep(step: string): string {
         if (lastPlusIdx === trimmed.length - 1 && lastPlusIdx > 0) {
             const prefix = trimmed.slice(0, lastPlusIdx);
             const parts = prefix.split("+").map((p) => p.trim().toLowerCase()).filter(Boolean);
-            const validMods = ["cmd", "meta", "command", "super", "ctrl", "control", "alt", "option", "shift"];
-            if (parts.length > 0 && parts.every((p) => validMods.includes(p))) {
+            const validMods = new SvelteSet(["cmd", "meta", "command", "super", "ctrl", "control", "alt", "option", "shift"]);
+            if (parts.length > 0 && parts.every((p) => validMods.has(p))) {
                 mainKeyIsPlus = true;
                 trimmed = prefix;
             }
@@ -809,13 +820,17 @@ export function normalizeComboStep(step: string): string {
     let hasShift = false;
     let parsedMainKey = "";
 
+    const CMD_MODS = new SvelteSet(["cmd", "meta", "command", "super"]);
+    const CTRL_MODS = new SvelteSet(["ctrl", "control"]);
+    const ALT_MODS = new SvelteSet(["alt", "option"]);
+
     for (const part of parts) {
         const lower = part.toLowerCase();
-        if (lower === "cmd" || lower === "meta" || lower === "command" || lower === "super") {
+        if (CMD_MODS.has(lower)) {
             hasCmd = true;
-        } else if (lower === "ctrl" || lower === "control") {
+        } else if (CTRL_MODS.has(lower)) {
             hasCtrl = true;
-        } else if (lower === "alt" || lower === "option") {
+        } else if (ALT_MODS.has(lower)) {
             hasAlt = true;
         } else if (lower === "shift") {
             hasShift = true;

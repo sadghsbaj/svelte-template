@@ -51,20 +51,20 @@ export function deepMerge<T extends Record<string, unknown>, S extends Record<st
     const result = { ...target } as Record<string, unknown>;
 
     for (const key in source) {
-        if (Object.prototype.hasOwnProperty.call(source, key)) {
-            const sourceValue = source[key];
-            const targetValue = result[key];
+        if (!Object.prototype.hasOwnProperty.call(source, key)) continue;
 
-            if (isPlainObject(targetValue) && isPlainObject(sourceValue)) {
-                result[key] = deepMerge(targetValue, sourceValue);
-            } else if (sourceValue !== undefined) {
-                if (Array.isArray(sourceValue)) {
-                    result[key] = [...sourceValue];
-                } else if (isPlainObject(sourceValue)) {
-                    result[key] = deepMerge({}, sourceValue);
-                } else {
-                    result[key] = sourceValue;
-                }
+        const sourceValue = source[key];
+        const targetValue = result[key];
+
+        if (isPlainObject(targetValue) && isPlainObject(sourceValue)) {
+            result[key] = deepMerge(targetValue, sourceValue);
+        } else if (sourceValue !== undefined) {
+            if (Array.isArray(sourceValue)) {
+                result[key] = [...sourceValue];
+            } else if (isPlainObject(sourceValue)) {
+                result[key] = deepMerge({}, sourceValue);
+            } else {
+                result[key] = sourceValue;
             }
         }
     }
@@ -89,8 +89,8 @@ export function isEqual(a: unknown, b: unknown): boolean {
 
     if (Array.isArray(a) && Array.isArray(b)) {
         if (a.length !== b.length) return false;
-        for (let i = 0; i < a.length; i++) {
-            if (!isEqual(a[i], b[i])) return false;
+        for (const [i, item] of a.entries()) {
+            if (!isEqual(item, b[i])) return false;
         }
         return true;
     }
@@ -151,7 +151,7 @@ export function deepClone<T>(val: T): T {
     }
 
     if (val instanceof Date) {
-        return new Date(val.getTime()) as unknown as T;
+        return new Date(val) as unknown as T;
     }
 
     if (val instanceof RegExp) {
@@ -175,7 +175,7 @@ export function deepClone<T>(val: T): T {
     }
 
     if (Array.isArray(val)) {
-        return val.map(deepClone) as unknown as T;
+        return val.map((item) => deepClone(item)) as unknown as T;
     }
 
     const prototype = Object.getPrototypeOf(val);

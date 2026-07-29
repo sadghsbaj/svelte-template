@@ -163,7 +163,7 @@ export function crossfade(
     const [send, receive] = svelte_crossfade(restParams);
 
     const wrap = (
-        transitionFn: (node: Element, p: any) => () => TransitionConfig
+        transitionFn: ReturnType<typeof svelte_crossfade>[number]
     ): CrossfadeFn => {
         return ((node: Element, p: MotionParams<{ key: unknown }>) => {
             const configFn = transitionFn(node, p);
@@ -229,6 +229,7 @@ export class Tween<T> {
     set target(value: T) {
         const activeManager = this.#manager ?? motionPreference;
         if (!this.#forceAnimate && activeManager.resolved === "reduce") {
+            // eslint-disable-next-line unicorn/prefer-await
             this.set(value, { duration: 0 }).catch(() => {});
         } else {
             this.#underlying.target = value;
@@ -298,6 +299,7 @@ export class Spring<T> {
     set target(value: T) {
         const activeManager = this.#manager ?? motionPreference;
         if (!this.#forceAnimate && activeManager.resolved === "reduce") {
+            // eslint-disable-next-line unicorn/prefer-await
             this.set(value, { instant: true }).catch(() => {});
         } else {
             this.#underlying.target = value;

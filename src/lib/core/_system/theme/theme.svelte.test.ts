@@ -3,13 +3,13 @@ import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 
 import { isValidMode, ThemeManager } from "./theme.svelte";
 
+async function waitForSwap() {
+    await tick();
+    await new Promise((resolve) => setTimeout(resolve, 50));
+}
+
 describe("ThemeManager (Browser Client)", () => {
     let manager: ThemeManager;
-
-    async function waitForSwap() {
-        await tick();
-        await new Promise((resolve) => setTimeout(resolve, 50));
-    }
 
     beforeEach(() => {
         localStorage.clear();

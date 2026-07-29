@@ -130,10 +130,10 @@ export function weightedRandom<T>(items: T[], weights: number[]): T | undefined 
     const random = Math.random() * totalWeight;
     let cumulativeWeight = 0;
 
-    for (let i = 0; i < items.length; i++) {
+    for (const [i, item] of items.entries()) {
         cumulativeWeight += weights[i];
         if (random < cumulativeWeight) {
-            return items[i];
+            return item;
         }
     }
 

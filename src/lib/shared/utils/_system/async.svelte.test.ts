@@ -30,20 +30,27 @@ describe("Async Utilities", () => {
 
     describe("timeout", () => {
         test("should resolve if promise resolves before timeout", async () => {
-            const fastPromise = delay(10).then(() => "success");
+            const fastPromise = (async () => {
+                await delay(10);
+                return "success";
+            })();
             const result = await timeout(fastPromise, 50);
             expect(result).toBe("success");
         });
 
         test("should reject if promise rejects before timeout", async () => {
-            const failingPromise = delay(10).then(() => {
+            const failingPromise = (async () => {
+                await delay(10);
                 throw new Error("failed");
-            });
+            })();
             await expect(timeout(failingPromise, 50)).rejects.toThrow("failed");
         });
 
         test("should reject with TimeoutError if promise takes too long", async () => {
-            const slowPromise = delay(100).then(() => "slow");
+            const slowPromise = (async () => {
+                await delay(100);
+                return "slow";
+            })();
             const resultPromise = timeout(slowPromise, 15, { message: "Custom timeout message" });
 
             await expect(resultPromise).rejects.toThrow("Custom timeout message");
@@ -52,7 +59,10 @@ describe("Async Utilities", () => {
 
         test("should respect AbortSignal", async () => {
             const controller = new AbortController();
-            const promise = delay(100).then(() => "done");
+            const promise = (async () => {
+                await delay(100);
+                return "done";
+            })();
             const timedPromise = timeout(promise, 50, { signal: controller.signal });
 
             setTimeout(() => controller.abort(), 10);

@@ -229,7 +229,7 @@ export function listenOnlineStatus(callback: (online: boolean) => void): () => v
     handler();
 
     // Periodically ping to detect network dropouts
-    const intervalId = setInterval(handler, 30000);
+    const intervalId = setInterval(handler, 30_000);
 
     return () => {
         window.removeEventListener("online", handler);

@@ -2,8 +2,8 @@ import { beforeEach, describe, expect, test } from "vitest";
 
 import type { ViewsConfig } from "./types";
 import { ViewState } from "./viewState.svelte";
-import { appShortcut } from "../../shortcut/appShortcut.svelte";
-import { appStack } from "../../stack/appStack.svelte";
+import { appShortcut } from "$core/_system/shortcut/appShortcut.svelte";
+import { appStack } from "$core/_system/stack/appStack.svelte";
 
 describe("ViewState (Browser Client)", () => {
     type TestView = "home" | "stats" | "statsDetails" | "statsSubDetails" | "settings";
@@ -217,7 +217,7 @@ describe("ViewState (Browser Client)", () => {
 
     describe("Verified Fixes & Edge Cases", () => {
         test("should throw Error on empty views array", () => {
-            expect(() => new ViewState({ views: [] } as any)).toThrow(
+            expect(() => new ViewState({ views: [] } as unknown as ViewsConfig<string>)).toThrow(
                 "ViewsConfig must contain at least one view definition"
             );
         });

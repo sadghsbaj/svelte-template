@@ -33,6 +33,7 @@
             lastPos = el.scrollTop;
             lastHeight = el.scrollHeight;
         };
+        // eslint-disable-next-line unicorn/prefer-observer-apis
         el.addEventListener("scroll", handleScroll, { passive: true });
 
         requestAnimationFrame(() => {

@@ -47,7 +47,7 @@ export function debugGuardPlugin(options: DebugGuardOptions = {}): Plugin {
                 // Read the original file directly from disk.
                 // This guarantees we scan the raw "debug-border" class before
                 // Svelte or UnoCSS hash it into scoped classes (e.g., uno-xxx).
-                const rawCode = fs.readFileSync(id, "utf-8");
+                const rawCode = fs.readFileSync(id, "utf8");
                 const match = rawCode.match(/debug-border(?:-[0-9])?/);
 
                 if (match) {
@@ -68,12 +68,12 @@ export function debugGuardPlugin(options: DebugGuardOptions = {}): Plugin {
 
         closeBundle() {
             // Print all collected warnings at the very end of the build process
-            if (warnings.length > 0) {
-                console.warn("\n" + warnings.join("\n"));
-                console.warn(
-                    `\x1b[33m   Make sure to remove debug utilities before committing.\x1b[0m\n`
-                );
-            }
+            if (warnings.length === 0) return;
+
+            console.warn("\n" + warnings.join("\n"));
+            console.warn(
+                `\x1b[33m   Make sure to remove debug utilities before committing.\x1b[0m\n`
+            );
         },
     };
 }

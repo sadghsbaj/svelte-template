@@ -47,15 +47,15 @@ export const appInertState = {
         }
     },
     unblock() {
-        if (blockCounter > 0) {
-            blockCounter--;
+        if (blockCounter === 0) return;
 
-            if (blockCounter === 0 && typeof window !== "undefined") {
-                document.body.style.paddingRight = savedPaddingRight;
-                document.body.style.overflow = savedOverflow;
-                savedPaddingRight = "";
-                savedOverflow = "";
-            }
+        blockCounter--;
+
+        if (blockCounter === 0 && typeof window !== "undefined") {
+            document.body.style.paddingRight = savedPaddingRight;
+            document.body.style.overflow = savedOverflow;
+            savedPaddingRight = "";
+            savedOverflow = "";
         }
     },
 };

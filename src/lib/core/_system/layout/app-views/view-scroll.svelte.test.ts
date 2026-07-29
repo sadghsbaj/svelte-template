@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, test } from "vitest";
 
 import type { ViewsConfig } from "./types";
-import { ViewScrollManager } from "./viewScroll";
+import { ViewScrollManager } from "./view-scroll";
 
 describe("ViewScrollManager (Browser Client)", () => {
     type TestView = "home" | "stats" | "settings";

@@ -169,7 +169,7 @@ describe("Object Utilities", () => {
 
         test("should handle NaN and +0/-0 correct according to Object.is", () => {
             expect(isEqual(NaN, NaN)).toBe(true);
-            expect(isEqual(+0, -0)).toBe(false);
+            expect(isEqual(0, -0)).toBe(false);
         });
 
         test("should return true for identical Dates and RegExps", () => {

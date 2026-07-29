@@ -84,9 +84,12 @@ export default defineConfig({
         [
             /^squircle(?:-(smooth|soft))?$/,
             ([_, type], { symbols }) => {
-                let shapeValue = "squircle";
-                if (type === "smooth") shapeValue = "superellipse(1.6)";
-                if (type === "soft") shapeValue = "superellipse(1.2)";
+                const SHAPE_MAP: Record<string, string> = {
+                    smooth: "superellipse(1.6)",
+                    soft: "superellipse(1.2)",
+                };
+
+                const shapeValue = SHAPE_MAP[type] ?? "squircle";
 
                 return {
                     [symbols.parent]: "@supports (corner-shape: squircle)",

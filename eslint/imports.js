@@ -23,7 +23,7 @@ export const restrictedImportsConfig = [
                 {
                     patterns: [
                         {
-                            regex: "^\\.\\./",
+                            regex: String.raw`^\.\./`,
                             message:
                                 "Relative parent imports via '../' are forbidden. Please use path aliases ($components, $utils, $core, $views etc.).",
                         },

@@ -16,8 +16,7 @@ export type ClassValue = string | number | bigint | boolean | undefined | null |
 export function cn(...classes: ClassValue[]): string {
     let result = "";
 
-    for (let i = 0; i < classes.length; i++) {
-        const value = classes[i];
+    for (const value of classes) {
 
         if (value) {
             if (typeof value === "string" || typeof value === "number") {

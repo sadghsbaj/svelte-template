@@ -47,6 +47,7 @@ export function motionGuardPlugin(options: MotionGuardOptions = {}): Plugin {
             if (forbiddenMatch || forbiddenDynamicMatch) {
                 const matchedPkg = (forbiddenMatch || forbiddenDynamicMatch)![1];
 
+                // eslint-disable-next-line unicorn/no-this-outside-of-class
                 this.error(
                     `Forbidden direct import from "svelte/${matchedPkg}" detected in ${id}.\n` +
                         `To ensure proper reduced motion support and global preference synchronization, ` +

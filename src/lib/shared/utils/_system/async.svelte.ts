@@ -39,49 +39,41 @@ export function delay(ms: number, options?: { signal?: AbortSignal }): Promise<v
  * Wraps a promise to reject with a TimeoutError if it does not resolve within the specified limit.
  * Cleans up internal timers and supports optional AbortSignal aborts.
  */
-export function timeout<T>(
+export async function timeout<T>(
     promise: Promise<T>,
     ms: number,
     options?: { signal?: AbortSignal; message?: string }
 ): Promise<T> {
     const signal = options?.signal;
     if (signal?.aborted) {
-        return Promise.reject(new DOMException("The operation was aborted.", "AbortError"));
+        throw new DOMException("The operation was aborted.", "AbortError");
     }
 
-    return new Promise<T>((resolve, reject) => {
-        const timeoutId = setTimeout(() => {
-            if (signal) {
-                signal.removeEventListener("abort", onAbort);
-            }
+    let timeoutId: ReturnType<typeof setTimeout> | undefined;
+    const timeoutPromise = new Promise<never>((_, reject) => {
+        timeoutId = setTimeout(() => {
             reject(new DOMException(options?.message || "The operation timed out.", "TimeoutError"));
         }, ms);
-
-        const onAbort = () => {
-            clearTimeout(timeoutId);
-            reject(new DOMException("The operation was aborted.", "AbortError"));
-        };
-
-        if (signal) {
-            signal.addEventListener("abort", onAbort);
-        }
-
-        promise
-            .then((value) => {
-                clearTimeout(timeoutId);
-                if (signal) {
-                    signal.removeEventListener("abort", onAbort);
-                }
-                resolve(value);
-            })
-            .catch((error) => {
-                clearTimeout(timeoutId);
-                if (signal) {
-                    signal.removeEventListener("abort", onAbort);
-                }
-                reject(error);
-            });
     });
+
+    let onAbort: (() => void) | undefined;
+    const abortPromise = signal
+        ? new Promise<never>((_, reject) => {
+              onAbort = () => reject(new DOMException("The operation was aborted.", "AbortError"));
+              signal.addEventListener("abort", onAbort, { once: true });
+          })
+        : null;
+
+    try {
+        const promises: Promise<T>[] = [promise, timeoutPromise];
+        if (abortPromise) promises.push(abortPromise);
+        return await Promise.race(promises);
+    } finally {
+        if (timeoutId) clearTimeout(timeoutId);
+        if (signal && onAbort) {
+            signal.removeEventListener("abort", onAbort);
+        }
+    }
 }
 
 export interface RetryOptions {
@@ -163,7 +155,7 @@ export async function mapLimit<T, R>(
 ): Promise<R[]> {
     const signal = options?.signal;
     if (signal?.aborted) {
-        return Promise.reject(new DOMException("The operation was aborted.", "AbortError"));
+        throw new DOMException("The operation was aborted.", "AbortError");
     }
 
     if (items.length === 0) {
@@ -171,7 +163,7 @@ export async function mapLimit<T, R>(
     }
 
     const concurrency = Math.min(limit, items.length);
-    const results = new Array<R>(items.length);
+    const results: R[] = Array.from({ length: items.length });
     let nextIndex = 0;
     let failed = false;
     let failureError: unknown = null;
@@ -292,12 +284,12 @@ export class AsyncState<T, Args extends unknown[] = []> {
             }
 
             return result;
-        } catch (err) {
+        } catch (error) {
             if (signal.aborted) {
                 throw new DOMException("The operation was aborted.", "AbortError");
             }
 
-            const errorInstance = err instanceof Error ? err : new Error(String(err));
+            const errorInstance = error instanceof Error ? error : new Error(String(error));
             this.#error = errorInstance;
             this.#loading = false;
 
@@ -314,10 +306,10 @@ export class AsyncState<T, Args extends unknown[] = []> {
     }
 
     abort(): void {
-        if (this.#abortController) {
-            this.#abortController.abort();
-            this.#abortController = null;
-            this.#loading = false;
-        }
+        if (!this.#abortController) return;
+
+        this.#abortController.abort();
+        this.#abortController = null;
+        this.#loading = false;
     }
 }

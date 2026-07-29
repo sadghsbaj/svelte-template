@@ -113,7 +113,7 @@ describe("Layer State Utilities & Components", () => {
 
             const layerEl = target.querySelector('[data-layout="app-layer"]');
             expect(layerEl).not.toBeNull();
-            expect(layerEl?.getAttribute("data-layer")).toBe("modal-layer");
+            expect((layerEl as HTMLElement)?.dataset.layer).toBe("modal-layer");
             expect((layerEl as HTMLElement)?.style.zIndex).toBe("50");
         });
 

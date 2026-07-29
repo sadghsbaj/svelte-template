@@ -63,9 +63,15 @@ describe("AppStackManager (Browser Client)", () => {
         test("should resolve synchronous ties deterministically using monotonic sequence counter", () => {
             const executionOrder: number[] = [];
 
-            manager.register(() => executionOrder.push(1), { priority: "overlay" });
-            manager.register(() => executionOrder.push(2), { priority: "overlay" });
-            manager.register(() => executionOrder.push(3), { priority: "overlay" });
+            manager.register(() => {
+                executionOrder.push(1);
+            }, { priority: "overlay" });
+            manager.register(() => {
+                executionOrder.push(2);
+            }, { priority: "overlay" });
+            manager.register(() => {
+                executionOrder.push(3);
+            }, { priority: "overlay" });
 
             manager.pop();
             manager.pop();
@@ -83,14 +89,13 @@ describe("AppStackManager (Browser Client)", () => {
         });
 
         test("should unregister by function reference using LIFO order for duplicate actions", () => {
-            const action = () => {};
-            manager.register(action, { id: "first", priority: "overlay" });
-            manager.register(action, { id: "second", priority: "overlay" });
+            manager.register(dummyAction, { id: "first", priority: "overlay" });
+            manager.register(dummyAction, { id: "second", priority: "overlay" });
 
             expect(manager.size).toBe(2);
 
             // Unregistering by function reference should remove the most recent entry ("second")
-            const removed = manager.unregister(action);
+            const removed = manager.unregister(dummyAction);
             expect(removed).toBe(true);
             expect(manager.size).toBe(1);
             expect(manager.entries[0].id).toBe("first");
@@ -261,4 +266,6 @@ describe("AppStackManager (Browser Client)", () => {
         });
     });
 });
+
+function dummyAction() {}
 

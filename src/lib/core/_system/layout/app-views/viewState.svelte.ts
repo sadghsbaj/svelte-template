@@ -1,4 +1,5 @@
 import { SvelteSet } from "svelte/reactivity";
+
 import { appShortcut } from "$core/_system/shortcut/appShortcut.svelte";
 import { appStack } from "$core/_system/stack/appStack.svelte";
 
@@ -10,8 +11,8 @@ import type {
     ViewTransitionFn,
     ViewTransitionOption,
 } from "./types";
-import { viewIn, viewOut } from "./view.transition";
-import { ViewScrollManager } from "./viewScroll";
+import { ViewScrollManager } from "./view-scroll";
+import { viewIn, viewOut } from "./view-transition";
 
 export class ViewState<T extends string> {
     activeView = $state<T>(undefined as unknown as T);
@@ -32,10 +33,10 @@ export class ViewState<T extends string> {
     }
 
     destroy(): void {
-        if (this.subviewUnregister) {
-            this.subviewUnregister();
-            this.subviewUnregister = null;
-        }
+        if (!this.subviewUnregister) return;
+
+        this.subviewUnregister();
+        this.subviewUnregister = null;
     }
 
     measureAndSave(el: HTMLElement | null, view: T = this.activeView): void {
@@ -47,7 +48,8 @@ export class ViewState<T extends string> {
     }
 
     private resolveInitialView(): T {
-        const fallback = this.config.views.find((v) => !v.disabled)?.view ?? this.config.views[0].view;
+        const fallback =
+            this.config.views.find((v) => !v.disabled)?.view ?? this.config.views[0].view;
 
         if (!this.config.persistKey || typeof window === "undefined") {
             return fallback;

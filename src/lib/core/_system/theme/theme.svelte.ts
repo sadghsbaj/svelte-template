@@ -116,16 +116,15 @@ export class ThemeManager {
         }
 
         this.#storageListener = (event: StorageEvent) => {
-            if (
-                (event.key === "ui-theme" || event.key === null) &&
-                (!event.storageArea || event.storageArea === localStorage)
-            ) {
-                const rawVal = event.newValue;
-                const newMode = isValidMode(rawVal) ? rawVal : "system";
-                if (newMode !== this.#mode) {
-                    this.#mode = newMode;
-                    this.apply();
-                }
+            const isTargetKey = event.key === "ui-theme" || event.key === null;
+            const isTargetStorage = !event.storageArea || event.storageArea === localStorage;
+            if (!isTargetKey || !isTargetStorage) return;
+
+            const rawVal = event.newValue;
+            const newMode = isValidMode(rawVal) ? rawVal : "system";
+            if (newMode !== this.#mode) {
+                this.#mode = newMode;
+                this.apply();
             }
         };
         window.addEventListener("storage", this.#storageListener);
@@ -190,9 +189,10 @@ export class ThemeManager {
 
         const prefersDark = window.matchMedia?.("(prefers-color-scheme: dark)")?.matches ?? false;
         const shouldBeDark = this.#mode === "dark" || (this.#mode === "system" && prefersDark);
+        const isCurrentlyDark = this.#resolved === "dark";
 
         // Skip DOM modifications and transitions if the visual state is already correct
-        if (shouldBeDark === (this.#resolved === "dark")) {
+        if (shouldBeDark === isCurrentlyDark) {
             return;
         }
 
@@ -237,7 +237,8 @@ export class ThemeManager {
                 }
                 const transition = doc.startViewTransition(performSwap);
 
-                // Silence unhandled rejections on transition.ready
+                // Silence unhandled rejections on transition.ready and background cleanup
+                /* eslint-disable unicorn/prefer-await */
                 transition.ready.catch(() => {});
 
                 transition.finished
@@ -247,6 +248,7 @@ export class ThemeManager {
                             document.documentElement.classList.remove("theme-switching");
                         }
                     });
+                /* eslint-enable unicorn/prefer-await */
             } catch {
                 document.documentElement.classList.remove("theme-switching");
                 performSwap();

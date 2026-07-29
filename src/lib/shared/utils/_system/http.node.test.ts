@@ -9,9 +9,7 @@ describe("HTTP Utilities", () => {
             // Mock fetch to inspect the final URL received
             const mockFetch = vi.fn().mockImplementation(() =>
                 Promise.resolve(
-                    new Response(JSON.stringify({ ok: true }), {
-                        headers: { "Content-Type": "application/json" },
-                    })
+                    Response.json({ ok: true })
                 )
             );
 
@@ -30,9 +28,7 @@ describe("HTTP Utilities", () => {
 
         test("should serialize request body and set headers", async () => {
             const mockFetch = vi.fn().mockResolvedValue(
-                new Response(JSON.stringify({ created: true }), {
-                    headers: { "Content-Type": "application/json" },
-                })
+                Response.json({ created: true })
             );
 
             const client = new HttpClient({ fetch: mockFetch, baseUrl: "https://api.test" });
@@ -59,9 +55,7 @@ describe("HTTP Utilities", () => {
 
         test("should ignore body on GET requests without throwing TypeError", async () => {
             const mockFetch = vi.fn().mockResolvedValue(
-                new Response(JSON.stringify({ ok: true }), {
-                    headers: { "Content-Type": "application/json" },
-                })
+                Response.json({ ok: true })
             );
 
             const client = new HttpClient({
@@ -80,9 +74,7 @@ describe("HTTP Utilities", () => {
     describe("HttpClient Configuration and Extension", () => {
         test("should extend client configuration", async () => {
             const mockFetch = vi.fn().mockResolvedValue(
-                new Response(JSON.stringify({ success: true }), {
-                    headers: { "Content-Type": "application/json" },
-                })
+                Response.json({ success: true })
             );
 
             const api = http.extend({
@@ -101,9 +93,7 @@ describe("HTTP Utilities", () => {
     describe("Interceptors", () => {
         test("should execute onRequest and onResponse interceptors", async () => {
             const mockFetch = vi.fn().mockResolvedValue(
-                new Response(JSON.stringify({ value: "original" }), {
-                    headers: { "Content-Type": "application/json" },
-                })
+                Response.json({ value: "original" })
             );
 
             const onRequestSpy = vi.fn((req: Request) => {
@@ -112,9 +102,7 @@ describe("HTTP Utilities", () => {
 
             const onResponseSpy = vi.fn(() => {
                 // Return custom mocked response instead
-                return new Response(JSON.stringify({ value: "intercepted-response" }), {
-                    headers: { "Content-Type": "application/json" },
-                });
+                return Response.json({ value: "intercepted-response" });
             });
 
             const client = new HttpClient({
@@ -137,10 +125,9 @@ describe("HTTP Utilities", () => {
     describe("Error Handling", () => {
         test("should throw HttpError on failure and parse payload", async () => {
             const mockFetch = vi.fn().mockResolvedValue(
-                new Response(JSON.stringify({ error: "bad request data" }), {
+                Response.json({ error: "bad request data" }, {
                     status: 400,
                     statusText: "Bad Request",
-                    headers: { "Content-Type": "application/json" },
                 })
             );
 
@@ -179,9 +166,7 @@ describe("HTTP Utilities", () => {
         test("should not throw TimeoutError if request completes in time", async () => {
             const mockFetch = vi.fn().mockImplementation(async () => {
                 await delay(5);
-                return new Response(JSON.stringify({ ok: true }), {
-                    headers: { "Content-Type": "application/json" },
-                });
+                return Response.json({ ok: true });
             });
 
             const client = new HttpClient({ fetch: mockFetch, baseUrl: "https://api.test", timeout: 50 });
@@ -191,9 +176,7 @@ describe("HTTP Utilities", () => {
 
         test("should cleanly remove abort listener from original signal to prevent memory leaks", async () => {
             const mockFetch = vi.fn().mockResolvedValue(
-                new Response(JSON.stringify({ ok: true }), {
-                    headers: { "Content-Type": "application/json" },
-                })
+                Response.json({ ok: true })
             );
 
             const controller = new AbortController();

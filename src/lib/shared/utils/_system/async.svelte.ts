@@ -239,6 +239,12 @@ export class AsyncState<T, Args extends unknown[] = []> {
     #fn: (...args: Args) => Promise<T>;
     #options?: AsyncStateOptions<T>;
 
+    constructor(fn: (...args: Args) => Promise<T>, options?: AsyncStateOptions<T>) {
+        this.#fn = fn;
+        this.#options = options;
+        this.#data = options?.initialData;
+    }
+
     get loading(): boolean {
         return this.#loading;
     }
@@ -249,12 +255,6 @@ export class AsyncState<T, Args extends unknown[] = []> {
 
     get data(): T | undefined {
         return this.#data;
-    }
-
-    constructor(fn: (...args: Args) => Promise<T>, options?: AsyncStateOptions<T>) {
-        this.#fn = fn;
-        this.#options = options;
-        this.#data = options?.initialData;
     }
 
     async execute(...args: Args): Promise<T> {

@@ -242,16 +242,16 @@ export function listenOnlineStatus(callback: (online: boolean) => void): () => v
 class OnlineStatusTracker {
     #online = $state(typeof navigator !== "undefined" ? navigator.onLine : true);
 
-    get value(): boolean {
-        return this.#online;
-    }
-
     constructor() {
         if (typeof window === "undefined") return;
 
         listenOnlineStatus((status) => {
             this.#online = status;
         });
+    }
+
+    get value(): boolean {
+        return this.#online;
     }
 }
 

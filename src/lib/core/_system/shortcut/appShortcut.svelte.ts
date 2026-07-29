@@ -42,6 +42,13 @@ export class AppShortcutManager {
     private holdTimers = new SvelteMap<string, ReturnType<typeof setTimeout>>();
     private keyPressTimes = new SvelteMap<string, number>();
     private listenerBound = false;
+
+    constructor() {
+        if (typeof window !== "undefined") {
+            this.bindGlobalEvents();
+        }
+    }
+
     private onKeyDown = (e: KeyboardEvent) => this.handleKeyDown(e);
     private onKeyUp = (e: KeyboardEvent) => this.handleKeyUp(e);
     private onBlur = () => this.resetModifiers();
@@ -51,12 +58,6 @@ export class AppShortcutManager {
             this.resetModifiers();
         }
     };
-
-    constructor() {
-        if (typeof window !== "undefined") {
-            this.bindGlobalEvents();
-        }
-    }
 
     configure(newConfig: Partial<AppShortcutConfig>): void {
         this.config = {

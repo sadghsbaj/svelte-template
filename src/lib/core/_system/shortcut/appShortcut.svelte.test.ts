@@ -598,7 +598,7 @@ describe("AppShortcutManager (Exhaustive Browser Client Test Suite)", () => {
 
             // Test 1: HTMLInputElement
             const input = document.createElement("input");
-            document.body.appendChild(input);
+            document.body.append(input);
             input.focus();
 
             manager.handleKeyDown(new KeyboardEvent("keydown", { key: "k", metaKey: true, bubbles: true }));
@@ -607,7 +607,7 @@ describe("AppShortcutManager (Exhaustive Browser Client Test Suite)", () => {
             manager.handleKeyDown(new KeyboardEvent("keydown", { key: "Enter", metaKey: true, bubbles: true }));
             expect(allowedExecuted).toBe(true);
 
-            document.body.removeChild(input);
+            input.remove();
 
             // Reset flags
             blockedExecuted = false;
@@ -616,7 +616,7 @@ describe("AppShortcutManager (Exhaustive Browser Client Test Suite)", () => {
             // Test 2: HTMLDivElement (contenteditable="true")
             const editableDiv = document.createElement("div");
             editableDiv.contentEditable = "true";
-            document.body.appendChild(editableDiv);
+            document.body.append(editableDiv);
             editableDiv.focus();
 
             manager.handleKeyDown(new KeyboardEvent("keydown", { key: "k", metaKey: true, bubbles: true }));
@@ -625,7 +625,7 @@ describe("AppShortcutManager (Exhaustive Browser Client Test Suite)", () => {
             manager.handleKeyDown(new KeyboardEvent("keydown", { key: "Enter", metaKey: true, bubbles: true }));
             expect(allowedExecuted).toBe(true);
 
-            document.body.removeChild(editableDiv);
+            editableDiv.remove();
 
             // Reset flags
             blockedExecuted = false;
@@ -635,7 +635,7 @@ describe("AppShortcutManager (Exhaustive Browser Client Test Suite)", () => {
             const ariaEditor = document.createElement("div");
             ariaEditor.setAttribute("role", "textbox");
             ariaEditor.tabIndex = 0;
-            document.body.appendChild(ariaEditor);
+            document.body.append(ariaEditor);
             ariaEditor.focus();
 
             manager.handleKeyDown(new KeyboardEvent("keydown", { key: "k", metaKey: true, bubbles: true }));
@@ -644,7 +644,7 @@ describe("AppShortcutManager (Exhaustive Browser Client Test Suite)", () => {
             manager.handleKeyDown(new KeyboardEvent("keydown", { key: "Enter", metaKey: true, bubbles: true }));
             expect(allowedExecuted).toBe(true);
 
-            document.body.removeChild(ariaEditor);
+            ariaEditor.remove();
 
             // Test 4: Non-text inputs (type="checkbox", type="radio", type="range")
             let singleKeyExecuted = false;
@@ -653,14 +653,14 @@ describe("AppShortcutManager (Exhaustive Browser Client Test Suite)", () => {
             // Test 4: Non-text inputs (type="checkbox", type="radio", type="range")
             const checkbox = document.createElement("input");
             checkbox.type = "checkbox";
-            document.body.appendChild(checkbox);
+            document.body.append(checkbox);
             checkbox.focus();
 
             // Shortcut MUST NOT be blocked on checkbox!
             manager.handleKeyDown(new KeyboardEvent("keydown", { key: "d", bubbles: true }));
             expect(singleKeyExecuted).toBe(true);
 
-            document.body.removeChild(checkbox);
+            checkbox.remove();
         });
     });
 
@@ -698,7 +698,7 @@ describe("AppShortcutManager (Exhaustive Browser Client Test Suite)", () => {
             const attachFn = shortcutAttach("Cmd+Enter", () => (actionExecuted = true), { attachOn: "focus" }, manager);
 
             const input = document.createElement("input");
-            document.body.appendChild(input);
+            document.body.append(input);
 
             const cleanup = attachFn(input);
             expect(manager.size).toBe(0); // Not registered before focus
@@ -715,7 +715,7 @@ describe("AppShortcutManager (Exhaustive Browser Client Test Suite)", () => {
             expect(manager.size).toBe(0); // Unregistered on blur
 
             cleanup();
-            document.body.removeChild(input);
+            input.remove();
         });
 
         test("should respect attachOn: 'hover' trigger on pointerenter and pointerleave", () => {
@@ -723,7 +723,7 @@ describe("AppShortcutManager (Exhaustive Browser Client Test Suite)", () => {
             const attachFn = shortcutAttach("d", () => (actionExecuted = true), { attachOn: "hover" }, manager);
 
             const card = document.createElement("div");
-            document.body.appendChild(card);
+            document.body.append(card);
 
             const cleanup = attachFn(card);
             expect(manager.size).toBe(0); // Not registered before hover
@@ -740,7 +740,7 @@ describe("AppShortcutManager (Exhaustive Browser Client Test Suite)", () => {
             expect(manager.size).toBe(0); // Unregistered on leave
 
             cleanup();
-            document.body.removeChild(card);
+            card.remove();
         });
     });
 });

@@ -115,7 +115,7 @@ export default defineConfig({
                     "blueviolet", // debug-border-9
                 ];
 
-                const colorIndex = num ? parseInt(num, 10) : 0;
+                const colorIndex = num ? Number(num) : 0;
 
                 return {
                     border: `1px dashed ${colors[colorIndex]} !important`,

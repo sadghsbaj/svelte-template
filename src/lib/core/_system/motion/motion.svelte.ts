@@ -46,8 +46,9 @@ function safeSetStorage(key: string, value: string): void {
 }
 
 function parseMotionPreference(value: unknown): MotionPreference {
-    if (value === "no-preference" || value === "reduce" || value === "system") {
-        return value;
+    const valid: MotionPreference[] = ["no-preference", "reduce", "system"];
+    if (typeof value === "string" && valid.includes(value as MotionPreference)) {
+        return value as MotionPreference;
     }
     return "system";
 }

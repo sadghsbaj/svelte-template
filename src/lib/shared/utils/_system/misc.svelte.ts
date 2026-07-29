@@ -21,7 +21,7 @@ export function getBrowserEngine(): BrowserEngine {
 
     // Gecko (Firefox)
     if (
-        typeof win.InstallTrigger !== "undefined" ||
+        win.InstallTrigger !== undefined ||
         "MozAppearance" in document.documentElement.style
     ) {
         return "gecko";
@@ -29,7 +29,7 @@ export function getBrowserEngine(): BrowserEngine {
 
     // Blink (Chrome, Opera, Edge, Brave, HeadlessChrome)
     const isBlink =
-        (typeof win.chrome !== "undefined" && win.chrome !== null) ||
+        (win.chrome !== undefined && win.chrome !== null) ||
         "chrome" in window ||
         /chrome|chromium|headlesschrome/i.test(navigator.userAgent || "");
 
@@ -39,11 +39,8 @@ export function getBrowserEngine(): BrowserEngine {
 
     // WebKit (Safari, iOS Browsers)
     const isSafari = /Apple/.test(navigator.vendor);
-    if (isSafari || "WebkitAppearance" in document.documentElement.style) {
-        // Exclude Blink spoofing Webkit
-        if (!isBlink) {
-            return "webkit";
-        }
+    if (!isBlink && (isSafari || "WebkitAppearance" in document.documentElement.style)) {
+        return "webkit";
     }
 
     return "unknown";
@@ -134,12 +131,12 @@ export async function copyToClipboard(text: string): Promise<boolean> {
         textArea.style.opacity = "0";
         textArea.style.pointerEvents = "none";
 
-        document.body.appendChild(textArea);
+        document.body.append(textArea);
         textArea.focus();
         textArea.select();
 
         const successful = document.execCommand("copy");
-        document.body.removeChild(textArea);
+        textArea.remove();
         return successful;
     } catch {
         return false;
@@ -179,7 +176,7 @@ async function checkRealInternet(): Promise<boolean> {
     }
 
     // In automated test environments, return navigator.onLine directly to prevent fetching Vite root during tests
-    if (typeof import.meta !== "undefined" && import.meta.env?.MODE === "test") {
+    if (import.meta !== undefined && import.meta.env?.MODE === "test") {
         return navigator.onLine;
     }
 

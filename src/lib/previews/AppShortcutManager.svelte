@@ -478,7 +478,7 @@
                     <span class="keys-label">Currently Pressed Keys:</span>
                     {#if appShortcut.pressedKeys.size > 0}
                         <div class="keys-list">
-                            {#each Array.from(appShortcut.pressedKeys) as k (k)}
+                            {#each [...appShortcut.pressedKeys] as k (k)}
                                 <kbd class="kbd-active">{k}</kbd>
                             {/each}
                         </div>
@@ -507,6 +507,7 @@
                         </div>
                     {:else}
                         {#each logs as item (item.id)}
+                            <!-- eslint-disable-next-line unocss/order -->
                             <div class="log-row log-{item.type}">
                                 <span class="log-time">[{item.time}]</span>
                                 <span class="log-text">{item.message}</span>

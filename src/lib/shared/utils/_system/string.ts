@@ -22,10 +22,10 @@ export function stripHtml(str: string): string {
     if (!str) return "";
 
     // 1. Remove script, style, and noscript blocks along with their contents
-    let cleaned = str.replace(/<(script|style|noscript)[^>]*>([\s\S]*?)<\/\1>/gi, "");
+    let cleaned = str.replaceAll(/<(script|style|noscript)[^>]*>([\s\S]*?)<\/\1>/gi, "");
 
     // 2. Remove all remaining HTML tags
-    cleaned = cleaned.replace(/<[^>]*>/g, "");
+    cleaned = cleaned.replaceAll(/<[^>]*>/g, "");
 
     // 3. Decode common HTML entities
     const entities: Record<string, string> = {
@@ -39,7 +39,7 @@ export function stripHtml(str: string): string {
         "&nbsp;": " ",
     };
 
-    return cleaned.replace(/&[a-z0-9#x]+;/gi, (match) => entities[match.toLowerCase()] || match);
+    return cleaned.replaceAll(/&[a-z0-9#x]+;/gi, (match) => entities[match.toLowerCase()] || match);
 }
 
 /**
@@ -62,7 +62,7 @@ function getNestedValue(obj: unknown, path: string): unknown {
  * using a data object. Resolves nested dot-notation paths safely.
  */
 export function template(str: string, data: Record<string, unknown>): string {
-    return str.replace(/\{\{([^}]+)\}\}/g, (_match, path) => {
+    return str.replaceAll(/\{\{([^}]+)\}\}/g, (_match, path) => {
         const trimmedPath = path.trim();
         const value = getNestedValue(data, trimmedPath);
         return value === undefined || value === null ? "" : String(value);
@@ -77,7 +77,7 @@ export function slugify(str: string): string {
     if (!str) return "";
 
     // 1. Map German umlauts and ß explicitly before accent stripping
-    let result = str.replace(/[äöüÄÖÜß]/g, (match) => {
+    let result = str.replaceAll(/[äöüÄÖÜß]/g, (match) => {
         const map: Record<string, string> = {
             ä: "ae",
             ö: "oe",
@@ -91,14 +91,14 @@ export function slugify(str: string): string {
     });
 
     // 2. Normalize and strip remaining diacritics/accents
-    result = result.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    result = result.normalize("NFD").replaceAll(/[\u{0300}-\u{036F}]/gu, "");
 
     // 3. Lowercase, replace non-alphanumeric characters with hyphens, collapse, and trim
     return result
         .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "-") // replace non-alphanumeric with hyphens
-        .replace(/^-+|-+$/g, "") // trim leading and trailing hyphens
-        .replace(/-+/g, "-"); // collapse multiple consecutive hyphens
+        .replaceAll(/[^a-z0-9]+/g, "-") // replace non-alphanumeric with hyphens
+        .replaceAll(/^-+|-+$/g, "") // trim leading and trailing hyphens
+        .replaceAll(/-+/g, "-"); // collapse multiple consecutive hyphens
 }
 
 /**
@@ -107,8 +107,8 @@ export function slugify(str: string): string {
  */
 function splitWords(str: string): string[] {
     return str
-        .replace(/([a-z0-9])([A-Z])/g, "$1 $2") // handle camelCase transition
-        .replace(/([A-Z])([A-Z][a-z])/g, "$1 $2") // handle acronym transitions
+        .replaceAll(/([a-z0-9])([A-Z])/g, "$1 $2") // handle camelCase transition
+        .replaceAll(/([A-Z])([A-Z][a-z])/g, "$1 $2") // handle acronym transitions
         .split(/[^a-zA-Z0-9]+/)
         .filter(Boolean);
 }

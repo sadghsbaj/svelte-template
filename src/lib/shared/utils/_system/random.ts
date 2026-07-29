@@ -30,7 +30,7 @@ export function uuid(): string {
 
     let result = "";
     for (let i = 0; i < 16; i++) {
-        if (i === 4 || i === 6 || i === 8 || i === 10) {
+        if ([4, 6, 8, 10].includes(i)) {
             result += "-";
         }
         result += bytes[i].toString(16).padStart(2, "0");
@@ -137,5 +137,5 @@ export function weightedRandom<T>(items: T[], weights: number[]): T | undefined 
         }
     }
 
-    return items[items.length - 1];
+    return items.at(-1);
 }

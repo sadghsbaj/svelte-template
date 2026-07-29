@@ -20,13 +20,13 @@ describe("Layer State Utilities & Components", () => {
     });
 
     afterEach(() => {
-        mountedApps.forEach((app) => {
+        for (const app of mountedApps) {
             try {
                 unmount(app);
             } catch {
                 // Ignore if already unmounted
             }
-        });
+        }
         mountedApps = [];
         vi.restoreAllMocks();
     });
@@ -100,7 +100,7 @@ describe("Layer State Utilities & Components", () => {
     describe("AppLayer Component Integration", () => {
         test("should mount AppLayer and render element with z-index style", () => {
             const target = document.createElement("div");
-            document.body.appendChild(target);
+            document.body.append(target);
 
             const app = mount(AppLayer, {
                 target,
@@ -119,7 +119,7 @@ describe("Layer State Utilities & Components", () => {
 
         test("should default z-index to 0 when z prop is omitted", () => {
             const target = document.createElement("div");
-            document.body.appendChild(target);
+            document.body.append(target);
 
             const app = mount(AppLayer, {
                 target,
@@ -138,7 +138,7 @@ describe("Layer State Utilities & Components", () => {
     describe("AppLayers Component Integration", () => {
         test("should mount AppLayers container", () => {
             const target = document.createElement("div");
-            document.body.appendChild(target);
+            document.body.append(target);
 
             const app = mount(AppLayers, {
                 target,

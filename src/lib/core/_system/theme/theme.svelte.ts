@@ -98,7 +98,7 @@ export class ThemeManager {
         this.#mode = validMode;
 
         const documentIsDark = typeof document !== "undefined" && document.documentElement.classList.contains("dark");
-        this.#resolved = documentIsDark ? "dark" : initialResolved === "dark" ? "dark" : "light";
+        this.#resolved = documentIsDark || initialResolved === "dark" ? "dark" : "light";
 
         // Initial apply to fully synchronize DOM states and meta tags
         this.apply();

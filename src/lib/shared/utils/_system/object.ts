@@ -160,17 +160,17 @@ export function deepClone<T>(val: T): T {
 
     if (val instanceof Map) {
         const clonedMap = new Map();
-        val.forEach((v, k) => {
+        for (const [k, v] of val.entries()) {
             clonedMap.set(deepClone(k), deepClone(v));
-        });
+        }
         return clonedMap as unknown as T;
     }
 
     if (val instanceof Set) {
         const clonedSet = new Set();
-        val.forEach((v) => {
+        for (const v of val) {
             clonedSet.add(deepClone(v));
-        });
+        }
         return clonedSet as unknown as T;
     }
 

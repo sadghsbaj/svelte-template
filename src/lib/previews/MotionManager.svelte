@@ -436,7 +436,7 @@
         font-weight: 600;
     }
 
-    .accent-icon {
+    :global(.accent-icon) {
         color: var(--accent);
     }
 </style>

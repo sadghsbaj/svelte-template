@@ -55,7 +55,7 @@ export function debugGuardPlugin(options: DebugGuardOptions = {}): Plugin {
 
                     // Store the formatted warning message
                     warnings.push(
-                        `\x1b[33m🚨 [DEBUG-GUARD] Leftover Debug Class Detected: "${match[0]}" in ${filename}\x1b[0m`
+                        `\u{1B}[33m🚨 [DEBUG-GUARD] Leftover Debug Class Detected: "${match[0]}" in ${filename}\u{1B}[0m`
                     );
                 }
             } catch {
@@ -72,7 +72,7 @@ export function debugGuardPlugin(options: DebugGuardOptions = {}): Plugin {
 
             console.warn("\n" + warnings.join("\n"));
             console.warn(
-                `\x1b[33m   Make sure to remove debug utilities before committing.\x1b[0m\n`
+                `\u{1B}[33m   Make sure to remove debug utilities before committing.\u{1B}[0m\n`
             );
         },
     };

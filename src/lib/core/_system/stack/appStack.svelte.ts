@@ -163,15 +163,12 @@ export class AppStackManager {
             if (
                 entry &&
                 (entry.scope === "global" || entry.scope === targetScope) &&
-                this.isPriorityAllowed(entry.priority)
-            ) {
-                if (
-                    !candidate ||
+                this.isPriorityAllowed(entry.priority) &&
+                (!candidate ||
                     entry.priority > candidate.priority ||
-                    (entry.priority === candidate.priority && entry.sequence >= candidate.sequence)
-                ) {
-                    candidate = entry;
-                }
+                    (entry.priority === candidate.priority && entry.sequence >= candidate.sequence))
+            ) {
+                candidate = entry;
             }
         }
 
@@ -202,10 +199,12 @@ export class AppStackManager {
     }
 
     private handlePopState = (_e: PopStateEvent): void => {
-        if (this._config.enabled !== false && this._config.interceptBrowserBack !== false) {
-            if (this.canGoBack) {
-                this.pop(this._activeScope, true);
-            }
+        if (
+            this._config.enabled !== false &&
+            this._config.interceptBrowserBack !== false &&
+            this.canGoBack
+        ) {
+            this.pop(this._activeScope, true);
         }
     };
 

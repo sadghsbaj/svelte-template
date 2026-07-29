@@ -84,7 +84,7 @@ export class ViewState<T extends string> {
     }
 
     get lastView(): T {
-        return this.config.views[this.config.views.length - 1].view;
+        return this.config.views.at(-1)!.view;
     }
 
     get currentIndex(): number {
@@ -127,9 +127,7 @@ export class ViewState<T extends string> {
         if (this.config.animated === false) return false;
 
         const targetConfig = this.getConfig(view);
-        if (targetConfig?.animated === false) return false;
-
-        return true;
+        return targetConfig?.animated !== false;
     }
 
     isDisabled(view: T): boolean {

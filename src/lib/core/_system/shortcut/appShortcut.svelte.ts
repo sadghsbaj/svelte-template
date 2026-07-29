@@ -176,9 +176,9 @@ export class AppShortcutManager {
     isPressed(key: string): boolean {
         const normalized = key.trim().toUpperCase();
         if (normalized === "SHIFT") return this.modifiers.shift;
-        if (normalized === "CTRL" || normalized === "CONTROL") return this.modifiers.ctrl;
-        if (normalized === "ALT" || normalized === "OPTION") return this.modifiers.alt;
-        if (normalized === "CMD" || normalized === "META" || normalized === "COMMAND") return this.modifiers.cmd;
+        if (["CTRL", "CONTROL"].includes(normalized)) return this.modifiers.ctrl;
+        if (["ALT", "OPTION"].includes(normalized)) return this.modifiers.alt;
+        if (["CMD", "META", "COMMAND"].includes(normalized)) return this.modifiers.cmd;
         return this.pressedKeys.has(normalized);
     }
 
@@ -342,10 +342,8 @@ export class AppShortcutManager {
         const eligibleEntries = this.entries.filter((entry) => {
             if (!this.isPriorityAllowed(entry.priority)) return false;
             if (!this.isScopeActive(entry.scope)) return false;
-            if (this.activeMode !== null) {
-                if (entry.mode !== null && !entry.mode.includes(this.activeMode)) {
-                    return false;
-                }
+            if (this.activeMode !== null && entry.mode !== null && !entry.mode.includes(this.activeMode)) {
+                return false;
             }
             if (inInput && !entry.allowInInput && !this.config.allowInInput) {
                 return false;
@@ -445,16 +443,14 @@ export class AppShortcutManager {
         const matchingEntries = this.entries.filter((entry) => {
             if (!this.isPriorityAllowed(entry.priority)) return false;
             if (!this.isScopeActive(entry.scope)) return false;
-            if (this.activeMode !== null) {
-                if (entry.mode !== null && !entry.mode.includes(this.activeMode)) {
-                    return false;
-                }
+            if (this.activeMode !== null && entry.mode !== null && !entry.mode.includes(this.activeMode)) {
+                return false;
             }
             if (inInput && !entry.allowInInput && !this.config.allowInInput) {
                 return false;
             }
 
-            const lastParsedStep = entry.parsedSequenceSteps[entry.parsedSequenceSteps.length - 1];
+            const lastParsedStep = entry.parsedSequenceSteps.at(-1)!;
 
             // Race-condition protection for keyup: If shortcut was primed during keydown
             // (stored in keyPressTimes or holdTimers), match by main key release without
@@ -609,7 +605,7 @@ function attachElementInternal(
 ) {
     let descriptors: ShortcutDescriptor[] = [];
     let options = sharedOpts;
-    let manager = mgr;
+    const manager = mgr;
 
     if (Array.isArray(descriptorsOrParams)) {
         descriptors = descriptorsOrParams as ShortcutDescriptor[];
@@ -729,10 +725,7 @@ function isFocusedInInput(): boolean {
     const tagName = active.tagName.toLowerCase();
     if (tagName === "input") {
         const type = (active as HTMLInputElement).type?.toLowerCase() || "text";
-        if (NON_TEXT_INPUT_TYPES.has(type)) {
-            return false;
-        }
-        return true;
+        return !NON_TEXT_INPUT_TYPES.has(type);
     }
 
     if (tagName === "textarea" || tagName === "select") {
@@ -744,7 +737,7 @@ function isFocusedInInput(): boolean {
     }
 
     const role = active.getAttribute("role")?.toLowerCase();
-    if (role === "textbox" || role === "combobox" || role === "searchbox") {
+    if (role && ["textbox", "combobox", "searchbox"].includes(role)) {
         return true;
     }
 
@@ -773,7 +766,7 @@ export function parseComboStep(normalizedStep: string): ParsedComboStep {
         modifiers = [];
     } else {
         const parts = normalizedStep.split("+");
-        mainKey = parts[parts.length - 1];
+        mainKey = parts.at(-1)!;
         modifiers = parts.slice(0, -1);
     }
 
@@ -880,17 +873,13 @@ export function matchEventToComboStep(
 
     // On Mac, Cmd maps to metaKey and Ctrl maps to ctrlKey.
     // On Windows/Linux, Cmd maps to ctrlKey or metaKey when wantCmd is true.
-    const hasCmdMatch = isMac
+    const hasCmdMatch = isMac || (wantCmd && wantCtrl) || !wantCmd
         ? event.metaKey
-        : wantCmd && wantCtrl
-          ? event.metaKey
-          : wantCmd
-            ? event.ctrlKey || event.metaKey
-            : event.metaKey;
+        : event.ctrlKey || event.metaKey;
 
     if (wantCmd !== hasCmdMatch) return false;
 
-    const hasCtrlMatch = isMac ? event.ctrlKey : (wantCmd && wantCtrl ? event.ctrlKey : (wantCmd ? false : event.ctrlKey));
+    const hasCtrlMatch = !isMac && wantCmd && !wantCtrl ? false : event.ctrlKey;
     if (wantCtrl !== hasCtrlMatch) return false;
 
     if (wantAlt !== event.altKey) return false;

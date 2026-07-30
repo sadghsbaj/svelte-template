@@ -13,7 +13,7 @@
         Trash2,
         X,
     } from "@lucide/svelte";
-    import { appShortcut, shortcutAttach } from "$core/_system/shortcut/appShortcut.svelte";
+    import { appShortcut, shortcutAttach } from "$modules/shortcut/appShortcut.svelte";
 
     // --- State for Interactive Logs ---
     interface LogItem {

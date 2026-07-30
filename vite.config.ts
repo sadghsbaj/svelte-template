@@ -61,6 +61,7 @@ export default defineConfig({
             $types: path.resolve(__dirname, "./src/lib/shared/types"),
             $attachments: path.resolve(__dirname, "./src/lib/shared/attachments"),
             $core: path.resolve(__dirname, "./src/lib/core"),
+            $modules: path.resolve(__dirname, "./src/lib/modules"),
             $views: path.resolve(__dirname, "./src/lib/views"),
             $features: path.resolve(__dirname, "./src/lib/features"),
         },

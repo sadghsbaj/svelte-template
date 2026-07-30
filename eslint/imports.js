@@ -46,6 +46,11 @@ export const restrictedImportsConfig = [
                                 "Please use the specific '$core' alias instead of '$lib/core'.",
                         },
                         {
+                            group: ["$lib/modules", "$lib/modules/**"],
+                            message:
+                                "Please use the specific '$modules' alias instead of '$lib/modules'.",
+                        },
+                        {
                             group: ["$lib/views", "$lib/views/**"],
                             message:
                                 "Please use the specific '$views' alias instead of '$lib/views'.",

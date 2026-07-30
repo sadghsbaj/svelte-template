@@ -28,6 +28,9 @@
             "$core": ["./src/lib/core"],
             "$core/*": ["./src/lib/core/*"],
 
+            "$modules": ["./src/lib/modules"],
+            "$modules/*": ["./src/lib/modules/*"],
+
             "$views": ["./src/lib/views"],
             "$views/*": ["./src/lib/views/*"],
 

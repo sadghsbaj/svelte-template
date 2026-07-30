@@ -1,6 +1,6 @@
 import { SvelteSet } from "svelte/reactivity";
 
-import { appShortcut } from "$core/_system/shortcut/appShortcut.svelte";
+import { appShortcut } from "$modules/shortcut/appShortcut.svelte";
 import { appStack } from "$core/_system/stack/appStack.svelte";
 
 import type {

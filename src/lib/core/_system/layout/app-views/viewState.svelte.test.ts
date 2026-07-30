@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, test } from "vitest";
 
 import type { ViewsConfig } from "./types";
 import { ViewState } from "./viewState.svelte";
-import { appShortcut } from "$core/_system/shortcut/appShortcut.svelte";
+import { appShortcut } from "$modules/shortcut/appShortcut.svelte";
 import { appStack } from "$core/_system/stack/appStack.svelte";
 
 describe("ViewState (Browser Client)", () => {

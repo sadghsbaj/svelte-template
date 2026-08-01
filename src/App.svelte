@@ -32,7 +32,7 @@
 
 <AppLayers>
     {#if import.meta.env.DEV}
-        <AppLayer z={9999} layer="performance">
+        <AppLayer z="top-layer" layer="performance">
             <PerformanceHost />
         </AppLayer>
     {/if}

@@ -133,6 +133,24 @@ describe("Layer State Utilities & Components", () => {
             expect(layerEl).not.toBeNull();
             expect((layerEl as HTMLElement)?.style.zIndex).toBe("0");
         });
+
+        test("should resolve 'top-layer' to z-index 10000", () => {
+            const target = document.createElement("div");
+            document.body.append(target);
+
+            const app = mount(AppLayer, {
+                target,
+                props: {
+                    layer: "top-layer-test",
+                    z: "top-layer",
+                },
+            });
+            mountedApps.push(app);
+
+            const layerEl = target.querySelector('[data-layout="app-layer"]');
+            expect(layerEl).not.toBeNull();
+            expect((layerEl as HTMLElement)?.style.zIndex).toBe("10000");
+        });
     });
 
     describe("AppLayers Component Integration", () => {

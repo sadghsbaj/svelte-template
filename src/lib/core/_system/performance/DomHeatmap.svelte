@@ -81,7 +81,7 @@
         const elements: ElementBound[] = [];
         if (document.body) {
             for (const child of document.body.children) {
-                collectElements(child, 1, elements);
+                collectElements(child, 2, elements);
             }
         }
 

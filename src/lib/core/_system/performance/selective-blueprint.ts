@@ -2,7 +2,7 @@
  * Selective DOM Background & Universal Black Text/Icon Blueprint (Idee 1).
  * Supports dynamic DOM updates (e.g. Svelte tab switches / route navigation).
  * - Backgrounds: ONLY elements with a non-transparent background turn solid white (#ffffff).
- * - Text/Icons/SVGs/Paths: ALL webpage elements and SVG paths (except #dev-perf-overlay) turn jet black (#000000).
+ * - Text/Icons/SVGs/Paths: ALL webpage elements and SVG paths (except performance overlays & inspector panels) turn jet black (#000000).
  * - Sliders/Checkboxes: accent-color set to #000000.
  */
 
@@ -27,8 +27,14 @@ function isPerformanceElement(el: Element): boolean {
     return (
         el.id === "dev-perf-overlay" ||
         el.id === "dev-dom-heatmap" ||
+        el.id === "dev-dom-inspector" ||
+        el.id === "dev-dom-inspector-hover" ||
+        el.id === "dev-inspector-parent-highlight" ||
         Boolean(el.closest("#dev-perf-overlay")) ||
-        Boolean(el.closest("#dev-dom-heatmap"))
+        Boolean(el.closest("#dev-dom-heatmap")) ||
+        Boolean(el.closest("#dev-dom-inspector")) ||
+        Boolean(el.closest("#dev-dom-inspector-hover")) ||
+        Boolean(el.closest("#dev-inspector-parent-highlight"))
     );
 }
 
@@ -98,17 +104,17 @@ export function applySelectiveBlueprint(active: boolean) {
         overrideStyle = document.createElement("style");
         overrideStyle.id = "dev-blueprint-overrides";
         overrideStyle.textContent = `
-            *:not(#dev-perf-overlay):not(#dev-perf-overlay *):not(#dev-dom-heatmap):not(#dev-dom-heatmap *) {
+            *:not(#dev-perf-overlay):not(#dev-perf-overlay *):not(#dev-dom-heatmap):not(#dev-dom-heatmap *):not(#dev-dom-inspector):not(#dev-dom-inspector *):not(#dev-dom-inspector-hover):not(#dev-inspector-parent-highlight) {
                 accent-color: #000000 !important;
                 caret-color: #000000 !important;
             }
-            svg:not(#dev-perf-overlay *), 
-            svg:not(#dev-perf-overlay *) * {
+            svg:not(#dev-perf-overlay *):not(#dev-dom-inspector *), 
+            svg:not(#dev-perf-overlay *):not(#dev-dom-inspector *) * {
                 color: #000000 !important;
                 fill: currentColor !important;
                 stroke: currentColor !important;
             }
-            svg[fill]:not([fill="none"]):not(#dev-perf-overlay *) {
+            svg[fill]:not([fill="none"]):not(#dev-perf-overlay *):not(#dev-dom-inspector *) {
                 fill: #000000 !important;
             }
         `;

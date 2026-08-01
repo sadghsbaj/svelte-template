@@ -15,6 +15,10 @@ export class PerformanceState {
     heapTotal = $state(0);
     isHeatmapActive = $state(false);
 
+    // Inspector State
+    isInspectorActive = $state(false);
+    selectedElement = $state<HTMLElement | null>(null);
+
     #isRunning = false;
     #cleanups: (() => void)[] = [];
     #intervalId: ReturnType<typeof setInterval> | null = null;
@@ -25,6 +29,22 @@ export class PerformanceState {
 
     stopHeatmap() {
         this.isHeatmapActive = false;
+    }
+
+    toggleInspector() {
+        this.isInspectorActive = !this.isInspectorActive;
+        if (!this.isInspectorActive) {
+            this.selectedElement = null;
+        }
+    }
+
+    stopInspector() {
+        this.isInspectorActive = false;
+        this.selectedElement = null;
+    }
+
+    selectElement(el: HTMLElement | null) {
+        this.selectedElement = el;
     }
 
     /**
@@ -75,6 +95,8 @@ export class PerformanceState {
         if (!this.#isRunning) return;
         this.#isRunning = false;
         this.isHeatmapActive = false;
+        this.isInspectorActive = false;
+        this.selectedElement = null;
 
         if (this.#intervalId !== null) {
             clearInterval(this.#intervalId);

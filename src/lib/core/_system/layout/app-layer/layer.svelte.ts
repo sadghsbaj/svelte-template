@@ -5,6 +5,7 @@
  */
 
 import { onDestroy } from "svelte";
+import type { Attachment } from "svelte/attachments";
 
 import { getLayerContext } from "./layer.context";
 
@@ -83,3 +84,22 @@ export function syncLayerState(isActive: () => boolean) {
         currentlyActive = false;
     });
 }
+
+export const layerAttach: Attachment = () => {
+    const layer = getLayerContext();
+    if (!layer) return;
+
+    let isAttached = false;
+
+    queueMicrotask(() => {
+        layer.setContextActive(true);
+        isAttached = true;
+    });
+
+    return () => {
+        if (!isAttached) return;
+
+        layer.setContextActive(false);
+        isAttached = false;
+    };
+};

@@ -1,7 +1,7 @@
 <script lang="ts">
     import { onMount } from "svelte";
 
-    import { syncLayerState } from "$core/_system/layout/app-layer/layer.svelte";
+    import { layerAttach } from "$core/_system/layout/app-layer/layer.svelte";
 
     import DomHeatmap from "./DomHeatmap.svelte";
     import DomInspector from "./DomInspector.svelte";
@@ -10,8 +10,6 @@
     import { performanceState } from "./performanceState.svelte";
 
     let isVisible = $state(true);
-
-    syncLayerState(() => isVisible);
 
     onMount(() => {
         if (!import.meta.env.DEV) return;
@@ -50,27 +48,29 @@
 </script>
 
 {#if isVisible}
-    {#if performanceState.isHeatmapActive}
-        <DomHeatmap active={true} />
-    {/if}
+    <div class="contents" {@attach layerAttach}>
+        {#if performanceState.isHeatmapActive}
+            <DomHeatmap active={true} />
+        {/if}
 
-    {#if performanceState.isInspectorActive}
-        <DomInspector />
-    {/if}
+        {#if performanceState.isInspectorActive}
+            <DomInspector />
+        {/if}
 
-    {#if performanceState.isInspectorActive || performanceState.selectedElement}
-        <DomInspectorCard onClose={() => performanceState.stopInspector()} />
-    {/if}
+        {#if performanceState.isInspectorActive || performanceState.selectedElement}
+            <DomInspectorCard onClose={() => performanceState.stopInspector()} />
+        {/if}
 
-    <PerformanceCard
-        isHeatmapActive={performanceState.isHeatmapActive}
-        isInspectorActive={performanceState.isInspectorActive}
-        onToggleHeatmap={() => performanceState.toggleHeatmap()}
-        onToggleInspector={() => performanceState.toggleInspector()}
-        onClose={() => {
-            performanceState.stopHeatmap();
-            performanceState.stopInspector();
-            isVisible = false;
-        }}
-    />
+        <PerformanceCard
+            isHeatmapActive={performanceState.isHeatmapActive}
+            isInspectorActive={performanceState.isInspectorActive}
+            onToggleHeatmap={() => performanceState.toggleHeatmap()}
+            onToggleInspector={() => performanceState.toggleInspector()}
+            onClose={() => {
+                performanceState.stopHeatmap();
+                performanceState.stopInspector();
+                isVisible = false;
+            }}
+        />
+    </div>
 {/if}

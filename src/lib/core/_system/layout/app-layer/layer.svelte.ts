@@ -85,6 +85,10 @@ export function syncLayerState(isActive: () => boolean) {
     });
 }
 
+/**
+ * Svelte 5 Attachment registering active layer state on element DOM mount
+ * and automatically cleaning up on element DOM unmount.
+ */
 export const layerAttach: Attachment = () => {
     const layer = getLayerContext();
     if (!layer) return;

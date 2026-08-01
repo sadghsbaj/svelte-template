@@ -10,9 +10,9 @@ describe("dom-observer (browser)", () => {
         const child2 = document.createElement("p");
         const subChild = document.createElement("span");
 
-        child1.appendChild(subChild);
-        root.appendChild(child1);
-        root.appendChild(child2);
+        child1.append(subChild);
+        root.append(child1);
+        root.append(child2);
 
         // Root (1) -> child1 (2) -> subChild (3)
         //          -> child2 (2)
@@ -25,22 +25,22 @@ describe("dom-observer (browser)", () => {
         const root = document.createElement("div");
 
         const normalChild = document.createElement("div");
-        root.appendChild(normalChild);
+        root.append(normalChild);
 
         const overlay = document.createElement("div");
         overlay.id = "dev-perf-overlay";
         const overlayChild = document.createElement("span");
-        overlay.appendChild(overlayChild);
-        root.appendChild(overlay);
+        overlay.append(overlayChild);
+        root.append(overlay);
 
-        document.body.appendChild(root);
+        document.body.append(root);
 
         try {
             const metrics = analyzeDomStructure(root);
             // Root (1) + normalChild (1) = 2. Overlay & overlayChild are ignored.
             expect(metrics.count).toBe(2);
         } finally {
-            document.body.removeChild(root);
+            root.remove();
         }
     });
 });

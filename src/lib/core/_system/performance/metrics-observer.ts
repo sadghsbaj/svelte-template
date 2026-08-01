@@ -1,6 +1,6 @@
 /**
  * @file metrics-observer.ts
- * FPS, Event Loop lag, Web Vitals, Memory, and Network observer utilities.
+ * FPS, Event Loop lag, Web Vitals, and Memory observer utilities.
  */
 
 export interface WebVitalsMetrics {
@@ -14,9 +14,11 @@ export interface MemoryMetrics {
     totalMb: number;
 }
 
-export interface NetworkMetrics {
-    requests: number;
-    totalSizeKb: number;
+export interface FpsMetrics {
+    fps: number;
+    minFps: number;
+    avgFps: number;
+    lagMs: number;
 }
 
 /**
@@ -47,27 +49,6 @@ export function getMemoryUsage(): MemoryMetrics {
     return {
         usedMb: Math.round((usedBytes / (1024 * 1024)) * 10) / 10,
         totalMb: Math.round((totalBytes / (1024 * 1024)) * 10) / 10,
-    };
-}
-
-/**
- * Retrieves network resource request counts and total downloaded asset size.
- */
-export function getNetworkMetrics(): NetworkMetrics {
-    if (typeof performance === "undefined" || typeof performance.getEntriesByType !== "function") {
-        return { requests: 0, totalSizeKb: 0 };
-    }
-
-    const resources = performance.getEntriesByType("resource") as PerformanceResourceTiming[];
-    let totalBytes = 0;
-
-    for (const res of resources) {
-        totalBytes += res.transferSize || res.encodedBodySize || 0;
-    }
-
-    return {
-        requests: resources.length,
-        totalSizeKb: Math.round(totalBytes / 1024),
     };
 }
 
@@ -152,12 +133,10 @@ export function createWebVitalsObserver(
 }
 
 /**
- * Measures FPS and Event Loop Lag using requestAnimationFrame and delta timing.
+ * Measures live, 60s min, 60s avg FPS, and Event Loop Lag using requestAnimationFrame and delta timing.
  * Returns a cleanup function.
  */
-export function createFpsObserver(
-    onUpdate: (metrics: { fps: number; lagMs: number }) => void
-): () => void {
+export function createFpsObserver(onUpdate: (metrics: FpsMetrics) => void): () => void {
     if (typeof requestAnimationFrame === "undefined" || typeof performance === "undefined") {
         return () => {};
     }
@@ -166,6 +145,7 @@ export function createFpsObserver(
     let lastTime = performance.now();
     let frameCount = 0;
     let lastSecond = performance.now();
+    const fpsHistory: number[] = [];
 
     function loop(now: number) {
         const delta = now - lastTime;
@@ -181,7 +161,16 @@ export function createFpsObserver(
                 60,
                 Math.round((frameCount * 1000) / (now - lastSecond))
             );
-            onUpdate({ fps: calculatedFps, lagMs });
+
+            fpsHistory.push(calculatedFps);
+            if (fpsHistory.length > 60) {
+                fpsHistory.shift();
+            }
+
+            const minFps = Math.min(...fpsHistory);
+            const avgFps = Math.round(fpsHistory.reduce((a, b) => a + b, 0) / fpsHistory.length);
+
+            onUpdate({ fps: calculatedFps, minFps, avgFps, lagMs });
             frameCount = 0;
             lastSecond = now;
         }

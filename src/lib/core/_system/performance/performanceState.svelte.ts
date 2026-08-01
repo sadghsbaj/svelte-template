@@ -4,15 +4,12 @@
  */
 
 import { analyzeDomStructure } from "./dom-observer";
-import {
-    createFpsObserver,
-    createWebVitalsObserver,
-    getMemoryUsage,
-    getNetworkMetrics,
-} from "./metrics-observer";
+import { createFpsObserver, createWebVitalsObserver, getMemoryUsage } from "./metrics-observer";
 
 export class PerformanceState {
     fps = $state(60);
+    minFps = $state(60);
+    avgFps = $state(60);
     eventLoopLag = $state(0);
     domCount = $state(0);
     domDepth = $state(0);
@@ -21,8 +18,6 @@ export class PerformanceState {
     inp = $state(0);
     heapUsed = $state(0);
     heapTotal = $state(0);
-    requests = $state(0);
-    totalSizeKb = $state(0);
 
     #isRunning = false;
     #cleanups: (() => void)[] = [];
@@ -35,9 +30,11 @@ export class PerformanceState {
         if (this.#isRunning || typeof window === "undefined") return;
         this.#isRunning = true;
 
-        // 1. FPS & Lag Observer
-        const stopFps = createFpsObserver(({ fps, lagMs }) => {
+        // 1. FPS & Lag Observer (with 60s min & avg FPS tracking)
+        const stopFps = createFpsObserver(({ fps, minFps, avgFps, lagMs }) => {
             this.fps = fps;
+            this.minFps = minFps;
+            this.avgFps = avgFps;
             this.eventLoopLag = lagMs;
         });
         this.#cleanups.push(stopFps);
@@ -50,7 +47,7 @@ export class PerformanceState {
         });
         this.#cleanups.push(stopVitals);
 
-        // 3. Periodic DOM, Memory, and Network Sampling (every 1.5s)
+        // 3. Periodic DOM and Memory Sampling (every 1.5s)
         const updatePeriodicMetrics = () => {
             // DOM Metrics
             const dom = analyzeDomStructure();
@@ -61,11 +58,6 @@ export class PerformanceState {
             const mem = getMemoryUsage();
             this.heapUsed = mem.usedMb;
             this.heapTotal = mem.totalMb;
-
-            // Network Metrics
-            const net = getNetworkMetrics();
-            this.requests = net.requests;
-            this.totalSizeKb = net.totalSizeKb;
         };
 
         updatePeriodicMetrics();

@@ -28,6 +28,75 @@
         { label: "INP", value: performanceState.inp, suffix: "ms" },
     ]);
 
+    // Memory Heap Tier calculation
+    const memoryTier = $derived.by(() => {
+        const used = performanceState.heapUsed;
+        if (used <= 35) {
+            return {
+                level: 1,
+                label: "Optimal",
+                color: "text-emerald-600 dark:text-emerald-400",
+                bg: "bg-emerald-500",
+            };
+        }
+        if (used <= 75) {
+            return {
+                level: 2,
+                label: "Good",
+                color: "text-emerald-500 dark:text-emerald-400",
+                bg: "bg-emerald-400",
+            };
+        }
+        if (used <= 150) {
+            return {
+                level: 3,
+                label: "Moderate",
+                color: "text-amber-600 dark:text-amber-400",
+                bg: "bg-amber-400",
+            };
+        }
+        if (used <= 300) {
+            return {
+                level: 4,
+                label: "High",
+                color: "text-orange-600 dark:text-orange-400",
+                bg: "bg-orange-500",
+            };
+        }
+        return {
+            level: 5,
+            label: "Critical",
+            color: "text-red-600 dark:text-red-400",
+            bg: "bg-red-500",
+        };
+    });
+
+    // DOM Health overall status incorporating both total element count and max nesting depth
+    const domHealthRating = $derived.by(() => {
+        const count = performanceState.domCount;
+        const depth = performanceState.domDepth;
+
+        if (count >= 1500 || depth >= 25) {
+            return {
+                status: "Critical",
+                textClass: "text-red-600 dark:text-red-400",
+                borderClass: "border-red-500/40 bg-red-500/15",
+            };
+        }
+        if (count >= 800 || depth >= 15) {
+            return {
+                status: "Warning",
+                textClass: "text-amber-600 dark:text-amber-400",
+                borderClass: "border-amber-500/40 bg-amber-500/15",
+            };
+        }
+        return {
+            status: "Optimal",
+            textClass: "text-emerald-600 dark:text-emerald-400",
+            borderClass: "border-emerald-500/40 bg-emerald-500/15",
+        };
+    });
+
     function clampPosition(x: number, y: number): { x: number; y: number } {
         const overlayWidth = 375;
         const overlayHeight = 360;
@@ -140,7 +209,7 @@
         >
             {@render domHealthCard()}
             {@render webVitalsCard()}
-            {@render memoryNetworkCard()}
+            {@render memoryCard()}
         </div>
     </div>
 {/if}
@@ -160,7 +229,13 @@
     </div>
 {/snippet}
 
-{#snippet subCard(label: string, value: string | number, Icon?: typeof Hash, suffix = "")}
+{#snippet subCard(
+    label: string,
+    value: string | number,
+    Icon?: typeof Hash,
+    suffix = "",
+    statusColorClass = ""
+)}
     <div
         class="p-2.5 rounded-xl bg-elevation-1 flex gap-2.5 items-center squircle-smooth dark:bg-elevation-1/60"
     >
@@ -169,7 +244,7 @@
         {/if}
         <div class="flex flex-col">
             <span class="text-[10px] text-weaker font-medium uppercase">{label}</span>
-            <span class="text-sm text-strong font-mono font-semibold">
+            <span class="text-sm font-mono font-semibold {statusColorClass || 'text-strong'}">
                 {value}{suffix ? ` ${suffix}` : ""}
             </span>
         </div>
@@ -181,37 +256,6 @@
         <span class="text-[10px] text-weaker font-medium block">{label}</span>
         <span class="text-xs text-strong font-mono font-semibold">{value}{suffix}</span>
     </div>
-{/snippet}
-
-{#snippet networkBadge(label: string, value: string | number)}
-    <div
-        class="px-2.5 py-1.5 rounded-xl bg-elevation-1 flex gap-2 items-center squircle-smooth dark:bg-elevation-1/60"
-    >
-        <span class="text-[10px] text-weaker font-medium uppercase">{label}</span>
-        <span class="text-xs text-strong font-mono font-semibold">{value}</span>
-    </div>
-{/snippet}
-
-{#snippet domStatusBadge()}
-    {#if performanceState.domCount >= 1500}
-        <span
-            class="text-xs text-red-600 font-mono font-semibold px-2.5 py-0.5 border border-red-500/40 rounded-full bg-red-500/15 dark:text-red-400 dark:border-red-500/40"
-        >
-            Critical
-        </span>
-    {:else if performanceState.domCount >= 800}
-        <span
-            class="text-xs text-amber-600 font-mono font-semibold px-2.5 py-0.5 border border-amber-500/40 rounded-full bg-amber-500/15 dark:text-amber-400 dark:border-amber-500/40"
-        >
-            Warning
-        </span>
-    {:else}
-        <span
-            class="text-xs text-emerald-600 font-mono font-semibold px-2.5 py-0.5 border border-emerald-500/40 rounded-full bg-emerald-500/15 dark:text-emerald-400 dark:border-emerald-500/40"
-        >
-            Optimal
-        </span>
-    {/if}
 {/snippet}
 
 <!-- ========================================================================= -->
@@ -264,12 +308,50 @@
                 <Layers class="text-accent-500 h-4 w-4" />
                 <span>DOM Health</span>
             </div>
-            {@render domStatusBadge()}
+            {#if domHealthRating.status === "Critical"}
+                <span
+                    class="text-xs text-red-600 font-mono font-semibold px-2.5 py-0.5 border border-red-500/40 rounded-full bg-red-500/15 dark:text-red-400 dark:border-red-500/40"
+                >
+                    Critical
+                </span>
+            {:else if domHealthRating.status === "Warning"}
+                <span
+                    class="text-xs text-amber-600 font-mono font-semibold px-2.5 py-0.5 border border-amber-500/40 rounded-full bg-amber-500/15 dark:text-amber-400 dark:border-amber-500/40"
+                >
+                    Warning
+                </span>
+            {:else}
+                <span
+                    class="text-xs text-emerald-600 font-mono font-semibold px-2.5 py-0.5 border border-emerald-500/40 rounded-full bg-emerald-500/15 dark:text-emerald-400 dark:border-emerald-500/40"
+                >
+                    Optimal
+                </span>
+            {/if}
         </div>
 
         <div class="mt-0.5 gap-2 grid grid-cols-2">
-            {@render subCard("Total Elements", performanceState.domCount, Hash)}
-            {@render subCard("Max Nesting", performanceState.domDepth, Maximize, "lvl")}
+            {@render subCard(
+                "Total Elements",
+                performanceState.domCount,
+                Hash,
+                "",
+                performanceState.domCount >= 1500
+                    ? "text-red-600 dark:text-red-400"
+                    : performanceState.domCount >= 800
+                      ? "text-amber-600 dark:text-amber-400"
+                      : ""
+            )}
+            {@render subCard(
+                "Max Nesting",
+                performanceState.domDepth,
+                Maximize,
+                "lvl",
+                performanceState.domDepth >= 25
+                    ? "text-red-600 dark:text-red-400"
+                    : performanceState.domDepth >= 15
+                      ? "text-amber-600 dark:text-amber-400"
+                      : ""
+            )}
         </div>
     </div>
 {/snippet}
@@ -293,35 +375,54 @@
                 {@render vitalTile(item.label, item.value, item.suffix)}
             {/each}
         </div>
+
+        <div class="gap-2 grid grid-cols-2">
+            {@render subCard("60s Min FPS", performanceState.minFps, Activity, "fps")}
+            {@render subCard("60s Avg FPS", performanceState.avgFps, Activity, "fps")}
+        </div>
     </div>
 {/snippet}
 
-{#snippet memoryNetworkCard()}
+{#snippet memoryCard()}
     <div class="p-3 rounded-xl bg-elevation-2 flex flex-col gap-2.5 squircle-smooth">
         <div class="text-sm flex items-center justify-between">
             <div class="text-main font-medium flex gap-2 items-center">
                 <HardDrive class="text-sky-500 h-4 w-4" />
-                <span>Memory & Network</span>
+                <span>Memory</span>
             </div>
             <span class="text-xs text-weak font-mono">
                 {performanceState.heapUsed} / {performanceState.heapTotal} MB
             </span>
         </div>
 
-        <!-- Memory Bar -->
-        <div class="mt-0.5 rounded-full bg-base-200 h-2 w-full overflow-hidden dark:bg-base-800">
+        <!-- Framed Progress Bar Track with High Contrast -->
+        <div
+            class="mt-0.5 p-0.5 border border-base-200/80 rounded-full bg-elevation-1 h-3 w-full overflow-hidden dark:border-base-800/80 dark:bg-elevation-1"
+        >
             <div
-                class="rounded-full bg-accent-500 h-full transition-all duration-300"
+                class="rounded-full bg-accent-500 h-full shadow-sm transition-all duration-300"
                 style="width: {performanceState.heapTotal > 0
                     ? (performanceState.heapUsed / performanceState.heapTotal) * 100
                     : 0}%"
             ></div>
         </div>
 
-        <!-- Network Badges -->
-        <div class="text-xs mt-0.5 flex items-center justify-between">
-            {@render networkBadge("Requests", performanceState.requests)}
-            {@render networkBadge("Assets", `${performanceState.totalSizeKb} KB`)}
+        <!-- Stepped Rating Scale (5 Pills Spectrum) -->
+        <div class="mt-1 flex flex-col gap-1.5">
+            <div class="gap-1.5 grid grid-cols-5">
+                {#each [1, 2, 3, 4, 5] as step (step)}
+                    <div
+                        class="rounded-full h-1.5 transition-all duration-200 {step <=
+                        memoryTier.level
+                            ? memoryTier.bg
+                            : 'bg-base-200 opacity-40 dark:bg-base-800'}"
+                    ></div>
+                {/each}
+            </div>
+            <div class="text-[10px] font-mono flex items-center justify-between">
+                <span class="text-weaker font-medium uppercase">Heap Tier</span>
+                <span class="{memoryTier.color} font-semibold">{memoryTier.label}</span>
+            </div>
         </div>
     </div>
 {/snippet}

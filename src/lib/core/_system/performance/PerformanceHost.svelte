@@ -7,7 +7,7 @@
     import PerformanceCard from "./PerformanceCard.svelte";
     import { performanceState } from "./performanceState.svelte";
 
-    let isVisible = $state(true);
+    let isVisible = $state(false);
 
     onMount(() => {
         if (!import.meta.env.DEV) return;

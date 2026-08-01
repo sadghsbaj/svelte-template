@@ -7,6 +7,7 @@
     import AppStage from "$core/_system/layout/app-stage/AppStage.svelte";
     import AppView from "$core/_system/layout/app-views/AppView.svelte";
     import AppViews from "$core/_system/layout/app-views/AppViews.svelte";
+    import PerformanceHost from "$core/_system/performance/PerformanceHost.svelte";
     import { viewState } from "$views/view.svelte";
 
     // @template-remove-start
@@ -30,8 +31,9 @@
 </AppStage>
 
 <AppLayers>
-    <!-- Example usage: -->
-    <AppLayer z={0} layer="">
-        <!-- ...Host.svelte -->
-    </AppLayer>
+    {#if import.meta.env.DEV}
+        <AppLayer z={9999} layer="performance">
+            <PerformanceHost />
+        </AppLayer>
+    {/if}
 </AppLayers>

@@ -5,6 +5,8 @@
 
     import { fly } from "$core/_system/motion";
 
+    import { performanceState } from "./performanceState.svelte";
+
     const STORAGE_KEY = "dev_perf_overlay_pos";
 
     let isVisible = $state(true);
@@ -13,32 +15,17 @@
     let dragOffset = { x: 0, y: 0 };
     let overlayEl = $state<HTMLElement | null>(null);
 
-    // Mock data for UI finalization
-    const metrics = $state({
-        fps: 60,
-        eventLoopLag: 0.4,
-        domCount: 482,
-        domDepth: 12,
-        cls: 0.002,
-        lcp: 240,
-        inp: 14,
-        heapUsed: 24.5,
-        heapTotal: 48,
-        requests: 18,
-        totalSizeKb: 420,
-    });
-
     // Derived metric data lists for clean iteration
     const summaryItems = $derived([
-        { label: "FPS", value: metrics.fps },
-        { label: "DOM NODES", value: metrics.domCount },
-        { label: "LOOP LAG", value: metrics.eventLoopLag, suffix: "ms" },
+        { label: "FPS", value: performanceState.fps },
+        { label: "DOM NODES", value: performanceState.domCount },
+        { label: "LOOP LAG", value: performanceState.eventLoopLag, suffix: "ms" },
     ]);
 
     const vitalItems = $derived([
-        { label: "CLS", value: metrics.cls },
-        { label: "LCP", value: metrics.lcp, suffix: "ms" },
-        { label: "INP", value: metrics.inp, suffix: "ms" },
+        { label: "CLS", value: performanceState.cls },
+        { label: "LCP", value: performanceState.lcp, suffix: "ms" },
+        { label: "INP", value: performanceState.inp, suffix: "ms" },
     ]);
 
     function clampPosition(x: number, y: number): { x: number; y: number } {
@@ -100,6 +87,8 @@
     onMount(() => {
         if (!import.meta.env.DEV) return;
 
+        performanceState.start();
+
         try {
             const saved = localStorage.getItem(STORAGE_KEY);
             if (saved) {
@@ -125,6 +114,7 @@
         })();
 
         return () => {
+            performanceState.stop();
             window.removeEventListener("resize", handleResize);
             cleanupShortcut?.();
         };
@@ -203,13 +193,13 @@
 {/snippet}
 
 {#snippet domStatusBadge()}
-    {#if metrics.domCount >= 1500}
+    {#if performanceState.domCount >= 1500}
         <span
             class="text-xs text-red-600 font-mono font-semibold px-2.5 py-0.5 border border-red-500/40 rounded-full bg-red-500/15 dark:text-red-400 dark:border-red-500/40"
         >
             Critical
         </span>
-    {:else if metrics.domCount >= 800}
+    {:else if performanceState.domCount >= 800}
         <span
             class="text-xs text-amber-600 font-mono font-semibold px-2.5 py-0.5 border border-amber-500/40 rounded-full bg-amber-500/15 dark:text-amber-400 dark:border-amber-500/40"
         >
@@ -278,8 +268,8 @@
         </div>
 
         <div class="mt-0.5 gap-2 grid grid-cols-2">
-            {@render subCard("Total Elements", metrics.domCount, Hash)}
-            {@render subCard("Max Nesting", metrics.domDepth, Maximize, "lvl")}
+            {@render subCard("Total Elements", performanceState.domCount, Hash)}
+            {@render subCard("Max Nesting", performanceState.domDepth, Maximize, "lvl")}
         </div>
     </div>
 {/snippet}
@@ -314,7 +304,7 @@
                 <span>Memory & Network</span>
             </div>
             <span class="text-xs text-weak font-mono">
-                {metrics.heapUsed} / {metrics.heapTotal} MB
+                {performanceState.heapUsed} / {performanceState.heapTotal} MB
             </span>
         </div>
 
@@ -322,14 +312,16 @@
         <div class="mt-0.5 rounded-full bg-base-200 h-2 w-full overflow-hidden dark:bg-base-800">
             <div
                 class="rounded-full bg-accent-500 h-full transition-all duration-300"
-                style="width: {(metrics.heapUsed / metrics.heapTotal) * 100}%"
+                style="width: {performanceState.heapTotal > 0
+                    ? (performanceState.heapUsed / performanceState.heapTotal) * 100
+                    : 0}%"
             ></div>
         </div>
 
         <!-- Network Badges -->
         <div class="text-xs mt-0.5 flex items-center justify-between">
-            {@render networkBadge("Requests", metrics.requests)}
-            {@render networkBadge("Assets", `${metrics.totalSizeKb} KB`)}
+            {@render networkBadge("Requests", performanceState.requests)}
+            {@render networkBadge("Assets", `${performanceState.totalSizeKb} KB`)}
         </div>
     </div>
 {/snippet}

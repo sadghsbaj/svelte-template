@@ -1,9 +1,10 @@
+import { appShortcut } from "$modules/shortcut/appShortcut.svelte";
 import { beforeEach, describe, expect, test } from "vitest";
+
+import { appStack } from "$core/_system/stack/appStack.svelte";
 
 import type { ViewsConfig } from "./types";
 import { ViewState } from "./viewState.svelte";
-import { appShortcut } from "$modules/shortcut/appShortcut.svelte";
-import { appStack } from "$core/_system/stack/appStack.svelte";
 
 describe("ViewState (Browser Client)", () => {
     type TestView = "home" | "stats" | "statsDetails" | "statsSubDetails" | "settings";
@@ -20,7 +21,11 @@ describe("ViewState (Browser Client)", () => {
                 { view: "home", label: "Startseite", parent: "root" },
                 { view: "stats", label: "Statistiken", parent: "root" },
                 { view: "statsDetails", label: "Statistik Details", parent: "stats" },
-                { view: "statsSubDetails", label: "Unter-Statistik Details", parent: "statsDetails" },
+                {
+                    view: "statsSubDetails",
+                    label: "Unter-Statistik Details",
+                    parent: "statsDetails",
+                },
                 { view: "settings", label: "Einstellungen", parent: "root", disabled: true },
             ],
         };

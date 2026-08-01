@@ -1,6 +1,7 @@
 # Svelte 5 Declaration Tags (`{const ...}`, `{let ...}`)
 
 ## Core Rule
+
 The legacy `{@const ...}` tag is **deprecated and forbidden**. All inline template variable declarations MUST use Svelte 5 declaration tags (`{const ...}` or `{let ...}`).
 
 > [!IMPORTANT]
@@ -19,6 +20,7 @@ The legacy `{@const ...}` tag is **deprecated and forbidden**. All inline templa
 ## Comparison & Examples
 
 ### Legacy `{@const}` - ❌ Deprecated
+
 ```svelte
 {#each items as item}
     {@const double = item.val * 2}
@@ -27,6 +29,7 @@ The legacy `{@const ...}` tag is **deprecated and forbidden**. All inline templa
 ```
 
 ### Svelte 5 `{const}` and `{let}` - ✅ Required
+
 ```svelte
 {#each items as item}
     {const double = item.val * 2}
@@ -43,4 +46,5 @@ The legacy `{@const ...}` tag is **deprecated and forbidden**. All inline templa
 ---
 
 ## Documentation Link
+
 Refer to the official [Svelte 5 Declaration Tags Documentation](https://svelte.dev/docs/svelte/declaration-tags).

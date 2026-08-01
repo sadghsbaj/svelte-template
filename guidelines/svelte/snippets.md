@@ -1,6 +1,7 @@
 # Svelte 5 Snippets & Render Tags (`{#snippet}`, `{@render}`)
 
 ## Core Rule
+
 Snippets define reusable or structurally isolated markup chunks instantiated with the `{@render ...}` tag or passed to components as props.
 
 ---

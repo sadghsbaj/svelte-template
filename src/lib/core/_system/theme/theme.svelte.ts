@@ -45,7 +45,9 @@ export const isValidMode = (v: unknown): v is ThemeMode =>
  */
 function safeGetStorage(key: string): string | null {
     try {
-        return typeof window !== "undefined" && window.localStorage ? localStorage.getItem(key) : null;
+        return typeof window !== "undefined" && window.localStorage
+            ? localStorage.getItem(key)
+            : null;
     } catch {
         return null;
     }
@@ -94,10 +96,15 @@ export class ThemeManager {
         }
 
         const stored = safeGetStorage("ui-theme");
-        const validMode = isValidMode(stored) ? stored : isValidMode(initialMode) ? initialMode : "system";
+        const validMode = isValidMode(stored)
+            ? stored
+            : isValidMode(initialMode)
+              ? initialMode
+              : "system";
         this.#mode = validMode;
 
-        const documentIsDark = typeof document !== "undefined" && document.documentElement.classList.contains("dark");
+        const documentIsDark =
+            typeof document !== "undefined" && document.documentElement.classList.contains("dark");
         this.#resolved = documentIsDark || initialResolved === "dark" ? "dark" : "light";
 
         // Initial apply to fully synchronize DOM states and meta tags
@@ -208,9 +215,12 @@ export class ThemeManager {
                     document.documentElement.style.colorScheme = "light";
                 }
 
-                const appBg = getComputedStyle(document.documentElement).getPropertyValue("--color-app").trim();
+                const appBg = getComputedStyle(document.documentElement)
+                    .getPropertyValue("--color-app")
+                    .trim();
                 const meta =
-                    document.querySelector('meta[name="theme-color"]') || document.getElementById("theme-color-meta");
+                    document.querySelector('meta[name="theme-color"]') ||
+                    document.getElementById("theme-color-meta");
                 if (meta && appBg) {
                     meta.setAttribute("content", appBg);
                 }
@@ -218,9 +228,11 @@ export class ThemeManager {
         };
 
         const prefersReducedMotion =
-            (typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches) ||
+            (typeof window !== "undefined" &&
+                window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches) ||
             document.documentElement.classList.contains("ui-reduce-motion");
-        const useTransition = !this.#isInitial && "startViewTransition" in document && !prefersReducedMotion;
+        const useTransition =
+            !this.#isInitial && "startViewTransition" in document && !prefersReducedMotion;
 
         if (useTransition) {
             document.documentElement.classList.add("theme-switching");
@@ -228,7 +240,10 @@ export class ThemeManager {
 
             try {
                 const doc = document as Document & {
-                    startViewTransition?: (cb: () => void) => { ready: Promise<void>; finished: Promise<void> };
+                    startViewTransition?: (cb: () => void) => {
+                        ready: Promise<void>;
+                        finished: Promise<void>;
+                    };
                 };
                 if (!doc.startViewTransition) {
                     document.documentElement.classList.remove("theme-switching");
@@ -260,4 +275,3 @@ export class ThemeManager {
 }
 
 export const theme = new ThemeManager();
-

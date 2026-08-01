@@ -1,5 +1,6 @@
 <script lang="ts">
     import { Activity, Laptop, Pause, Play, Shield, Sliders, Zap, ZapOff } from "@lucide/svelte";
+
     import { motionPreference, type MotionPreference } from "$core/_system/motion";
 
     function selectPreference(pref: MotionPreference) {
@@ -20,7 +21,8 @@
                     <span class="badge-svelte">Svelte 5</span>
                 </div>
                 <p class="header-desc">
-                    Reactive motion preference coordinator supporting Reduced Motion, No-Preference & OS accessibility guards.
+                    Reactive motion preference coordinator supporting Reduced Motion, No-Preference
+                    & OS accessibility guards.
                 </p>
             </div>
         </div>
@@ -50,7 +52,8 @@
                     <span class="card-badge">motionPreference.set()</span>
                 </div>
                 <p class="card-intro">
-                    Configure animation preferences. <code>reduce</code> automatically suppresses CSS transitions & Svelte animations for accessibility.
+                    Configure animation preferences. <code>reduce</code> automatically suppresses CSS
+                    transitions & Svelte animations for accessibility.
                 </p>
 
                 <div class="modes-grid">
@@ -106,7 +109,10 @@
                 </p>
 
                 <div class="animation-demo-row">
-                    <div class="anim-box" class:pulse-animation={motionPreference.resolved === "no-preference"}>
+                    <div
+                        class="anim-box"
+                        class:pulse-animation={motionPreference.resolved === "no-preference"}
+                    >
                         <div class="anim-status">
                             {#if motionPreference.resolved === "reduce"}
                                 <Pause size={18} />
@@ -136,7 +142,11 @@
                     </div>
                     <div class="status-row">
                         <span class="row-label">HTML Class</span>
-                        <code class="row-val">{motionPreference.resolved === "reduce" ? ".ui-reduce-motion" : "(none)"}</code>
+                        <code class="row-val"
+                            >{motionPreference.resolved === "reduce"
+                                ? ".ui-reduce-motion"
+                                : "(none)"}</code
+                        >
                     </div>
                 </div>
             </div>
@@ -156,37 +166,43 @@
         --text-muted: var(--color-text-weak);
         --accent: var(--color-accent-500);
         --accent-tint: oklch(from var(--color-accent-500) l c h / 0.12);
+        box-sizing: border-box;
+        min-height: 100vh;
+        padding: 32px;
+        color: var(--text-main);
+        font-family:
+            system-ui,
+            -apple-system,
+            BlinkMacSystemFont,
+            "Segoe UI",
+            Roboto,
+            sans-serif;
 
         background: var(--bg-page);
-        color: var(--text-main);
-        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        padding: 32px;
-        min-height: 100vh;
-        box-sizing: border-box;
     }
 
     .demo-header {
         display: flex;
-        justify-content: space-between;
         align-items: center;
+        justify-content: space-between;
         margin-bottom: 32px;
     }
 
     .header-left {
         display: flex;
-        align-items: center;
         gap: 16px;
+        align-items: center;
     }
 
     .header-icon-box {
-        width: 44px;
-        height: 44px;
-        border-radius: 12px;
-        background: var(--accent-tint);
-        color: var(--accent);
         display: flex;
         align-items: center;
         justify-content: center;
+        width: 44px;
+        height: 44px;
+        color: var(--accent);
+        background: var(--accent-tint);
+        border-radius: 12px;
     }
 
     .header-text {
@@ -197,45 +213,45 @@
 
     .header-title-row {
         display: flex;
-        align-items: center;
         gap: 10px;
+        align-items: center;
     }
 
     .header-title-row h1 {
+        margin: 0;
         font-size: 22px;
         font-weight: 700;
-        margin: 0;
         letter-spacing: -0.02em;
     }
 
     .badge-svelte {
+        padding: 2px 8px;
+        color: var(--text-sub);
         font-size: 11px;
         font-weight: 600;
         background: var(--bg-subtle);
-        color: var(--text-sub);
-        padding: 2px 8px;
         border-radius: 6px;
     }
 
     .header-desc {
         margin: 0;
-        font-size: 13px;
         color: var(--text-sub);
+        font-size: 13px;
     }
 
     .status-chips-bar {
         display: flex;
-        align-items: center;
         gap: 10px;
+        align-items: center;
     }
 
     .chip {
         display: flex;
         flex-direction: column;
+        min-width: 110px;
         padding: 8px 14px;
         background: var(--bg-surface);
         border-radius: 10px;
-        min-width: 110px;
     }
 
     .chip-accent {
@@ -248,17 +264,17 @@
     }
 
     .chip-label {
+        color: var(--text-muted);
         font-size: 10px;
         font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 0.05em;
-        color: var(--text-muted);
     }
 
     .chip-val {
+        color: var(--text-main);
         font-size: 13px;
         font-weight: 600;
-        color: var(--text-main);
     }
 
     .grid-layout {
@@ -267,50 +283,51 @@
         gap: 28px;
     }
 
-    .column-main, .column-sidebar {
+    .column-main,
+    .column-sidebar {
         display: flex;
         flex-direction: column;
         gap: 24px;
     }
 
     .flat-card {
+        padding: 24px;
         background: var(--bg-surface);
         border-radius: 16px;
-        padding: 24px;
     }
 
     .card-head {
         display: flex;
-        justify-content: space-between;
         align-items: center;
+        justify-content: space-between;
         margin-bottom: 6px;
     }
 
     .card-title {
         display: flex;
-        align-items: center;
         gap: 10px;
+        align-items: center;
     }
 
     .card-title h2 {
+        margin: 0;
         font-size: 16px;
         font-weight: 600;
-        margin: 0;
     }
 
     .card-badge {
+        padding: 4px 10px;
+        color: var(--text-sub);
         font-family: monospace;
         font-size: 11px;
         background: var(--bg-subtle);
-        color: var(--text-sub);
-        padding: 4px 10px;
         border-radius: 20px;
     }
 
     .card-intro {
-        font-size: 13px;
-        color: var(--text-sub);
         margin: 0 0 18px 0;
+        color: var(--text-sub);
+        font-size: 13px;
     }
 
     .modes-grid {
@@ -322,14 +339,14 @@
     .mode-card {
         all: unset;
         display: flex;
-        align-items: center;
         gap: 14px;
+        align-items: center;
+        box-sizing: border-box;
         padding: 16px;
         background: var(--bg-subtle);
         border-radius: 12px;
-        cursor: pointer;
         transition: all 0.15s ease;
-        box-sizing: border-box;
+        cursor: pointer;
     }
 
     .mode-card:hover {
@@ -342,9 +359,9 @@
     }
 
     .mode-icon {
-        color: var(--accent);
         display: flex;
         align-items: center;
+        color: var(--accent);
     }
 
     .mode-info {
@@ -359,8 +376,8 @@
     }
 
     .mode-info span {
-        font-size: 11px;
         color: var(--text-muted);
+        font-size: 11px;
     }
 
     .animation-demo-row {
@@ -372,12 +389,12 @@
     }
 
     .anim-box {
-        padding: 20px 32px;
-        background: var(--bg-surface);
-        border-radius: 12px;
         display: flex;
         align-items: center;
         justify-content: center;
+        padding: 20px 32px;
+        background: var(--bg-surface);
+        border-radius: 12px;
     }
 
     .pulse-animation {
@@ -385,17 +402,22 @@
     }
 
     @keyframes pulseMotion {
-        0%, 100% { transform: scale(1); }
-        50% { transform: scale(1.08); }
+        0%,
+        100% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.08);
+        }
     }
 
     .anim-status {
         display: flex;
-        align-items: center;
         gap: 10px;
+        align-items: center;
+        color: var(--accent);
         font-size: 13px;
         font-weight: 600;
-        color: var(--accent);
     }
 
     .side-card {
@@ -404,15 +426,15 @@
 
     .side-head {
         display: flex;
-        align-items: center;
         gap: 8px;
+        align-items: center;
         margin-bottom: 16px;
     }
 
     .side-head h3 {
+        margin: 0;
         font-size: 14px;
         font-weight: 600;
-        margin: 0;
     }
 
     .status-stack {
@@ -423,8 +445,8 @@
 
     .status-row {
         display: flex;
-        justify-content: space-between;
         align-items: center;
+        justify-content: space-between;
         font-size: 12px;
     }
 

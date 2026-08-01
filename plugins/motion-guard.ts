@@ -42,7 +42,9 @@ export function motionGuardPlugin(options: MotionGuardOptions = {}): Plugin {
             }
 
             const forbiddenMatch = code.match(/from\s+['"]svelte\/(transition|animate|motion)['"]/);
-            const forbiddenDynamicMatch = code.match(/import\s*\(\s*['"]svelte\/(transition|animate|motion)['"]\s*\)/);
+            const forbiddenDynamicMatch = code.match(
+                /import\s*\(\s*['"]svelte\/(transition|animate|motion)['"]\s*\)/
+            );
 
             if (forbiddenMatch || forbiddenDynamicMatch) {
                 const matchedPkg = (forbiddenMatch || forbiddenDynamicMatch)![1];

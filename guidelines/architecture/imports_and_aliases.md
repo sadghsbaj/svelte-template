@@ -1,6 +1,7 @@
 # Imports, Path Aliases & Boundary Rules
 
 ## Core Rule
+
 All internal cross-directory imports MUST use official path aliases (`$core`, `$utils`, etc.). Relative parent imports (`../`) are strictly forbidden.
 
 > [!IMPORTANT]
@@ -10,17 +11,17 @@ All internal cross-directory imports MUST use official path aliases (`$core`, `$
 
 ## 1. Path Aliases Reference Table
 
-| Path Alias | Resolves To | Usage |
-| :--- | :--- | :--- |
-| **`$core`** | `src/lib/core` | Core framework architecture & systems |
-| **`$components`** | `src/lib/shared/components` | Shared reusable UI components |
-| **`$utils`** | `src/lib/shared/utils` | Shared utility functions & helpers |
-| **`$styles`** | `src/lib/shared/styles` | Global CSS styles & design tokens |
+| Path Alias         | Resolves To                  | Usage                                   |
+| :----------------- | :--------------------------- | :-------------------------------------- |
+| **`$core`**        | `src/lib/core`               | Core framework architecture & systems   |
+| **`$components`**  | `src/lib/shared/components`  | Shared reusable UI components           |
+| **`$utils`**       | `src/lib/shared/utils`       | Shared utility functions & helpers      |
+| **`$styles`**      | `src/lib/shared/styles`      | Global CSS styles & design tokens       |
 | **`$transitions`** | `src/lib/shared/transitions` | Shared animation & transition functions |
-| **`$types`** | `src/lib/shared/types` | Shared TypeScript interfaces & types |
-| **`$attachments`** | `src/lib/shared/attachments` | Shared Svelte 5 element attachments |
-| **`$views`** | `src/lib/views` | Top-level view modules |
-| **`$features`** | `src/lib/features` | Feature-bound application modules |
+| **`$types`**       | `src/lib/shared/types`       | Shared TypeScript interfaces & types    |
+| **`$attachments`** | `src/lib/shared/attachments` | Shared Svelte 5 element attachments     |
+| **`$views`**       | `src/lib/views`              | Top-level view modules                  |
+| **`$features`**    | `src/lib/features`           | Feature-bound application modules       |
 
 ---
 

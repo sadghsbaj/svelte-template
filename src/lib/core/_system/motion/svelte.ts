@@ -162,13 +162,12 @@ export function crossfade(
     const { forceAnimate = false, ...restParams } = params || {};
     const [send, receive] = svelte_crossfade(restParams);
 
-    const wrap = (
-        transitionFn: ReturnType<typeof svelte_crossfade>[number]
-    ): CrossfadeFn => {
+    const wrap = (transitionFn: ReturnType<typeof svelte_crossfade>[number]): CrossfadeFn => {
         return ((node: Element, p: MotionParams<{ key: unknown }>) => {
             const configFn = transitionFn(node, p);
             const activeManager = manager ?? motionPreference;
-            const shouldReduce = !p?.forceAnimate && !forceAnimate && activeManager.resolved === "reduce";
+            const shouldReduce =
+                !p?.forceAnimate && !forceAnimate && activeManager.resolved === "reduce";
             if (shouldReduce) {
                 return () => {
                     const config = configFn?.();
@@ -210,7 +209,10 @@ export class Tween<T> {
     #forceAnimate: boolean;
     #manager?: MotionManager;
 
-    constructor(value: T, options?: TweenOptions<T> & { forceAnimate?: boolean; manager?: MotionManager }) {
+    constructor(
+        value: T,
+        options?: TweenOptions<T> & { forceAnimate?: boolean; manager?: MotionManager }
+    ) {
         const { forceAnimate = false, manager, ...restOptions } = options || {};
         this.#underlying = new SvelteTween(value, restOptions);
         this.#forceAnimate = forceAnimate;
@@ -280,7 +282,10 @@ export class Spring<T> {
     #forceAnimate: boolean;
     #manager?: MotionManager;
 
-    constructor(value: T, options?: SpringOptions & { forceAnimate?: boolean; manager?: MotionManager }) {
+    constructor(
+        value: T,
+        options?: SpringOptions & { forceAnimate?: boolean; manager?: MotionManager }
+    ) {
         const { forceAnimate = false, manager, ...restOptions } = options || {};
         this.#underlying = new SvelteSpring(value, restOptions);
         this.#forceAnimate = forceAnimate;

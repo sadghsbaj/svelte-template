@@ -121,4 +121,3 @@ describe("MotionManager (Browser Client)", () => {
 function dummyTransition() {
     return { duration: 300, delay: 0 };
 }
-

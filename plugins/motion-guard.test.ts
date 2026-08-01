@@ -60,6 +60,8 @@ describe("motionGuardPlugin", () => {
                 throw new Error(msg);
             },
         };
-        expect(transform.call(context, code, "src/lib/foundation/logic/motion/svelte.ts")).toBeNull();
+        expect(
+            transform.call(context, code, "src/lib/foundation/logic/motion/svelte.ts")
+        ).toBeNull();
     });
 });

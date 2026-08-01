@@ -3,13 +3,13 @@ import { SvelteSet } from "svelte/reactivity";
 
 import { uuid } from "$utils/_system";
 
-import type {
-    AppStackConfig,
-    StackEntry,
-    StackPriority,
-    StackRegisterOptions,
+import {
+    STACK_PRIORITY_MAP,
+    type AppStackConfig,
+    type StackEntry,
+    type StackPriority,
+    type StackRegisterOptions,
 } from "./types";
-import { STACK_PRIORITY_MAP } from "./types";
 
 export class AppStackManager {
     private _entries = $state<StackEntry[]>([]);
@@ -188,9 +188,7 @@ export class AppStackManager {
 
     clear(scope?: string): void {
         untrack(() => {
-            this._entries = scope
-                ? this._entries.filter((entry) => entry?.scope !== scope)
-                : [];
+            this._entries = scope ? this._entries.filter((entry) => entry?.scope !== scope) : [];
         });
     }
 

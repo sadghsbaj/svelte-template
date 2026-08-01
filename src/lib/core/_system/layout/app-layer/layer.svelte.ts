@@ -6,7 +6,12 @@
 
 import { getLayerContext } from "./layer.context";
 
-export { getLayerContext, setLayerContext, LAYER_CONTEXT_KEY, type LayerContext } from "./layer.context";
+export {
+    getLayerContext,
+    setLayerContext,
+    LAYER_CONTEXT_KEY,
+    type LayerContext,
+} from "./layer.context";
 
 let blockCounter = $state(0);
 let savedPaddingRight = "";

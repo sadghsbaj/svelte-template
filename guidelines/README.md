@@ -5,6 +5,7 @@ This directory contains strict engineering guidelines for maintaining clean, sca
 ## 📚 Guideline Index
 
 ### 1. Svelte 5 Standards (`guidelines/svelte/`)
+
 - **[Context Management](file:///home/colin/Main/01_programming/01_projects/01_current_projects/svelte-template/guidelines/svelte/context.md)**: Using Svelte 5 `createContext` and central `x.context.ts` files.
 - **[Attachments](file:///home/colin/Main/01_programming/01_projects/01_current_projects/svelte-template/guidelines/svelte/attachment.md)**: Modern element attachment directives (`{@attach ...}`) and `Attachment` types.
 - **[Actions Deprecation](file:///home/colin/Main/01_programming/01_projects/01_current_projects/svelte-template/guidelines/svelte/actions.md)**: Internal deprecation policy for legacy `use:action` directives.
@@ -16,9 +17,11 @@ This directory contains strict engineering guidelines for maintaining clean, sca
 - **[Component Structure & Order](file:///home/colin/Main/01_programming/01_projects/01_current_projects/svelte-template/guidelines/svelte/component_structure.md)**: Layout order inside `<script lang="ts">` and co-location strategies.
 
 ### 2. TypeScript Rules (`guidelines/ts/`)
+
 - **[TypeScript Guidelines](file:///home/colin/Main/01_programming/01_projects/01_current_projects/svelte-template/guidelines/ts/typescript.md)**: Zero `any` policy and non-null assertion `!` prohibition.
 
 ### 3. Architecture & Verification (`guidelines/architecture/`)
+
 - **[Imports & Path Aliases](file:///home/colin/Main/01_programming/01_projects/01_current_projects/svelte-template/guidelines/architecture/imports_and_aliases.md)**: Path alias enforcement (`$core`, `$utils`, etc.) and layer boundary rules.
 - **[Project & Layer Structure](file:///home/colin/Main/01_programming/01_projects/01_current_projects/svelte-template/guidelines/architecture/project_structure.md)**: Responsibilities of `$core`, `$shared`, `$views`, `$features`, and `_system/`.
 - **[Naming Conventions](file:///home/colin/Main/01_programming/01_projects/01_current_projects/svelte-template/guidelines/architecture/naming.md)**: Casing rules, boolean verb prefixes, and file/directory extension standards.

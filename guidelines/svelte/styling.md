@@ -1,6 +1,7 @@
 # Svelte 5 Component Styling & Scoping Guidelines
 
 ## Core Rule
+
 Style components using standard scoped `<style>` blocks and Vanilla CSS. Rely on clean CSS custom properties and native Svelte class/style bindings.
 
 ---
@@ -17,15 +18,11 @@ Svelte provides flexible ways to bind dynamic classes and inline styles:
 
 <!-- Class directives & ternaries -->
 <div class="card" class:active={isActive}>
-    <button class={isActive ? "btn-primary" : "btn-secondary"}>
-        Toggle
-    </button>
+    <button class={isActive ? "btn-primary" : "btn-secondary"}> Toggle </button>
 </div>
 
 <!-- Inline style directives -->
-<div style:color={themeColor} style:z-index={10}>
-    Styled Content
-</div>
+<div style:color={themeColor} style:z-index={10}>Styled Content</div>
 ```
 
 ---
@@ -35,6 +32,7 @@ Svelte provides flexible ways to bind dynamic classes and inline styles:
 Svelte automatically scopes CSS to elements rendered directly in the component's HTML template.
 
 ### Styling Child Components or External Elements
+
 When passing classes to child components (e.g. `<Icon class="accent-icon" />`) or styling elements rendered outside the local template scope:
 
 1. **`:global(.class-name)`**: Wrap the selector in `:global(...)` so Svelte's CSS compiler does not mark it as an unused selector.

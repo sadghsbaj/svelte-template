@@ -4,7 +4,8 @@
  * Designed as a lightweight, zero-dependency alternative to clsx/classnames.
  */
 
-export type ClassValue = string | number | bigint | boolean | undefined | null | Record<string, unknown> | ClassValue[];
+export type ClassValue =
+    string | number | bigint | boolean | undefined | null | Record<string, unknown> | ClassValue[];
 
 /**
  * Conditionally joins class names, arrays, and objects into a single space-separated string.
@@ -17,7 +18,6 @@ export function cn(...classes: ClassValue[]): string {
     let result = "";
 
     for (const value of classes) {
-
         if (value) {
             if (typeof value === "string" || typeof value === "number") {
                 result += (result ? " " : "") + value;

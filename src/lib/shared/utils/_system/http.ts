@@ -113,7 +113,10 @@ export class HttpClient {
         const baseUrl = options.baseUrl ?? this.#defaults.baseUrl;
         const isAbsolute = /^[a-z]+:\/\//i.test(url) || url.startsWith("//");
 
-        let finalUrl = baseUrl && !isAbsolute ? `${baseUrl.replace(/\/+$/, "")}/${url.replace(/^\/+/, "")}` : url;
+        let finalUrl =
+            baseUrl && !isAbsolute
+                ? `${baseUrl.replace(/\/+$/, "")}/${url.replace(/^\/+/, "")}`
+                : url;
 
         // Merge query parameters
         const mergedParams = { ...this.#defaults.params, ...options.params };
@@ -237,7 +240,11 @@ export class HttpClient {
             return data as T;
         } catch (error) {
             // Convert abort triggered by timeout into a TimeoutError
-            if (error instanceof DOMException && error.name === "AbortError" && controller?.signal.aborted) {
+            if (
+                error instanceof DOMException &&
+                error.name === "AbortError" &&
+                controller?.signal.aborted
+            ) {
                 throw new DOMException("The operation timed out.", "TimeoutError");
             }
             throw error;

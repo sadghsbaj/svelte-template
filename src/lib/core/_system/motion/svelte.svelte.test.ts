@@ -77,7 +77,11 @@ describe("Svelte Motion/Transition Wrappers", () => {
 
         test("flip animation overrides duration to 0 when motion is reduced", () => {
             motionPreference.set("reduce");
-            const config = flip(dummyNode, { from: {} as DOMRect, to: {} as DOMRect }, { duration: 300 });
+            const config = flip(
+                dummyNode,
+                { from: {} as DOMRect, to: {} as DOMRect },
+                { duration: 300 }
+            );
             expect(config.duration).toBe(0);
         });
 
@@ -194,4 +198,3 @@ describe("Svelte Motion/Transition Wrappers", () => {
         });
     });
 });
-

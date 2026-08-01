@@ -20,9 +20,7 @@
 
     const inTransition = $derived(viewState.getInTransition(view));
     const outTransition = $derived(viewState.getOutTransition(view));
-    const transitionParams = $derived(
-        viewState.isAnimated(view) ? {} : { duration: 0 }
-    );
+    const transitionParams = $derived(viewState.isAnimated(view) ? {} : { duration: 0 });
 
     const scrollRestoration: Attachment = (node) => {
         const el = node as HTMLElement;

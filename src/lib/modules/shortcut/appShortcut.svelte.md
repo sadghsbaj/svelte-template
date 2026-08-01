@@ -12,7 +12,7 @@ Exposes reactive properties and methods to register, handle, and manage single s
 
 ```typescript
 class AppShortcutManager {
-    constructor()
+    constructor();
 
     // Reactive Properties
     readonly entries: ShortcutEntry[];
@@ -149,9 +149,9 @@ function shortcutAttach(
 - **Arbitrary Key Press Tracking (`appShortcut.isPressed(key)`):** `appShortcut.isPressed("g")` returns a reactive boolean indicating whether any specific key (e.g. `"g"`, `"v"`, `"Space"`) is currently held down. Perfect for interactive canvas snap modes or custom drag behaviors!
 - **Reactive Modifier Key State (`appShortcut.modifiers`):** Exposes `appShortcut.modifiers.shift`, `ctrl`, `alt`, and `cmd` as reactive Svelte 5 `$state` booleans.
 - **Attachment Trigger Modes (`attachOn`):**
-  - `"mount"` (default): Registers shortcuts when element mounts into DOM, unregisters on unmount.
-  - `"focus"`: Registers shortcuts when element receives `focus`, unregisters when it loses focus (`blur`).
-  - `"hover"`: Registers shortcuts when pointer enters element (`pointerenter`), unregisters when pointer leaves (`pointerleave`).
+    - `"mount"` (default): Registers shortcuts when element mounts into DOM, unregisters on unmount.
+    - `"focus"`: Registers shortcuts when element receives `focus`, unregisters when it loses focus (`blur`).
+    - `"hover"`: Registers shortcuts when pointer enters element (`pointerenter`), unregisters when pointer leaves (`pointerleave`).
 - **Multi-Shortcut Array Attachments:** Supports passing an array of `ShortcutDescriptor` objects (`[{ combo: "Cmd+S", action: saveFn }, { combo: "Escape", action: cancelFn }]`).
 - **Hierarchical Prefix Scope Matching:** When `activeScope` is set to `"home:editor"`, shortcuts registered with `scope: "home"` remain active alongside shortcuts registered with `scope: "home:editor"`.
 - **Automatic ViewState Scope Sync:** `ViewState.setView()` automatically synchronizes `appShortcut.setScope(rootView)`.

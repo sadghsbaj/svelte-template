@@ -1,5 +1,6 @@
 <script lang="ts">
     import { Activity, Keyboard, Layers, Palette } from "@lucide/svelte";
+
     import AppShortcutManager from "./AppShortcutManager.svelte";
     import AppStackManager from "./AppStackManager.svelte";
     import MotionManager from "./MotionManager.svelte";
@@ -78,15 +79,15 @@
     }
 
     .preview-nav {
+        position: sticky;
+        top: 0;
+        z-index: 100;
         display: flex;
         align-items: center;
         justify-content: space-between;
         padding: 12px 32px;
         background: var(--color-elevation-1);
         border-bottom: 1px solid var(--color-elevation-2);
-        position: sticky;
-        top: 0;
-        z-index: 100;
     }
 
     .nav-brand {
@@ -95,11 +96,11 @@
     }
 
     .nav-title {
+        color: var(--color-text-strong);
         font-size: 13px;
         font-weight: 700;
-        letter-spacing: -0.01em;
-        color: var(--color-text-strong);
         text-transform: uppercase;
+        letter-spacing: -0.01em;
         letter-spacing: 0.05em;
     }
 
@@ -110,27 +111,27 @@
 
     .nav-tab {
         display: inline-flex;
-        align-items: center;
         gap: 8px;
+        align-items: center;
+        padding: 8px 16px;
+        color: var(--color-text-main);
         font-size: 13px;
         font-weight: 600;
-        padding: 8px 16px;
-        border-radius: 8px;
-        border: none;
         background: transparent;
-        color: var(--color-text-main);
-        cursor: pointer;
+        border: none;
+        border-radius: 8px;
         transition: all 0.15s ease;
+        cursor: pointer;
     }
 
     .nav-tab:hover {
-        background: var(--color-elevation-2);
         color: var(--color-text-strong);
+        background: var(--color-elevation-2);
     }
 
     .nav-tab.active {
-        background: oklch(from var(--color-accent-500) l c h / 0.12);
         color: var(--color-accent-500);
+        background: oklch(from var(--color-accent-500) l c h / 0.12);
     }
 
     .preview-viewport {

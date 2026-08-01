@@ -21,10 +21,10 @@ export default defineConfig({
     theme: {
         colors: {
             app: "var(--color-app)",
-            surface: {
-                DEFAULT: "var(--color-elevation-0)", // `bg-surface`
-                1: "var(--color-elevation-1)", // `bg-surface-1`
-                2: "var(--color-elevation-2)", // `bg-surface-2`
+            elevation: {
+                DEFAULT: "var(--color-elevation-0)",
+                1: "var(--color-elevation-1)",
+                2: "var(--color-elevation-2)",
             },
 
             strong: "var(--color-text-strong)",

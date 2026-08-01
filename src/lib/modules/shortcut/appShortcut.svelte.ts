@@ -3,18 +3,18 @@ import { SvelteMap, SvelteSet } from "svelte/reactivity";
 
 import { getOS, uuid } from "$utils/_system";
 
-import type {
-    AppShortcutConfig,
-    ModifierState,
-    ParsedComboStep,
-    ShortcutAttachTrigger,
-    ShortcutDescriptor,
-    ShortcutEntry,
-    ShortcutPriority,
-    ShortcutRegisterOptions,
-    ShortcutTriggerMode,
+import {
+    SHORTCUT_PRIORITY_MAP,
+    type AppShortcutConfig,
+    type ModifierState,
+    type ParsedComboStep,
+    type ShortcutAttachTrigger,
+    type ShortcutDescriptor,
+    type ShortcutEntry,
+    type ShortcutPriority,
+    type ShortcutRegisterOptions,
+    type ShortcutTriggerMode,
 } from "./types";
-import { SHORTCUT_PRIORITY_MAP } from "./types";
 
 export class AppShortcutManager {
     entries = $state<ShortcutEntry[]>([]);
@@ -87,13 +87,19 @@ export class AppShortcutManager {
     }
 
     setScope(scope: string): void {
-        const parts = scope.split(":").map((s) => s.trim()).filter(Boolean);
+        const parts = scope
+            .split(":")
+            .map((s) => s.trim())
+            .filter(Boolean);
         this.scopeStack = parts.length > 0 ? parts : ["global"];
         this.updateActiveScope();
     }
 
     pushScope(scope: string): () => void {
-        const parts = scope.split(":").map((s) => s.trim()).filter(Boolean);
+        const parts = scope
+            .split(":")
+            .map((s) => s.trim())
+            .filter(Boolean);
         for (const part of parts) {
             this.scopeStack.push(part);
         }
@@ -210,7 +216,8 @@ export class AppShortcutManager {
     ): () => void {
         const id = options?.id ?? uuid();
         const priority = this.resolvePriority(options?.priority);
-        const scope = (options?.scope && options.scope.trim() !== "") ? options.scope.trim() : "global";
+        const scope =
+            options?.scope && options.scope.trim() !== "" ? options.scope.trim() : "global";
         const mode = options?.mode
             ? Array.isArray(options.mode)
                 ? options.mode
@@ -305,14 +312,16 @@ export class AppShortcutManager {
                 // Only reset the pending sequence if it belonged to a removed entry
                 if (this.pendingSequence !== null) {
                     const hasActiveSequenceInRemoved = removed.some((entry) => {
-                            // Check if the pending sequence buffer matches any removed entry's steps
-                            const bufferLen = this.sequenceBuffer.length;
-                            if (bufferLen === 0) return false;
-                            return (
-                                entry.sequenceSteps.length > bufferLen &&
-                                entry.sequenceSteps.slice(0, bufferLen).every((s, i) => s === this.sequenceBuffer[i])
-                            );
-                        });
+                        // Check if the pending sequence buffer matches any removed entry's steps
+                        const bufferLen = this.sequenceBuffer.length;
+                        if (bufferLen === 0) return false;
+                        return (
+                            entry.sequenceSteps.length > bufferLen &&
+                            entry.sequenceSteps
+                                .slice(0, bufferLen)
+                                .every((s, i) => s === this.sequenceBuffer[i])
+                        );
+                    });
                     if (hasActiveSequenceInRemoved) {
                         this.resetSequence();
                     }
@@ -343,7 +352,11 @@ export class AppShortcutManager {
         const eligibleEntries = this.entries.filter((entry) => {
             if (!this.isPriorityAllowed(entry.priority)) return false;
             if (!this.isScopeActive(entry.scope)) return false;
-            if (this.activeMode !== null && entry.mode !== null && !entry.mode.includes(this.activeMode)) {
+            if (
+                this.activeMode !== null &&
+                entry.mode !== null &&
+                !entry.mode.includes(this.activeMode)
+            ) {
                 return false;
             }
             if (inInput && !entry.allowInInput && !this.config.allowInInput) {
@@ -357,7 +370,11 @@ export class AppShortcutManager {
             for (let i = 0; i < currentStepIndex; i++) {
                 if (entry.sequenceSteps[i] !== this.sequenceBuffer[i]) return false;
             }
-            return matchEventToComboStep(event, entry.parsedSequenceSteps[currentStepIndex], entry.useCode);
+            return matchEventToComboStep(
+                event,
+                entry.parsedSequenceSteps[currentStepIndex],
+                entry.useCode
+            );
         });
 
         if (matchingEntries.length === 0 && currentStepIndex > 0) {
@@ -376,7 +393,8 @@ export class AppShortcutManager {
             const current = matchingEntries[i];
             if (
                 current.priority > candidate.priority ||
-                (current.priority === candidate.priority && current.createdAt >= candidate.createdAt)
+                (current.priority === candidate.priority &&
+                    current.createdAt >= candidate.createdAt)
             ) {
                 candidate = current;
             }
@@ -444,7 +462,11 @@ export class AppShortcutManager {
         const matchingEntries = this.entries.filter((entry) => {
             if (!this.isPriorityAllowed(entry.priority)) return false;
             if (!this.isScopeActive(entry.scope)) return false;
-            if (this.activeMode !== null && entry.mode !== null && !entry.mode.includes(this.activeMode)) {
+            if (
+                this.activeMode !== null &&
+                entry.mode !== null &&
+                !entry.mode.includes(this.activeMode)
+            ) {
                 return false;
             }
             if (inInput && !entry.allowInInput && !this.config.allowInInput) {
@@ -547,7 +569,11 @@ export function shortcutAttach(
 ): (node: Element) => () => void;
 export function shortcutAttach(
     nodeOrCombo: Element | string | ShortcutDescriptor[],
-    actionOrOptions?: ((event: KeyboardEvent) => void) | ShortcutRegisterOptions | ShortcutDescriptor | ShortcutDescriptor[],
+    actionOrOptions?:
+        | ((event: KeyboardEvent) => void)
+        | ShortcutRegisterOptions
+        | ShortcutDescriptor
+        | ShortcutDescriptor[],
     optionsOrManager?: ShortcutRegisterOptions | AppShortcutManager,
     targetShortcutArg?: AppShortcutManager
 ): ((node: Element) => () => void) | { destroy: () => void } {
@@ -794,8 +820,21 @@ export function normalizeComboStep(step: string): string {
         const lastPlusIdx = trimmed.lastIndexOf("+");
         if (lastPlusIdx === trimmed.length - 1 && lastPlusIdx > 0) {
             const prefix = trimmed.slice(0, lastPlusIdx);
-            const parts = prefix.split("+").map((p) => p.trim().toLowerCase()).filter(Boolean);
-            const validMods = new SvelteSet(["cmd", "meta", "command", "super", "ctrl", "control", "alt", "option", "shift"]);
+            const parts = prefix
+                .split("+")
+                .map((p) => p.trim().toLowerCase())
+                .filter(Boolean);
+            const validMods = new SvelteSet([
+                "cmd",
+                "meta",
+                "command",
+                "super",
+                "ctrl",
+                "control",
+                "alt",
+                "option",
+                "shift",
+            ]);
             if (parts.length > 0 && parts.every((p) => validMods.has(p))) {
                 mainKeyIsPlus = true;
                 trimmed = prefix;
@@ -874,9 +913,8 @@ export function matchEventToComboStep(
 
     // On Mac, Cmd maps to metaKey and Ctrl maps to ctrlKey.
     // On Windows/Linux, Cmd maps to ctrlKey or metaKey when wantCmd is true.
-    const hasCmdMatch = isMac || (wantCmd && wantCtrl) || !wantCmd
-        ? event.metaKey
-        : event.ctrlKey || event.metaKey;
+    const hasCmdMatch =
+        isMac || (wantCmd && wantCtrl) || !wantCmd ? event.metaKey : event.ctrlKey || event.metaKey;
 
     if (wantCmd !== hasCmdMatch) return false;
 

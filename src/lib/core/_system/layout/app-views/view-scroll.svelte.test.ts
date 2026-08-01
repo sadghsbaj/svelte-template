@@ -57,9 +57,18 @@ describe("ViewScrollManager (Browser Client)", () => {
                 () => mockConfig
             );
 
-            expect(manager.getResolvedScrollConfig("home")).toEqual({ session: false, persist: true });
-            expect(manager.getResolvedScrollConfig("stats")).toEqual({ session: false, persist: false });
-            expect(manager.getResolvedScrollConfig("settings")).toEqual({ session: true, persist: true });
+            expect(manager.getResolvedScrollConfig("home")).toEqual({
+                session: false,
+                persist: true,
+            });
+            expect(manager.getResolvedScrollConfig("stats")).toEqual({
+                session: false,
+                persist: false,
+            });
+            expect(manager.getResolvedScrollConfig("settings")).toEqual({
+                session: true,
+                persist: true,
+            });
         });
 
         test("should disable persist if no persistKey is defined", () => {
@@ -71,7 +80,10 @@ describe("ViewScrollManager (Browser Client)", () => {
                 () => mockConfig
             );
 
-            expect(manager.getResolvedScrollConfig("home")).toEqual({ session: true, persist: false });
+            expect(manager.getResolvedScrollConfig("home")).toEqual({
+                session: true,
+                persist: false,
+            });
         });
     });
 

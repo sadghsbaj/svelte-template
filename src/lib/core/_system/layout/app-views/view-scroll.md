@@ -15,7 +15,7 @@ class ViewScrollManager<T extends string> {
     constructor(
         getConfig: (view: T) => ViewConfig<T> | undefined,
         getGlobalConfig: () => ViewsConfig<T>
-    )
+    );
 
     // Methods
     measureAndSave(el: HTMLElement | null, view: T): void;

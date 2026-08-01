@@ -60,7 +60,8 @@ export class MotionManager {
             : "system"
     );
     #resolved = $state<"no-preference" | "reduce">(
-        typeof document !== "undefined" && document.documentElement.classList.contains("ui-reduce-motion")
+        typeof document !== "undefined" &&
+            document.documentElement.classList.contains("ui-reduce-motion")
             ? "reduce"
             : "no-preference"
     );
@@ -148,7 +149,8 @@ export class MotionManager {
         if (typeof window === "undefined") return;
 
         const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-        const shouldBeReduced = this.#preference === "reduce" || (this.#preference === "system" && prefersReduced);
+        const shouldBeReduced =
+            this.#preference === "reduce" || (this.#preference === "system" && prefersReduced);
         const isCurrentlyReduced = this.#resolved === "reduce";
 
         // Skip DOM modifications if the visual state is already correct

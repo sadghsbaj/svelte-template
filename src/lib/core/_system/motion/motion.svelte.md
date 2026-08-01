@@ -11,11 +11,13 @@ A Svelte 5 Rune-based reactive motion preference manager coordinating user reduc
 ### Classes
 
 #### `MotionManager`
+
 Exposes reactive properties and methods to configure motion settings.
+
 ```typescript
 class MotionManager {
-    constructor()
-    
+    constructor();
+
     // Reactive Properties
     readonly preference: MotionPreference; // 'system' | 'no-preference' | 'reduce'
     readonly resolved: "no-preference" | "reduce";
@@ -30,7 +32,9 @@ class MotionManager {
 ### Constants
 
 #### `motionPreference`
+
 Default reactive singleton instance of `MotionManager`.
+
 ```typescript
 const motionPreference: MotionManager;
 ```

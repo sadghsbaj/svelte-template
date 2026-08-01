@@ -1,5 +1,6 @@
 import { cubicOut, quintOut } from "svelte/easing";
 import type { TransitionConfig } from "svelte/transition";
+
 import { withMotionGuard } from "$core/_system/motion";
 
 export interface ViewTransitionOptions {

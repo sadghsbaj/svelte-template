@@ -52,7 +52,9 @@ export async function timeout<T>(
     let timeoutId: ReturnType<typeof setTimeout> | undefined;
     const timeoutPromise = new Promise<never>((_, reject) => {
         timeoutId = setTimeout(() => {
-            reject(new DOMException(options?.message || "The operation timed out.", "TimeoutError"));
+            reject(
+                new DOMException(options?.message || "The operation timed out.", "TimeoutError")
+            );
         }, ms);
     });
 

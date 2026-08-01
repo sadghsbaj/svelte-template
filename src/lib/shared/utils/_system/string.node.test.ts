@@ -1,6 +1,15 @@
 import { describe, expect, test } from "vitest";
 
-import { camelCase, capitalize, kebabCase, pascalCase, slugify, snakeCase, stripHtml, template } from "./string";
+import {
+    camelCase,
+    capitalize,
+    kebabCase,
+    pascalCase,
+    slugify,
+    snakeCase,
+    stripHtml,
+    template,
+} from "./string";
 
 describe("String Utilities", () => {
     describe("capitalize", () => {
@@ -36,17 +45,21 @@ describe("String Utilities", () => {
         });
 
         test("should remove style blocks along with their contents", () => {
-            expect(stripHtml("Text <style>body { color: red; }</style> More Text")).toBe("Text  More Text");
+            expect(stripHtml("Text <style>body { color: red; }</style> More Text")).toBe(
+                "Text  More Text"
+            );
         });
 
         test("should remove noscript blocks along with their contents", () => {
-            expect(stripHtml("Active <noscript><p>Please enable JS</p></noscript> Page")).toBe("Active  Page");
+            expect(stripHtml("Active <noscript><p>Please enable JS</p></noscript> Page")).toBe(
+                "Active  Page"
+            );
         });
 
         test("should decode common HTML entities", () => {
-            expect(stripHtml("A &amp; B &lt; C &gt; D &quot; E &apos; F &#39; G &#x27; H &nbsp; I")).toBe(
-                "A & B < C > D \" E ' F ' G ' H   I"
-            );
+            expect(
+                stripHtml("A &amp; B &lt; C &gt; D &quot; E &apos; F &#39; G &#x27; H &nbsp; I")
+            ).toBe("A & B < C > D \" E ' F ' G ' H   I");
         });
 
         test("should handle empty or null-like strings safely", () => {
@@ -79,7 +92,10 @@ describe("String Utilities", () => {
                     },
                 },
             };
-            const result = template("{{user.profile.name}} lives in {{user.profile.address.city}}.", data);
+            const result = template(
+                "{{user.profile.name}} lives in {{user.profile.address.city}}.",
+                data
+            );
             expect(result).toBe("Colin lives in Berlin.");
         });
 
@@ -138,7 +154,13 @@ describe("String Utilities", () => {
                 pascal: "HelloWorld",
                 snake: "hello_world",
             },
-            { raw: "foo-bar-baz", camel: "fooBarBaz", kebab: "foo-bar-baz", pascal: "FooBarBaz", snake: "foo_bar_baz" },
+            {
+                raw: "foo-bar-baz",
+                camel: "fooBarBaz",
+                kebab: "foo-bar-baz",
+                pascal: "FooBarBaz",
+                snake: "foo_bar_baz",
+            },
             {
                 raw: "PascalCaseName",
                 camel: "pascalCaseName",

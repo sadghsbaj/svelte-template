@@ -35,7 +35,11 @@ describe("AppShortcutManager (Exhaustive Browser Client Test Suite)", () => {
             manager.register("Shift+s", () => (shiftKeyExecuted = true));
 
             // Pressing Cmd+S -> ONLY Cmd+S should fire
-            const eventCmdS = new KeyboardEvent("keydown", { key: "s", metaKey: true, bubbles: true });
+            const eventCmdS = new KeyboardEvent("keydown", {
+                key: "s",
+                metaKey: true,
+                bubbles: true,
+            });
             manager.handleKeyDown(eventCmdS);
             expect(cmdKeyExecuted).toBe(true);
             expect(singleKeyExecuted).toBe(false);
@@ -46,7 +50,11 @@ describe("AppShortcutManager (Exhaustive Browser Client Test Suite)", () => {
             cmdKeyExecuted = false;
 
             // Pressing Shift+S -> ONLY Shift+S should fire
-            const eventShiftS = new KeyboardEvent("keydown", { key: "s", shiftKey: true, bubbles: true });
+            const eventShiftS = new KeyboardEvent("keydown", {
+                key: "s",
+                shiftKey: true,
+                bubbles: true,
+            });
             manager.handleKeyDown(eventShiftS);
             expect(shiftKeyExecuted).toBe(true);
             expect(singleKeyExecuted).toBe(false);
@@ -122,7 +130,9 @@ describe("AppShortcutManager (Exhaustive Browser Client Test Suite)", () => {
             manager.handleKeyDown(new KeyboardEvent("keydown", { key: "Tab", bubbles: true }));
             expect(tabSpy).toHaveBeenCalledTimes(1);
 
-            manager.handleKeyDown(new KeyboardEvent("keydown", { key: "Backspace", bubbles: true }));
+            manager.handleKeyDown(
+                new KeyboardEvent("keydown", { key: "Backspace", bubbles: true })
+            );
             expect(backspaceSpy).toHaveBeenCalledTimes(1);
 
             manager.handleKeyDown(new KeyboardEvent("keydown", { key: "Delete", bubbles: true }));
@@ -137,7 +147,11 @@ describe("AppShortcutManager (Exhaustive Browser Client Test Suite)", () => {
             manager.register("+", () => (standalonePlusExecuted = true));
 
             // Press Cmd + '+'
-            const eventZoom = new KeyboardEvent("keydown", { key: "+", metaKey: true, bubbles: true });
+            const eventZoom = new KeyboardEvent("keydown", {
+                key: "+",
+                metaKey: true,
+                bubbles: true,
+            });
             manager.handleKeyDown(eventZoom);
             expect(zoomInExecuted).toBe(true);
             expect(standalonePlusExecuted).toBe(false);
@@ -160,24 +174,43 @@ describe("AppShortcutManager (Exhaustive Browser Client Test Suite)", () => {
             manager.register("j", () => scrollNavCount++, { repeat: true });
 
             // Initial keydown (repeat: false)
-            const eventInitialEnter = new KeyboardEvent("keydown", { key: "Enter", metaKey: true, repeat: false, bubbles: true });
+            const eventInitialEnter = new KeyboardEvent("keydown", {
+                key: "Enter",
+                metaKey: true,
+                repeat: false,
+                bubbles: true,
+            });
             manager.handleKeyDown(eventInitialEnter);
             expect(singleSubmitCount).toBe(1);
 
             // Repeated keydown (repeat: true from OS holding key down) -> MUST BE SUPPRESSED FOR ACTION BUT STILL PREVENT DEFAULT!
-            const eventRepeatEnter = new KeyboardEvent("keydown", { key: "Enter", metaKey: true, repeat: true, cancelable: true, bubbles: true });
+            const eventRepeatEnter = new KeyboardEvent("keydown", {
+                key: "Enter",
+                metaKey: true,
+                repeat: true,
+                cancelable: true,
+                bubbles: true,
+            });
             const handledRepeat = manager.handleKeyDown(eventRepeatEnter);
             expect(singleSubmitCount).toBe(1); // Action still 1!
             expect(handledRepeat).toBe(true); // Handled by shortcut!
             expect(eventRepeatEnter.defaultPrevented).toBe(true); // Browser default still blocked!
 
             // Initial keydown for 'j' (repeat: true)
-            const eventInitialJ = new KeyboardEvent("keydown", { key: "j", repeat: false, bubbles: true });
+            const eventInitialJ = new KeyboardEvent("keydown", {
+                key: "j",
+                repeat: false,
+                bubbles: true,
+            });
             manager.handleKeyDown(eventInitialJ);
             expect(scrollNavCount).toBe(1);
 
             // Repeated keydown for 'j' (repeat: true) -> MUST FIRE AGAIN!
-            const eventRepeatJ = new KeyboardEvent("keydown", { key: "j", repeat: true, bubbles: true });
+            const eventRepeatJ = new KeyboardEvent("keydown", {
+                key: "j",
+                repeat: true,
+                bubbles: true,
+            });
             manager.handleKeyDown(eventRepeatJ);
             expect(scrollNavCount).toBe(2);
         });
@@ -215,10 +248,24 @@ describe("AppShortcutManager (Exhaustive Browser Client Test Suite)", () => {
             manager.register("Cmd+Esc", () => (escExecuted = true), { useCode: true });
             manager.register("Cmd+Enter", () => (enterExecuted = true), { useCode: true });
 
-            manager.handleKeyDown(new KeyboardEvent("keydown", { key: "Escape", code: "Escape", metaKey: true, bubbles: true }));
+            manager.handleKeyDown(
+                new KeyboardEvent("keydown", {
+                    key: "Escape",
+                    code: "Escape",
+                    metaKey: true,
+                    bubbles: true,
+                })
+            );
             expect(escExecuted).toBe(true);
 
-            manager.handleKeyDown(new KeyboardEvent("keydown", { key: "Enter", code: "Enter", metaKey: true, bubbles: true }));
+            manager.handleKeyDown(
+                new KeyboardEvent("keydown", {
+                    key: "Enter",
+                    code: "Enter",
+                    metaKey: true,
+                    bubbles: true,
+                })
+            );
             expect(enterExecuted).toBe(true);
 
             // Symbol keys (Minus / Comma / Period) in useCode: true mode
@@ -230,13 +277,34 @@ describe("AppShortcutManager (Exhaustive Browser Client Test Suite)", () => {
             manager.register("Cmd+,", () => (prefsExecuted = true), { useCode: true });
             manager.register("Cmd+.", () => (periodExecuted = true), { useCode: true });
 
-            manager.handleKeyDown(new KeyboardEvent("keydown", { key: "-", code: "Minus", metaKey: true, bubbles: true }));
+            manager.handleKeyDown(
+                new KeyboardEvent("keydown", {
+                    key: "-",
+                    code: "Minus",
+                    metaKey: true,
+                    bubbles: true,
+                })
+            );
             expect(zoomOutExecuted).toBe(true);
 
-            manager.handleKeyDown(new KeyboardEvent("keydown", { key: ",", code: "Comma", metaKey: true, bubbles: true }));
+            manager.handleKeyDown(
+                new KeyboardEvent("keydown", {
+                    key: ",",
+                    code: "Comma",
+                    metaKey: true,
+                    bubbles: true,
+                })
+            );
             expect(prefsExecuted).toBe(true);
 
-            manager.handleKeyDown(new KeyboardEvent("keydown", { key: ".", code: "Period", metaKey: true, bubbles: true }));
+            manager.handleKeyDown(
+                new KeyboardEvent("keydown", {
+                    key: ".",
+                    code: "Period",
+                    metaKey: true,
+                    bubbles: true,
+                })
+            );
             expect(periodExecuted).toBe(true);
         });
     });
@@ -317,17 +385,25 @@ describe("AppShortcutManager (Exhaustive Browser Client Test Suite)", () => {
             manager.setScope("home:editor:form");
 
             // All ancestor scopes ('home', 'home:editor', 'home:editor:form') match!
-            manager.handleKeyDown(new KeyboardEvent("keydown", { key: "1", metaKey: true, bubbles: true }));
+            manager.handleKeyDown(
+                new KeyboardEvent("keydown", { key: "1", metaKey: true, bubbles: true })
+            );
             expect(homeExecuted).toBe(true);
 
-            manager.handleKeyDown(new KeyboardEvent("keydown", { key: "2", metaKey: true, bubbles: true }));
+            manager.handleKeyDown(
+                new KeyboardEvent("keydown", { key: "2", metaKey: true, bubbles: true })
+            );
             expect(editorExecuted).toBe(true);
 
-            manager.handleKeyDown(new KeyboardEvent("keydown", { key: "3", metaKey: true, bubbles: true }));
+            manager.handleKeyDown(
+                new KeyboardEvent("keydown", { key: "3", metaKey: true, bubbles: true })
+            );
             expect(formExecuted).toBe(true);
 
             // Unrelated scope 'settings' does NOT match!
-            manager.handleKeyDown(new KeyboardEvent("keydown", { key: "4", metaKey: true, bubbles: true }));
+            manager.handleKeyDown(
+                new KeyboardEvent("keydown", { key: "4", metaKey: true, bubbles: true })
+            );
             expect(settingsExecuted).toBe(false);
         });
 
@@ -361,24 +437,36 @@ describe("AppShortcutManager (Exhaustive Browser Client Test Suite)", () => {
             expect(manager.scopeStack).toEqual(["home", "modal", "form"]);
 
             // Test execution when deep in stack ["home", "modal", "form"]:
-            manager.handleKeyDown(new KeyboardEvent("keydown", { key: "g", metaKey: true, bubbles: true }));
+            manager.handleKeyDown(
+                new KeyboardEvent("keydown", { key: "g", metaKey: true, bubbles: true })
+            );
             expect(globalExecuted).toBe(true);
 
-            manager.handleKeyDown(new KeyboardEvent("keydown", { key: "h", metaKey: true, bubbles: true }));
+            manager.handleKeyDown(
+                new KeyboardEvent("keydown", { key: "h", metaKey: true, bubbles: true })
+            );
             expect(homeExecuted).toBe(true);
 
-            manager.handleKeyDown(new KeyboardEvent("keydown", { key: "m", metaKey: true, bubbles: true }));
+            manager.handleKeyDown(
+                new KeyboardEvent("keydown", { key: "m", metaKey: true, bubbles: true })
+            );
             expect(modalExecuted).toBe(true);
 
             // THIS WAS BROKEN BEFORE! Now 'form' registered shortcut fires cleanly!
-            manager.handleKeyDown(new KeyboardEvent("keydown", { key: "f", metaKey: true, bubbles: true }));
+            manager.handleKeyDown(
+                new KeyboardEvent("keydown", { key: "f", metaKey: true, bubbles: true })
+            );
             expect(formExecuted).toBe(true);
 
-            manager.handleKeyDown(new KeyboardEvent("keydown", { key: "x", metaKey: true, bubbles: true }));
+            manager.handleKeyDown(
+                new KeyboardEvent("keydown", { key: "x", metaKey: true, bubbles: true })
+            );
             expect(modalFormExecuted).toBe(true);
 
             // Unrelated scope 'settings' must NOT fire
-            manager.handleKeyDown(new KeyboardEvent("keydown", { key: "s", metaKey: true, bubbles: true }));
+            manager.handleKeyDown(
+                new KeyboardEvent("keydown", { key: "s", metaKey: true, bubbles: true })
+            );
             expect(settingsExecuted).toBe(false);
 
             // Pop 'form' via cleanup function
@@ -388,7 +476,9 @@ describe("AppShortcutManager (Exhaustive Browser Client Test Suite)", () => {
 
             // Reset flags and verify 'form' scope is no longer active
             formExecuted = false;
-            manager.handleKeyDown(new KeyboardEvent("keydown", { key: "f", metaKey: true, bubbles: true }));
+            manager.handleKeyDown(
+                new KeyboardEvent("keydown", { key: "f", metaKey: true, bubbles: true })
+            );
             expect(formExecuted).toBe(false);
 
             // Pop 'modal' via cleanup function
@@ -466,7 +556,12 @@ describe("AppShortcutManager (Exhaustive Browser Client Test Suite)", () => {
 
             // Press Shift + Cmd
             manager.handleKeyDown(
-                new KeyboardEvent("keydown", { key: "Shift", shiftKey: true, metaKey: true, bubbles: true })
+                new KeyboardEvent("keydown", {
+                    key: "Shift",
+                    shiftKey: true,
+                    metaKey: true,
+                    bubbles: true,
+                })
             );
 
             expect(manager.modifiers.shift).toBe(true);
@@ -474,7 +569,12 @@ describe("AppShortcutManager (Exhaustive Browser Client Test Suite)", () => {
 
             // Release Shift
             manager.handleKeyUp(
-                new KeyboardEvent("keyup", { key: "Shift", shiftKey: false, metaKey: true, bubbles: true })
+                new KeyboardEvent("keyup", {
+                    key: "Shift",
+                    shiftKey: false,
+                    metaKey: true,
+                    bubbles: true,
+                })
             );
 
             expect(manager.modifiers.shift).toBe(false);
@@ -538,12 +638,20 @@ describe("AppShortcutManager (Exhaustive Browser Client Test Suite)", () => {
             manager.register("Cmd+s", () => (releaseExecuted = true), { triggerOn: "release" });
 
             // Step 1: User presses Cmd+S -> primes release shortcut
-            const keyDown = new KeyboardEvent("keydown", { key: "s", metaKey: true, bubbles: true });
+            const keyDown = new KeyboardEvent("keydown", {
+                key: "s",
+                metaKey: true,
+                bubbles: true,
+            });
             manager.handleKeyDown(keyDown);
             expect(releaseExecuted).toBe(false);
 
             // Step 2: User releases Cmd key first (metaKey becomes false)
-            const keyUpCmd = new KeyboardEvent("keyup", { key: "Meta", metaKey: false, bubbles: true });
+            const keyUpCmd = new KeyboardEvent("keyup", {
+                key: "Meta",
+                metaKey: false,
+                bubbles: true,
+            });
             manager.handleKeyUp(keyUpCmd);
             expect(releaseExecuted).toBe(false);
 
@@ -601,10 +709,14 @@ describe("AppShortcutManager (Exhaustive Browser Client Test Suite)", () => {
             document.body.append(input);
             input.focus();
 
-            manager.handleKeyDown(new KeyboardEvent("keydown", { key: "k", metaKey: true, bubbles: true }));
+            manager.handleKeyDown(
+                new KeyboardEvent("keydown", { key: "k", metaKey: true, bubbles: true })
+            );
             expect(blockedExecuted).toBe(false);
 
-            manager.handleKeyDown(new KeyboardEvent("keydown", { key: "Enter", metaKey: true, bubbles: true }));
+            manager.handleKeyDown(
+                new KeyboardEvent("keydown", { key: "Enter", metaKey: true, bubbles: true })
+            );
             expect(allowedExecuted).toBe(true);
 
             input.remove();
@@ -619,10 +731,14 @@ describe("AppShortcutManager (Exhaustive Browser Client Test Suite)", () => {
             document.body.append(editableDiv);
             editableDiv.focus();
 
-            manager.handleKeyDown(new KeyboardEvent("keydown", { key: "k", metaKey: true, bubbles: true }));
+            manager.handleKeyDown(
+                new KeyboardEvent("keydown", { key: "k", metaKey: true, bubbles: true })
+            );
             expect(blockedExecuted).toBe(false);
 
-            manager.handleKeyDown(new KeyboardEvent("keydown", { key: "Enter", metaKey: true, bubbles: true }));
+            manager.handleKeyDown(
+                new KeyboardEvent("keydown", { key: "Enter", metaKey: true, bubbles: true })
+            );
             expect(allowedExecuted).toBe(true);
 
             editableDiv.remove();
@@ -638,10 +754,14 @@ describe("AppShortcutManager (Exhaustive Browser Client Test Suite)", () => {
             document.body.append(ariaEditor);
             ariaEditor.focus();
 
-            manager.handleKeyDown(new KeyboardEvent("keydown", { key: "k", metaKey: true, bubbles: true }));
+            manager.handleKeyDown(
+                new KeyboardEvent("keydown", { key: "k", metaKey: true, bubbles: true })
+            );
             expect(blockedExecuted).toBe(false);
 
-            manager.handleKeyDown(new KeyboardEvent("keydown", { key: "Enter", metaKey: true, bubbles: true }));
+            manager.handleKeyDown(
+                new KeyboardEvent("keydown", { key: "Enter", metaKey: true, bubbles: true })
+            );
             expect(allowedExecuted).toBe(true);
 
             ariaEditor.remove();
@@ -683,7 +803,9 @@ describe("AppShortcutManager (Exhaustive Browser Client Test Suite)", () => {
 
             expect(manager.size).toBe(2);
 
-            manager.handleKeyDown(new KeyboardEvent("keydown", { key: "s", metaKey: true, bubbles: true }));
+            manager.handleKeyDown(
+                new KeyboardEvent("keydown", { key: "s", metaKey: true, bubbles: true })
+            );
             expect(firstExecuted).toBe(true);
 
             manager.handleKeyDown(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
@@ -695,7 +817,12 @@ describe("AppShortcutManager (Exhaustive Browser Client Test Suite)", () => {
 
         test("should respect attachOn: 'focus' trigger on focus and blur", () => {
             let actionExecuted = false;
-            const attachFn = shortcutAttach("Cmd+Enter", () => (actionExecuted = true), { attachOn: "focus" }, manager);
+            const attachFn = shortcutAttach(
+                "Cmd+Enter",
+                () => (actionExecuted = true),
+                { attachOn: "focus" },
+                manager
+            );
 
             const input = document.createElement("input");
             document.body.append(input);
@@ -707,7 +834,9 @@ describe("AppShortcutManager (Exhaustive Browser Client Test Suite)", () => {
             input.dispatchEvent(new Event("focus"));
             expect(manager.size).toBe(1); // Registered on focus
 
-            manager.handleKeyDown(new KeyboardEvent("keydown", { key: "Enter", metaKey: true, bubbles: true }));
+            manager.handleKeyDown(
+                new KeyboardEvent("keydown", { key: "Enter", metaKey: true, bubbles: true })
+            );
             expect(actionExecuted).toBe(true);
 
             // Blur input
@@ -720,7 +849,12 @@ describe("AppShortcutManager (Exhaustive Browser Client Test Suite)", () => {
 
         test("should respect attachOn: 'hover' trigger on pointerenter and pointerleave", () => {
             let actionExecuted = false;
-            const attachFn = shortcutAttach("d", () => (actionExecuted = true), { attachOn: "hover" }, manager);
+            const attachFn = shortcutAttach(
+                "d",
+                () => (actionExecuted = true),
+                { attachOn: "hover" },
+                manager
+            );
 
             const card = document.createElement("div");
             document.body.append(card);

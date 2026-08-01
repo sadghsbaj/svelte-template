@@ -1,5 +1,6 @@
 <script lang="ts">
     import { Eye, Laptop, Moon, Palette, RefreshCw, Sparkles, Sun } from "@lucide/svelte";
+
     import { theme, type ThemeMode } from "$core/_system/theme";
 
     function selectMode(newMode: ThemeMode) {
@@ -24,7 +25,8 @@
                     <span class="badge-svelte">Svelte 5</span>
                 </div>
                 <p class="header-desc">
-                    Reactive theme preference coordinator supporting Light, Dark, System OS preference & View Transitions.
+                    Reactive theme preference coordinator supporting Light, Dark, System OS
+                    preference & View Transitions.
                 </p>
             </div>
         </div>
@@ -54,7 +56,8 @@
                     <span class="card-badge">theme.set()</span>
                 </div>
                 <p class="card-intro">
-                    Switch between explicit <code>light</code>, <code>dark</code>, or automatic <code>system</code> theme mode.
+                    Switch between explicit <code>light</code>, <code>dark</code>, or automatic
+                    <code>system</code> theme mode.
                 </p>
 
                 <div class="modes-grid">
@@ -119,13 +122,17 @@
                 <div class="preview-components-row">
                     <div class="component-box">
                         <span class="comp-label">Surface Box</span>
-                        <p class="comp-text">Sample surface container reacting to <code>.dark</code> document class.</p>
+                        <p class="comp-text">
+                            Sample surface container reacting to <code>.dark</code> document class.
+                        </p>
                         <button class="flat-btn btn-subtle">Button Sample</button>
                     </div>
 
                     <div class="component-box accent-box">
                         <span class="comp-label">Accent Highlight</span>
-                        <p class="comp-text">Accent token <code>var(--color-accent-500)</code> highlight region.</p>
+                        <p class="comp-text">
+                            Accent token <code>var(--color-accent-500)</code> highlight region.
+                        </p>
                         <div class="sample-tag"><Sparkles size={12} /> Active Token</div>
                     </div>
                 </div>
@@ -151,7 +158,8 @@
                     </div>
                     <div class="status-row">
                         <span class="row-label">HTML Class</span>
-                        <code class="row-val">{theme.resolved === "dark" ? ".dark" : "(none)"}</code>
+                        <code class="row-val">{theme.resolved === "dark" ? ".dark" : "(none)"}</code
+                        >
                     </div>
                 </div>
             </div>
@@ -171,37 +179,43 @@
         --text-muted: var(--color-text-weak);
         --accent: var(--color-accent-500);
         --accent-tint: oklch(from var(--color-accent-500) l c h / 0.12);
+        box-sizing: border-box;
+        min-height: 100vh;
+        padding: 32px;
+        color: var(--text-main);
+        font-family:
+            system-ui,
+            -apple-system,
+            BlinkMacSystemFont,
+            "Segoe UI",
+            Roboto,
+            sans-serif;
 
         background: var(--bg-page);
-        color: var(--text-main);
-        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        padding: 32px;
-        min-height: 100vh;
-        box-sizing: border-box;
     }
 
     .demo-header {
         display: flex;
-        justify-content: space-between;
         align-items: center;
+        justify-content: space-between;
         margin-bottom: 32px;
     }
 
     .header-left {
         display: flex;
-        align-items: center;
         gap: 16px;
+        align-items: center;
     }
 
     .header-icon-box {
-        width: 44px;
-        height: 44px;
-        border-radius: 12px;
-        background: var(--accent-tint);
-        color: var(--accent);
         display: flex;
         align-items: center;
         justify-content: center;
+        width: 44px;
+        height: 44px;
+        color: var(--accent);
+        background: var(--accent-tint);
+        border-radius: 12px;
     }
 
     .header-text {
@@ -212,45 +226,45 @@
 
     .header-title-row {
         display: flex;
-        align-items: center;
         gap: 10px;
+        align-items: center;
     }
 
     .header-title-row h1 {
+        margin: 0;
         font-size: 22px;
         font-weight: 700;
-        margin: 0;
         letter-spacing: -0.02em;
     }
 
     .badge-svelte {
+        padding: 2px 8px;
+        color: var(--text-sub);
         font-size: 11px;
         font-weight: 600;
         background: var(--bg-subtle);
-        color: var(--text-sub);
-        padding: 2px 8px;
         border-radius: 6px;
     }
 
     .header-desc {
         margin: 0;
-        font-size: 13px;
         color: var(--text-sub);
+        font-size: 13px;
     }
 
     .status-chips-bar {
         display: flex;
-        align-items: center;
         gap: 10px;
+        align-items: center;
     }
 
     .chip {
         display: flex;
         flex-direction: column;
+        min-width: 110px;
         padding: 8px 14px;
         background: var(--bg-surface);
         border-radius: 10px;
-        min-width: 110px;
     }
 
     .chip-accent {
@@ -263,17 +277,17 @@
     }
 
     .chip-label {
+        color: var(--text-muted);
         font-size: 10px;
         font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 0.05em;
-        color: var(--text-muted);
     }
 
     .chip-val {
+        color: var(--text-main);
         font-size: 13px;
         font-weight: 600;
-        color: var(--text-main);
     }
 
     .grid-layout {
@@ -282,50 +296,51 @@
         gap: 28px;
     }
 
-    .column-main, .column-sidebar {
+    .column-main,
+    .column-sidebar {
         display: flex;
         flex-direction: column;
         gap: 24px;
     }
 
     .flat-card {
+        padding: 24px;
         background: var(--bg-surface);
         border-radius: 16px;
-        padding: 24px;
     }
 
     .card-head {
         display: flex;
-        justify-content: space-between;
         align-items: center;
+        justify-content: space-between;
         margin-bottom: 6px;
     }
 
     .card-title {
         display: flex;
-        align-items: center;
         gap: 10px;
+        align-items: center;
     }
 
     .card-title h2 {
+        margin: 0;
         font-size: 16px;
         font-weight: 600;
-        margin: 0;
     }
 
     .card-badge {
+        padding: 4px 10px;
+        color: var(--text-sub);
         font-family: monospace;
         font-size: 11px;
         background: var(--bg-subtle);
-        color: var(--text-sub);
-        padding: 4px 10px;
         border-radius: 20px;
     }
 
     .card-intro {
-        font-size: 13px;
-        color: var(--text-sub);
         margin: 0 0 18px 0;
+        color: var(--text-sub);
+        font-size: 13px;
     }
 
     .modes-grid {
@@ -338,14 +353,14 @@
     .mode-card {
         all: unset;
         display: flex;
-        align-items: center;
         gap: 14px;
+        align-items: center;
+        box-sizing: border-box;
         padding: 16px;
         background: var(--bg-subtle);
         border-radius: 12px;
-        cursor: pointer;
         transition: all 0.15s ease;
-        box-sizing: border-box;
+        cursor: pointer;
     }
 
     .mode-card:hover {
@@ -358,9 +373,9 @@
     }
 
     .mode-icon {
-        color: var(--accent);
         display: flex;
         align-items: center;
+        color: var(--accent);
     }
 
     .mode-info {
@@ -375,8 +390,8 @@
     }
 
     .mode-info span {
-        font-size: 11px;
         color: var(--text-muted);
+        font-size: 11px;
     }
 
     .toggle-row {
@@ -386,20 +401,20 @@
 
     .flat-btn {
         display: inline-flex;
-        align-items: center;
         gap: 8px;
+        align-items: center;
+        padding: 9px 18px;
         font-size: 13px;
         font-weight: 600;
-        padding: 9px 18px;
-        border-radius: 10px;
         border: none;
-        cursor: pointer;
+        border-radius: 10px;
         transition: opacity 0.15s ease;
+        cursor: pointer;
     }
 
     .btn-accent {
-        background: var(--accent);
         color: #ffffff;
+        background: var(--accent);
     }
 
     .btn-accent:hover {
@@ -407,8 +422,8 @@
     }
 
     .btn-subtle {
-        background: var(--bg-subtle);
         color: var(--text-main);
+        background: var(--bg-subtle);
     }
 
     .preview-components-row {
@@ -418,12 +433,12 @@
     }
 
     .component-box {
-        background: var(--bg-subtle);
-        border-radius: 12px;
-        padding: 18px;
         display: flex;
         flex-direction: column;
         gap: 10px;
+        padding: 18px;
+        background: var(--bg-subtle);
+        border-radius: 12px;
     }
 
     .accent-box {
@@ -431,23 +446,23 @@
     }
 
     .comp-label {
+        color: var(--text-sub);
         font-size: 12px;
         font-weight: 600;
-        color: var(--text-sub);
     }
 
     .comp-text {
-        font-size: 13px;
         margin: 0;
+        font-size: 13px;
     }
 
     .sample-tag {
         display: inline-flex;
-        align-items: center;
         gap: 6px;
+        align-items: center;
+        color: var(--accent);
         font-size: 11px;
         font-weight: 600;
-        color: var(--accent);
     }
 
     .side-card {
@@ -456,15 +471,15 @@
 
     .side-head {
         display: flex;
-        align-items: center;
         gap: 8px;
+        align-items: center;
         margin-bottom: 16px;
     }
 
     .side-head h3 {
+        margin: 0;
         font-size: 14px;
         font-weight: 600;
-        margin: 0;
     }
 
     .status-stack {
@@ -475,8 +490,8 @@
 
     .status-row {
         display: flex;
-        justify-content: space-between;
         align-items: center;
+        justify-content: space-between;
         font-size: 12px;
     }
 

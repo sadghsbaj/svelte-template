@@ -8,6 +8,7 @@ For standard components, use the **Categorical Pipeline Order**. This top-down d
 <script lang="ts">
     // 1. IMPORTS (Third-party -> Core/Shared -> Relative)
     import { onMount } from "svelte";
+
     import { viewStateContext } from "./view.context";
 
     // 2. TYPES & INTERFACES (Props & Component types)
@@ -48,7 +49,7 @@ For standard components, use the **Categorical Pipeline Order**. This top-down d
 
 ## 2. Large & Complex Components (Feature-Block Co-location)
 
-When a component contains multiple distinct sub-features (e.g. *Search*, *Pagination*, *Selection*), do **not** force strict global categorization if it impairs readability.
+When a component contains multiple distinct sub-features (e.g. _Search_, _Pagination_, _Selection_), do **not** force strict global categorization if it impairs readability.
 
 Instead, group the script into **Co-located Feature Blocks** where state, derived values, and handlers for each sub-feature stay together:
 
@@ -56,17 +57,22 @@ Instead, group the script into **Co-located Feature Blocks** where state, derive
 <script lang="ts">
     // Global Inputs
     import { viewStateContext } from "./view.context";
+
     let { items }: Props = $props();
 
     // FEATURE 1: SEARCH & FILTER (Co-located)
     let searchQuery = $state("");
-    const filteredItems = $derived(items.filter(i => i.includes(searchQuery)));
-    function resetSearch() { searchQuery = ""; }
+    const filteredItems = $derived(items.filter((i) => i.includes(searchQuery)));
+    function resetSearch() {
+        searchQuery = "";
+    }
 
     // FEATURE 2: PAGINATION (Co-located)
     let currentPage = $state(1);
     const totalPages = $derived(Math.ceil(filteredItems.length / 10));
-    function nextPage() { currentPage++; }
+    function nextPage() {
+        currentPage++;
+    }
 </script>
 ```
 

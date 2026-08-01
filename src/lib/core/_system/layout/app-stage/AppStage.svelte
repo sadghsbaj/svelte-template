@@ -1,6 +1,7 @@
 <script lang="ts" generics="T extends keyof SvelteHTMLElements = 'div'">
     import type { Snippet } from "svelte";
     import type { SvelteHTMLElements } from "svelte/elements";
+
     import { appInertState } from "$core/_system/layout/app-layer/layer.svelte";
 
     type Props = SvelteHTMLElements[T] & {

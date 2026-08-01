@@ -43,9 +43,13 @@ Trigger actions only after holding a shortcut for a specified duration in millis
 
 ```ts
 // Requires holding Delete for 1000ms to purge data
-appShortcut.registerShortcut("Delete", () => {
-    console.log("Permanent delete confirmed!");
-}, { hold: 1000 });
+appShortcut.registerShortcut(
+    "Delete",
+    () => {
+        console.log("Permanent delete confirmed!");
+    },
+    { hold: 1000 }
+);
 ```
 
 ---
@@ -94,14 +98,22 @@ Filter active shortcuts based on the active modal keybind mode.
 appShortcut.activeMode = "normal";
 
 // Active only in 'normal' mode
-appShortcut.registerShortcut("i", () => {
-    appShortcut.activeMode = "insert";
-}, { activeMode: "normal" });
+appShortcut.registerShortcut(
+    "i",
+    () => {
+        appShortcut.activeMode = "insert";
+    },
+    { activeMode: "normal" }
+);
 
 // Active in multiple modes
-appShortcut.registerShortcut("Escape", () => {
-    appShortcut.activeMode = "normal";
-}, { activeMode: ["insert", "visual"] });
+appShortcut.registerShortcut(
+    "Escape",
+    () => {
+        appShortcut.activeMode = "normal";
+    },
+    { activeMode: ["insert", "visual"] }
+);
 ```
 
 ---
@@ -116,22 +128,25 @@ Attach keyboard shortcuts directly to HTML elements with automatic lifecycle cle
 </script>
 
 <!-- Trigger on mount -->
-<button {@attach shortcutAttach("Cmd+Enter", handleSubmit)}>
-    Submit
-</button>
+<button {@attach shortcutAttach("Cmd+Enter", handleSubmit)}> Submit </button>
 
 <!-- Trigger only when focused -->
-<input 
-    type="text" 
-    placeholder="Search..." 
-    {@attach shortcutAttach("Escape", clearSearch, { attachOn: "focus" })} 
+<input
+    type="text"
+    placeholder="Search..."
+    {@attach shortcutAttach("Escape", clearSearch, { attachOn: "focus" })}
 />
 
 <!-- Array of multiple shortcuts -->
-<div {@attach shortcutAttach([
-    { combination: "j", handler: nextItem },
-    { combination: "k", handler: prevItem }
-], { attachOn: "hover" })}>
+<div
+    {@attach shortcutAttach(
+        [
+            { combination: "j", handler: nextItem },
+            { combination: "k", handler: prevItem },
+        ],
+        { attachOn: "hover" }
+    )}
+>
     Interactive Panel
 </div>
 ```

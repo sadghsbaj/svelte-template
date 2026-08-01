@@ -7,7 +7,8 @@ A lightweight, zero-dependency utility function to conditionally join CSS class 
 ### Types
 
 ```typescript
-type ClassValue = string | number | bigint | boolean | undefined | null | Record<string, unknown> | ClassValue[];
+type ClassValue =
+    string | number | bigint | boolean | undefined | null | Record<string, unknown> | ClassValue[];
 ```
 
 ### Functions

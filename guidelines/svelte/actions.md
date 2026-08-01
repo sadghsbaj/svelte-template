@@ -1,6 +1,7 @@
 # Deprecation Policy for Legacy Actions (`use:action`)
 
 ## Internal Deprecation Policy
+
 While Svelte 5 maintains backward compatibility for `use:action` directives, **our codebase treats `use:action` as fully deprecated and strictly forbidden**.
 
 > [!WARNING]
@@ -9,6 +10,7 @@ While Svelte 5 maintains backward compatibility for `use:action` directives, **o
 ---
 
 ## Enforced Restrictions
+
 1. **Template Directives**: Writing `<div use:action>` triggers ESLint error `SvelteDirective[kind='Action']`.
 2. **Type Imports**: Importing `Action` or `ActionReturn` from `'svelte/action'` is blocked by ESLint (`no-restricted-imports`).
 
@@ -17,6 +19,7 @@ While Svelte 5 maintains backward compatibility for `use:action` directives, **o
 ## Migration Guide
 
 ### Legacy Action (`use:action`) - ❌ Forbidden
+
 ```ts
 // Legacy Action definition
 function legacyTooltip(node: HTMLElement, text: string) {
@@ -24,16 +27,18 @@ function legacyTooltip(node: HTMLElement, text: string) {
     return {
         destroy() {
             node.removeAttribute("title");
-        }
+        },
     };
 }
 ```
+
 ```svelte
 <!-- Legacy usage -->
 <button use:legacyTooltip={"Click me"}>Button</button>
 ```
 
 ### Modern Attachment (`{@attach ...}`) - ✅ Required
+
 ```ts
 import type { Attachment } from "svelte/attachments";
 
@@ -47,6 +52,7 @@ function tooltip(text: string): Attachment {
     };
 }
 ```
+
 ```svelte
 <!-- Modern usage -->
 <button {@attach tooltip("Click me")}>Button</button>

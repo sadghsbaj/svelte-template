@@ -20,10 +20,7 @@ export function getBrowserEngine(): BrowserEngine {
     const win = window as unknown as Record<string, unknown>;
 
     // Gecko (Firefox)
-    if (
-        win.InstallTrigger !== undefined ||
-        "MozAppearance" in document.documentElement.style
-    ) {
+    if (win.InstallTrigger !== undefined || "MozAppearance" in document.documentElement.style) {
         return "gecko";
     }
 

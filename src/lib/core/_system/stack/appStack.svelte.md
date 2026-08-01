@@ -12,7 +12,7 @@ Exposes reactive properties and methods to register, pop, configure, and manage 
 
 ```typescript
 class AppStackManager {
-    constructor()
+    constructor();
 
     // Reactive Properties
     readonly entries: StackEntry[];
@@ -82,4 +82,3 @@ function stackAttach(
 - **Svelte 5 Attachments (`stackAttach`):** Overlays and modals can use `{@attach stackAttach(closeFn)}` directly on HTML elements. The attachment callback registers the action upon mounting into the DOM and cleans up automatically via `unregister()` upon unmounting or conditional removal. Action updates update the closure dynamically to prevent stale state retention.
 - **Browser Event Interception (`popstate`):** In browser environments (`typeof window !== "undefined"`), `AppStackManager` listens to global `popstate` events via a bound listener. Browser back actions trigger stack popping without non-functional `preventDefault()` calls, and root pop exit handlers are guarded against double history navigation. Listeners can be detached via `unbindGlobalEvents()` or `destroy()`.
 - **Isomorphic Safety (SSR):** Window listeners and browser history pop operations automatically no-op on the server during SSR rendering.
-

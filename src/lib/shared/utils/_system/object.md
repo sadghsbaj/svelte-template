@@ -35,7 +35,10 @@ function omit<T extends object, K extends keyof T>(obj: T, keys: K[]): Omit<T, K
 Deeply merges two objects. Arrays are cloned, nested plain objects are merged recursively. Does not mutate inputs.
 
 ```typescript
-function deepMerge<T extends Record<string, unknown>, S extends Record<string, unknown>>(target: T, source: S): T & S;
+function deepMerge<T extends Record<string, unknown>, S extends Record<string, unknown>>(
+    target: T,
+    source: S
+): T & S;
 ```
 
 #### `isEqual`

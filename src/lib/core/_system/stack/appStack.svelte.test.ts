@@ -18,8 +18,14 @@ describe("AppStackManager (Browser Client)", () => {
             let overlayExecuted = false;
             let subviewExecuted = false;
 
-            manager.register(() => (subviewExecuted = true), { priority: "subview", scope: "home" });
-            manager.register(() => (overlayExecuted = true), { priority: "overlay", scope: "home" });
+            manager.register(() => (subviewExecuted = true), {
+                priority: "subview",
+                scope: "home",
+            });
+            manager.register(() => (overlayExecuted = true), {
+                priority: "overlay",
+                scope: "home",
+            });
 
             manager.setScope("home");
             expect(manager.canGoBack).toBe(true);
@@ -63,15 +69,24 @@ describe("AppStackManager (Browser Client)", () => {
         test("should resolve synchronous ties deterministically using monotonic sequence counter", () => {
             const executionOrder: number[] = [];
 
-            manager.register(() => {
-                executionOrder.push(1);
-            }, { priority: "overlay" });
-            manager.register(() => {
-                executionOrder.push(2);
-            }, { priority: "overlay" });
-            manager.register(() => {
-                executionOrder.push(3);
-            }, { priority: "overlay" });
+            manager.register(
+                () => {
+                    executionOrder.push(1);
+                },
+                { priority: "overlay" }
+            );
+            manager.register(
+                () => {
+                    executionOrder.push(2);
+                },
+                { priority: "overlay" }
+            );
+            manager.register(
+                () => {
+                    executionOrder.push(3);
+                },
+                { priority: "overlay" }
+            );
 
             manager.pop();
             manager.pop();
@@ -215,7 +230,10 @@ describe("AppStackManager (Browser Client)", () => {
 
             expect(popped).toBe(true);
             expect(manager.size).toBe(0);
-            expect(consoleErrorSpy).toHaveBeenCalledWith("Error executing stack action:", expect.any(Error));
+            expect(consoleErrorSpy).toHaveBeenCalledWith(
+                "Error executing stack action:",
+                expect.any(Error)
+            );
 
             consoleErrorSpy.mockRestore();
         });
@@ -234,7 +252,11 @@ describe("AppStackManager (Browser Client)", () => {
     describe("Attachment Helper (stackAttach)", () => {
         test("should register on attachment invocation and unregister on cleanup", () => {
             let actionExecuted = false;
-            const attachFn = stackAttach(() => (actionExecuted = true), { priority: "overlay" }, manager);
+            const attachFn = stackAttach(
+                () => (actionExecuted = true),
+                { priority: "overlay" },
+                manager
+            );
 
             // Simulate element mounting
             const dummyElement = document.createElement("div");
@@ -268,4 +290,3 @@ describe("AppStackManager (Browser Client)", () => {
 });
 
 function dummyAction() {}
-

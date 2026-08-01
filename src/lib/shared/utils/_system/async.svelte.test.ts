@@ -87,7 +87,12 @@ describe("Async Utilities", () => {
                 return "resolved";
             });
 
-            const result = await retry(fn, { retries: 3, delay: 1, exponential: false, jitter: false });
+            const result = await retry(fn, {
+                retries: 3,
+                delay: 1,
+                exponential: false,
+                jitter: false,
+            });
             expect(result).toBe("resolved");
             expect(fn).toHaveBeenCalledTimes(3);
         });
@@ -95,9 +100,9 @@ describe("Async Utilities", () => {
         test("should throw the final error if all retries fail", async () => {
             const fn = vi.fn().mockRejectedValue(new Error("fatal error"));
 
-            await expect(retry(fn, { retries: 2, delay: 1, exponential: false, jitter: false })).rejects.toThrow(
-                "fatal error"
-            );
+            await expect(
+                retry(fn, { retries: 2, delay: 1, exponential: false, jitter: false })
+            ).rejects.toThrow("fatal error");
             expect(fn).toHaveBeenCalledTimes(3); // Initial try + 2 retries
         });
 

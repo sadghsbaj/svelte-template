@@ -11,6 +11,7 @@
         Trash2,
         X,
     } from "@lucide/svelte";
+
     import { appStack, stackAttach } from "$core/_system/stack";
 
     // --- State for Interactive Logs ---

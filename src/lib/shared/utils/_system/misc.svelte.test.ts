@@ -102,10 +102,13 @@ describe("Misc Utilities", () => {
     describe("Online Status", () => {
         test("should subscribe to online changes and run checks", async () => {
             // Mock fetch to simulate internet access check
-            vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
-                ok: true,
-                status: 200,
-            }));
+            vi.stubGlobal(
+                "fetch",
+                vi.fn().mockResolvedValue({
+                    ok: true,
+                    status: 200,
+                })
+            );
 
             const statusUpdates: boolean[] = [];
             const unsubscribe = listenOnlineStatus((online) => {

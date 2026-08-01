@@ -16,12 +16,7 @@ export const baseRulesConfig = {
         "@typescript-eslint/member-ordering": [
             "error",
             {
-                default: [
-                    "signature",
-                    "field",
-                    "constructor",
-                    ["get", "set", "method"],
-                ],
+                default: ["signature", "field", "constructor", ["get", "set", "method"]],
             },
         ],
     },

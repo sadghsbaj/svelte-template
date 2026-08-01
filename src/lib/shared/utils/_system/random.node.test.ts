@@ -1,6 +1,15 @@
 import { describe, expect, test } from "vitest";
 
-import { randomBool, randomFloat, randomInt, randomItem, randomString, shuffle, uuid, weightedRandom } from "./random";
+import {
+    randomBool,
+    randomFloat,
+    randomInt,
+    randomItem,
+    randomString,
+    shuffle,
+    uuid,
+    weightedRandom,
+} from "./random";
 
 describe("Random Utilities", () => {
     describe("uuid", () => {
@@ -9,7 +18,8 @@ describe("Random Utilities", () => {
             expect(id).toHaveLength(36);
 
             // Validate UUID v4 format
-            const v4Regex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+            const v4Regex =
+                /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
             expect(id).toMatch(v4Regex);
         });
 

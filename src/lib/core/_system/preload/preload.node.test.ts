@@ -9,4 +9,3 @@ describe("initPreload (Node SSR)", () => {
         expect(() => initPreload()).not.toThrow();
     });
 });
-

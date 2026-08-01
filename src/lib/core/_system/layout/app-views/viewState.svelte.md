@@ -12,7 +12,7 @@ Exposes reactive properties and methods to control view navigation, direction, h
 
 ```typescript
 class ViewState<T extends string> {
-    constructor(config: ViewsConfig<T>)
+    constructor(config: ViewsConfig<T>);
 
     // Reactive Properties
     readonly activeView: T;

@@ -7,15 +7,15 @@ describe("HTTP Utilities", () => {
     describe("HttpClient basic functions", () => {
         test("should append query parameters correctly to absolute and relative URLs", async () => {
             // Mock fetch to inspect the final URL received
-            const mockFetch = vi.fn().mockImplementation(() =>
-                Promise.resolve(
-                    Response.json({ ok: true })
-                )
-            );
+            const mockFetch = vi
+                .fn()
+                .mockImplementation(() => Promise.resolve(Response.json({ ok: true })));
 
             const client = new HttpClient({ fetch: mockFetch, baseUrl: "https://api.test" });
 
-            await client.get("/users", { params: { limit: 10, filter: "active", empty: null, undef: undefined } });
+            await client.get("/users", {
+                params: { limit: 10, filter: "active", empty: null, undef: undefined },
+            });
             expect(mockFetch).toHaveBeenCalled();
             const request = mockFetch.mock.calls[0][0] as Request;
             expect(request.url).toBe("https://api.test/users?limit=10&filter=active");
@@ -27,9 +27,7 @@ describe("HTTP Utilities", () => {
         });
 
         test("should serialize request body and set headers", async () => {
-            const mockFetch = vi.fn().mockResolvedValue(
-                Response.json({ created: true })
-            );
+            const mockFetch = vi.fn().mockResolvedValue(Response.json({ created: true }));
 
             const client = new HttpClient({ fetch: mockFetch, baseUrl: "https://api.test" });
 
@@ -54,9 +52,7 @@ describe("HTTP Utilities", () => {
         });
 
         test("should ignore body on GET requests without throwing TypeError", async () => {
-            const mockFetch = vi.fn().mockResolvedValue(
-                Response.json({ ok: true })
-            );
+            const mockFetch = vi.fn().mockResolvedValue(Response.json({ ok: true }));
 
             const client = new HttpClient({
                 fetch: mockFetch,
@@ -64,7 +60,9 @@ describe("HTTP Utilities", () => {
                 body: { defaultData: "ignore-me" },
             });
 
-            await expect(client.get("/users", { body: { filter: "ignored" } })).resolves.toEqual({ ok: true });
+            await expect(client.get("/users", { body: { filter: "ignored" } })).resolves.toEqual({
+                ok: true,
+            });
             const request = mockFetch.mock.calls[0][0] as Request;
             expect(request.method).toBe("GET");
             expect(request.body).toBeNull();
@@ -73,9 +71,7 @@ describe("HTTP Utilities", () => {
 
     describe("HttpClient Configuration and Extension", () => {
         test("should extend client configuration", async () => {
-            const mockFetch = vi.fn().mockResolvedValue(
-                Response.json({ success: true })
-            );
+            const mockFetch = vi.fn().mockResolvedValue(Response.json({ success: true }));
 
             const api = http.extend({
                 baseUrl: "https://api.example.com",
@@ -92,9 +88,7 @@ describe("HTTP Utilities", () => {
 
     describe("Interceptors", () => {
         test("should execute onRequest and onResponse interceptors", async () => {
-            const mockFetch = vi.fn().mockResolvedValue(
-                Response.json({ value: "original" })
-            );
+            const mockFetch = vi.fn().mockResolvedValue(Response.json({ value: "original" }));
 
             const onRequestSpy = vi.fn((req: Request) => {
                 req.headers.set("X-Custom-Req", "intercepted");
@@ -125,10 +119,13 @@ describe("HTTP Utilities", () => {
     describe("Error Handling", () => {
         test("should throw HttpError on failure and parse payload", async () => {
             const mockFetch = vi.fn().mockResolvedValue(
-                Response.json({ error: "bad request data" }, {
-                    status: 400,
-                    statusText: "Bad Request",
-                })
+                Response.json(
+                    { error: "bad request data" },
+                    {
+                        status: 400,
+                        statusText: "Bad Request",
+                    }
+                )
             );
 
             const client = new HttpClient({ fetch: mockFetch, baseUrl: "https://api.test" });
@@ -158,7 +155,11 @@ describe("HTTP Utilities", () => {
                 });
             });
 
-            const client = new HttpClient({ fetch: mockFetch, baseUrl: "https://api.test", timeout: 10 });
+            const client = new HttpClient({
+                fetch: mockFetch,
+                baseUrl: "https://api.test",
+                timeout: 10,
+            });
 
             await expect(client.get("/slow")).rejects.toThrow(/timed out/i);
         });
@@ -169,15 +170,17 @@ describe("HTTP Utilities", () => {
                 return Response.json({ ok: true });
             });
 
-            const client = new HttpClient({ fetch: mockFetch, baseUrl: "https://api.test", timeout: 50 });
+            const client = new HttpClient({
+                fetch: mockFetch,
+                baseUrl: "https://api.test",
+                timeout: 50,
+            });
             const data = await client.get("/fast");
             expect(data).toEqual({ ok: true });
         });
 
         test("should cleanly remove abort listener from original signal to prevent memory leaks", async () => {
-            const mockFetch = vi.fn().mockResolvedValue(
-                Response.json({ ok: true })
-            );
+            const mockFetch = vi.fn().mockResolvedValue(Response.json({ ok: true }));
 
             const controller = new AbortController();
             const signal = controller.signal;
@@ -185,7 +188,11 @@ describe("HTTP Utilities", () => {
             const addSpy = vi.spyOn(signal, "addEventListener");
             const removeSpy = vi.spyOn(signal, "removeEventListener");
 
-            const client = new HttpClient({ fetch: mockFetch, baseUrl: "https://api.test", timeout: 50 });
+            const client = new HttpClient({
+                fetch: mockFetch,
+                baseUrl: "https://api.test",
+                timeout: 50,
+            });
 
             await client.get("/leak-test", { signal });
 

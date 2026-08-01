@@ -6,7 +6,10 @@ describe("createInterceptClick", () => {
     test("should delegate to onclick when not disabled", () => {
         const onclick = vi.fn();
         const handler = createInterceptClick(() => false, onclick);
-        const event = { preventDefault: vi.fn(), stopPropagation: vi.fn() } as unknown as MouseEvent;
+        const event = {
+            preventDefault: vi.fn(),
+            stopPropagation: vi.fn(),
+        } as unknown as MouseEvent;
 
         handler(event);
 
@@ -19,7 +22,10 @@ describe("createInterceptClick", () => {
     test("should block event and prevent delegation when disabled", () => {
         const onclick = vi.fn();
         const handler = createInterceptClick(() => true, onclick);
-        const event = { preventDefault: vi.fn(), stopPropagation: vi.fn() } as unknown as MouseEvent;
+        const event = {
+            preventDefault: vi.fn(),
+            stopPropagation: vi.fn(),
+        } as unknown as MouseEvent;
 
         handler(event);
 
@@ -32,7 +38,10 @@ describe("createInterceptClick", () => {
         let disabled = true;
         const onclick = vi.fn();
         const handler = createInterceptClick(() => disabled, onclick);
-        const event = { preventDefault: vi.fn(), stopPropagation: vi.fn() } as unknown as MouseEvent;
+        const event = {
+            preventDefault: vi.fn(),
+            stopPropagation: vi.fn(),
+        } as unknown as MouseEvent;
 
         // First click (disabled)
         handler(event);
@@ -46,7 +55,10 @@ describe("createInterceptClick", () => {
 
     test("should handle undefined onclick gracefully when enabled", () => {
         const handler = createInterceptClick(() => false, undefined);
-        const event = { preventDefault: vi.fn(), stopPropagation: vi.fn() } as unknown as MouseEvent;
+        const event = {
+            preventDefault: vi.fn(),
+            stopPropagation: vi.fn(),
+        } as unknown as MouseEvent;
 
         expect(() => handler(event)).not.toThrow();
         expect(event.preventDefault).not.toHaveBeenCalled();

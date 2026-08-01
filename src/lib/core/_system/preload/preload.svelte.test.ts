@@ -36,4 +36,3 @@ describe("initPreload (Browser Client)", () => {
         expect(() => cleanup()).not.toThrow();
     });
 });
-

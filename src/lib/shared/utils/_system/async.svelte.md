@@ -19,7 +19,11 @@ function delay(ms: number, options?: { signal?: AbortSignal }): Promise<void>;
 Wraps a promise to reject with a `TimeoutError` if it does not resolve within the specified limit.
 
 ```typescript
-function timeout<T>(promise: Promise<T>, ms: number, options?: { signal?: AbortSignal; message?: string }): Promise<T>;
+function timeout<T>(
+    promise: Promise<T>,
+    ms: number,
+    options?: { signal?: AbortSignal; message?: string }
+): Promise<T>;
 ```
 
 #### `retry`

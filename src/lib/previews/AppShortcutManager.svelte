@@ -111,7 +111,10 @@
             const unreg7 = appShortcut.register(
                 "Esc",
                 () => {
-                    log("Scope Shortcut 'Esc' matched in scope: " + appShortcut.activeScope, "danger");
+                    log(
+                        "Scope Shortcut 'Esc' matched in scope: " + appShortcut.activeScope,
+                        "danger"
+                    );
                     if (isFormOpen) toggleForm();
                     else if (isModalOpen) toggleModal();
                 },
@@ -206,7 +209,8 @@
                     <span class="badge-svelte">Svelte 5</span>
                 </div>
                 <p class="header-desc">
-                    Ultra-flat test harness for key combos, scopes, element attachments & input guarding.
+                    Ultra-flat test harness for key combos, scopes, element attachments & input
+                    guarding.
                 </p>
             </div>
         </div>
@@ -243,7 +247,8 @@
                     <span class="card-badge">pushScope / popScope</span>
                 </div>
                 <p class="card-intro">
-                    Scope isolation keeps hotkeys contained. <code>modal</code> and <code>form</code> hotkeys fire strictly when active in the stack.
+                    Scope isolation keeps hotkeys contained. <code>modal</code> and
+                    <code>form</code> hotkeys fire strictly when active in the stack.
                 </p>
 
                 <div class="actions-row">
@@ -291,7 +296,8 @@
                             </div>
                         {:else}
                             <p class="box-desc">
-                                Modal scope active. Click "Open Form" to stack the <code>form</code> scope over <code>modal</code>.
+                                Modal scope active. Click "Open Form" to stack the <code>form</code>
+                                scope over <code>modal</code>.
                             </p>
                         {/if}
                     </div>
@@ -308,7 +314,8 @@
                     <span class="card-badge">&#123;@attach&#125;</span>
                 </div>
                 <p class="card-intro">
-                    Native Svelte 5 element attachments binding hotkeys directly to DOM element lifecycle triggers.
+                    Native Svelte 5 element attachments binding hotkeys directly to DOM element
+                    lifecycle triggers.
                 </p>
 
                 <div class="attach-grid">
@@ -379,7 +386,9 @@
                             class="flat-input"
                             placeholder="Type here... Single key 'd' is blocked, Cmd+Enter allowed"
                         />
-                        <span class="field-info">Single key shortcuts like <kbd>d</kbd> are ignored while typing in text inputs.</span>
+                        <span class="field-info"
+                            >Single key shortcuts like <kbd>d</kbd> are ignored while typing in text inputs.</span
+                        >
                     </div>
 
                     <div class="form-group">
@@ -468,7 +477,8 @@
                 </div>
 
                 <div class="modifiers-grid">
-                    <span class="mod-pill" class:active={appShortcut.modifiers.cmd}>Cmd / Meta</span>
+                    <span class="mod-pill" class:active={appShortcut.modifiers.cmd}>Cmd / Meta</span
+                    >
                     <span class="mod-pill" class:active={appShortcut.modifiers.ctrl}>Ctrl</span>
                     <span class="mod-pill" class:active={appShortcut.modifiers.alt}>Alt</span>
                     <span class="mod-pill" class:active={appShortcut.modifiers.shift}>Shift</span>
@@ -533,38 +543,44 @@
         --text-muted: var(--color-text-weak);
         --accent: var(--color-accent-500);
         --accent-tint: oklch(from var(--color-accent-500) l c h / 0.12);
+        box-sizing: border-box;
+        min-height: 100vh;
+        padding: 32px;
+        color: var(--text-main);
+        font-family:
+            system-ui,
+            -apple-system,
+            BlinkMacSystemFont,
+            "Segoe UI",
+            Roboto,
+            sans-serif;
 
         background: var(--bg-page);
-        color: var(--text-main);
-        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        padding: 32px;
-        min-height: 100vh;
-        box-sizing: border-box;
     }
 
     /* Header */
     .demo-header {
         display: flex;
-        justify-content: space-between;
         align-items: center;
+        justify-content: space-between;
         margin-bottom: 32px;
     }
 
     .header-left {
         display: flex;
-        align-items: center;
         gap: 16px;
+        align-items: center;
     }
 
     .header-icon-box {
-        width: 44px;
-        height: 44px;
-        border-radius: 12px;
-        background: var(--accent-tint);
-        color: var(--accent);
         display: flex;
         align-items: center;
         justify-content: center;
+        width: 44px;
+        height: 44px;
+        color: var(--accent);
+        background: var(--accent-tint);
+        border-radius: 12px;
     }
 
     .header-text {
@@ -575,46 +591,46 @@
 
     .header-title-row {
         display: flex;
-        align-items: center;
         gap: 10px;
+        align-items: center;
     }
 
     .header-title-row h1 {
+        margin: 0;
         font-size: 22px;
         font-weight: 700;
-        margin: 0;
         letter-spacing: -0.02em;
     }
 
     .badge-svelte {
+        padding: 2px 8px;
+        color: var(--text-sub);
         font-size: 11px;
         font-weight: 600;
         background: var(--bg-subtle);
-        color: var(--text-sub);
-        padding: 2px 8px;
         border-radius: 6px;
     }
 
     .header-desc {
         margin: 0;
-        font-size: 13px;
         color: var(--text-sub);
+        font-size: 13px;
     }
 
     /* Status Bar */
     .status-chips-bar {
         display: flex;
-        align-items: center;
         gap: 10px;
+        align-items: center;
     }
 
     .chip {
         display: flex;
         flex-direction: column;
+        min-width: 110px;
         padding: 8px 14px;
         background: var(--bg-surface);
         border-radius: 10px;
-        min-width: 110px;
     }
 
     .chip-accent {
@@ -627,23 +643,23 @@
     }
 
     .chip-label {
+        color: var(--text-muted);
         font-size: 10px;
         font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 0.05em;
-        color: var(--text-muted);
     }
 
     .chip-val {
+        color: var(--text-main);
         font-size: 13px;
         font-weight: 600;
-        color: var(--text-main);
     }
 
     .chip-mono {
+        color: var(--text-sub);
         font-family: monospace;
         font-size: 12px;
-        color: var(--text-sub);
     }
 
     .pulse-val {
@@ -657,7 +673,8 @@
         gap: 28px;
     }
 
-    .column-main, .column-sidebar {
+    .column-main,
+    .column-sidebar {
         display: flex;
         flex-direction: column;
         gap: 24px;
@@ -665,45 +682,45 @@
 
     /* Borderless Flat Cards */
     .flat-card {
-        background: var(--bg-surface);
-        border-radius: 16px;
         padding: 24px;
+        background: var(--bg-surface);
         border: none;
+        border-radius: 16px;
     }
 
     .card-head {
         display: flex;
-        justify-content: space-between;
         align-items: center;
+        justify-content: space-between;
         margin-bottom: 6px;
     }
 
     .card-title {
         display: flex;
-        align-items: center;
         gap: 10px;
+        align-items: center;
     }
 
     .card-title h2 {
+        margin: 0;
         font-size: 16px;
         font-weight: 600;
-        margin: 0;
         letter-spacing: -0.01em;
     }
 
     .card-badge {
+        padding: 4px 10px;
+        color: var(--text-sub);
         font-family: monospace;
         font-size: 11px;
         background: var(--bg-subtle);
-        color: var(--text-sub);
-        padding: 4px 10px;
         border-radius: 20px;
     }
 
     .card-intro {
-        font-size: 13px;
-        color: var(--text-sub);
         margin: 0 0 18px 0;
+        color: var(--text-sub);
+        font-size: 13px;
         line-height: 1.5;
     }
 
@@ -715,20 +732,22 @@
 
     .flat-btn {
         display: inline-flex;
-        align-items: center;
         gap: 8px;
+        align-items: center;
+        padding: 9px 18px;
         font-size: 13px;
         font-weight: 600;
-        padding: 9px 18px;
-        border-radius: 10px;
         border: none;
+        border-radius: 10px;
+        transition:
+            opacity 0.15s ease,
+            background-color 0.15s ease;
         cursor: pointer;
-        transition: opacity 0.15s ease, background-color 0.15s ease;
     }
 
     .btn-accent {
-        background: var(--accent);
         color: #ffffff;
+        background: var(--accent);
     }
 
     .btn-accent:hover {
@@ -736,8 +755,8 @@
     }
 
     .btn-subtle {
-        background: var(--bg-subtle);
         color: var(--text-main);
+        background: var(--bg-subtle);
     }
 
     .btn-subtle:hover {
@@ -746,10 +765,10 @@
 
     /* Surface Nested Boxes */
     .surface-box {
-        border-radius: 12px;
-        padding: 18px;
         margin-top: 14px;
+        padding: 18px;
         border: none;
+        border-radius: 12px;
     }
 
     .box-modal {
@@ -757,14 +776,14 @@
     }
 
     .box-form {
-        background: #ffffff;
         margin-top: 12px;
+        background: #ffffff;
     }
 
     .box-head {
         display: flex;
-        justify-content: space-between;
         align-items: center;
+        justify-content: space-between;
         margin-bottom: 8px;
     }
 
@@ -774,14 +793,14 @@
     }
 
     .box-hint {
-        font-size: 12px;
         color: var(--text-muted);
+        font-size: 12px;
     }
 
     .box-desc {
-        font-size: 13px;
-        color: var(--text-sub);
         margin: 0;
+        color: var(--text-sub);
+        font-size: 13px;
     }
 
     /* Attachment Grid */
@@ -793,8 +812,8 @@
 
     .attach-tile {
         display: flex;
-        align-items: center;
         gap: 12px;
+        align-items: center;
         padding: 14px 16px;
         background: var(--bg-subtle);
         border-radius: 12px;
@@ -804,29 +823,30 @@
     .attach-tile.clickable {
         all: unset;
         display: flex;
-        align-items: center;
         gap: 12px;
+        align-items: center;
+        box-sizing: border-box;
         padding: 14px 16px;
         background: var(--bg-subtle);
         border-radius: 12px;
-        box-sizing: border-box;
         cursor: pointer;
     }
 
-    .attach-tile:hover, .attach-tile:focus-within {
+    .attach-tile:hover,
+    .attach-tile:focus-within {
         background: var(--accent-tint);
     }
 
     .tile-icon {
-        color: var(--accent);
         display: flex;
         align-items: center;
+        color: var(--accent);
     }
 
     .tile-content {
         display: flex;
-        flex-direction: column;
         flex: 1;
+        flex-direction: column;
         gap: 2px;
     }
 
@@ -836,8 +856,8 @@
     }
 
     .tile-content span {
-        font-size: 11px;
         color: var(--text-muted);
+        font-size: 11px;
     }
 
     /* Inputs */
@@ -853,19 +873,20 @@
         gap: 6px;
     }
 
-    .form-group label, .group-label {
+    .form-group label,
+    .group-label {
+        color: var(--text-sub);
         font-size: 12px;
         font-weight: 600;
-        color: var(--text-sub);
     }
 
     .flat-input {
-        font-size: 13px;
         padding: 10px 14px;
+        color: var(--text-main);
+        font-size: 13px;
+        background: var(--bg-subtle);
         border: none;
         border-radius: 10px;
-        background: var(--bg-subtle);
-        color: var(--text-main);
         outline: none;
         transition: background-color 0.15s ease;
     }
@@ -881,35 +902,37 @@
     }
 
     .field-info {
-        font-size: 11px;
         color: var(--text-muted);
+        font-size: 11px;
     }
 
     .controls-bar {
         display: flex;
-        align-items: center;
         gap: 24px;
-        background: var(--bg-subtle);
+        align-items: center;
         padding: 14px 18px;
+        background: var(--bg-subtle);
         border-radius: 10px;
     }
 
     .control-check {
         display: flex;
-        align-items: center;
         gap: 8px;
+        align-items: center;
         font-size: 13px;
         cursor: pointer;
     }
 
-    .flat-checkbox, .flat-radio, .flat-range {
+    .flat-checkbox,
+    .flat-radio,
+    .flat-range {
         accent-color: var(--accent);
     }
 
     .control-slider {
         display: flex;
-        align-items: center;
         gap: 8px;
+        align-items: center;
         font-size: 13px;
     }
 
@@ -922,25 +945,25 @@
 
     .flat-pill {
         display: flex;
-        align-items: center;
         gap: 8px;
+        align-items: center;
         padding: 8px 14px;
+        color: var(--text-sub);
+        font-size: 12px;
         background: var(--bg-subtle);
         border-radius: 10px;
-        font-size: 12px;
-        color: var(--text-sub);
     }
 
     /* KBD Styling */
     kbd {
+        padding: 3px 7px;
+        color: var(--text-main);
         font-family: monospace;
         font-size: 11px;
         font-weight: 600;
         background: var(--bg-subtle);
-        color: var(--text-main);
-        padding: 3px 7px;
-        border-radius: 6px;
         border: none;
+        border-radius: 6px;
     }
 
     .accent-icon {
@@ -954,15 +977,15 @@
 
     .side-head {
         display: flex;
-        align-items: center;
         gap: 8px;
+        align-items: center;
         margin-bottom: 16px;
     }
 
     .side-head h3 {
+        margin: 0;
         font-size: 14px;
         font-weight: 600;
-        margin: 0;
     }
 
     .modifiers-grid {
@@ -973,19 +996,19 @@
     }
 
     .mod-pill {
+        padding: 8px;
+        color: var(--text-muted);
         font-size: 11px;
         font-weight: 600;
         text-align: center;
-        padding: 8px;
         background: var(--bg-subtle);
-        color: var(--text-muted);
         border-radius: 8px;
         transition: all 0.15s ease;
     }
 
     .mod-pill.active {
-        background: var(--accent);
         color: #ffffff;
+        background: var(--accent);
     }
 
     .keys-held-group {
@@ -995,11 +1018,11 @@
     }
 
     .keys-label {
+        color: var(--text-muted);
         font-size: 10px;
         font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 0.05em;
-        color: var(--text-muted);
     }
 
     .keys-list {
@@ -1009,13 +1032,13 @@
     }
 
     .kbd-active {
-        background: var(--accent);
         color: #ffffff;
+        background: var(--accent);
     }
 
     .keys-none {
-        font-size: 12px;
         color: var(--text-muted);
+        font-size: 12px;
         font-style: italic;
     }
 
@@ -1031,43 +1054,43 @@
 
     .term-title {
         display: flex;
-        align-items: center;
         gap: 8px;
+        align-items: center;
     }
 
     .icon-btn {
-        background: transparent;
-        border: none;
-        color: var(--text-muted);
-        cursor: pointer;
-        padding: 4px;
-        border-radius: 6px;
         display: flex;
         align-items: center;
+        padding: 4px;
+        color: var(--text-muted);
+        background: transparent;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
     }
 
     .icon-btn:hover {
-        background: var(--bg-subtle);
         color: var(--text-main);
+        background: var(--bg-subtle);
     }
 
     .terminal-body {
-        background: var(--color-zinc-900, #18181b);
-        border-radius: 12px;
-        padding: 14px;
-        max-height: 380px;
-        overflow-y: auto;
-        font-family: monospace;
-        font-size: 11px;
         display: flex;
         flex-direction: column;
         gap: 6px;
+        max-height: 380px;
+        padding: 14px;
+        overflow-y: auto;
+        font-family: monospace;
+        font-size: 11px;
+        background: var(--color-zinc-900, #18181b);
+        border-radius: 12px;
     }
 
     .terminal-placeholder {
+        padding: 28px 8px;
         color: var(--color-zinc-500, #71717a);
         text-align: center;
-        padding: 28px 8px;
     }
 
     .log-row {

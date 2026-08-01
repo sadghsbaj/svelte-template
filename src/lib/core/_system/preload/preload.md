@@ -25,4 +25,3 @@ function initPreload(): () => void;
     ```
     This guarantees that the browser has fully calculated layouts and paint calculations _before_ CSS transitions are unlocked, avoiding visual jumping on initial page load.
 - **Explicit Invocation:** `initPreload()` is explicitly invoked at application startup (e.g. in `main.ts`).
-

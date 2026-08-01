@@ -1,6 +1,7 @@
 # Svelte 5 Element Attachments (`{@attach ...}`)
 
 ## Core Rule
+
 Element behaviors, event listeners, and DOM-side effects MUST be implemented using Svelte 5 attachments (`{@attach ...}`) instead of legacy actions (`use:action`).
 
 > [!IMPORTANT]
@@ -9,6 +10,7 @@ Element behaviors, event listeners, and DOM-side effects MUST be implemented usi
 ---
 
 ## Why Attachments?
+
 1. **Full Reactivity**: Attachments integrate natively with Svelte 5 Runes (`$state`, `$derived`, `$effect`).
 2. **Simplified Lifecycle**: An attachment is a simple function `(node: Element) => () => void` that receives the DOM element on mount and returns a cleanup function on unmount.
 3. **Type Safety**: Type definitions are imported directly from `'svelte/attachments'`.
@@ -51,4 +53,5 @@ Element behaviors, event listeners, and DOM-side effects MUST be implemented usi
 ---
 
 ## Documentation Link
+
 For further details, consult the official [Svelte 5 @attach Documentation](https://svelte.dev/docs/svelte/@attach).

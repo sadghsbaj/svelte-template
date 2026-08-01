@@ -58,6 +58,9 @@
     function renderHeatmap() {
         if (!canvasEl || !active || typeof window === "undefined") return;
 
+        // Ensure newly rendered DOM nodes (e.g. Tab switches) are converted to blueprint
+        applySelectiveBlueprint(true);
+
         const ctx = canvasEl.getContext("2d");
         if (!ctx) return;
 
@@ -113,8 +116,8 @@
             offCtx.fillRect(rect.left, rect.top, rect.width, rect.height);
         }
 
-        // Render offscreen depth map to main canvas with multiply blend mode (white background turns into rich heatmap color, black text stays jet black)
-        ctx.globalAlpha = 0.5;
+        // Render offscreen depth map to main canvas with multiply blend mode (rich vibrant colors over white blueprint)
+        ctx.globalAlpha = 0.58;
         ctx.drawImage(offCanvas, 0, 0);
     }
 

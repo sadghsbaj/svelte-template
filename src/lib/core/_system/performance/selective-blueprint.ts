@@ -1,5 +1,6 @@
 /**
  * Selective DOM Background & Universal Black Text/Icon Blueprint (Idee 1).
+ * Supports dynamic DOM updates (e.g. Svelte tab switches / route navigation).
  * - Backgrounds: ONLY elements with a non-transparent background turn solid white (#ffffff).
  * - Text/Icons/SVGs/Paths: ALL webpage elements and SVG paths (except #dev-perf-overlay) turn jet black (#000000).
  * - Sliders/Checkboxes: accent-color set to #000000.
@@ -67,8 +68,6 @@ export function applySelectiveBlueprint(active: boolean) {
         return;
     }
 
-    if (modifiedElements.size > 0) return; // Already applied
-
     // Inject high-specificity CSS rules for SVG icons & native sliders
     if (!overrideStyle) {
         overrideStyle = document.createElement("style");
@@ -96,6 +95,7 @@ export function applySelectiveBlueprint(active: boolean) {
     for (const node of allElements) {
         if (!(node instanceof HTMLElement)) continue;
         if (isPerformanceElement(node)) continue;
+        if (modifiedElements.has(node)) continue; // Skip already processed nodes
 
         const computed = window.getComputedStyle(node);
         if (computed.display === "none" || computed.visibility === "hidden") continue;

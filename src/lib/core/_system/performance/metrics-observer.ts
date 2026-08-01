@@ -1,8 +1,3 @@
-/**
- * @file metrics-observer.ts
- * FPS, Event Loop lag, Web Vitals, and Memory observer utilities.
- */
-
 export interface WebVitalsMetrics {
     cls: number;
     lcp: number;

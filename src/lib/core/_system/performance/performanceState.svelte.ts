@@ -1,8 +1,3 @@
-/**
- * @file performanceState.svelte.ts
- * Svelte 5 Rune-based performance state manager.
- */
-
 import { analyzeDomStructure } from "./dom-observer";
 import { createFpsObserver, createWebVitalsObserver, getMemoryUsage } from "./metrics-observer";
 

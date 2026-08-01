@@ -4,6 +4,8 @@
  * inertness and scroll blocking for modal overlays.
  */
 
+import { onDestroy } from "svelte";
+
 import { getLayerContext } from "./layer.context";
 
 export {
@@ -13,7 +15,7 @@ export {
     type LayerContext,
 } from "./layer.context";
 
-let blockCounter = $state(0);
+let blockCounter = 0;
 let savedPaddingRight = "";
 let savedOverflow = "";
 
@@ -64,11 +66,20 @@ export function syncLayerState(isActive: () => boolean) {
     const layer = getLayerContext();
     if (!layer) return;
 
+    let currentlyActive = false;
+
     $effect(() => {
         const active = isActive();
-        layer.setContextActive(active);
-        return () => {
-            if (active) layer.setContextActive(false);
-        };
+        if (active !== currentlyActive) {
+            layer.setContextActive(active);
+            currentlyActive = active;
+        }
+    });
+
+    onDestroy(() => {
+        if (!currentlyActive) return;
+
+        layer.setContextActive(false);
+        currentlyActive = false;
     });
 }

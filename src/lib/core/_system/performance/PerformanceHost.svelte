@@ -1,6 +1,8 @@
 <script lang="ts">
     import { onMount } from "svelte";
 
+    import { syncLayerState } from "$core/_system/layout/app-layer/layer.svelte";
+
     import DomHeatmap from "./DomHeatmap.svelte";
     import DomInspector from "./DomInspector.svelte";
     import DomInspectorCard from "./DomInspectorCard.svelte";
@@ -8,6 +10,8 @@
     import { performanceState } from "./performanceState.svelte";
 
     let isVisible = $state(true);
+
+    syncLayerState(() => isVisible);
 
     onMount(() => {
         if (!import.meta.env.DEV) return;

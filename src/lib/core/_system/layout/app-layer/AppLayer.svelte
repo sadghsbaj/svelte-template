@@ -20,12 +20,20 @@
     const computedZ = $derived(z === "top-layer" ? TOP_LAYER_Z : (z ?? 0));
 
     setLayerContext({
+        get layer() {
+            return layer;
+        },
+        get zIndex() {
+            return computedZ;
+        },
         setContextActive: (active: boolean) => {
-            if (active) {
-                activeCount++;
-            } else {
-                activeCount = Math.max(0, activeCount - 1);
-            }
+            queueMicrotask(() => {
+                if (active) {
+                    activeCount++;
+                } else {
+                    activeCount = Math.max(0, activeCount - 1);
+                }
+            });
         },
     });
 
@@ -73,6 +81,4 @@
     });
 </script>
 
-<div data-layout="app-layer" data-layer={layer} style:z-index={computedZ}>
-    {@render children?.()}
-</div>
+{@render children?.()}

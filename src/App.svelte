@@ -3,7 +3,6 @@
 
     import { initPreload } from "$core/_system";
     import AppLayer from "$core/_system/layout/app-layer/AppLayer.svelte";
-    import AppLayers from "$core/_system/layout/app-layer/AppLayers.svelte";
     import AppStage from "$core/_system/layout/app-stage/AppStage.svelte";
     import AppView from "$core/_system/layout/app-views/AppView.svelte";
     import AppViews from "$core/_system/layout/app-views/AppViews.svelte";
@@ -30,10 +29,10 @@
     </AppViews>
 </AppStage>
 
-<AppLayers>
-    {#if import.meta.env.DEV}
-        <AppLayer z="top-layer" layer="performance">
-            <PerformanceHost />
-        </AppLayer>
-    {/if}
-</AppLayers>
+<!-- AppLayers -->
+{#if import.meta.env.DEV}
+    <AppLayer z="top-layer" layer="performance">
+        <PerformanceHost />
+    </AppLayer>
+{/if}
+<!-- /AppLayers -->

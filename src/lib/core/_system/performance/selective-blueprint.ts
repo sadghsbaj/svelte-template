@@ -32,6 +32,26 @@ function isPerformanceElement(el: Element): boolean {
     );
 }
 
+function storeOriginalStyle(node: Element) {
+    if (modifiedElements.has(node)) return;
+    if (!(node instanceof HTMLElement || node instanceof SVGElement)) return;
+
+    modifiedElements.set(node, {
+        bg: node.style.getPropertyValue("background-color"),
+        bgPriority: node.style.getPropertyPriority("background-color"),
+        color: node.style.getPropertyValue("color"),
+        colorPriority: node.style.getPropertyPriority("color"),
+        borderColor: node.style.getPropertyValue("border-color"),
+        borderColorPriority: node.style.getPropertyPriority("border-color"),
+        fill: node.style.getPropertyValue("fill"),
+        fillPriority: node.style.getPropertyPriority("fill"),
+        stroke: node.style.getPropertyValue("stroke"),
+        strokePriority: node.style.getPropertyPriority("stroke"),
+        accentColor: node.style.getPropertyValue("accent-color"),
+        accentPriority: node.style.getPropertyPriority("accent-color"),
+    });
+}
+
 function blackenSvgChildren(svgNode: Element) {
     const children = svgNode.querySelectorAll(
         "path, circle, rect, line, polyline, polygon, g, use"
@@ -41,6 +61,7 @@ function blackenSvgChildren(svgNode: Element) {
             continue;
         }
 
+        storeOriginalStyle(child);
         child.style.setProperty("color", "#000000", "important");
         child.style.setProperty("stroke", "#000000", "important");
     }
@@ -109,20 +130,7 @@ export function applySelectiveBlueprint(active: boolean) {
             bg !== "transparent" && bg !== "rgba(0, 0, 0, 0)" && bg !== "rgba(0,0,0,0)";
 
         // Store original inline style properties
-        modifiedElements.set(node, {
-            bg: node.style.getPropertyValue("background-color"),
-            bgPriority: node.style.getPropertyPriority("background-color"),
-            color: node.style.getPropertyValue("color"),
-            colorPriority: node.style.getPropertyPriority("color"),
-            borderColor: node.style.getPropertyValue("border-color"),
-            borderColorPriority: node.style.getPropertyPriority("border-color"),
-            fill: node.style.getPropertyValue("fill"),
-            fillPriority: node.style.getPropertyPriority("fill"),
-            stroke: node.style.getPropertyValue("stroke"),
-            strokePriority: node.style.getPropertyPriority("stroke"),
-            accentColor: node.style.getPropertyValue("accent-color"),
-            accentPriority: node.style.getPropertyPriority("accent-color"),
-        });
+        storeOriginalStyle(node);
 
         // 1. Selective background whitening (only for elements that HAD a background)
         if (hasVisibleBg) {

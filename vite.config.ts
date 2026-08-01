@@ -38,7 +38,7 @@ export default defineConfig({
                 : plugin
         ),
         UnoCSS({
-            injectReset: "@unocss/reset/tailwind.css",
+            // injectReset: "@unocss/reset/tailwind.css",
             combine: true,
             cssFileTransformers: [transformerDirectives()],
         }),

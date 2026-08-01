@@ -21,7 +21,7 @@ interface RestorableStyle {
     accentPriority: string;
 }
 
-const modifiedElements = new Map<HTMLElement, RestorableStyle>();
+const modifiedElements = new Map<Element, RestorableStyle>();
 
 function isPerformanceElement(el: Element): boolean {
     return (
@@ -32,7 +32,7 @@ function isPerformanceElement(el: Element): boolean {
     );
 }
 
-function blackenSvgChildren(svgNode: HTMLElement) {
+function blackenSvgChildren(svgNode: Element) {
     const children = svgNode.querySelectorAll(
         "path, circle, rect, line, polyline, polygon, g, use"
     );
@@ -57,6 +57,10 @@ export function applySelectiveBlueprint(active: boolean) {
 
         // Restore exact original inline styles
         for (const [el, style] of modifiedElements) {
+            if (!(el instanceof HTMLElement || el instanceof SVGElement)) {
+                continue;
+            }
+
             el.style.setProperty("background-color", style.bg, style.bgPriority);
             el.style.setProperty("color", style.color, style.colorPriority);
             el.style.setProperty("border-color", style.borderColor, style.borderColorPriority);
@@ -93,7 +97,7 @@ export function applySelectiveBlueprint(active: boolean) {
     const allElements = document.body.querySelectorAll("*");
 
     for (const node of allElements) {
-        if (!(node instanceof HTMLElement)) continue;
+        if (!(node instanceof HTMLElement || node instanceof SVGElement)) continue;
         if (isPerformanceElement(node)) continue;
         if (modifiedElements.has(node)) continue; // Skip already processed nodes
 

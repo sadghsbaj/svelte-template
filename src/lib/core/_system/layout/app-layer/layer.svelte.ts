@@ -17,6 +17,7 @@ export {
 } from "./layer.context";
 
 let blockCounter = 0;
+let isAppInertState = $state(false);
 let savedPaddingRight = "";
 let savedOverflow = "";
 
@@ -26,12 +27,14 @@ let savedOverflow = "";
  */
 export const appInertState = {
     get isAppInert() {
-        return blockCounter > 0;
+        return isAppInertState;
     },
     block() {
         blockCounter++;
 
         if (blockCounter === 1 && typeof window !== "undefined") {
+            isAppInertState = true;
+
             savedPaddingRight = document.body.style.paddingRight;
             savedOverflow = document.body.style.overflow;
 
@@ -50,6 +53,8 @@ export const appInertState = {
         blockCounter--;
 
         if (blockCounter === 0 && typeof window !== "undefined") {
+            isAppInertState = false;
+
             document.body.style.paddingRight = savedPaddingRight;
             document.body.style.overflow = savedOverflow;
             savedPaddingRight = "";

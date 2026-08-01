@@ -28,6 +28,19 @@
         },
     });
 
+    // DEV-Guard
+    $effect(() => {
+        if (!import.meta.env.DEV || !inertApp) return;
+
+        queueMicrotask(() => {
+            if (activeCount <= 0) {
+                console.warn(
+                    `[AppLayer DevGuard] Layer "${layer}" has inertApp=true, but no child component registered {@attach layerAttach}.`
+                );
+            }
+        });
+    });
+
     $effect(() => {
         if (!inertApp || activeCount <= 0) return;
 

@@ -19,7 +19,7 @@
      * Interactive children rendered inside AppLayer must explicitly set `pointer-events: auto`.
      */
     [data-layout="app-layers"] {
-        pointer-events: none;
+        display: contents;
 
         /* App layers: */
         > :global([data-layout="app-layer"]) {

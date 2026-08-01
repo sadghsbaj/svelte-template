@@ -13,10 +13,19 @@ export class PerformanceState {
     inp = $state(0);
     heapUsed = $state(0);
     heapTotal = $state(0);
+    isHeatmapActive = $state(false);
 
     #isRunning = false;
     #cleanups: (() => void)[] = [];
     #intervalId: ReturnType<typeof setInterval> | null = null;
+
+    toggleHeatmap() {
+        this.isHeatmapActive = !this.isHeatmapActive;
+    }
+
+    stopHeatmap() {
+        this.isHeatmapActive = false;
+    }
 
     /**
      * Starts performance sampling and observers.
@@ -65,6 +74,7 @@ export class PerformanceState {
     stop() {
         if (!this.#isRunning) return;
         this.#isRunning = false;
+        this.isHeatmapActive = false;
 
         if (this.#intervalId !== null) {
             clearInterval(this.#intervalId);

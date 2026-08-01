@@ -1,12 +1,12 @@
 # Performance Engine (`PerformanceHost.svelte`)
 
-A real-time developer performance overlay and metrics observer utility built with Svelte 5 runes (`$state`, `$derived`) and native browser APIs. It monitors rendering health, DOM complexity, Web Vitals, and JS memory consumption without impacting application runtime.
+A real-time developer performance overlay, DOM nesting spatial heatmap visualizer, and metrics observer utility built with Svelte 5 runes (`$state`, `$derived`) and native browser Canvas APIs. It monitors rendering health, DOM complexity, Web Vitals, and JS memory consumption without impacting application runtime.
 
 ---
 
 ## 📊 Monitored Metrics & Threshold Boundaries
 
-### 1. DOM Health
+### 1. DOM Health & Heatmap Canvas Overlay
 
 Monitors DOM node count and maximum nesting tree depth. The overlay container (`#dev-perf-overlay`) and its internal elements are automatically excluded from analysis to avoid self-inflation.
 
@@ -15,7 +15,12 @@ Monitors DOM node count and maximum nesting tree depth. The overlay container (`
 | **Total Elements** | `< 800`       | `800 - 1499`  | `≥ 1500`   | Total rendered DOM element count.   |
 | **Max Nesting**    | `< 15 lvl`    | `15 - 24 lvl` | `≥ 25 lvl` | Maximum element nesting tree depth. |
 
-- **Overall DOM Health Badge**: Computed dynamically from both metrics. If either `Total Elements ≥ 1500` or `Max Nesting ≥ 25 lvl`, the overall badge switches to **Critical**. If either threshold is in Warning range, the overall badge switches to **Warning**.
+- **DOM Heatmap Canvas Overlay (🔥 Flame Toggle)**: Toggling the Flame button in the `DOM Health` card mounts a GPU-accelerated Spatial Canvas Overlay (`<DomHeatmap />`).
+    - Utilizes a **Spatial Painter's Algorithm** (sorting elements by depth ascending, painting shallow elements first and deep elements last) to render pixel-exact color highlights without muddying color mixtures.
+    - **Level 1–14 (Optimal)**: Soft Emerald fill (`rgba(16, 185, 129, 0.08)`) with `1px` Emerald stroke.
+    - **Level 15–24 (Warning)**: Amber fill (`rgba(245, 158, 11, 0.18)`) with `1px` Amber stroke.
+    - **Level 25+ (Critical)**: Red fill (`rgba(239, 68, 68, 0.30)`) with `1px` Red stroke.
+    - **Reactivity**: Listens to viewport `scroll`, `resize`, and `MutationObserver` layout changes at 60–144 FPS with zero lag.
 
 ---
 
@@ -56,9 +61,11 @@ Monitors V8 JavaScript heap memory (`performance.memory`). A 5-step segmented sp
 
 ## 🏗️ Architecture & Modules
 
-- **`PerformanceHost.svelte`**: Dev-only glassmorphic floating UI container featuring pointer drag-and-drop, viewport clamping, `localStorage` position persistence, and Svelte 5 `{#snippet}` blocks.
+- **`PerformanceHost.svelte`**: Dev-only orchestrator mounted in app root managing card visibility and heat map activation.
+- **`PerformanceCard.svelte`**: Glassmorphic floating UI panel featuring drag-and-drop, position persistence, and metrics cards.
+- **`DomHeatmap.svelte`**: Dedicated GPU-accelerated Spatial Canvas Overlay for real-time DOM nesting heatmaps.
 - **`performanceState.svelte.ts`**: Reactive Svelte 5 class managing active metric state and handling observer lifecycles (`start()`, `stop()`).
-- **`dom-observer.ts`**: Efficient DOM tree walker calculating total nodes and maximum depth while filtering out `#dev-perf-overlay`.
+- **`dom-observer.ts`**: Efficient DOM tree walker calculating total nodes and maximum depth while filtering out `#dev-perf-overlay` and `#dev-dom-heatmap`.
 - **`metrics-observer.ts`**: Browser performance observer utilities for Web Vitals, Memory, FPS (with 60s min/avg history), and Event Loop Lag.
 
 ---

@@ -187,7 +187,7 @@
     in:fly={{ y: -20, duration: 260, easing: backOut }}
     out:fly={{ y: -16, duration: 150, easing: expoIn }}
     style={position ? `left: ${position.x}px; top: ${position.y}px; right: auto;` : ""}
-    class="bg-elevation-1/90 text-strong font-sans p-4 border border-base-200/80 rounded-2xl squircle-smooth w-[375px] pointer-events-auto select-none shadow-2xl right-4 top-4 fixed z-[99999] backdrop-blur-xl dark:border-base-800/80 {isDragging
+    class="text-strong font-sans p-4 border border-base-200/80 rounded-2xl bg-elevation-1/90 w-[375px] pointer-events-auto select-none shadow-2xl right-4 top-4 fixed z-10 backdrop-blur-xl squircle-smooth dark:border-base-800/80 {isDragging
         ? '!transition-none'
         : 'transition-colors duration-150'}"
 >
@@ -302,8 +302,8 @@
                 <!-- Heatmap Toggle Button -->
                 <button
                     onclick={onToggleHeatmap}
-                    class="p-1 rounded-lg transition-colors squircle-smooth flex items-center justify-center {isHeatmapActive
-                        ? 'text-orange-500 bg-orange-500/15 border border-orange-500/30 dark:text-orange-400'
+                    class="p-1 rounded-lg flex transition-colors items-center justify-center squircle-smooth {isHeatmapActive
+                        ? 'text-orange-500 border border-orange-500/30 bg-orange-500/15 dark:text-orange-400'
                         : 'text-weak hover:text-strong hover:bg-elevation-1'}"
                     title={isHeatmapActive
                         ? "Disable DOM Heatmap"

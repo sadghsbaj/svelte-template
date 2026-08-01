@@ -1,11 +1,11 @@
 <script lang="ts">
     import { onMount } from "svelte";
 
+    import DomHeatmap from "./DomHeatmap.svelte";
     import PerformanceCard from "./PerformanceCard.svelte";
     import { performanceState } from "./performanceState.svelte";
 
     let isVisible = $state(true);
-    let isHeatmapActive = $state(false);
 
     onMount(() => {
         if (!import.meta.env.DEV) return;
@@ -30,9 +30,16 @@
 </script>
 
 {#if isVisible}
+    {#if performanceState.isHeatmapActive}
+        <DomHeatmap active={true} />
+    {/if}
+
     <PerformanceCard
-        {isHeatmapActive}
-        onToggleHeatmap={() => (isHeatmapActive = !isHeatmapActive)}
-        onClose={() => (isVisible = false)}
+        isHeatmapActive={performanceState.isHeatmapActive}
+        onToggleHeatmap={() => performanceState.toggleHeatmap()}
+        onClose={() => {
+            performanceState.stopHeatmap();
+            isVisible = false;
+        }}
     />
 {/if}

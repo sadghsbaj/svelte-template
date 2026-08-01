@@ -47,9 +47,39 @@
     ]);
 
     const vitalItems = $derived([
-        { label: "CLS", value: performanceState.cls },
-        { label: "LCP", value: performanceState.lcp, suffix: "ms" },
-        { label: "INP", value: performanceState.inp, suffix: "ms" },
+        {
+            label: "CLS",
+            value: performanceState.cls,
+            suffix: "",
+            statusColorClass:
+                performanceState.cls > 0.25
+                    ? "text-red-600 dark:text-red-400"
+                    : performanceState.cls > 0.1
+                      ? "text-amber-600 dark:text-amber-400"
+                      : "",
+        },
+        {
+            label: "LCP",
+            value: performanceState.lcp,
+            suffix: "ms",
+            statusColorClass:
+                performanceState.lcp > 4000
+                    ? "text-red-600 dark:text-red-400"
+                    : performanceState.lcp > 2500
+                      ? "text-amber-600 dark:text-amber-400"
+                      : "",
+        },
+        {
+            label: "INP",
+            value: performanceState.inp,
+            suffix: "ms",
+            statusColorClass:
+                performanceState.inp > 500
+                    ? "text-red-600 dark:text-red-400"
+                    : performanceState.inp > 200
+                      ? "text-amber-600 dark:text-amber-400"
+                      : "",
+        },
     ]);
 
     // Memory Heap Tier calculation
@@ -95,6 +125,15 @@
         };
     });
 
+    // Memory percentage calculation (safely handled against NaN & missing heapTotal)
+    const memoryPercent = $derived.by(() => {
+        const used = performanceState.heapUsed;
+        if (!used || used <= 0) return 0;
+        const total = performanceState.heapTotal;
+        if (!total || total <= 0) return 15;
+        return Math.min(100, Math.max(3, Math.round((used / total) * 100)));
+    });
+
     // DOM Health overall status incorporating both total element count and max nesting depth
     const domHealthRating = $derived.by(() => {
         const count = performanceState.domCount;
@@ -118,6 +157,27 @@
             status: "Optimal",
             textClass: "text-emerald-600 dark:text-emerald-400",
             borderClass: "border-emerald-500/40 bg-emerald-500/15",
+        };
+    });
+
+    // Web Vitals overall status incorporating CLS, LCP, and INP thresholds
+    const webVitalsRating = $derived.by(() => {
+        const cls = performanceState.cls;
+        const lcp = performanceState.lcp;
+        const inp = performanceState.inp;
+
+        if (cls > 0.25 || lcp > 4000 || inp > 500) {
+            return {
+                status: "Poor",
+            };
+        }
+        if (cls > 0.1 || lcp > 2500 || inp > 200) {
+            return {
+                status: "Needs Improvement",
+            };
+        }
+        return {
+            status: "Good",
         };
     });
 
@@ -178,6 +238,8 @@
     }
 
     onMount(() => {
+        if (typeof window === "undefined") return;
+
         try {
             const saved = localStorage.getItem(STORAGE_KEY);
             if (saved) {
@@ -259,10 +321,12 @@
     </div>
 {/snippet}
 
-{#snippet vitalTile(label: string, value: string | number, suffix = "")}
+{#snippet vitalTile(label: string, value: string | number, suffix = "", statusColorClass = "")}
     <div class="p-2 rounded-xl bg-elevation-1 squircle-smooth dark:bg-elevation-1/60">
         <span class="text-[10px] text-weaker font-medium block">{label}</span>
-        <span class="text-xs text-strong font-mono font-semibold">{value}{suffix}</span>
+        <span class="text-xs font-mono font-semibold {statusColorClass || 'text-strong'}"
+            >{value}{suffix}</span
+        >
     </div>
 {/snippet}
 
@@ -400,16 +464,30 @@
                 <Activity class="text-amber-500 h-4 w-4" />
                 <span>Web Vitals</span>
             </div>
-            <span
-                class="text-xs text-emerald-600 font-mono font-semibold px-2.5 py-0.5 border border-emerald-500/40 rounded-full bg-emerald-500/15 dark:text-emerald-400 dark:border-emerald-500/40"
-            >
-                Good
-            </span>
+            {#if webVitalsRating.status === "Poor"}
+                <span
+                    class="text-xs text-red-600 font-mono font-semibold px-2.5 py-0.5 border border-red-500/40 rounded-full bg-red-500/15 dark:text-red-400 dark:border-red-500/40"
+                >
+                    Poor
+                </span>
+            {:else if webVitalsRating.status === "Needs Improvement"}
+                <span
+                    class="text-xs text-amber-600 font-mono font-semibold px-2.5 py-0.5 border border-amber-500/40 rounded-full bg-amber-500/15 dark:text-amber-400 dark:border-amber-500/40"
+                >
+                    Needs Improvement
+                </span>
+            {:else}
+                <span
+                    class="text-xs text-emerald-600 font-mono font-semibold px-2.5 py-0.5 border border-emerald-500/40 rounded-full bg-emerald-500/15 dark:text-emerald-400 dark:border-emerald-500/40"
+                >
+                    Good
+                </span>
+            {/if}
         </div>
 
         <div class="mt-0.5 text-center gap-2 grid grid-cols-3">
             {#each vitalItems as item (item.label)}
-                {@render vitalTile(item.label, item.value, item.suffix)}
+                {@render vitalTile(item.label, item.value, item.suffix, item.statusColorClass)}
             {/each}
         </div>
 
@@ -428,37 +506,24 @@
                 <span>Memory</span>
             </div>
             <span class="text-xs text-weak font-mono">
-                {performanceState.heapUsed} / {performanceState.heapTotal} MB
+                {performanceState.heapUsed} / {performanceState.heapTotal || "--"} MB
             </span>
         </div>
 
-        <!-- Framed Progress Bar Track with High Contrast -->
         <div
-            class="mt-0.5 p-0.5 border border-base-200/80 rounded-full bg-elevation-1 h-3 w-full overflow-hidden dark:border-base-800/80 dark:bg-elevation-1"
+            class="p-2.5 rounded-xl bg-elevation-1 flex flex-col gap-1.5 squircle-smooth dark:bg-elevation-1/60"
         >
-            <div
-                class="rounded-full bg-accent-500 h-full shadow-sm transition-all duration-300"
-                style="width: {performanceState.heapTotal > 0
-                    ? (performanceState.heapUsed / performanceState.heapTotal) * 100
-                    : 0}%"
-            ></div>
-        </div>
-
-        <!-- Stepped Rating Scale (5 Pills Spectrum) -->
-        <div class="mt-1 flex flex-col gap-1.5">
-            <div class="gap-1.5 grid grid-cols-5">
-                {#each [1, 2, 3, 4, 5] as step (step)}
-                    <div
-                        class="rounded-full h-1.5 transition-all duration-200 {step <=
-                        memoryTier.level
-                            ? memoryTier.bg
-                            : 'bg-base-200 opacity-40 dark:bg-base-800'}"
-                    ></div>
-                {/each}
+            <div class="text-xs flex justify-between">
+                <span class="text-weak font-medium">Heap Usage</span>
+                <span class="font-mono font-semibold {memoryTier.color}">
+                    {memoryTier.label} ({memoryPercent}%)
+                </span>
             </div>
-            <div class="text-[10px] font-mono flex items-center justify-between">
-                <span class="text-weaker font-medium uppercase">Heap Tier</span>
-                <span class="{memoryTier.color} font-semibold">{memoryTier.label}</span>
+            <div class="rounded-full bg-base-300/80 h-2 w-full overflow-hidden dark:bg-base-700/80">
+                <div
+                    class="rounded-full h-full transition-all duration-300 {memoryTier.bg}"
+                    style="width: {memoryPercent}%;"
+                ></div>
             </div>
         </div>
     </div>

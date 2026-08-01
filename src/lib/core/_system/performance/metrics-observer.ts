@@ -1,3 +1,5 @@
+import { performanceState } from "./performanceState.svelte";
+
 export interface WebVitalsMetrics {
     cls: number;
     lcp: number;
@@ -64,6 +66,9 @@ export function createWebVitalsObserver(
     try {
         let clsValue = 0;
         const clsObserver = new PerformanceObserver((entryList) => {
+            // Ignore artificial layout shifts while developer DOM inspector is active
+            if (performanceState.isInspectorActive) return;
+
             for (const entry of entryList.getEntries()) {
                 const shiftEntry = entry as PerformanceEntry & {
                     hadRecentInput?: boolean;

@@ -1,8 +1,17 @@
 <script lang="ts">
     import { onMount } from "svelte";
+    import { backOut, expoIn } from "svelte/easing";
     import { Activity, HardDrive, Hash, Layers, Maximize, X } from "@lucide/svelte";
 
+    import { fly } from "$core/_system/motion";
+
+    const STORAGE_KEY = "dev_perf_overlay_pos";
+
     let isVisible = $state(true);
+    let position = $state<{ x: number; y: number } | null>(null);
+    let isDragging = $state(false);
+    let dragOffset = { x: 0, y: 0 };
+    let overlayEl = $state<HTMLElement | null>(null);
 
     // Mock data for UI finalization
     const metrics = $state({
@@ -19,47 +28,105 @@
         totalSizeKb: 420,
     });
 
-    // Soft Ampel Badge Styles
-    function getStatusBadge(
-        value: number,
-        thresholdYellow: number,
-        thresholdRed: number
-    ): { text: string; class: string } {
-        if (value >= thresholdRed) {
-            return {
-                text: "Critical",
-                class: "bg-danger-500/10 text-danger-600 dark:text-danger-400 border-danger-500/20",
-            };
-        }
-        if (value >= thresholdYellow) {
-            return {
-                text: "Warning",
-                class: "bg-warning-500/10 text-warning-600 dark:text-warning-400 border-warning-500/20",
-            };
-        }
+    // Derived metric data lists for clean iteration
+    const summaryItems = $derived([
+        { label: "FPS", value: metrics.fps },
+        { label: "DOM NODES", value: metrics.domCount },
+        { label: "LOOP LAG", value: metrics.eventLoopLag, suffix: "ms" },
+    ]);
+
+    const vitalItems = $derived([
+        { label: "CLS", value: metrics.cls },
+        { label: "LCP", value: metrics.lcp, suffix: "ms" },
+        { label: "INP", value: metrics.inp, suffix: "ms" },
+    ]);
+
+    function clampPosition(x: number, y: number): { x: number; y: number } {
+        const overlayWidth = 375;
+        const overlayHeight = 360;
+        const margin = 12;
+
+        const maxX = Math.max(margin, window.innerWidth - overlayWidth - margin);
+        const maxY = Math.max(margin, window.innerHeight - overlayHeight - margin);
+
         return {
-            text: "Optimal",
-            class: "bg-success-500/10 text-success-600 dark:text-success-400 border-success-500/20",
+            x: Math.min(Math.max(margin, x), maxX),
+            y: Math.min(Math.max(margin, y), maxY),
         };
     }
 
-    const domStatus = $derived(getStatusBadge(metrics.domCount, 800, 1500));
+    function handleResize() {
+        if (position) {
+            position = clampPosition(position.x, position.y);
+        }
+    }
+
+    function handlePointerDown(e: PointerEvent) {
+        if ((e.target as HTMLElement).closest("button")) return;
+        if (!overlayEl) return;
+
+        const rect = overlayEl.getBoundingClientRect();
+        dragOffset = {
+            x: e.clientX - rect.left,
+            y: e.clientY - rect.top,
+        };
+
+        isDragging = true;
+        (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+    }
+
+    function handlePointerMove(e: PointerEvent) {
+        if (!isDragging) return;
+
+        const rawX = e.clientX - dragOffset.x;
+        const rawY = e.clientY - dragOffset.y;
+
+        position = clampPosition(rawX, rawY);
+    }
+
+    function handlePointerUp(_e: PointerEvent) {
+        if (!isDragging) return;
+        isDragging = false;
+
+        if (position) {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(position));
+            } catch {
+                // ignore
+            }
+        }
+    }
 
     onMount(() => {
         if (!import.meta.env.DEV) return;
 
-        let cleanup: (() => void) | undefined;
+        try {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                if (typeof parsed.x === "number" && typeof parsed.y === "number") {
+                    position = clampPosition(parsed.x, parsed.y);
+                }
+            }
+        } catch {
+            // ignore
+        }
+
+        window.addEventListener("resize", handleResize);
+
+        let cleanupShortcut: (() => void) | undefined;
 
         (async () => {
             const { appShortcut } = await import("$modules/shortcut");
 
-            cleanup = appShortcut.register("Alt+P", () => {
+            cleanupShortcut = appShortcut.register("Alt+P", () => {
                 isVisible = !isVisible;
             });
         })();
 
         return () => {
-            cleanup?.();
+            window.removeEventListener("resize", handleResize);
+            cleanupShortcut?.();
         };
     });
 </script>
@@ -67,198 +134,202 @@
 {#if isVisible}
     <div
         id="dev-perf-overlay"
-        class="pointer-events-auto fixed top-4 right-4 z-[99999] w-[350px] select-none rounded-2xl border border-base-200/80 dark:border-base-800/80 bg-surface-1/90 p-3.5 text-strong shadow-2xl backdrop-blur-xl transition-all duration-200 font-sans"
+        bind:this={overlayEl}
+        in:fly={{ y: -20, duration: 260, easing: backOut }}
+        out:fly={{ y: -16, duration: 150, easing: expoIn }}
+        style={position ? `left: ${position.x}px; top: ${position.y}px; right: auto;` : ""}
+        class="text-strong font-sans p-4 border border-base-200/80 rounded-2xl bg-elevation-1/90 w-[375px] pointer-events-auto select-none shadow-2xl right-4 top-4 fixed z-[99999] backdrop-blur-xl squircle-smooth dark:border-base-800/80 {isDragging
+            ? '!transition-none'
+            : 'transition-colors duration-150'}"
     >
-        <!-- Header Bar -->
+        {@render header()}
+        {@render summaryBar()}
+
         <div
-            class="flex items-center justify-between border-b border-base-200/60 dark:border-base-800/60 pb-2.5"
+            class="mt-3.5 pt-3.5 border-t border-base-200/60 flex flex-col gap-3 dark:border-base-800/60"
         >
-            <div class="flex items-center gap-2">
-                <div class="relative flex h-2.5 w-2.5 items-center justify-center">
-                    <span
-                        class="absolute inline-flex h-full w-full animate-ping rounded-full bg-success-400 opacity-75"
-                    ></span>
-                    <span class="relative inline-flex h-2.5 w-2.5 rounded-full bg-success-500"
-                    ></span>
-                </div>
-                <span class="font-semibold text-xs text-strong tracking-wide">
-                    Performance Engine
-                </span>
-            </div>
-
-            <button
-                onclick={() => (isVisible = false)}
-                class="rounded-lg p-1 text-weak hover:bg-surface-2 hover:text-strong transition-colors"
-                title="Close Overlay (Alt+P to reopen)"
-            >
-                <X class="h-4 w-4" />
-            </button>
-        </div>
-
-        <!-- Quick Summary Bar -->
-        <div class="grid grid-cols-3 gap-2 pt-3">
-            <!-- FPS -->
-            <div
-                class="flex flex-col items-center justify-center rounded-xl border border-base-200/50 dark:border-base-800/50 bg-surface-2/50 p-2 text-center"
-            >
-                <span class="text-[10px] font-medium text-weak uppercase tracking-wider">FPS</span>
-                <span class="font-mono text-sm font-bold text-success-600 dark:text-success-400"
-                    >{metrics.fps}</span
-                >
-            </div>
-
-            <!-- DOM Count -->
-            <div
-                class="flex flex-col items-center justify-center rounded-xl border border-base-200/50 dark:border-base-800/50 bg-surface-2/50 p-2 text-center"
-            >
-                <span class="text-[10px] font-medium text-weak uppercase tracking-wider"
-                    >DOM NODES</span
-                >
-                <span class="font-mono text-sm font-bold text-success-600 dark:text-success-400"
-                    >{metrics.domCount}</span
-                >
-            </div>
-
-            <!-- Event Loop Lag -->
-            <div
-                class="flex flex-col items-center justify-center rounded-xl border border-base-200/50 dark:border-base-800/50 bg-surface-2/50 p-2 text-center"
-            >
-                <span class="text-[10px] font-medium text-weak uppercase tracking-wider"
-                    >LOOP LAG</span
-                >
-                <span class="font-mono text-sm font-bold text-success-600 dark:text-success-400"
-                    >{metrics.eventLoopLag} ms</span
-                >
-            </div>
-        </div>
-
-        <!-- Detailed Cards Stack -->
-        <div
-            class="mt-3 flex flex-col gap-2.5 border-t border-base-200/60 dark:border-base-800/60 pt-3"
-        >
-            <!-- DOM Health Card -->
-            <div
-                class="flex flex-col gap-2 rounded-xl border border-base-200/50 dark:border-base-800/50 bg-surface-2/30 p-2.5"
-            >
-                <div class="flex items-center justify-between text-xs">
-                    <div class="flex items-center gap-1.5 font-medium text-main">
-                        <Layers class="h-3.5 w-3.5 text-accent-500" />
-                        <span>DOM Health</span>
-                    </div>
-                    <span
-                        class="rounded-full border px-2 py-0.5 font-mono text-[10px] font-semibold {domStatus.class}"
-                    >
-                        {domStatus.text}
-                    </span>
-                </div>
-
-                <div class="grid grid-cols-2 gap-2 mt-0.5">
-                    <div
-                        class="flex items-center gap-2 rounded-lg border border-base-200/40 dark:border-base-800/40 bg-surface-1/60 p-2"
-                    >
-                        <Hash class="h-3.5 w-3.5 text-weak" />
-                        <div class="flex flex-col">
-                            <span class="text-[9px] text-weaker">Total Elements</span>
-                            <span class="font-mono text-xs font-semibold text-strong"
-                                >{metrics.domCount}</span
-                            >
-                        </div>
-                    </div>
-                    <div
-                        class="flex items-center gap-2 rounded-lg border border-base-200/40 dark:border-base-800/40 bg-surface-1/60 p-2"
-                    >
-                        <Maximize class="h-3.5 w-3.5 text-weak" />
-                        <div class="flex flex-col">
-                            <span class="text-[9px] text-weaker">Max Nesting</span>
-                            <span class="font-mono text-xs font-semibold text-strong"
-                                >{metrics.domDepth} lvl</span
-                            >
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Web Vitals Card -->
-            <div
-                class="flex flex-col gap-2 rounded-xl border border-base-200/50 dark:border-base-800/50 bg-surface-2/30 p-2.5"
-            >
-                <div class="flex items-center justify-between text-xs">
-                    <div class="flex items-center gap-1.5 font-medium text-main">
-                        <Activity class="h-3.5 w-3.5 text-warning-500" />
-                        <span>Web Vitals</span>
-                    </div>
-                    <span
-                        class="rounded-full border border-success-500/20 bg-success-500/10 px-2 py-0.5 font-mono text-[10px] font-semibold text-success-600 dark:text-success-400"
-                    >
-                        Good
-                    </span>
-                </div>
-
-                <div class="grid grid-cols-3 gap-1.5 text-center mt-0.5">
-                    <div
-                        class="rounded-lg border border-base-200/40 dark:border-base-800/40 bg-surface-1/60 p-1.5"
-                    >
-                        <span class="block text-[9px] text-weaker">CLS</span>
-                        <span class="font-mono text-xs font-semibold text-strong"
-                            >{metrics.cls}</span
-                        >
-                    </div>
-                    <div
-                        class="rounded-lg border border-base-200/40 dark:border-base-800/40 bg-surface-1/60 p-1.5"
-                    >
-                        <span class="block text-[9px] text-weaker">LCP</span>
-                        <span class="font-mono text-xs font-semibold text-strong"
-                            >{metrics.lcp}ms</span
-                        >
-                    </div>
-                    <div
-                        class="rounded-lg border border-base-200/40 dark:border-base-800/40 bg-surface-1/60 p-1.5"
-                    >
-                        <span class="block text-[9px] text-weaker">INP</span>
-                        <span class="font-mono text-xs font-semibold text-strong"
-                            >{metrics.inp}ms</span
-                        >
-                    </div>
-                </div>
-            </div>
-
-            <!-- Memory & Network Card -->
-            <div
-                class="flex flex-col gap-2 rounded-xl border border-base-200/50 dark:border-base-800/50 bg-surface-2/30 p-2.5"
-            >
-                <div class="flex items-center justify-between text-xs">
-                    <div class="flex items-center gap-1.5 font-medium text-main">
-                        <HardDrive class="h-3.5 w-3.5 text-info-500" />
-                        <span>Memory & Network</span>
-                    </div>
-                    <span class="font-mono text-[10px] text-weak">
-                        {metrics.heapUsed} / {metrics.heapTotal} MB
-                    </span>
-                </div>
-
-                <!-- Memory Bar -->
-                <div
-                    class="h-1.5 w-full overflow-hidden rounded-full bg-base-200 dark:bg-base-800 mt-0.5"
-                >
-                    <div
-                        class="h-full rounded-full bg-accent-500 transition-all duration-300"
-                        style="width: {(metrics.heapUsed / metrics.heapTotal) * 100}%"
-                    ></div>
-                </div>
-
-                <div class="flex justify-between items-center text-[11px] text-weak mt-0.5">
-                    <span
-                        >Requests: <strong class="font-mono font-semibold text-strong"
-                            >{metrics.requests}</strong
-                        ></span
-                    >
-                    <span
-                        >Assets: <strong class="font-mono font-semibold text-strong"
-                            >{metrics.totalSizeKb} KB</strong
-                        ></span
-                    >
-                </div>
-            </div>
+            {@render domHealthCard()}
+            {@render webVitalsCard()}
+            {@render memoryNetworkCard()}
         </div>
     </div>
 {/if}
+
+<!-- ========================================================================= -->
+<!-- REUSABLE ATOMIC SNIPPETS -->
+<!-- ========================================================================= -->
+
+{#snippet summaryTile(label: string, value: string | number, suffix = "")}
+    <div
+        class="p-2.5 text-center rounded-xl bg-elevation-2 flex flex-col items-center justify-center squircle-smooth"
+    >
+        <span class="text-xs text-weak tracking-wider font-medium uppercase">{label}</span>
+        <span class="text-base text-emerald-600 font-bold font-mono dark:text-emerald-400">
+            {value}{suffix ? ` ${suffix}` : ""}
+        </span>
+    </div>
+{/snippet}
+
+{#snippet subCard(label: string, value: string | number, Icon?: typeof Hash, suffix = "")}
+    <div
+        class="p-2.5 rounded-xl bg-elevation-1 flex gap-2.5 items-center squircle-smooth dark:bg-elevation-1/60"
+    >
+        {#if Icon}
+            <Icon class="text-weak h-4 w-4" />
+        {/if}
+        <div class="flex flex-col">
+            <span class="text-[10px] text-weaker font-medium uppercase">{label}</span>
+            <span class="text-sm text-strong font-mono font-semibold">
+                {value}{suffix ? ` ${suffix}` : ""}
+            </span>
+        </div>
+    </div>
+{/snippet}
+
+{#snippet vitalTile(label: string, value: string | number, suffix = "")}
+    <div class="p-2 rounded-xl bg-elevation-1 squircle-smooth dark:bg-elevation-1/60">
+        <span class="text-[10px] text-weaker font-medium block">{label}</span>
+        <span class="text-xs text-strong font-mono font-semibold">{value}{suffix}</span>
+    </div>
+{/snippet}
+
+{#snippet networkBadge(label: string, value: string | number)}
+    <div
+        class="px-2.5 py-1.5 rounded-xl bg-elevation-1 flex gap-2 items-center squircle-smooth dark:bg-elevation-1/60"
+    >
+        <span class="text-[10px] text-weaker font-medium uppercase">{label}</span>
+        <span class="text-xs text-strong font-mono font-semibold">{value}</span>
+    </div>
+{/snippet}
+
+{#snippet domStatusBadge()}
+    {#if metrics.domCount >= 1500}
+        <span
+            class="text-xs text-red-600 font-mono font-semibold px-2.5 py-0.5 border border-red-500/40 rounded-full bg-red-500/15 dark:text-red-400 dark:border-red-500/40"
+        >
+            Critical
+        </span>
+    {:else if metrics.domCount >= 800}
+        <span
+            class="text-xs text-amber-600 font-mono font-semibold px-2.5 py-0.5 border border-amber-500/40 rounded-full bg-amber-500/15 dark:text-amber-400 dark:border-amber-500/40"
+        >
+            Warning
+        </span>
+    {:else}
+        <span
+            class="text-xs text-emerald-600 font-mono font-semibold px-2.5 py-0.5 border border-emerald-500/40 rounded-full bg-emerald-500/15 dark:text-emerald-400 dark:border-emerald-500/40"
+        >
+            Optimal
+        </span>
+    {/if}
+{/snippet}
+
+<!-- ========================================================================= -->
+<!-- COMPONENT SECTION SNIPPETS -->
+<!-- ========================================================================= -->
+
+{#snippet header()}
+    <!-- svelte-ignore a11y_no_static_element_interactions -->
+    <div
+        onpointerdown={handlePointerDown}
+        onpointermove={handlePointerMove}
+        onpointerup={handlePointerUp}
+        onpointercancel={handlePointerUp}
+        class="pb-3 border-b border-base-200/60 flex cursor-grab select-none items-center justify-between dark:border-base-800/60 active:cursor-grabbing"
+    >
+        <div class="flex gap-2.5 items-center">
+            <div class="flex h-2.5 w-2.5 items-center justify-center relative">
+                <span
+                    class="rounded-full bg-emerald-400 opacity-75 inline-flex h-full w-full absolute animate-ping"
+                ></span>
+                <span class="rounded-full bg-emerald-500 inline-flex h-2.5 w-2.5 relative"></span>
+            </div>
+            <span class="text-sm text-strong tracking-wide font-semibold">
+                Performance Engine
+            </span>
+        </div>
+
+        <button
+            onclick={() => (isVisible = false)}
+            class="text-weak p-1 rounded-lg transition-colors squircle-smooth hover:text-strong hover:bg-elevation-2"
+            title="Close Overlay (Alt+P to reopen)"
+        >
+            <X class="h-4.5 w-4.5" />
+        </button>
+    </div>
+{/snippet}
+
+{#snippet summaryBar()}
+    <div class="pt-3.5 gap-2.5 grid grid-cols-3">
+        {#each summaryItems as item (item.label)}
+            {@render summaryTile(item.label, item.value, item.suffix)}
+        {/each}
+    </div>
+{/snippet}
+
+{#snippet domHealthCard()}
+    <div class="p-3 rounded-xl bg-elevation-2 flex flex-col gap-2.5 squircle-smooth">
+        <div class="text-sm flex items-center justify-between">
+            <div class="text-main font-medium flex gap-2 items-center">
+                <Layers class="text-accent-500 h-4 w-4" />
+                <span>DOM Health</span>
+            </div>
+            {@render domStatusBadge()}
+        </div>
+
+        <div class="mt-0.5 gap-2 grid grid-cols-2">
+            {@render subCard("Total Elements", metrics.domCount, Hash)}
+            {@render subCard("Max Nesting", metrics.domDepth, Maximize, "lvl")}
+        </div>
+    </div>
+{/snippet}
+
+{#snippet webVitalsCard()}
+    <div class="p-3 rounded-xl bg-elevation-2 flex flex-col gap-2.5 squircle-smooth">
+        <div class="text-sm flex items-center justify-between">
+            <div class="text-main font-medium flex gap-2 items-center">
+                <Activity class="text-amber-500 h-4 w-4" />
+                <span>Web Vitals</span>
+            </div>
+            <span
+                class="text-xs text-emerald-600 font-mono font-semibold px-2.5 py-0.5 border border-emerald-500/40 rounded-full bg-emerald-500/15 dark:text-emerald-400 dark:border-emerald-500/40"
+            >
+                Good
+            </span>
+        </div>
+
+        <div class="mt-0.5 text-center gap-2 grid grid-cols-3">
+            {#each vitalItems as item (item.label)}
+                {@render vitalTile(item.label, item.value, item.suffix)}
+            {/each}
+        </div>
+    </div>
+{/snippet}
+
+{#snippet memoryNetworkCard()}
+    <div class="p-3 rounded-xl bg-elevation-2 flex flex-col gap-2.5 squircle-smooth">
+        <div class="text-sm flex items-center justify-between">
+            <div class="text-main font-medium flex gap-2 items-center">
+                <HardDrive class="text-sky-500 h-4 w-4" />
+                <span>Memory & Network</span>
+            </div>
+            <span class="text-xs text-weak font-mono">
+                {metrics.heapUsed} / {metrics.heapTotal} MB
+            </span>
+        </div>
+
+        <!-- Memory Bar -->
+        <div class="mt-0.5 rounded-full bg-base-200 h-2 w-full overflow-hidden dark:bg-base-800">
+            <div
+                class="rounded-full bg-accent-500 h-full transition-all duration-300"
+                style="width: {(metrics.heapUsed / metrics.heapTotal) * 100}%"
+            ></div>
+        </div>
+
+        <!-- Network Badges -->
+        <div class="text-xs mt-0.5 flex items-center justify-between">
+            {@render networkBadge("Requests", metrics.requests)}
+            {@render networkBadge("Assets", `${metrics.totalSizeKb} KB`)}
+        </div>
+    </div>
+{/snippet}

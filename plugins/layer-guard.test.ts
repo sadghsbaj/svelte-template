@@ -27,7 +27,7 @@ describe("layerGuardPlugin", () => {
         expect(transform.call(context, code, "node_modules/SomeComp.svelte")).toBeNull();
     });
 
-    test("should pass when rendered child component includes layerAttach", () => {
+    test("should pass when rendered child component includes layerAttach directive", () => {
         const code = `
             import PerformanceHost from "$core/_system/performance/PerformanceHost.svelte";
             <AppLayer layer="perf">

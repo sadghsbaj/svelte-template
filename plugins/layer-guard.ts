@@ -4,7 +4,7 @@
  *
  * This compiler-level guard inspects Svelte source files during development and build.
  * When an <AppLayer> component tag is detected, it resolves the imported child components
- * and verifies that the child component source contains `layerAttach`. This guarantees that
+ * and verifies that the child component template contains `{@attach layerAttach}`. This guarantees that
  * all layer overlays correctly register z-index, teleportation, and active state tracking.
  */
 
@@ -63,15 +63,15 @@ function checkChildComponent(
 
     try {
         const childCode = fs.readFileSync(resolvedPath, "utf8");
-        const hasLayerAttach =
-            childCode.includes("layerAttach") || childCode.includes("layer.context");
+        // Verify that layerAttach is actually attached to an element in the template ({@attach layerAttach})
+        const hasAttachDirective = /@attach\s+layerAttach\b/.test(childCode);
 
-        if (!hasLayerAttach) {
+        if (!hasAttachDirective) {
             onError(
-                `Missing {@attach layerAttach} in overlay component "<${compName} />" (${path.basename(resolvedPath)}) ` +
+                `Missing {@attach layerAttach} directive in overlay component "<${compName} />" (${path.basename(resolvedPath)}) ` +
                     `rendered inside <AppLayer> in ${path.basename(id)}.\n` +
                     `To ensure proper z-index, teleportation, and active layer tracking, ` +
-                    `the root element of "<${compName} />" must include {@attach layerAttach}.`
+                    `an element inside "<${compName} />" must use {@attach layerAttach}.`
             );
         }
     } catch (error) {

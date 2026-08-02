@@ -27,16 +27,32 @@ export interface WaapiViewTransitionOptions {
 export const viewWaapiIn = withMotionGuard<WaapiViewTransitionOptions>(
     (
         node: Element,
-        {
+        params?: WaapiViewTransitionOptions
+    ): TransitionConfig => {
+        const {
             y = 18,
             scale = 0.985,
             blur = 6,
             duration = 360,
             easing = ease.quintOut,
-        }: WaapiViewTransitionOptions = {}
-    ): TransitionConfig => {
-        if (typeof node.animate === "function") {
-            node.animate(
+        } = params ?? {};
+
+        const el = node as HTMLElement;
+
+        if (duration > 0 && typeof el?.animate === "function") {
+            // 1. Pre-promote layer for GPU compositing
+            if (el.style) {
+                el.style.willChange = blur > 0 ? "opacity, transform, filter" : "opacity, transform";
+            }
+
+            // 2. Clear concurrent active animations on rapid navigation
+            if (typeof el.getAnimations === "function") {
+                for (const anim of el.getAnimations()) {
+                    anim.cancel();
+                }
+            }
+
+            const animation = el.animate(
                 [
                     {
                         opacity: 0,
@@ -55,6 +71,24 @@ export const viewWaapiIn = withMotionGuard<WaapiViewTransitionOptions>(
                     fill: "forwards",
                 }
             );
+
+            // 3. Commit end state to element inline styles and release compositor resources using async cleanup
+            if (animation && "finished" in animation && typeof animation.commitStyles === "function") {
+                void (async () => {
+                    try {
+                        await animation.finished;
+                        animation.commitStyles();
+                        animation.cancel();
+                        if (el.style) el.style.willChange = "auto";
+                    } catch {
+                        // Ignore cancelled animation rejections
+                    }
+                })();
+            } else if (animation) {
+                animation.onfinish = () => {
+                    if (el.style) el.style.willChange = "auto";
+                };
+            }
         }
 
         return { duration };
@@ -69,16 +103,32 @@ export const viewWaapiIn = withMotionGuard<WaapiViewTransitionOptions>(
 export const viewWaapiOut = withMotionGuard<WaapiViewTransitionOptions>(
     (
         node: Element,
-        {
+        params?: WaapiViewTransitionOptions
+    ): TransitionConfig => {
+        const {
             y = -8,
             scale = 0.99,
             blur = 0,
             duration = 180,
             easing = ease.cubicOut,
-        }: WaapiViewTransitionOptions = {}
-    ): TransitionConfig => {
-        if (typeof node.animate === "function") {
-            node.animate(
+        } = params ?? {};
+
+        const el = node as HTMLElement;
+
+        if (duration > 0 && typeof el?.animate === "function") {
+            // 1. Pre-promote layer for GPU compositing
+            if (el.style) {
+                el.style.willChange = blur > 0 ? "opacity, transform, filter" : "opacity, transform";
+            }
+
+            // 2. Clear concurrent active animations on rapid navigation
+            if (typeof el.getAnimations === "function") {
+                for (const anim of el.getAnimations()) {
+                    anim.cancel();
+                }
+            }
+
+            const animation = el.animate(
                 [
                     {
                         opacity: 1,
@@ -97,6 +147,24 @@ export const viewWaapiOut = withMotionGuard<WaapiViewTransitionOptions>(
                     fill: "forwards",
                 }
             );
+
+            // 3. Commit end state to element inline styles and release compositor resources using async cleanup
+            if (animation && "finished" in animation && typeof animation.commitStyles === "function") {
+                void (async () => {
+                    try {
+                        await animation.finished;
+                        animation.commitStyles();
+                        animation.cancel();
+                        if (el.style) el.style.willChange = "auto";
+                    } catch {
+                        // Ignore cancelled animation rejections
+                    }
+                })();
+            } else if (animation) {
+                animation.onfinish = () => {
+                    if (el.style) el.style.willChange = "auto";
+                };
+            }
         }
 
         return { duration };

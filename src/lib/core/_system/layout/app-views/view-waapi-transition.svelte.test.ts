@@ -8,14 +8,32 @@ import {
     viewWaapiTransition,
 } from "./view-waapi-transition";
 
-describe("WAAPI View Transitions", () => {
-    test("should execute viewWaapiIn and invoke node.animate with correct keyframes", () => {
-        const animateMock = vi.fn();
-        const mockNode = { animate: animateMock } as unknown as Element;
+function createMockNode() {
+    const animateMock = vi.fn().mockReturnValue({
+        finished: Promise.resolve(),
+        commitStyles: vi.fn(),
+        cancel: vi.fn(),
+        onfinish: null,
+    });
+    const getAnimationsMock = vi.fn().mockReturnValue([]);
 
-        const result = viewWaapiIn(mockNode);
+    const node = {
+        style: { willChange: "" },
+        animate: animateMock,
+        getAnimations: getAnimationsMock,
+    } as unknown as Element;
+
+    return { node, animateMock, getAnimationsMock };
+}
+
+describe("WAAPI View Transitions", () => {
+    test("should execute viewWaapiIn, set willChange, and invoke node.animate with correct keyframes", () => {
+        const { node, animateMock } = createMockNode();
+
+        const result = viewWaapiIn(node);
 
         expect(result.duration).toBe(360);
+        expect((node as unknown as HTMLElement).style.willChange).toBe("opacity, transform, filter");
         expect(animateMock).toHaveBeenCalledWith(
             [
                 {
@@ -38,12 +56,12 @@ describe("WAAPI View Transitions", () => {
     });
 
     test("should execute viewWaapiOut and invoke node.animate with correct keyframes", () => {
-        const animateMock = vi.fn();
-        const mockNode = { animate: animateMock } as unknown as Element;
+        const { node, animateMock } = createMockNode();
 
-        const result = viewWaapiOut(mockNode);
+        const result = viewWaapiOut(node);
 
         expect(result.duration).toBe(180);
+        expect((node as unknown as HTMLElement).style.willChange).toBe("opacity, transform");
         expect(animateMock).toHaveBeenCalledWith(
             [
                 {
@@ -66,10 +84,9 @@ describe("WAAPI View Transitions", () => {
     });
 
     test("should accept custom options for viewWaapiIn", () => {
-        const animateMock = vi.fn();
-        const mockNode = { animate: animateMock } as unknown as Element;
+        const { node, animateMock } = createMockNode();
 
-        const result = viewWaapiIn(mockNode, {
+        const result = viewWaapiIn(node, {
             duration: 500,
             y: 30,
             scale: 0.95,
@@ -106,10 +123,9 @@ describe("WAAPI View Transitions", () => {
     test("should return duration 0 when reduced motion is enabled", () => {
         motionPreference.set("reduce");
 
-        const animateMock = vi.fn();
-        const mockNode = { animate: animateMock } as unknown as Element;
+        const { node } = createMockNode();
 
-        const result = viewWaapiIn(mockNode);
+        const result = viewWaapiIn(node);
         expect(result.duration).toBe(0);
 
         motionPreference.set("no-preference");

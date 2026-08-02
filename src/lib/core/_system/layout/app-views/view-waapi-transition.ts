@@ -8,8 +8,7 @@
 
 import type { TransitionConfig } from "svelte/transition";
 
-import { withMotionGuard } from "$core/_system/motion";
-import { ease } from "$constants/easings";
+import { ease, withMotionGuard } from "$core/_system/motion";
 
 export interface WaapiViewTransitionOptions {
     y?: number;

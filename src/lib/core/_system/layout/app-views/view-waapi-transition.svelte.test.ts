@@ -1,7 +1,6 @@
 import { describe, expect, test, vi } from "vitest";
 
-import { motionPreference } from "$core/_system/motion";
-import { ease } from "$constants/easings";
+import { ease, motionPreference } from "$core/_system/motion";
 
 import {
     viewWaapiIn,

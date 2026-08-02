@@ -220,7 +220,10 @@
                 const cx = w / 2;
                 const cy = h / 2;
 
-                const bg = isDark ? "#141417" : "#fafafa";
+                const bg =
+                    getComputedStyle(document.documentElement)
+                        .getPropertyValue("--color-app")
+                        .trim() || (isDark ? "oklch(14.1% 0.005 285.823)" : "oklch(98.5% 0 0)");
                 const accentRgb = isDark ? [96, 165, 250] : [37, 99, 235];
                 const textCol = isDark ? "rgba(226, 232, 240, " : "rgba(30, 41, 59, ";
 

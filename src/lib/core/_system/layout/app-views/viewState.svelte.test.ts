@@ -6,6 +6,16 @@ import { appStack } from "$core/_system/stack/appStack.svelte";
 import type { ViewsConfig } from "./types";
 import { ViewState } from "./viewState.svelte";
 
+function mockCustomFn() {
+    return { duration: 420 };
+}
+function mockCustomIn() {
+    return { duration: 500 };
+}
+function mockCustomOut() {
+    return { duration: 250 };
+}
+
 describe("ViewState (Browser Client)", () => {
     type TestView = "home" | "stats" | "statsDetails" | "statsSubDetails" | "settings";
 
@@ -223,17 +233,14 @@ describe("ViewState (Browser Client)", () => {
         });
 
         test("should support custom transition functions directly", () => {
-            const customFn = () => ({ duration: 420 });
-            mockConfig.transition = customFn;
+            mockConfig.transition = mockCustomFn;
             const stateCustom = new ViewState(mockConfig);
             expect(stateCustom.getInTransition("home")({} as Element)).toEqual({ duration: 420 });
             expect(stateCustom.getOutTransition("home")({} as Element)).toEqual({ duration: 420 });
         });
 
         test("should support custom in and out transition functions in an object", () => {
-            const customIn = () => ({ duration: 500 });
-            const customOut = () => ({ duration: 250 });
-            mockConfig.transition = { in: customIn, out: customOut };
+            mockConfig.transition = { in: mockCustomIn, out: mockCustomOut };
             const stateObj = new ViewState(mockConfig);
             expect(stateObj.getInTransition("home")({} as Element)).toEqual({ duration: 500 });
             expect(stateObj.getOutTransition("home")({} as Element)).toEqual({ duration: 250 });

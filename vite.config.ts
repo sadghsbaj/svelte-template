@@ -3,6 +3,7 @@ import { svelte } from "@sveltejs/vite-plugin-svelte";
 import UnoCSS from "@unocss/svelte-scoped/vite";
 import transformerDirectives from "@unocss/transformer-directives";
 import { playwright } from "@vitest/browser-playwright";
+import { visualizer } from "rollup-plugin-visualizer";
 import { createHtmlPlugin } from "vite-plugin-html";
 import { defineConfig } from "vitest/config";
 
@@ -50,6 +51,12 @@ export default defineConfig({
                     return { runes: true };
                 }
             },
+        }),
+        visualizer({
+            filename: "./dist/stats.html",
+            open: true,
+            gzipSize: true,
+            brotliSize: true,
         }),
     ],
 

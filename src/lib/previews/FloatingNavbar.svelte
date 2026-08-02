@@ -1,6 +1,7 @@
 <script lang="ts">
     import { BarChart3, Home, Settings } from "@lucide/svelte";
 
+    import { layerAttach } from "$core/_system/layout/app-layer/layer.svelte";
     import { viewState } from "$views/view.svelte";
 
     const navItems = [
@@ -12,6 +13,7 @@
 
 <nav
     class="p-1.5 rounded-2xl bg-elevation-1 flex gap-1 shadow-xl items-center bottom-6 left-1/2 fixed z-40 -translate-x-1/2"
+    {@attach layerAttach}
 >
     {#each navItems as item (item.id)}
         {const IconComponent = item.icon}

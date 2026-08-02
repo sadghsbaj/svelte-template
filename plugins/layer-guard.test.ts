@@ -1,3 +1,5 @@
+import fs from "node:fs";
+import path from "node:path";
 import { describe, expect, test } from "vitest";
 
 import { layerGuardPlugin } from "./layer-guard.ts";
@@ -74,5 +76,33 @@ describe("layerGuardPlugin", () => {
         expect(() => transform.call(context, code, "src/App.svelte")).toThrow(
             "Invalid z-index (super-top)"
         );
+    });
+
+    test("should throw error when rendered child component lacks layerAttach directive", () => {
+        const code = `
+            import NonAttachedOverlay from "./NonAttachedOverlay.svelte";
+            <AppLayer layer="bar" z={100}>
+                <NonAttachedOverlay />
+            </AppLayer>
+        `;
+        const context = {
+            error(msg: string) {
+                throw new Error(msg);
+            },
+        };
+
+        // Create temporary component lacking {@attach layerAttach} for the test
+        const tempPath = path.resolve(process.cwd(), "src/NonAttachedOverlay.svelte");
+        fs.writeFileSync(tempPath, "<nav>Dummy</nav>", "utf8");
+
+        try {
+            expect(() => transform.call(context, code, "src/App.svelte")).toThrow(
+                "Missing {@attach layerAttach} directive in overlay component"
+            );
+        } finally {
+            if (fs.existsSync(tempPath)) {
+                fs.unlinkSync(tempPath);
+            }
+        }
     });
 });

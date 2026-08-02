@@ -1,4 +1,4 @@
-import { describe, expect, test, vi } from "vitest";
+import { beforeEach, describe, expect, test, vi } from "vitest";
 
 import { ease, motionPreference } from "$core/_system/motion";
 
@@ -23,6 +23,10 @@ function createMockNode() {
 }
 
 describe("WAAPI View Transitions", () => {
+    beforeEach(() => {
+        motionPreference.set("no-preference");
+    });
+
     test("should execute viewWaapiIn, set willChange, and invoke node.animate with correct keyframes", () => {
         const { node, animateMock } = createMockNode();
 

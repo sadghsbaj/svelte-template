@@ -17,14 +17,20 @@ export interface LayerGuardOptions {
     exclude?: (string | RegExp)[];
 }
 
+function stripJsonComments(jsonc: string): string {
+    return jsonc.replaceAll(
+        /("(?:[^\\"]|\\.)*")|(?:\/\*[\s\S]*?\*\/|\/\/[^\r\n]*)/g,
+        (_match, group1: string | undefined) => group1 ?? ""
+    );
+}
+
 function loadTsconfigPaths(): Record<string, string> {
     try {
         const tsconfigPath = path.resolve(process.cwd(), "tsconfig.app.json");
         if (!fs.existsSync(tsconfigPath)) return {};
 
         const raw = fs.readFileSync(tsconfigPath, "utf8");
-        // Strip single-line and multi-line comments from JSONC tsconfig files
-        const cleaned = raw.replaceAll(/\/\*[\s\S]*?\*\/|([^\\:]|^)\/\/.*/g, "$1");
+        const cleaned = stripJsonComments(raw);
         const json = JSON.parse(cleaned);
 
         const paths: Record<string, string[]> = json.compilerOptions?.paths || {};
@@ -39,7 +45,13 @@ function loadTsconfigPaths(): Record<string, string> {
             aliasMap[cleanAlias] = cleanTarget;
         }
 
-        return aliasMap;
+        const sortedAliasMap: Record<string, string> = {};
+        const sortedEntries = Object.entries(aliasMap).toSorted((a, b) => b[0].length - a[0].length);
+        for (const [key, val] of sortedEntries) {
+            sortedAliasMap[key] = val;
+        }
+
+        return sortedAliasMap;
     } catch {
         return {};
     }
@@ -49,17 +61,78 @@ const ALIAS_MAP = loadTsconfigPaths();
 
 const MAX_NUMERIC_Z = 9999;
 
-function resolveImportPath(importPath: string, currentFileId: string): string {
-    if (importPath.startsWith(".")) {
-        const resolved = path.resolve(path.dirname(currentFileId), importPath);
-        return resolved.endsWith(".svelte") ? resolved : `${resolved}.svelte`;
+function extractImports(code: string): Map<string, string> {
+    const importMap = new Map<string, string>();
+    const cleanCode = stripJsonComments(code);
+
+    const importBlockRegex = /import\s+([\s\S]*?)\s+from\s+['"]([^'"]+)['"]/g;
+
+    let match: RegExpExecArray | null;
+    while ((match = importBlockRegex.exec(cleanCode)) !== null) {
+        const [, clause, importPath] = match;
+        if (!clause || !importPath) continue;
+
+        const trimmed = clause.trim();
+
+        // 1. Default import: e.g. "FloatingNavbar" or "FloatingNavbar, { Bar }"
+        const defaultMatch = trimmed.match(/^([A-Za-z0-9_$]+)/);
+        if (defaultMatch && defaultMatch[1] !== "type" && defaultMatch[1] !== "{") {
+            importMap.set(defaultMatch[1], importPath);
+        }
+
+        // 2. Named imports: e.g. "{ FloatingNavbar, Bar as Baz }"
+        const namedMatch = trimmed.match(/\{([\s\S]*?)\}/);
+        if (namedMatch) {
+            const specifiers = namedMatch[1].split(",");
+            for (const spec of specifiers) {
+                const parts = spec.trim().split(/\s+as\s+/);
+                const localName = parts.at(-1)?.trim();
+                if (localName && localName !== "type") {
+                    importMap.set(localName, importPath);
+                }
+            }
+        }
     }
 
-    for (const [alias, dir] of Object.entries(ALIAS_MAP)) {
-        if (importPath === alias || importPath.startsWith(`${alias}/`)) {
-            const relPath = importPath.slice(alias.length);
-            const resolved = path.resolve(process.cwd(), dir + relPath);
-            return resolved.endsWith(".svelte") ? resolved : `${resolved}.svelte`;
+    return importMap;
+}
+
+function resolveImportPath(importPath: string, currentFileId: string): string {
+    let baseResolved = "";
+    const absCurrentFile = path.isAbsolute(currentFileId)
+        ? currentFileId
+        : path.resolve(process.cwd(), currentFileId);
+
+    if (importPath.startsWith(".")) {
+        baseResolved = path.resolve(path.dirname(absCurrentFile), importPath);
+    } else {
+        for (const [alias, dir] of Object.entries(ALIAS_MAP)) {
+            if (importPath === alias) {
+                baseResolved = path.join(process.cwd(), dir);
+                break;
+            }
+            if (importPath.startsWith(`${alias}/`)) {
+                const relPath = importPath.slice(alias.length + 1);
+                baseResolved = path.join(process.cwd(), dir, relPath);
+                break;
+            }
+        }
+    }
+
+    if (!baseResolved) return "";
+
+    // Check directly or append extensions (.svelte, .ts, /index.svelte, /index.ts)
+    const candidates = [
+        baseResolved,
+        `${baseResolved}.svelte`,
+        `${baseResolved}.ts`,
+        path.join(baseResolved, "index.svelte"),
+        path.join(baseResolved, "index.ts"),
+    ];
+
+    for (const candidate of candidates) {
+        if (fs.existsSync(candidate) && fs.statSync(candidate).isFile()) {
+            return candidate;
         }
     }
 
@@ -84,25 +157,29 @@ function checkZIndex(block: string, id: string, onError: (msg: string) => void):
     }
 }
 
+interface PluginContextLike {
+    addWatchFile?: (file: string) => void;
+}
+
 function checkChildComponent(
     compName: string,
-    code: string,
+    importMap: Map<string, string>,
     id: string,
-    onError: (msg: string) => void
+    onError: (msg: string) => void,
+    pluginContext?: PluginContextLike
 ): void {
-    if (compName === "AppLayer") return;
+    const rawImportPath = importMap.get(compName);
+    if (!rawImportPath) return;
 
-    // Locate the import statement for this component in the current file
-    const importRegex = new RegExp(String.raw`import\s+${compName}\s+from\s+['"]([^'"]+)['"]`);
-    const importMatch = code.match(importRegex);
-    if (!importMatch) return;
+    const resolvedPath = resolveImportPath(rawImportPath, id);
+    if (!resolvedPath) return;
 
-    const resolvedPath = resolveImportPath(importMatch[1], id);
-    if (!resolvedPath || !fs.existsSync(resolvedPath)) return;
+    if (typeof pluginContext?.addWatchFile === "function") {
+        pluginContext.addWatchFile(resolvedPath);
+    }
 
     try {
         const childCode = fs.readFileSync(resolvedPath, "utf8");
-        // Verify that layerAttach is actually attached to an element in the template ({@attach layerAttach})
         const hasAttachDirective = /@attach\s+layerAttach\b/.test(childCode);
 
         if (!hasAttachDirective) {
@@ -116,6 +193,24 @@ function checkChildComponent(
     } catch (error) {
         if (error && typeof error === "object" && "message" in error) {
             throw error;
+        }
+    }
+}
+
+function processChildTags(
+    block: string,
+    importMap: Map<string, string>,
+    id: string,
+    onError: (msg: string) => void,
+    pluginContext?: PluginContextLike
+): void {
+    const childComponentMatches = block.match(/<([A-Z][A-Za-z0-9_]*)\b/g);
+    if (!childComponentMatches) return;
+
+    for (const rawTag of childComponentMatches) {
+        const compName = rawTag.slice(1);
+        if (compName !== "AppLayer") {
+            checkChildComponent(compName, importMap, id, onError, pluginContext);
         }
     }
 }
@@ -144,21 +239,22 @@ export function layerGuardPlugin(options: LayerGuardOptions = {}): Plugin {
             const appLayerBlocks = code.match(/<AppLayer[\s\S]*?<\/AppLayer>/g);
             if (!appLayerBlocks) return null;
 
+            const importMap = extractImports(code);
+
+            // eslint-disable-next-line unicorn/no-this-outside-of-class
+            const ctx = this as PluginContextLike & { error?: (msg: string) => never };
+
             const onError = (msg: string) => {
-                // eslint-disable-next-line unicorn/no-this-outside-of-class
-                this.error(msg);
+                if (typeof ctx.error === "function") {
+                    ctx.error(msg);
+                } else {
+                    throw new TypeError(msg);
+                }
             };
 
             for (const block of appLayerBlocks) {
                 checkZIndex(block, id, onError);
-
-                const childComponentMatches = block.match(/<([A-Z][A-Za-z0-9_]*)\b/g);
-                if (!childComponentMatches) continue;
-
-                for (const rawTag of childComponentMatches) {
-                    const compName = rawTag.slice(1);
-                    checkChildComponent(compName, code, id, onError);
-                }
+                processChildTags(block, importMap, id, onError, ctx);
             }
 
             return null;

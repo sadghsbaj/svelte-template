@@ -15,6 +15,11 @@ export default defineConfig({
         {
             "flex-center": "flex justify-center items-center",
             "absolute-center": "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2",
+
+            "app-views":
+                "flex-1 grid min-h-0 w-full [grid-template-areas:'app-view'] overflow-hidden",
+            "app-view":
+                "w-full h-full [grid-area:app-view] overflow-y-[var(--app-view-overflow,auto)]",
         },
     ],
 

@@ -6,10 +6,11 @@
 
     interface Props {
         view: string;
+        overflow?: "auto" | "hidden" | "scroll" | "visible";
         children?: Snippet;
     }
 
-    let { view, children }: Props = $props();
+    let { view, overflow = "auto", children }: Props = $props();
 
     const getViewState = getViewStateContext();
     if (!getViewState) {
@@ -17,13 +18,27 @@
     }
 
     const viewState = $derived(getViewState());
-
     const inTransition = $derived(viewState.getInTransition(view));
     const outTransition = $derived(viewState.getOutTransition(view));
     const transitionParams = $derived(viewState.isAnimated(view) ? {} : { duration: 0 });
 
+    /**
+     * Configures the custom `--app-view-overflow` CSS property on DOM mount
+     * when a non-default overflow behavior is specified via component props.
+     */
+    const viewOverflow: Attachment = (node) => {
+        if (overflow !== "auto") {
+            (node as HTMLElement).style.setProperty("--app-view-overflow", overflow);
+        }
+    };
+
+    /**
+     * Tracks and restores scroll coordinates across view navigation lifecycles,
+     * capturing scroll offsets before destruction and reapplying them on mount.
+     */
     const scrollRestoration: Attachment = (node) => {
         const el = node as HTMLElement;
+
         let lastPos = 0;
         let lastHeight = 0;
 
@@ -53,11 +68,11 @@
 
 {#if viewState.isCurrent(view)}
     <div
-        data-layout="app-view"
-        data-view={view}
+        class="app-view"
         in:inTransition={transitionParams}
         out:outTransition={transitionParams}
         {@attach scrollRestoration}
+        {@attach viewOverflow}
     >
         {@render children?.()}
     </div>

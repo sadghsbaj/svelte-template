@@ -9,4 +9,10 @@ export const variantsConfig: Variant[] = [
             selector: (s) => `${s}:hover`,
         };
     },
+    (matcher) => {
+        if (!matcher.startsWith("t:")) return matcher;
+        return {
+            matcher: `t-${matcher.slice(2)}`,
+        };
+    },
 ];

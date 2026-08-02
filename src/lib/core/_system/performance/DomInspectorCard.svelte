@@ -128,7 +128,7 @@
         ? 'bg-elevation-1 backdrop-blur-none'
         : 'backdrop-blur-xl bg-elevation-1/90'} {isDragging
         ? '!transition-none'
-        : 'transition-colors duration-150'}"
+        : 't-bg-150-sine-out t-text-150-sine-out'}"
 >
     <!-- Header -->
     <!-- svelte-ignore a11y_no_static_element_interactions -->
@@ -148,7 +148,7 @@
 
         <button
             onclick={onClose}
-            class="text-weak p-1 rounded-lg transition-colors squircle-smooth hover:text-strong hover:bg-elevation-2"
+            class="text-weak p-1 rounded-lg t-bg-150-sine-out t-text-150-sine-out squircle-smooth hover:text-strong hover:bg-elevation-2"
             title="Close Inspector"
         >
             <X class="h-4.5 w-4.5" />
@@ -223,7 +223,7 @@
                         onclick={() => {
                             performanceState.selectElement(item.el);
                         }}
-                        class="text-xs font-mono p-1.5 px-2 rounded-lg flex cursor-pointer transition-colors items-center justify-between squircle-smooth {item.el ===
+                        class="text-xs font-mono p-1.5 px-2 rounded-lg flex cursor-pointer t-bg-150-sine-out t-text-150-sine-out items-center justify-between squircle-smooth {item.el ===
                         performanceState.selectedElement
                             ? 'text-cyan-700 border border-cyan-500/30 bg-cyan-500/15 dark:text-cyan-300'
                             : 'text-strong bg-elevation-1 hover:bg-elevation-2 dark:bg-elevation-1/60'}"
@@ -265,7 +265,7 @@
 {#if hoveredAncestorRect}
     <div
         id="dev-inspector-parent-highlight"
-        class="border-2 border-amber-500/80 rounded bg-amber-500/15 pointer-events-none shadow-sm transition-all duration-75 fixed z-9 dark:border-amber-400/80 dark:bg-amber-400/15"
+        class="border-2 border-amber-500/80 rounded bg-amber-500/15 pointer-events-none shadow-sm t-75-sine-out fixed z-9 dark:border-amber-400/80 dark:bg-amber-400/15"
         style="left: {hoveredAncestorRect.left}px; top: {hoveredAncestorRect.top}px; width: {hoveredAncestorRect.width}px; height: {hoveredAncestorRect.height}px;"
     ></div>
 {/if}

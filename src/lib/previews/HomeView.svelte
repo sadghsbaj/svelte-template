@@ -111,7 +111,7 @@
         </div>
         <button
             type="button"
-            class="t:bg-400-expo-out t:text-400-expo-out text-white font-medium px-5 py-3 rounded-2xl bg-accent-500 flex gap-2 shadow-accent-500/20 shadow-md items-center z-10 hover:(text-red-500 bg-accent-600) active:scale-98"
+            class="text-white font-medium px-5 py-3 rounded-2xl bg-accent-500 flex gap-2 shadow-accent-500/20 shadow-md items-center z-10 hover:(text-red-500 bg-accent-600) active:scale-98 t:(bg-2000-expo-out text-2000-expo-out)"
         >
             <Plus size={18} />
             <span>Neues Projekt</span>

@@ -1,6 +1,8 @@
 import svelte from "eslint-plugin-svelte";
 import ts from "typescript-eslint";
 
+import { forbiddenTransitionSelector } from "./transitions.js";
+
 export const svelteConfig = [
     ...svelte.configs.recommended,
 
@@ -19,6 +21,7 @@ export const svelteConfig = [
             "prefer-const": "off",
             "no-restricted-syntax": [
                 "error",
+                forbiddenTransitionSelector,
                 {
                     selector: "SvelteDirective[kind='Action']",
                     message:

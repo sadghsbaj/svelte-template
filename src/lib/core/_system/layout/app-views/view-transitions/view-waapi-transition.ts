@@ -1,7 +1,7 @@
 /**
  * @file view-waapi-transition.ts
  * High-performance Web Animations API (WAAPI) transition functions for view switching (`viewWaapiIn` / `viewWaapiOut`).
- * 
+ *
  * Runs natively on the browser Compositor thread for 60/120 FPS performance,
  * while seamlessly returning duration metadata to Svelte's transition runner.
  */
@@ -25,10 +25,7 @@ export interface WaapiViewTransitionOptions {
  * Automatically respects `motionPreference` unless `forceAnimate: true` is provided.
  */
 export const viewWaapiIn = withMotionGuard<WaapiViewTransitionOptions>(
-    (
-        node: Element,
-        params?: WaapiViewTransitionOptions
-    ): TransitionConfig => {
+    (node: Element, params?: WaapiViewTransitionOptions): TransitionConfig => {
         const {
             y = 18,
             scale = 0.985,
@@ -42,7 +39,8 @@ export const viewWaapiIn = withMotionGuard<WaapiViewTransitionOptions>(
         if (duration > 0 && typeof el?.animate === "function") {
             // 1. Pre-promote layer for GPU compositing
             if (el.style) {
-                el.style.willChange = blur > 0 ? "opacity, transform, filter" : "opacity, transform";
+                el.style.willChange =
+                    blur > 0 ? "opacity, transform, filter" : "opacity, transform";
             }
 
             // 2. Clear concurrent active animations on rapid navigation
@@ -73,7 +71,11 @@ export const viewWaapiIn = withMotionGuard<WaapiViewTransitionOptions>(
             );
 
             // 3. Commit end state to element inline styles and release compositor resources using async cleanup
-            if (animation && "finished" in animation && typeof animation.commitStyles === "function") {
+            if (
+                animation &&
+                "finished" in animation &&
+                typeof animation.commitStyles === "function"
+            ) {
                 void (async () => {
                     try {
                         await animation.finished;
@@ -101,10 +103,7 @@ export const viewWaapiIn = withMotionGuard<WaapiViewTransitionOptions>(
  * Automatically respects `motionPreference` unless `forceAnimate: true` is provided.
  */
 export const viewWaapiOut = withMotionGuard<WaapiViewTransitionOptions>(
-    (
-        node: Element,
-        params?: WaapiViewTransitionOptions
-    ): TransitionConfig => {
+    (node: Element, params?: WaapiViewTransitionOptions): TransitionConfig => {
         const {
             y = -8,
             scale = 0.99,
@@ -118,7 +117,8 @@ export const viewWaapiOut = withMotionGuard<WaapiViewTransitionOptions>(
         if (duration > 0 && typeof el?.animate === "function") {
             // 1. Pre-promote layer for GPU compositing
             if (el.style) {
-                el.style.willChange = blur > 0 ? "opacity, transform, filter" : "opacity, transform";
+                el.style.willChange =
+                    blur > 0 ? "opacity, transform, filter" : "opacity, transform";
             }
 
             // 2. Clear concurrent active animations on rapid navigation
@@ -149,7 +149,11 @@ export const viewWaapiOut = withMotionGuard<WaapiViewTransitionOptions>(
             );
 
             // 3. Commit end state to element inline styles and release compositor resources using async cleanup
-            if (animation && "finished" in animation && typeof animation.commitStyles === "function") {
+            if (
+                animation &&
+                "finished" in animation &&
+                typeof animation.commitStyles === "function"
+            ) {
                 void (async () => {
                     try {
                         await animation.finished;

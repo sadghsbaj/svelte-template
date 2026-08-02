@@ -1,6 +1,7 @@
 import { describe, expect, test } from "vitest";
 
 import type { ViewsConfig } from "$core/_system/layout/app-views/types";
+
 import { ViewState } from "./viewState.svelte";
 
 describe("ViewState (Node SSR Environment)", () => {

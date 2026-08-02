@@ -1,7 +1,5 @@
 import { SvelteSet } from "svelte/reactivity";
 
-import { appStack } from "$core/_system/stack/appStack.svelte";
-
 import type {
     Direction,
     StoredScrollState,
@@ -11,8 +9,15 @@ import type {
     ViewTransitionOption,
 } from "$core/_system/layout/app-views/types";
 import { ViewScrollManager } from "$core/_system/layout/app-views/view-scroll/view-scroll";
-import { viewIn, viewOut } from "$core/_system/layout/app-views/view-transitions/view-svelte-transition";
-import { viewWaapiIn, viewWaapiOut } from "$core/_system/layout/app-views/view-transitions/view-waapi-transition";
+import {
+    viewIn,
+    viewOut,
+} from "$core/_system/layout/app-views/view-transitions/view-svelte-transition";
+import {
+    viewWaapiIn,
+    viewWaapiOut,
+} from "$core/_system/layout/app-views/view-transitions/view-waapi-transition";
+import { appStack } from "$core/_system/stack/appStack.svelte";
 
 export type ViewScopeChangeListener = (rootView: string) => void;
 const scopeChangeListeners = new SvelteSet<ViewScopeChangeListener>();

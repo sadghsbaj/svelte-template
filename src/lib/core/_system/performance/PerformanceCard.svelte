@@ -270,7 +270,7 @@
         ? 'bg-elevation-1 backdrop-blur-none'
         : 'backdrop-blur-xl bg-elevation-1/90'} {isDragging
         ? '!transition-none'
-        : 'transition-colors duration-150'}"
+        : 't-bg-150-sine-out t-text-150-sine-out'}"
 >
     {@render header()}
     {@render summaryBar()}
@@ -357,7 +357,7 @@
 
         <button
             onclick={onClose}
-            class="text-weak p-1 rounded-lg transition-colors squircle-smooth hover:text-strong hover:bg-elevation-2"
+            class="text-weak p-1 rounded-lg t-bg-150-sine-out t-text-150-sine-out squircle-smooth hover:text-strong hover:bg-elevation-2"
             title="Close Overlay (Alt+P to reopen)"
         >
             <X class="h-4.5 w-4.5" />
@@ -385,7 +385,7 @@
                 <!-- Heatmap Toggle Button -->
                 <button
                     onclick={onToggleHeatmap}
-                    class="p-1 rounded-lg flex transition-colors items-center justify-center squircle-smooth {isHeatmapActive
+                    class="p-1 rounded-lg flex items-center justify-center t-bg-150-sine-out t-text-150-sine-out squircle-smooth {isHeatmapActive
                         ? 'text-orange-500 border border-orange-500/30 bg-orange-500/15 dark:text-orange-400'
                         : 'text-weak hover:text-strong hover:bg-elevation-1'}"
                     title={isHeatmapActive
@@ -398,7 +398,7 @@
                 <!-- Inspector Toggle Button -->
                 <button
                     onclick={onToggleInspector}
-                    class="p-1 rounded-lg flex transition-colors items-center justify-center squircle-smooth {isInspectorActive
+                    class="p-1 rounded-lg flex items-center justify-center t-bg-150-sine-out t-text-150-sine-out squircle-smooth {isInspectorActive
                         ? 'text-cyan-500 border border-cyan-500/30 bg-cyan-500/15 dark:text-cyan-400'
                         : 'text-weak hover:text-strong hover:bg-elevation-1'}"
                     title={isInspectorActive
@@ -521,7 +521,7 @@
             </div>
             <div class="rounded-full h-2 w-full overflow-hidden bg-base-300/80 dark:bg-base-700/80">
                 <div
-                    class="rounded-full h-full transition-all duration-300 {memoryTier.bg}"
+                    class="rounded-full h-full t-300-sine-out {memoryTier.bg}"
                     style="width: {memoryPercent}%;"
                 ></div>
             </div>

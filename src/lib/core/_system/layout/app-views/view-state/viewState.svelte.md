@@ -57,10 +57,7 @@ interface ViewTransitionObject {
     out?: ViewTransitionFn;
 }
 
-type ViewTransitionOption =
-    | ViewTransitionMode
-    | ViewTransitionFn
-    | ViewTransitionObject;
+type ViewTransitionOption = ViewTransitionMode | ViewTransitionFn | ViewTransitionObject;
 
 interface ViewConfig<T extends string> {
     view: T;

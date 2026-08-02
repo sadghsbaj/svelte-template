@@ -15,10 +15,7 @@ export interface ViewTransitionObject {
     out?: ViewTransitionFn;
 }
 
-export type ViewTransitionOption =
-    | ViewTransitionMode
-    | ViewTransitionFn
-    | ViewTransitionObject;
+export type ViewTransitionOption = ViewTransitionMode | ViewTransitionFn | ViewTransitionObject;
 
 // --- Scroll Restoration Types ---
 

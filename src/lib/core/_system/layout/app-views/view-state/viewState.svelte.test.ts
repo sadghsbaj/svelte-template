@@ -1,9 +1,9 @@
 import { appShortcut } from "$modules/shortcut/appShortcut.svelte";
 import { beforeEach, describe, expect, test } from "vitest";
 
+import type { ViewsConfig } from "$core/_system/layout/app-views/types";
 import { appStack } from "$core/_system/stack/appStack.svelte";
 
-import type { ViewsConfig } from "$core/_system/layout/app-views/types";
 import { ViewState } from "./viewState.svelte";
 
 function mockCustomFn() {

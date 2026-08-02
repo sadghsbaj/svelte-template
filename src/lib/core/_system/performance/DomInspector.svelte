@@ -61,7 +61,7 @@
 {#if performanceState.isInspectorActive && hoverBoxRect}
     <div
         id="dev-dom-inspector-hover"
-        class="border-2 border-cyan-500/80 rounded bg-cyan-500/10 pointer-events-none shadow-sm transition-all duration-75 fixed z-9 dark:border-cyan-400/80 dark:bg-cyan-400/10"
+        class="border-2 border-cyan-500/80 rounded bg-cyan-500/10 pointer-events-none shadow-sm t-75-sine-out fixed z-9 dark:border-cyan-400/80 dark:bg-cyan-400/10"
         style="left: {hoverBoxRect.left}px; top: {hoverBoxRect.top}px; width: {hoverBoxRect.width}px; height: {hoverBoxRect.height}px;"
     ></div>
 {/if}

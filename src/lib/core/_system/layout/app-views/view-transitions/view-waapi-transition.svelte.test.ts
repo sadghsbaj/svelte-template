@@ -2,11 +2,7 @@ import { describe, expect, test, vi } from "vitest";
 
 import { ease, motionPreference } from "$core/_system/motion";
 
-import {
-    viewWaapiIn,
-    viewWaapiOut,
-    viewWaapiTransition,
-} from "./view-waapi-transition";
+import { viewWaapiIn, viewWaapiOut, viewWaapiTransition } from "./view-waapi-transition";
 
 function createMockNode() {
     const animateMock = vi.fn().mockReturnValue({
@@ -33,7 +29,9 @@ describe("WAAPI View Transitions", () => {
         const result = viewWaapiIn(node);
 
         expect(result.duration).toBe(360);
-        expect((node as unknown as HTMLElement).style.willChange).toBe("opacity, transform, filter");
+        expect((node as unknown as HTMLElement).style.willChange).toBe(
+            "opacity, transform, filter"
+        );
         expect(animateMock).toHaveBeenCalledWith(
             [
                 {

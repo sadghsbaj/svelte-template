@@ -21,7 +21,6 @@
     const isCurrent = $derived(viewState.activeView === view);
     const inTransition = $derived(viewState.getInTransition(view));
     const outTransition = $derived(viewState.getOutTransition(view));
-    const transitionParams = $derived(viewState.isAnimated(view) ? {} : { duration: 0 });
 
     /**
      * Configures the custom `--app-view-overflow` CSS property on DOM mount
@@ -70,8 +69,8 @@
 {#if isCurrent}
     <div
         class="app-view"
-        in:inTransition={transitionParams}
-        out:outTransition={transitionParams}
+        in:inTransition
+        out:outTransition
         {@attach scrollRestoration}
         {@attach viewOverflow}
     >

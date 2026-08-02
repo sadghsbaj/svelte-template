@@ -7,8 +7,18 @@ export type ViewTransitionFn = (
     params?: Record<string, unknown>
 ) => TransitionConfig;
 
+export type ViewTransitionMode = "waapi" | "svelte" | "none";
+
+export interface ViewTransitionObject {
+    mode?: ViewTransitionMode;
+    in?: ViewTransitionFn;
+    out?: ViewTransitionFn;
+}
+
 export type ViewTransitionOption =
-    ViewTransitionFn | { in?: ViewTransitionFn; out?: ViewTransitionFn };
+    | ViewTransitionMode
+    | ViewTransitionFn
+    | ViewTransitionObject;
 
 // --- Scroll Restoration Types ---
 
@@ -31,7 +41,6 @@ export interface ViewConfig<T extends string> {
     label?: string;
     parent: "root" | T;
     scroll?: false | ScrollConfig;
-    animated?: boolean;
     transition?: ViewTransitionOption;
     disabled?: boolean;
     /** Whether back-stack auto-registration is enabled for this view (default: true) */
@@ -42,7 +51,6 @@ export interface ViewsConfig<T extends string> {
     persistKey?: string;
     scroll?: ScrollConfig;
     views: readonly ViewConfig<T>[];
-    animated?: boolean;
     transition?: ViewTransitionOption;
     /** Whether back-stack auto-registration is enabled globally for all views (default: true) */
     stack?: boolean;

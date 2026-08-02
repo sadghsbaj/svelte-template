@@ -35,7 +35,6 @@ class ViewState<T extends string> {
     next(): boolean;
     previous(): boolean;
     isCurrent(view: T): boolean;
-    isAnimated(view?: T): boolean;
     isDisabled(view: T): boolean;
 
     // Transition & Scroll Facades
@@ -50,12 +49,24 @@ class ViewState<T extends string> {
 ### Configuration Options
 
 ```typescript
+type ViewTransitionMode = "waapi" | "svelte" | "none";
+
+interface ViewTransitionObject {
+    mode?: ViewTransitionMode;
+    in?: ViewTransitionFn;
+    out?: ViewTransitionFn;
+}
+
+type ViewTransitionOption =
+    | ViewTransitionMode
+    | ViewTransitionFn
+    | ViewTransitionObject;
+
 interface ViewConfig<T extends string> {
     view: T;
     label?: string;
     parent: "root" | T;
     scroll?: false | ScrollConfig;
-    animated?: boolean;
     transition?: ViewTransitionOption;
     disabled?: boolean;
     stack?: boolean; // Enable/disable back-stack registration for this view (default: true)
@@ -65,8 +76,7 @@ interface ViewsConfig<T extends string> {
     persistKey?: string;
     scroll?: ScrollConfig;
     views: readonly ViewConfig<T>[];
-    animated?: boolean;
-    transition?: ViewTransitionOption;
+    transition?: ViewTransitionOption; // Default: 'waapi'
     stack?: boolean; // Enable/disable back-stack registration globally (default: true)
 }
 ```
@@ -88,6 +98,6 @@ function createViewState<T extends string>(config: ViewsConfig<T>): ViewState<T>
 - **Declared Hierarchy (`parent: "root" | T`):** Views explicitly define their parent via `parent: "root" | T`. Level 1 root views specify `"root"`, while subviews reference their direct parent view string. `getParent(view)` retrieves the direct parent, and `getRootView(view)` recursively resolves the primary root tab.
 - **Automatic Back-Stack Integration:** `ViewState` seamlessly synchronizes with `appStack`. Upon initialization and every `setView(targetView)` invocation, `ViewState` updates `appStack.setScope(rootView)`. For subviews (`parent !== "root"`), `ViewState` automatically registers a subview rollback action (`priority: "subview"`, `scope: root`) to return to the parent view upon back gesture or `appStack.pop()`.
 - **Back-Stack Opt-Out (`stack: false`):** Auto-registration can be disabled globally by setting `stack: false` in `ViewsConfig`, or for individual subviews by setting `stack: false` in `ViewConfig`.
-- **Direction Calculation:** `direction` is derived dynamically by comparing indices of `fromView` and `activeView` in the configured `views` array to drive slide animations.
+- **WAAPI High-Performance Transitions (`transition: "waapi"`):** By default, views utilize GPU-accelerated Web Animations API transitions (`viewWaapiIn` / `viewWaapiOut`) running on the browser compositor thread. Can be configured globally or per-view to `"svelte"`, `"none"`, or custom transition functions.
 - **Scroll State Restoration:** Coordinates scroll position measurement and restoration per view via `ViewScrollManager`, supporting both session storage and local storage persistence based on view-level scroll rules.
 - **LocalStorage State Persistence:** If `persistKey` is provided in `ViewsConfig`, `ViewState` restores the initial view from `localStorage` during initialization and persists active view changes.

@@ -12,9 +12,12 @@ import type {
 } from "./types";
 import { ViewScrollManager } from "./view-scroll";
 import { viewIn, viewOut } from "./view-svelte-transition";
+import { viewWaapiIn, viewWaapiOut } from "./view-waapi-transition";
 
 export type ViewScopeChangeListener = (rootView: string) => void;
 const scopeChangeListeners = new SvelteSet<ViewScopeChangeListener>();
+
+const noneTransition: ViewTransitionFn = () => ({ duration: 0 });
 
 /**
  * Registers a listener callback invoked when the active view root scope changes.
@@ -138,13 +141,6 @@ export class ViewState<T extends string> {
         return this.activeView === view;
     }
 
-    isAnimated(view: T = this.activeView): boolean {
-        if (this.config.animated === false) return false;
-
-        const targetConfig = this.getConfig(view);
-        return targetConfig?.animated !== false;
-    }
-
     isDisabled(view: T): boolean {
         return this.getConfig(view)?.disabled ?? false;
     }
@@ -209,18 +205,6 @@ export class ViewState<T extends string> {
         this.scrollManager.savePosition(view, state);
     }
 
-    private resolveOption(
-        option: ViewTransitionOption | undefined,
-        type: "in" | "out"
-    ): ViewTransitionFn | undefined {
-        if (!option) return undefined;
-
-        if (typeof option === "function") return option;
-
-        const fn = option[type];
-        return typeof fn === "function" ? fn : undefined;
-    }
-
     getParent(view: T = this.activeView): "root" | T {
         return this.getConfig(view)?.parent ?? "root";
     }
@@ -242,24 +226,46 @@ export class ViewState<T extends string> {
         return view;
     }
 
-    getInTransition(view: T = this.activeView): ViewTransitionFn {
+    private resolveTransition(view: T, type: "in" | "out"): ViewTransitionFn {
         const viewConfig = this.getConfig(view);
+        const option: ViewTransitionOption =
+            viewConfig?.transition ?? this.config.transition ?? "waapi";
 
-        return (
-            this.resolveOption(viewConfig?.transition, "in") ??
-            this.resolveOption(this.config.transition, "in") ??
-            viewIn
-        );
+        if (option === "none") {
+            return noneTransition;
+        }
+
+        if (option === "waapi") {
+            return type === "in" ? viewWaapiIn : viewWaapiOut;
+        }
+
+        if (option === "svelte") {
+            return type === "in" ? viewIn : viewOut;
+        }
+
+        if (typeof option === "function") {
+            return option;
+        }
+
+        if (typeof option === "object" && option !== null) {
+            if (typeof option[type] === "function") {
+                return option[type]!;
+            }
+            const mode = option.mode ?? "waapi";
+            if (mode === "none") return noneTransition;
+            if (mode === "svelte") return type === "in" ? viewIn : viewOut;
+            return type === "in" ? viewWaapiIn : viewWaapiOut;
+        }
+
+        return type === "in" ? viewWaapiIn : viewWaapiOut;
+    }
+
+    getInTransition(view: T = this.activeView): ViewTransitionFn {
+        return this.resolveTransition(view, "in");
     }
 
     getOutTransition(view: T = this.activeView): ViewTransitionFn {
-        const viewConfig = this.getConfig(view);
-
-        return (
-            this.resolveOption(viewConfig?.transition, "out") ??
-            this.resolveOption(this.config.transition, "out") ??
-            viewOut
-        );
+        return this.resolveTransition(view, "out");
     }
 }
 

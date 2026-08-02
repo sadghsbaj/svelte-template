@@ -172,32 +172,54 @@ describe("ViewState (Browser Client)", () => {
         });
     });
 
-    describe("Animation & State Inspection", () => {
-        test("should correctly report isCurrent, isAnimated, and index getters", () => {
+    describe("Transition Resolution & Modes", () => {
+        test("should default to WAAPI transition functions when no option is specified", () => {
             const state = new ViewState(mockConfig);
-            expect(state.isCurrent("home")).toBe(true);
-            expect(state.isCurrent("stats")).toBe(false);
-            expect(state.currentIndex).toBe(0);
-            expect(state.firstView).toBe("home");
-            expect(state.lastView).toBe("settings");
+            const inFn = state.getInTransition("home");
+            const outFn = state.getOutTransition("home");
+            expect(typeof inFn).toBe("function");
+            expect(typeof outFn).toBe("function");
 
-            expect(state.isAnimated("home")).toBe(true);
+            const mockElem = { animate: () => {} } as unknown as Element;
+            expect(inFn(mockElem)).toHaveProperty("duration");
+            expect(outFn(mockElem)).toHaveProperty("duration");
         });
 
-        test("should respect animated: false at global or view level", () => {
-            mockConfig.animated = false;
-            const stateGlobalDisabled = new ViewState(mockConfig);
-            expect(stateGlobalDisabled.isAnimated("home")).toBe(false);
+        test("should respect transition: 'none' at global or view level", () => {
+            mockConfig.transition = "none";
+            const stateNone = new ViewState(mockConfig);
+            expect(stateNone.getInTransition("home")({} as Element)).toEqual({ duration: 0 });
 
-            mockConfig.animated = true;
+            mockConfig.transition = "waapi";
             mockConfig.views = [
-                { view: "home", parent: "root", animated: false },
+                { view: "home", parent: "root", transition: "none" },
                 { view: "stats", parent: "root" },
-                { view: "settings", parent: "root" },
+                { view: "statsDetails", parent: "stats" },
+                { view: "statsSubDetails", parent: "statsDetails" },
+                { view: "settings", parent: "root", disabled: true },
             ];
-            const stateViewDisabled = new ViewState(mockConfig);
-            expect(stateViewDisabled.isAnimated("home")).toBe(false);
-            expect(stateViewDisabled.isAnimated("stats")).toBe(true);
+            const stateViewNone = new ViewState(mockConfig);
+            expect(stateViewNone.getInTransition("home")({} as Element)).toEqual({ duration: 0 });
+            expect(
+                stateViewNone.getInTransition("stats")({ animate: () => {} } as unknown as Element)
+                    .duration
+            ).toBeGreaterThan(0);
+        });
+
+        test("should respect transition: 'svelte' mode", () => {
+            mockConfig.transition = "svelte";
+            const stateSvelte = new ViewState(mockConfig);
+            const inFn = stateSvelte.getInTransition("home");
+            const res = inFn({} as Element);
+            expect(res).toHaveProperty("duration");
+            expect(res).toHaveProperty("css");
+        });
+
+        test("should handle custom transition objects with mode overrides", () => {
+            mockConfig.transition = { mode: "svelte" };
+            const stateObj = new ViewState(mockConfig);
+            const res = stateObj.getInTransition("home")({} as Element);
+            expect(res).toHaveProperty("css");
         });
     });
 

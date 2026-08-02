@@ -30,7 +30,7 @@ describe("layerGuardPlugin", () => {
     test("should pass when rendered child component includes layerAttach directive", () => {
         const code = `
             import PerformanceHost from "$core/_system/performance/PerformanceHost.svelte";
-            <AppLayer layer="perf">
+            <AppLayer layer="perf" z="top-layer">
                 <PerformanceHost />
             </AppLayer>
         `;
@@ -40,5 +40,39 @@ describe("layerGuardPlugin", () => {
             },
         };
         expect(transform.call(context, code, "src/App.svelte")).toBeNull();
+    });
+
+    test("should throw error for invalid z-index numeric range", () => {
+        const code = `
+            import PerformanceHost from "$core/_system/performance/PerformanceHost.svelte";
+            <AppLayer layer="perf" z={15000}>
+                <PerformanceHost />
+            </AppLayer>
+        `;
+        const context = {
+            error(msg: string) {
+                throw new Error(msg);
+            },
+        };
+        expect(() => transform.call(context, code, "src/App.svelte")).toThrow(
+            "Invalid z-index (15000)"
+        );
+    });
+
+    test("should throw error for invalid z-index string value", () => {
+        const code = `
+            import PerformanceHost from "$core/_system/performance/PerformanceHost.svelte";
+            <AppLayer layer="perf" z="super-top">
+                <PerformanceHost />
+            </AppLayer>
+        `;
+        const context = {
+            error(msg: string) {
+                throw new Error(msg);
+            },
+        };
+        expect(() => transform.call(context, code, "src/App.svelte")).toThrow(
+            "Invalid z-index (super-top)"
+        );
     });
 });

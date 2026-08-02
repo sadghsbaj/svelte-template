@@ -14,7 +14,6 @@
     let { layer, z = 0, inertApp = false, children }: AppLayerProps = $props();
 
     const TOP_LAYER_Z = 10_000;
-    const MAX_NUMERIC_Z = 9999;
 
     let activeCount = $state(0);
     const computedZ = $derived(z === "top-layer" ? TOP_LAYER_Z : (z ?? 0));
@@ -37,28 +36,7 @@
         },
     });
 
-    // DEV-Guard: Validates z-index range (0 to 9999 or "top-layer")
-    function zIndexDevGuard() {
-        if (!import.meta.env.DEV) return;
-
-        if (typeof z === "number") {
-            if (z < 0 || z > MAX_NUMERIC_Z || !Number.isSafeInteger(z)) {
-                console.error(
-                    `[AppLayer DevGuard] Invalid numeric z-index (${z}) on layer "${layer}". ` +
-                        `Numeric z must be an integer between 0 and 9999. Use z="top-layer" for ${TOP_LAYER_Z}.`
-                );
-            }
-        } else if (z !== "top-layer") {
-            console.error(
-                `[AppLayer DevGuard] Invalid z value ("${z}") on layer "${layer}". ` +
-                    `Expected an integer between 0 and 9999, or "top-layer".`
-            );
-        }
-    }
-
     $effect(() => {
-        zIndexDevGuard();
-
         if (!inertApp || activeCount <= 0) return;
 
         appInertState.block();

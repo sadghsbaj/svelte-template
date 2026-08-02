@@ -1,11 +1,11 @@
 /**
  * @file layer-guard.ts
- * Vite plugin to enforce layerAttach usage on overlay components rendered inside AppLayer.
+ * Vite plugin to enforce layerAttach usage on overlay components rendered inside AppLayer
+ * and validate z-index prop values at compile time.
  *
  * This compiler-level guard inspects Svelte source files during development and build.
- * When an <AppLayer> component tag is detected, it resolves the imported child components
- * and verifies that the child component template contains `{@attach layerAttach}`. This guarantees that
- * all layer overlays correctly register z-index, teleportation, and active state tracking.
+ * When an <AppLayer> component tag is detected, it validates the z-index prop range (0-9999 or "top-layer")
+ * and verifies that child overlay components contain `{@attach layerAttach}`.
  */
 
 import fs from "node:fs";
@@ -26,6 +26,8 @@ const ALIAS_MAP: Record<string, string> = {
     $utils: "src/lib/shared/utils",
 };
 
+const MAX_NUMERIC_Z = 9999;
+
 function resolveImportPath(importPath: string, currentFileId: string): string {
     if (importPath.startsWith(".")) {
         const resolved = path.resolve(path.dirname(currentFileId), importPath);
@@ -41,6 +43,24 @@ function resolveImportPath(importPath: string, currentFileId: string): string {
     }
 
     return "";
+}
+
+function checkZIndex(block: string, id: string, onError: (msg: string) => void): void {
+    const zMatch = block.match(/\bz=(?:["']([^"']+)["']|\{([^}]+)\})/);
+    if (!zMatch) return;
+
+    const rawZ = (zMatch[1] ?? zMatch[2] ?? "").trim();
+    if (!rawZ) return;
+
+    if (["top-layer", "'top-layer'", '"top-layer"'].includes(rawZ)) return;
+
+    const numZ = Number(rawZ);
+    if (Number.isNaN(numZ) || !Number.isSafeInteger(numZ) || numZ < 0 || numZ > MAX_NUMERIC_Z) {
+        onError(
+            `Invalid z-index (${rawZ}) on <AppLayer> in ${path.basename(id)}.\n` +
+                `Numeric z must be an integer between 0 and ${MAX_NUMERIC_Z}. Use z="top-layer" for 10000.`
+        );
+    }
 }
 
 function checkChildComponent(
@@ -114,6 +134,8 @@ export function layerGuardPlugin(options: LayerGuardOptions = {}): Plugin {
             };
 
             for (const block of appLayerBlocks) {
+                checkZIndex(block, id, onError);
+
                 const childComponentMatches = block.match(/<([A-Z][A-Za-z0-9_]*)\b/g);
                 if (!childComponentMatches) continue;
 

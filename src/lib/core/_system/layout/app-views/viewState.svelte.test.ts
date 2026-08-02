@@ -221,6 +221,23 @@ describe("ViewState (Browser Client)", () => {
             const res = stateObj.getInTransition("home")({} as Element);
             expect(res).toHaveProperty("css");
         });
+
+        test("should support custom transition functions directly", () => {
+            const customFn = () => ({ duration: 420 });
+            mockConfig.transition = customFn;
+            const stateCustom = new ViewState(mockConfig);
+            expect(stateCustom.getInTransition("home")({} as Element)).toEqual({ duration: 420 });
+            expect(stateCustom.getOutTransition("home")({} as Element)).toEqual({ duration: 420 });
+        });
+
+        test("should support custom in and out transition functions in an object", () => {
+            const customIn = () => ({ duration: 500 });
+            const customOut = () => ({ duration: 250 });
+            mockConfig.transition = { in: customIn, out: customOut };
+            const stateObj = new ViewState(mockConfig);
+            expect(stateObj.getInTransition("home")({} as Element)).toEqual({ duration: 500 });
+            expect(stateObj.getOutTransition("home")({} as Element)).toEqual({ duration: 250 });
+        });
     });
 
     describe("Scroll Facade Delegations", () => {

@@ -20,7 +20,7 @@ const MASTER_TRANSITION_VARS = [
 
 export const transitionRules: Rule[] = [
     [
-        /^t-(.+)$/,
+        /^t[-:](.+)$/,
         ([_, raw]) => {
             if (!raw || raw.startsWith("views") || raw.startsWith("view")) return;
 

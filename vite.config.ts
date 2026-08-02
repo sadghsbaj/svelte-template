@@ -43,6 +43,7 @@ export default defineConfig({
         UnoCSS({
             // injectReset: "@unocss/reset/tailwind.css",
             combine: true,
+            classPrefix: "c-",
             cssFileTransformers: [transformerDirectives()],
         }),
         svelte({
@@ -68,9 +69,9 @@ export default defineConfig({
             $utils: path.resolve(import.meta.dirname, "./src/lib/shared/utils"),
             $transitions: path.resolve(import.meta.dirname, "./src/lib/shared/transitions"),
             $types: path.resolve(import.meta.dirname, "./src/lib/shared/types"),
-            "$attachments": path.resolve(import.meta.dirname, "./src/lib/shared/attachments"),
-            "$constants": path.resolve(import.meta.dirname, "./src/lib/shared/constants"),
-            "$core": path.resolve(import.meta.dirname, "./src/lib/core"),
+            $attachments: path.resolve(import.meta.dirname, "./src/lib/shared/attachments"),
+            $constants: path.resolve(import.meta.dirname, "./src/lib/shared/constants"),
+            $core: path.resolve(import.meta.dirname, "./src/lib/core"),
             $modules: path.resolve(import.meta.dirname, "./src/lib/modules"),
             $views: path.resolve(import.meta.dirname, "./src/lib/views"),
             $features: path.resolve(import.meta.dirname, "./src/lib/features"),

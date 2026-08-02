@@ -14,25 +14,32 @@ const safeCaf = (id: number): void => {
 };
 
 /**
- * Dismisses the initial application loading screen (#app-loading) with a smooth
- * transition and cleans it up from the DOM.
+ * Dismisses the initial application loading screen (#app-loading) and its associated
+ * inline script (#app-loading-script) with a smooth transition and cleans them up from the DOM.
  *
  * @param targetId Optional ID of the loading container (defaults to "app-loading").
+ * @param scriptId Optional ID of the inline script element (defaults to "app-loading-script").
  */
-export function dismissLoadingScreen(targetId = "app-loading"): void {
+export function dismissLoadingScreen(
+    targetId = "app-loading",
+    scriptId = "app-loading-script"
+): void {
     if (typeof document === "undefined") {
         return;
     }
 
     const loadingEl = document.getElementById(targetId);
+    const scriptEl = document.getElementById(scriptId);
+
     if (!loadingEl) {
+        scriptEl?.remove();
         return;
     }
 
     let isRemoved = false;
     let fallbackTimer: ReturnType<typeof setTimeout> | null = null;
 
-    const removeElement = () => {
+    const removeElements = () => {
         if (isRemoved) return;
         isRemoved = true;
         loadingEl.removeEventListener("transitionend", handleTransitionEnd);
@@ -41,11 +48,12 @@ export function dismissLoadingScreen(targetId = "app-loading"): void {
             fallbackTimer = null;
         }
         loadingEl.remove();
+        scriptEl?.remove();
     };
 
     const handleTransitionEnd = (event: TransitionEvent) => {
         if (event.target === loadingEl) {
-            removeElement();
+            removeElements();
         }
     };
 
@@ -53,14 +61,14 @@ export function dismissLoadingScreen(targetId = "app-loading"): void {
     loadingEl.addEventListener("transitionend", handleTransitionEnd);
 
     // Fallback timer to guarantee DOM removal if transitionend does not fire
-    fallbackTimer = setTimeout(removeElement, 400);
+    fallbackTimer = setTimeout(removeElements, 400);
 }
 
 /**
  * Initializes the preload removal flow. It ensures the '.preload' class
  * is removed from the body only after browser paint cycles have completed,
  * avoiding flash of unstyled content (FOUC) and flash of animated motion (FOAM).
- * Also dismisses the initial loading screen (#app-loading) if present.
+ * Also dismisses the initial loading screen (#app-loading) and script if present.
  *
  * @returns A cleanup function to cancel pending animation frame callbacks,
  * fallback timers, or DOM event listeners.

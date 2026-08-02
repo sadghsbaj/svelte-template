@@ -18,6 +18,7 @@
     });
 </script>
 
+<!--  AppStage -->
 <AppViews {viewState}>
     <!-- @template-remove-start -->
     <AppView view="demo">
@@ -25,8 +26,9 @@
     </AppView>
     <!-- @template-remove-end -->
 </AppViews>
+<!--  /AppStage -->
 
-<!-- AppLayers -->
+<!--  AppLayers -->
 {#if import.meta.env.DEV}
     <AppLayer z="top-layer" layer="performance">
         <PerformanceHost />

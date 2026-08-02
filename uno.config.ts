@@ -15,11 +15,6 @@ export default defineConfig({
         {
             "flex-center": "flex justify-center items-center",
             "absolute-center": "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2",
-
-            "app-views":
-                "flex-1 grid min-h-0 w-full [grid-template-areas:'app-view'] overflow-hidden",
-            "app-view":
-                "w-full h-full [grid-area:app-view] overflow-y-[var(--app-view-overflow,auto)]",
         },
     ],
 
@@ -79,6 +74,26 @@ export default defineConfig({
     },
 
     rules: [
+        [
+            "app-views",
+            {
+                display: "grid",
+                flex: "1 1 0%",
+                "min-height": "0",
+                width: "100%",
+                "grid-template-areas": "'app-view'",
+                overflow: "hidden",
+            },
+        ],
+        [
+            "app-view",
+            {
+                width: "100%",
+                height: "100%",
+                "grid-area": "app-view",
+                "overflow-y": "var(--app-view-overflow, auto)",
+            },
+        ],
         [
             "no-scrollbar",
             {

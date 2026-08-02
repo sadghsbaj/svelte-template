@@ -14,10 +14,14 @@ export function layerAttach(node: HTMLElement) {
     const ctx = getLayerContext();
     if (!ctx) return;
 
-    node.style.pointerEvents = "none";
     node.style.zIndex = String(ctx.zIndex);
 
-    document.body.append(node);
+    const appMount = document.getElementById("app");
+    if (appMount) {
+        appMount.after(node);
+    } else {
+        document.body.append(node);
+    }
 
     ctx.setContextActive(true);
 

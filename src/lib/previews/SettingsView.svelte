@@ -41,7 +41,7 @@
 
                 <div class="p-5 rounded-2xl bg-elevation-2 flex gap-5 items-center">
                     <div
-                        class="text-xl text-accent-500 font-bold rounded-2xl bg-accent-500/20 flex h-16 w-16 items-center justify-center squircle"
+                        class="text-xl text-accent-500 font-bold rounded-2xl flex h-16 w-16 items-center justify-center squircle bg-accent-500/20"
                     >
                         AV
                     </div>

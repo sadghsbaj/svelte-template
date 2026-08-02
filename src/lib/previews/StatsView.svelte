@@ -76,7 +76,7 @@
                 <div class="group flex flex-1 flex-col gap-3 items-center">
                     <div class="flex w-full items-end justify-center">
                         <div
-                            class="rounded-2xl bg-accent-500/80 flex max-w-[48px] w-full justify-center relative group-hover:bg-accent-500 {bar.height}"
+                            class="rounded-2xl flex max-w-[48px] w-full justify-center relative bg-accent-500/80 group-hover:bg-accent-500 {bar.height}"
                         >
                             <span
                                 class="text-xs text-strong font-bold px-2 py-0.5 rounded-md bg-elevation-1 opacity-0 shadow-xs absolute group-hover:opacity-100 -top-8"

@@ -124,9 +124,9 @@
     in:fly={{ y: -20, duration: 260, easing: backOut }}
     out:fly={{ y: -16, duration: 150, easing: expoIn }}
     style={position ? `left: ${position.x}px; top: ${position.y}px; right: auto;` : ""}
-    class="text-strong font-sans p-4 border border-base-200/80 rounded-2xl w-[380px] pointer-events-auto select-none shadow-2xl left-4 top-4 fixed z-10 squircle-smooth dark:border-base-800/80 {performanceState.isHeatmapActive
+    class="text-strong font-sans p-4 border rounded-2xl w-[380px] pointer-events-auto select-none shadow-2xl left-4 top-4 fixed z-10 squircle-smooth border-base-200/80 dark:border-base-800/80 {performanceState.isHeatmapActive
         ? 'bg-elevation-1 backdrop-blur-none'
-        : 'bg-elevation-1/90 backdrop-blur-xl'} {isDragging
+        : 'backdrop-blur-xl bg-elevation-1/90'} {isDragging
         ? '!transition-none'
         : 'transition-colors duration-150'}"
 >
@@ -137,7 +137,7 @@
         onpointermove={handlePointerMove}
         onpointerup={handlePointerUp}
         onpointercancel={handlePointerUp}
-        class="pb-3 border-b border-base-200/60 flex cursor-grab select-none items-center justify-between dark:border-base-800/60 active:cursor-grabbing"
+        class="pb-3 border-b flex cursor-grab select-none items-center justify-between border-base-200/60 active:cursor-grabbing dark:border-base-800/60"
     >
         <div class="flex gap-2.5 items-center">
             <div class="text-cyan-600 p-1 rounded-lg bg-cyan-500/15 dark:text-cyan-400">
@@ -200,7 +200,7 @@
     <!-- Hierarchy Stack List -->
     {#if ancestryStack.length > 0}
         <div
-            class="mt-2.5 pt-2.5 border-t border-base-200/60 flex flex-col gap-1 dark:border-base-800/60"
+            class="mt-2.5 pt-2.5 border-t flex flex-col gap-1 border-base-200/60 dark:border-base-800/60"
         >
             <div
                 class="text-[10px] text-weaker tracking-wider font-medium mb-0.5 flex gap-1.5 uppercase items-center"
@@ -226,7 +226,7 @@
                         class="text-xs font-mono p-1.5 px-2 rounded-lg flex cursor-pointer transition-colors items-center justify-between squircle-smooth {item.el ===
                         performanceState.selectedElement
                             ? 'text-cyan-700 border border-cyan-500/30 bg-cyan-500/15 dark:text-cyan-300'
-                            : 'text-strong bg-elevation-1 dark:bg-elevation-1/60 hover:bg-elevation-2'}"
+                            : 'text-strong bg-elevation-1 hover:bg-elevation-2 dark:bg-elevation-1/60'}"
                     >
                         <div class="flex gap-2 truncate items-center">
                             {#if item.depth >= 25}

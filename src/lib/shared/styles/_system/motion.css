@@ -2,6 +2,16 @@
     PRELOAD, THEME SWITCHING & GLOBAL ANIMATIONS
     ========================================================================== */
 
+:where(html) {
+    --t-bg: opacity 0s;
+    --t-text: opacity 0s;
+    --t-border: opacity 0s;
+    --t-opacity: opacity 0s;
+    --t-transform: opacity 0s;
+    --t-shadow: opacity 0s;
+    --t-all: opacity 0s;
+}
+
 /* Disable all transitions and animations during initial page load (.preload) or theme switch (.theme-switching) */
 :where(
     :is(.preload, .theme-switching),
@@ -70,8 +80,9 @@
         animation: none !important;
     }
 
-    ::view-transition-old(root),
-    ::view-transition-new(root) {
+    ::view-transition-group(*),
+    ::view-transition-old(*),
+    ::view-transition-new(*) {
         animation: none !important;
     }
 }
@@ -92,7 +103,8 @@
     animation: none !important;
 }
 
-.ui-reduce-motion::view-transition-old(root),
-.ui-reduce-motion::view-transition-new(root) {
+.ui-reduce-motion::view-transition-group(*),
+.ui-reduce-motion::view-transition-old(*),
+.ui-reduce-motion::view-transition-new(*) {
     animation: none !important;
 }

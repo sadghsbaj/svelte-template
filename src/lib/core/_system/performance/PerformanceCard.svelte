@@ -266,9 +266,9 @@
     in:fly={{ y: -20, duration: 260, easing: backOut }}
     out:fly={{ y: -16, duration: 150, easing: expoIn }}
     style={position ? `left: ${position.x}px; top: ${position.y}px; right: auto;` : ""}
-    class="text-strong font-sans p-4 border border-base-200/80 rounded-2xl w-[375px] pointer-events-auto select-none shadow-2xl right-4 top-4 fixed z-10 squircle-smooth dark:border-base-800/80 {isHeatmapActive
+    class="text-strong font-sans p-4 border rounded-2xl w-[375px] pointer-events-auto select-none shadow-2xl right-4 top-4 fixed z-10 squircle-smooth border-base-200/80 dark:border-base-800/80 {isHeatmapActive
         ? 'bg-elevation-1 backdrop-blur-none'
-        : 'bg-elevation-1/90 backdrop-blur-xl'} {isDragging
+        : 'backdrop-blur-xl bg-elevation-1/90'} {isDragging
         ? '!transition-none'
         : 'transition-colors duration-150'}"
 >
@@ -276,7 +276,7 @@
     {@render summaryBar()}
 
     <div
-        class="mt-3.5 pt-3.5 border-t border-base-200/60 flex flex-col gap-3 dark:border-base-800/60"
+        class="mt-3.5 pt-3.5 border-t flex flex-col gap-3 border-base-200/60 dark:border-base-800/60"
     >
         {@render domHealthCard()}
         {@render webVitalsCard()}
@@ -341,7 +341,7 @@
         onpointermove={handlePointerMove}
         onpointerup={handlePointerUp}
         onpointercancel={handlePointerUp}
-        class="pb-3 border-b border-base-200/60 flex cursor-grab select-none items-center justify-between dark:border-base-800/60 active:cursor-grabbing"
+        class="pb-3 border-b flex cursor-grab select-none items-center justify-between border-base-200/60 active:cursor-grabbing dark:border-base-800/60"
     >
         <div class="flex gap-2.5 items-center">
             <div class="flex h-2.5 w-2.5 items-center justify-center relative">
@@ -519,7 +519,7 @@
                     {memoryTier.label} ({memoryPercent}%)
                 </span>
             </div>
-            <div class="rounded-full bg-base-300/80 h-2 w-full overflow-hidden dark:bg-base-700/80">
+            <div class="rounded-full h-2 w-full overflow-hidden bg-base-300/80 dark:bg-base-700/80">
                 <div
                     class="rounded-full h-full transition-all duration-300 {memoryTier.bg}"
                     style="width: {memoryPercent}%;"

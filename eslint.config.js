@@ -16,6 +16,7 @@ import { baseRulesConfig } from "./eslint/base-rules.js";
 import { ignoresConfig } from "./eslint/ignores.js";
 import { restrictedImportsConfig } from "./eslint/imports.js";
 import { svelteConfig } from "./eslint/svelte.js";
+import { forbiddenTransitionsConfig } from "./eslint/transitions.js";
 import { unicornConfig } from "./eslint/unicorn.js";
 
 export default defineConfig([
@@ -25,6 +26,7 @@ export default defineConfig([
     ...ts.configs.recommended,
 
     baseRulesConfig,
+    forbiddenTransitionsConfig,
     ...unicornConfig,
     unocss,
 

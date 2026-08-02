@@ -21,6 +21,8 @@ const MASTER_TRANSITION_VARS = [
     "var(--t-all, opacity 0s)",
 ];
 
+const STANDARD_EASINGS = new Set(["linear", "ease", "ease-in", "ease-out", "ease-in-out"]);
+
 export const transitionRules: Rule[] = [
     [
         /^t-(.+)$/,
@@ -30,16 +32,11 @@ export const transitionRules: Rule[] = [
             const tokens = raw.split("-");
             if (tokens.length === 0) return;
 
-            let propKey = "all";
-            let remainingTokens = tokens;
-
             const firstToken = tokens[0].toLowerCase();
             const isFirstTokenDuration = /^\d+(?:ms|s)?$/.test(firstToken);
 
-            if (!isFirstTokenDuration) {
-                propKey = firstToken;
-                remainingTokens = tokens.slice(1);
-            }
+            const propKey = isFirstTokenDuration ? "all" : firstToken;
+            const remainingTokens = isFirstTokenDuration ? tokens : tokens.slice(1);
 
             const propInfo = PROP_MAP[propKey] ?? {
                 prop: propKey,
@@ -48,13 +45,15 @@ export const transitionRules: Rule[] = [
 
             let duration = "150ms";
             let delay = "";
+            let durationSet = false;
             const easingTokenParts: string[] = [];
 
             for (const token of remainingTokens) {
                 if (/^\d+(?:ms|s)?$/.test(token)) {
                     const formattedNum = /^\d+$/.test(token) ? `${token}ms` : token;
-                    if (duration === "150ms" && remainingTokens.indexOf(token) === 0) {
+                    if (!durationSet) {
                         duration = formattedNum;
+                        durationSet = true;
                     } else if (!delay) {
                         delay = formattedNum;
                     }
@@ -63,21 +62,14 @@ export const transitionRules: Rule[] = [
                 }
             }
 
-            let easingName = easingTokenParts.join("-").toLowerCase();
-            if (easingName.startsWith("ease-")) {
-                easingName = easingName.slice(5);
-            }
+            const rawEasing = easingTokenParts.join("-").toLowerCase();
+            const easingName = rawEasing.startsWith("ease-") ? rawEasing.slice(5) : rawEasing;
 
-            const standardEasings = ["linear", "ease", "ease-in", "ease-out", "ease-in-out"];
-            let easingValue = "var(--ease-sine-out)";
-
-            if (easingName) {
-                if (standardEasings.includes(easingName)) {
-                    easingValue = easingName;
-                } else {
-                    easingValue = `var(--ease-${easingName})`;
-                }
-            }
+            const easingValue = !easingName
+                ? "var(--ease-sine-out)"
+                : STANDARD_EASINGS.has(easingName)
+                  ? easingName
+                  : `var(--ease-${easingName})`;
 
             const transitionValue = `${propInfo.prop} ${duration} ${easingValue}${delay ? ` ${delay}` : ""}`;
 

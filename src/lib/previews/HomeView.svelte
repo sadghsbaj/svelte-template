@@ -76,8 +76,8 @@
     ];
 </script>
 
-<div class="mx-auto p-6 flex flex-col gap-8 max-w-6xl md:p-10">
-    <!-- Header Bar with Navigation Tabs -->
+<div class="mx-auto p-6 pb-28 flex flex-col gap-8 max-w-6xl md:p-10 md:pb-28">
+    <!-- Header Bar -->
     <header class="flex flex-col gap-4 justify-between sm:flex-row sm:items-center">
         <div>
             <div class="mb-1 flex gap-2 items-center">
@@ -90,45 +90,6 @@
             </div>
             <h1 class="text-3xl text-strong tracking-tight font-bold">Willkommen zurück, Alex</h1>
         </div>
-
-        <!-- Flat View Navigation -->
-        <nav
-            class="p-1.5 rounded-2xl bg-elevation-1 flex gap-1 items-center self-start sm:self-auto"
-        >
-            <button
-                type="button"
-                onclick={() => viewState.setView("home")}
-                class="text-sm font-medium px-4 py-2 rounded-xl transition-all duration-200 {viewState.isCurrent(
-                    'home'
-                )
-                    ? 'text-strong bg-elevation-2 shadow-xs'
-                    : 'text-weak hover:text-strong'}"
-            >
-                Home
-            </button>
-            <button
-                type="button"
-                onclick={() => viewState.setView("stats")}
-                class="text-sm font-medium px-4 py-2 rounded-xl transition-all duration-200 {viewState.isCurrent(
-                    'stats'
-                )
-                    ? 'text-strong bg-elevation-2 shadow-xs'
-                    : 'text-weak hover:text-strong'}"
-            >
-                Stats
-            </button>
-            <button
-                type="button"
-                onclick={() => viewState.setView("settings")}
-                class="text-sm font-medium px-4 py-2 rounded-xl transition-all duration-200 {viewState.isCurrent(
-                    'settings'
-                )
-                    ? 'text-strong bg-elevation-2 shadow-xs'
-                    : 'text-weak hover:text-strong'}"
-            >
-                Settings
-            </button>
-        </nav>
     </header>
 
     <!-- Banner Card -->

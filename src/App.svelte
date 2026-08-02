@@ -2,6 +2,7 @@
     import { onMount } from "svelte";
 
     import { initPreload } from "$core/_system";
+    import FocusHost from "$core/_system/focus/FocusHost.svelte";
     import AppLayer from "$core/_system/layout/app-layer/AppLayer.svelte";
     import AppView from "$core/_system/layout/app-views/AppView.svelte";
     import AppViews from "$core/_system/layout/app-views/AppViews.svelte";
@@ -45,8 +46,12 @@
 </div>
 
 <!-- AppLayers -->
+<AppLayer z="top-layer" layer="focus">
+    <FocusHost />
+</AppLayer>
+
 {#if import.meta.env.DEV}
-    <AppLayer z="top-layer" layer="performance">
+    <AppLayer z={9000} layer="performance">
         <PerformanceHost />
     </AppLayer>
 {/if}

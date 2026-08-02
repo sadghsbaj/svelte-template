@@ -2,8 +2,7 @@ import { mount, unmount } from "svelte";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 
 import AppLayer from "./AppLayer.svelte";
-import { layerAttach } from "./layer.context";
-import { appInertState, LAYER_CONTEXT_KEY } from "./layer.svelte";
+import { appInertState, layerAttach, LAYER_CONTEXT_KEY } from "./layer.svelte";
 
 describe("Layer State Utilities & Components", () => {
     let mountedApps: ReturnType<typeof mount>[] = [];
@@ -114,7 +113,7 @@ describe("Layer State Utilities & Components", () => {
             expect(target).not.toBeNull();
         });
 
-        test("should export layerAttach function for elements", () => {
+        test("should export layerAttach attachment from layer.svelte", () => {
             expect(typeof layerAttach).toBe("function");
         });
     });

@@ -97,24 +97,30 @@ export function syncLayerState(isActive: () => boolean) {
 }
 
 /**
- * Svelte 5 Attachment registering active layer state on element DOM mount
- * and automatically cleaning up on element DOM unmount.
+ * Svelte 5 Attachment that teleports the element to directly after #app (i.e. a
+ * direct child of <body> outside the app root), sets its z-index from the parent
+ * AppLayer context, and keeps the layer's active state in sync.
+ *
+ * This is the single canonical layerAttach — import only from this file.
  */
-export const layerAttach: Attachment = () => {
+export const layerAttach: Attachment = (element) => {
     const layer = getLayerContext();
     if (!layer) return;
 
-    let isAttached = false;
+    const node = element as HTMLElement;
+    node.style.zIndex = String(layer.zIndex);
 
-    queueMicrotask(() => {
-        layer.setContextActive(true);
-        isAttached = true;
-    });
+    const appMount = document.getElementById("app");
+    if (appMount) {
+        appMount.after(node);
+    } else {
+        document.body.append(node);
+    }
+
+    layer.setContextActive(true);
 
     return () => {
-        if (!isAttached) return;
-
         layer.setContextActive(false);
-        isAttached = false;
+        node.remove();
     };
 };

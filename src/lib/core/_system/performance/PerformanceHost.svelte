@@ -1,7 +1,7 @@
 <script lang="ts">
     import { onMount } from "svelte";
 
-    import { layerAttach } from "$core/_system/layout/app-layer/layer.context";
+    import { layerAttach } from "$core/_system/layout/app-layer/layer.svelte";
 
     import DomHeatmap from "./DomHeatmap.svelte";
     import DomInspector from "./DomInspector.svelte";

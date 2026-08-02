@@ -8,5 +8,15 @@ export const viewState = createViewState({
             label: "Home",
             parent: "root",
         },
+        {
+            view: "stats",
+            label: "Stats",
+            parent: "root",
+        },
+        {
+            view: "settings",
+            label: "Settings",
+            parent: "root",
+        },
     ] as const,
 });

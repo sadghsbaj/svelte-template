@@ -72,9 +72,7 @@ function checkChildComponent(
     if (compName === "AppLayer") return;
 
     // Locate the import statement for this component in the current file
-    const importRegex = new RegExp(
-        String.raw`import\s+${compName}\s+from\s+['"]([^'"]+)['"]`
-    );
+    const importRegex = new RegExp(String.raw`import\s+${compName}\s+from\s+['"]([^'"]+)['"]`);
     const importMatch = code.match(importRegex);
     if (!importMatch) return;
 
@@ -102,10 +100,7 @@ function checkChildComponent(
 }
 
 export function layerGuardPlugin(options: LayerGuardOptions = {}): Plugin {
-    const defaultExcludes = [
-        /[/\\]node_modules[/\\]/,
-        /[/\\]layer-guard(\.test)?\.ts$/,
-    ];
+    const defaultExcludes = [/[/\\]node_modules[/\\]/, /[/\\]layer-guard(\.test)?\.ts$/];
 
     const excludes = [...defaultExcludes, ...(options.exclude || [])];
 

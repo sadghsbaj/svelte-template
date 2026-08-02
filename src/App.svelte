@@ -8,6 +8,10 @@
     import PerformanceHost from "$core/_system/performance/PerformanceHost.svelte";
     import { viewState } from "$views/view.svelte";
 
+    import HomeView from "$lib/previews/HomeView.svelte";
+    import SettingsView from "$lib/previews/SettingsView.svelte";
+    import StatsView from "$lib/previews/StatsView.svelte";
+
     onMount(() => {
         return initPreload();
     });
@@ -15,10 +19,13 @@
 
 <AppViews {viewState}>
     <AppView view="home">
-        <main class="text-center flex-center flex-col gap-2 h-full">
-            <h1 class="text-2xl text-neutral-100 tracking-tight font-semibold">Svelte 5 App</h1>
-            <p class="text-sm text-neutral-400">Clean starter canvas</p>
-        </main>
+        <HomeView />
+    </AppView>
+    <AppView view="stats">
+        <StatsView />
+    </AppView>
+    <AppView view="settings">
+        <SettingsView />
     </AppView>
 </AppViews>
 

@@ -5,10 +5,7 @@ const PROP_MAP: Record<string, { prop: string; varName: string }> = {
     text: { prop: "color", varName: "--t-text" },
     color: { prop: "color", varName: "--t-text" },
     border: { prop: "border-color", varName: "--t-border" },
-    opacity: { prop: "opacity", varName: "--t-opacity" },
-    transform: { prop: "transform", varName: "--t-transform" },
     shadow: { prop: "box-shadow", varName: "--t-shadow" },
-    all: { prop: "all", varName: "--t-all" },
 };
 
 const MASTER_TRANSITION_VARS = [
@@ -20,8 +17,6 @@ const MASTER_TRANSITION_VARS = [
     "var(--t-shadow, opacity 0s)",
     "var(--t-all, opacity 0s)",
 ];
-
-const STANDARD_EASINGS = new Set(["linear", "ease", "ease-in", "ease-out", "ease-in-out"]);
 
 export const transitionRules: Rule[] = [
     [
@@ -64,12 +59,7 @@ export const transitionRules: Rule[] = [
 
             const rawEasing = easingTokenParts.join("-").toLowerCase();
             const easingName = rawEasing.startsWith("ease-") ? rawEasing.slice(5) : rawEasing;
-
-            const easingValue = !easingName
-                ? "var(--ease-sine-out)"
-                : STANDARD_EASINGS.has(easingName)
-                  ? easingName
-                  : `var(--ease-${easingName})`;
+            const easingValue = easingName ? `var(--ease-${easingName})` : "var(--ease-sine-out)";
 
             const transitionValue = `${propInfo.prop} ${duration} ${easingValue}${delay ? ` ${delay}` : ""}`;
 
@@ -86,7 +76,7 @@ export const transitionRules: Rule[] = [
         },
         {
             autocomplete:
-                "t-(bg|text|border|opacity|transform|shadow|all)-(100|150|200|300|500)-(expo-out|sine-in|sine-out|back-out|cubic-out)",
+                "t-(bg|text|border|opacity|transform|shadow|all|width|height)-(100|150|200|300|500)-(expo-out|sine-in|sine-out|back-out|cubic-out)",
         },
     ],
 ];

@@ -1,6 +1,10 @@
 /**
- * @file view-transition.ts
+ * @file view-svelte-transition.ts
  * JavaScript Svelte transition functions for view switching (`viewIn` / `viewOut`).
+ * 
+ * Note: High-performance WAAPI transitions (`view-waapi-transition.ts`) are the default 
+ * standard for app views. Developers can manually switch to these Svelte JS transitions 
+ * when custom Svelte transition logic or easing behavior is desired.
  */
 
 import { cubicOut, quintOut } from "svelte/easing";

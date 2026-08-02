@@ -11,7 +11,7 @@ import type {
     ViewTransitionOption,
 } from "./types";
 import { ViewScrollManager } from "./view-scroll";
-import { viewIn, viewOut } from "./view-transition";
+import { viewIn, viewOut } from "./view-svelte-transition";
 
 export type ViewScopeChangeListener = (rootView: string) => void;
 const scopeChangeListeners = new SvelteSet<ViewScopeChangeListener>();

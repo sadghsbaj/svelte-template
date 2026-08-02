@@ -53,7 +53,10 @@
             "$types/*": ["./src/lib/shared/types/*"],
 
             "$attachments": ["./src/lib/shared/attachments"],
-            "$attachments/*": ["./src/lib/shared/attachments/*"]
+            "$attachments/*": ["./src/lib/shared/attachments/*"],
+
+            "$constants": ["./src/lib/shared/constants"],
+            "$constants/*": ["./src/lib/shared/constants/*"]
         }
     },
     "include": ["src/**/*.ts", "src/**/*.js", "src/**/*.svelte"]

@@ -223,7 +223,7 @@
                         onclick={() => {
                             performanceState.selectElement(item.el);
                         }}
-                        class="text-xs font-mono p-1.5 px-2 rounded-lg flex cursor-pointer t-bg-150-sine-out t-text-150-sine-out items-center justify-between squircle-smooth {item.el ===
+                        class="text-xs font-mono p-1.5 px-2 rounded-lg flex cursor-pointer items-center justify-between t-bg-150-sine-out t-text-150-sine-out squircle-smooth {item.el ===
                         performanceState.selectedElement
                             ? 'text-cyan-700 border border-cyan-500/30 bg-cyan-500/15 dark:text-cyan-300'
                             : 'text-strong bg-elevation-1 hover:bg-elevation-2 dark:bg-elevation-1/60'}"
@@ -265,7 +265,7 @@
 {#if hoveredAncestorRect}
     <div
         id="dev-inspector-parent-highlight"
-        class="border-2 border-amber-500/80 rounded bg-amber-500/15 pointer-events-none shadow-sm t-75-sine-out fixed z-9 dark:border-amber-400/80 dark:bg-amber-400/15"
+        class="border-2 border-amber-500/80 rounded bg-amber-500/15 pointer-events-none shadow-sm fixed z-9 t-75-sine-out dark:border-amber-400/80 dark:bg-amber-400/15"
         style="left: {hoveredAncestorRect.left}px; top: {hoveredAncestorRect.top}px; width: {hoveredAncestorRect.width}px; height: {hoveredAncestorRect.height}px;"
     ></div>
 {/if}

@@ -32,7 +32,7 @@
                 <button
                     type="button"
                     onclick={() => viewState.setView(item.id)}
-                    class="text-sm font-medium px-3 py-2.5 rounded-xl flex gap-3 t-bg-150-sine-out t-text-150-sine-out items-center {viewState.activeView ===
+                    class="text-sm font-medium px-3 py-2.5 rounded-xl flex gap-3 items-center t-bg-150-sine-out t-text-150-sine-out {viewState.activeView ===
                     item.id
                         ? 'text-strong bg-elevation-2 shadow-xs'
                         : 'text-weak hover:text-strong hover:bg-elevation-2/50'}"

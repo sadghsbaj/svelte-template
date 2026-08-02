@@ -14,9 +14,53 @@ const safeCaf = (id: number): void => {
 };
 
 /**
+ * Dismisses the initial application loading screen (#app-loading) with a smooth
+ * transition and cleans it up from the DOM.
+ *
+ * @param targetId Optional ID of the loading container (defaults to "app-loading").
+ */
+export function dismissLoadingScreen(targetId = "app-loading"): void {
+    if (typeof document === "undefined") {
+        return;
+    }
+
+    const loadingEl = document.getElementById(targetId);
+    if (!loadingEl) {
+        return;
+    }
+
+    let isRemoved = false;
+    let fallbackTimer: ReturnType<typeof setTimeout> | null = null;
+
+    const removeElement = () => {
+        if (isRemoved) return;
+        isRemoved = true;
+        loadingEl.removeEventListener("transitionend", handleTransitionEnd);
+        if (fallbackTimer !== null) {
+            clearTimeout(fallbackTimer);
+            fallbackTimer = null;
+        }
+        loadingEl.remove();
+    };
+
+    const handleTransitionEnd = (event: TransitionEvent) => {
+        if (event.target === loadingEl) {
+            removeElement();
+        }
+    };
+
+    loadingEl.classList.add("fade-out");
+    loadingEl.addEventListener("transitionend", handleTransitionEnd);
+
+    // Fallback timer to guarantee DOM removal if transitionend does not fire
+    fallbackTimer = setTimeout(removeElement, 400);
+}
+
+/**
  * Initializes the preload removal flow. It ensures the '.preload' class
  * is removed from the body only after browser paint cycles have completed,
  * avoiding flash of unstyled content (FOUC) and flash of animated motion (FOAM).
+ * Also dismisses the initial loading screen (#app-loading) if present.
  *
  * @returns A cleanup function to cancel pending animation frame callbacks,
  * fallback timers, or DOM event listeners.
@@ -55,6 +99,7 @@ export function initPreload(): () => void {
     const removeClass = () => {
         if (isCleanedUp) return;
         document.body?.classList.remove("preload");
+        dismissLoadingScreen();
         cleanup();
     };
 

@@ -60,6 +60,21 @@
             body {
                 background-color: var(--color-app);
             }
+
+            #app-loading {
+                position: fixed;
+                inset: 0;
+                z-index: 99999;
+                background-color: red;
+                transition:
+                    opacity 300ms ease-out,
+                    transform 300ms ease-out;
+            }
+            #app-loading.fade-out {
+                opacity: 0;
+                transform: scale(0.98);
+                pointer-events: none;
+            }
         </style>
 
         <script>
@@ -118,6 +133,7 @@
         %unocss-svelte-scoped.global%
     </head>
     <body class="preload">
+        <div id="app-loading"></div>
         <div id="app"></div>
         <script type="module" src="/src/main.ts"></script>
     </body>

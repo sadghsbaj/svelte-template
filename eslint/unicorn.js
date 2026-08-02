@@ -18,6 +18,12 @@ export const unicornConfig = [
         },
     },
     {
+        files: ["src/main.ts", "src/main.js"],
+        rules: {
+            "unicorn/no-top-level-side-effects": "off",
+        },
+    },
+    {
         files: ["**/*.svelte"],
         rules: {
             "unicorn/filename-case": ["warn", { case: "pascalCase", ignore: ["^[a-z0-9-]+$"] }],

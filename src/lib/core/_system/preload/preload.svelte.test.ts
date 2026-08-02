@@ -1,21 +1,43 @@
 import { afterEach, describe, expect, test, vi } from "vitest";
 
-import { initPreload } from "./preload";
+import { dismissLoadingScreen, initPreload } from "./preload";
 
-describe("initPreload (Browser Client)", () => {
+describe("initPreload & dismissLoadingScreen (Browser Client)", () => {
     afterEach(() => {
         document.body.classList.remove("preload");
+        document.getElementById("app-loading")?.remove();
     });
 
-    test("should remove preload class from body after paint frames", async () => {
+    test("should remove preload class from body and dismiss loading screen after paint frames", async () => {
         document.body.classList.add("preload");
+        const loadingEl = document.createElement("div");
+        loadingEl.id = "app-loading";
+        document.body.append(loadingEl);
+
         expect(document.body.classList.contains("preload")).toBe(true);
+        expect(document.getElementById("app-loading")).not.toBeNull();
 
         initPreload();
 
         await vi.waitFor(() => {
             expect(document.body.classList.contains("preload")).toBe(false);
+            expect(document.getElementById("app-loading")).toBeNull();
         });
+    });
+
+    test("should animate fade-out and remove loading screen via dismissLoadingScreen", async () => {
+        const loadingEl = document.createElement("div");
+        loadingEl.id = "app-loading";
+        document.body.append(loadingEl);
+
+        dismissLoadingScreen();
+
+        expect(loadingEl.classList.contains("fade-out")).toBe(true);
+
+        // Simulate transitionend event
+        loadingEl.dispatchEvent(new Event("transitionend"));
+
+        expect(document.getElementById("app-loading")).toBeNull();
     });
 
     test("should support early cleanup cancellation", async () => {

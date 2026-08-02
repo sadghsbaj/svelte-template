@@ -12,13 +12,17 @@ export const [getLayerContext, setLayerContext] = createContext<LayerContext>();
 
 export function layerAttach(node: HTMLElement) {
     const ctx = getLayerContext();
+    if (!ctx) return;
 
     node.style.pointerEvents = "none";
     node.style.zIndex = String(ctx.zIndex);
+
+    document.body.append(node);
 
     ctx.setContextActive(true);
 
     return () => {
         ctx.setContextActive(false);
+        node.remove();
     };
 }

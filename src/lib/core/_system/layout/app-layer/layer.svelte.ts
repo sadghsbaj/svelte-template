@@ -35,6 +35,9 @@ export const appInertState = {
         if (blockCounter === 1 && typeof window !== "undefined") {
             isAppInertState = true;
 
+            const appMount = document.getElementById("app");
+            if (appMount) appMount.inert = true;
+
             savedPaddingRight = document.body.style.paddingRight;
             savedOverflow = document.body.style.overflow;
 
@@ -54,6 +57,9 @@ export const appInertState = {
 
         if (blockCounter === 0 && typeof window !== "undefined") {
             isAppInertState = false;
+
+            const appMount = document.getElementById("app");
+            if (appMount) appMount.inert = false;
 
             document.body.style.paddingRight = savedPaddingRight;
             document.body.style.overflow = savedOverflow;

@@ -3,7 +3,6 @@
 
     import { initPreload } from "$core/_system";
     import AppLayer from "$core/_system/layout/app-layer/AppLayer.svelte";
-    import AppStage from "$core/_system/layout/app-stage/AppStage.svelte";
     import AppView from "$core/_system/layout/app-views/AppView.svelte";
     import AppViews from "$core/_system/layout/app-views/AppViews.svelte";
     import PerformanceHost from "$core/_system/performance/PerformanceHost.svelte";
@@ -19,15 +18,13 @@
     });
 </script>
 
-<AppStage>
-    <AppViews {viewState}>
-        <!-- @template-remove-start -->
-        <AppView view="demo">
-            <DemoView />
-        </AppView>
-        <!-- @template-remove-end -->
-    </AppViews>
-</AppStage>
+<AppViews {viewState}>
+    <!-- @template-remove-start -->
+    <AppView view="demo">
+        <DemoView />
+    </AppView>
+    <!-- @template-remove-end -->
+</AppViews>
 
 <!-- AppLayers -->
 {#if import.meta.env.DEV}

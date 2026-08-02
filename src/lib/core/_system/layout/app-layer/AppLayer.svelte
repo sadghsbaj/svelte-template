@@ -37,20 +37,6 @@
         },
     });
 
-    // DEV-Guard: Validates that layers with inertApp=true
-    // have at least one child attached via {@attach layerAttach}
-    function layerAttachDevGuard() {
-        if (!import.meta.env.DEV || !inertApp) return;
-
-        queueMicrotask(() => {
-            if (activeCount <= 0) {
-                console.warn(
-                    `[AppLayer DevGuard] Layer "${layer}" has inertApp=true, but no child component registered {@attach layerAttach}.`
-                );
-            }
-        });
-    }
-
     // DEV-Guard: Validates z-index range (0 to 9999 or "top-layer")
     function zIndexDevGuard() {
         if (!import.meta.env.DEV) return;
@@ -71,7 +57,6 @@
     }
 
     $effect(() => {
-        layerAttachDevGuard();
         zIndexDevGuard();
 
         if (!inertApp || activeCount <= 0) return;

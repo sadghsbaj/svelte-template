@@ -17,14 +17,35 @@ export interface LayerGuardOptions {
     exclude?: (string | RegExp)[];
 }
 
-const ALIAS_MAP: Record<string, string> = {
-    $core: "src/lib/core",
-    $modules: "src/lib/modules",
-    $views: "src/lib/views",
-    $features: "src/lib/features",
-    $components: "src/lib/shared/components",
-    $utils: "src/lib/shared/utils",
-};
+function loadTsconfigPaths(): Record<string, string> {
+    try {
+        const tsconfigPath = path.resolve(process.cwd(), "tsconfig.app.json");
+        if (!fs.existsSync(tsconfigPath)) return {};
+
+        const raw = fs.readFileSync(tsconfigPath, "utf8");
+        // Strip single-line and multi-line comments from JSONC tsconfig files
+        const cleaned = raw.replaceAll(/\/\*[\s\S]*?\*\/|([^\\:]|^)\/\/.*/g, "$1");
+        const json = JSON.parse(cleaned);
+
+        const paths: Record<string, string[]> = json.compilerOptions?.paths || {};
+        const aliasMap: Record<string, string> = {};
+
+        for (const [aliasPattern, targetArray] of Object.entries(paths)) {
+            if (!targetArray || targetArray.length === 0) continue;
+
+            const cleanAlias = aliasPattern.replaceAll(/\/\*$/g, "");
+            const cleanTarget = targetArray[0].replaceAll(/^\.\//g, "").replaceAll(/\/\*$/g, "");
+
+            aliasMap[cleanAlias] = cleanTarget;
+        }
+
+        return aliasMap;
+    } catch {
+        return {};
+    }
+}
+
+const ALIAS_MAP = loadTsconfigPaths();
 
 const MAX_NUMERIC_Z = 9999;
 
@@ -35,7 +56,7 @@ function resolveImportPath(importPath: string, currentFileId: string): string {
     }
 
     for (const [alias, dir] of Object.entries(ALIAS_MAP)) {
-        if (importPath.startsWith(alias)) {
+        if (importPath === alias || importPath.startsWith(`${alias}/`)) {
             const relPath = importPath.slice(alias.length);
             const resolved = path.resolve(process.cwd(), dir + relPath);
             return resolved.endsWith(".svelte") ? resolved : `${resolved}.svelte`;

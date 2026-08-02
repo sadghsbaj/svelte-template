@@ -2,6 +2,7 @@ import path from "node:path";
 import { svelte } from "@sveltejs/vite-plugin-svelte";
 import UnoCSS from "@unocss/svelte-scoped/vite";
 import transformerDirectives from "@unocss/transformer-directives";
+import transformerVariantGroup from "@unocss/transformer-variant-group";
 import { playwright } from "@vitest/browser-playwright";
 import { visualizer } from "rollup-plugin-visualizer";
 import { createHtmlPlugin } from "vite-plugin-html";
@@ -43,7 +44,7 @@ export default defineConfig({
         UnoCSS({
             // injectReset: "@unocss/reset/tailwind.css",
             combine: true,
-            cssFileTransformers: [transformerDirectives()],
+            cssFileTransformers: [transformerDirectives(), transformerVariantGroup()],
         }),
         svelte({
             dynamicCompileOptions({ filename, compileOptions }) {

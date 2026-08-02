@@ -1,5 +1,7 @@
 import type { Rule } from "unocss";
 
+import { transitionRules } from "./transitions.ts";
+
 const PROPERTY_MAP: Record<string, string> = {
     bg: "background-color",
     text: "color",
@@ -11,6 +13,7 @@ const PROPERTY_MAP: Record<string, string> = {
 };
 
 export const rulesConfig: Rule[] = [
+    ...transitionRules,
     [
         "app-views",
         {

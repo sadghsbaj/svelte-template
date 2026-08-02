@@ -2,29 +2,8 @@
     FOCUS & ACCESSIBILITY
     ========================================================================= */
 
-:root {
-    --focus-ring-color: var(--color-accent-500);
-    --focus-ring-width: 2px;
-    --focus-ring-offset: 2px;
-
-    --transition-focus: outline-color 200ms var(--ease-quad-out);
-}
-
-.transition-focus {
-    transition: var(--transition-focus);
-}
-
-:where(a, button, input, textarea, select, [tabindex]) {
-    outline: var(--focus-ring-width) solid transparent;
-    outline-offset: var(--focus-ring-offset);
-
-    transition: var(--transition-focus);
-}
-
-:focus-visible {
-    outline-color: var(--focus-ring-color);
-}
-
-:focus:not(:focus-visible) {
-    outline-color: transparent;
+:focus-visible:not([data-no-canvas-focus]) {
+    outline: none !important;
+    outline-offset: 0 !important;
+    box-shadow: none !important;
 }

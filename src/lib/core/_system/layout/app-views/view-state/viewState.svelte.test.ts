@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, test } from "vitest";
 
 import { appStack } from "$core/_system/stack/appStack.svelte";
 
-import type { ViewsConfig } from "./types";
+import type { ViewsConfig } from "$core/_system/layout/app-views/types";
 import { ViewState } from "./viewState.svelte";
 
 function mockCustomFn() {

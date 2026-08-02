@@ -1,6 +1,6 @@
 import { SvelteMap } from "svelte/reactivity";
 
-import type { ScrollConfig, StoredScrollState, ViewConfig, ViewsConfig } from "./types";
+import type { ScrollConfig, StoredScrollState, ViewConfig, ViewsConfig } from "$core/_system/layout/app-views/types";
 
 export class ViewScrollManager<T extends string> {
     private sessionScrollMap = new SvelteMap<T, StoredScrollState>();

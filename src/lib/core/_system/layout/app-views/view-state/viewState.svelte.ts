@@ -9,10 +9,10 @@ import type {
     ViewsConfig,
     ViewTransitionFn,
     ViewTransitionOption,
-} from "./types";
-import { ViewScrollManager } from "./view-scroll";
-import { viewIn, viewOut } from "./view-svelte-transition";
-import { viewWaapiIn, viewWaapiOut } from "./view-waapi-transition";
+} from "$core/_system/layout/app-views/types";
+import { ViewScrollManager } from "$core/_system/layout/app-views/view-scroll/view-scroll";
+import { viewIn, viewOut } from "$core/_system/layout/app-views/view-transitions/view-svelte-transition";
+import { viewWaapiIn, viewWaapiOut } from "$core/_system/layout/app-views/view-transitions/view-waapi-transition";
 
 export type ViewScopeChangeListener = (rootView: string) => void;
 const scopeChangeListeners = new SvelteSet<ViewScopeChangeListener>();

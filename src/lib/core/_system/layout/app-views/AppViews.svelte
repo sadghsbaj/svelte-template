@@ -2,7 +2,7 @@
     import type { Snippet } from "svelte";
 
     import { setViewStateContext } from "./view.context";
-    import type { ViewState } from "./viewState.svelte";
+    import type { ViewState } from "./view-state/viewState.svelte";
 
     let { viewState, children }: { viewState: ViewState<T>; children?: Snippet } = $props();
 

@@ -8,7 +8,9 @@ import { themeConfig } from "./uno/theme.ts";
 import { variantsConfig } from "./uno/variants.ts";
 
 export default defineConfig({
-    presets: [presetWind4()],
+    presets: [
+        presetWind4(),
+    ],
 
     shortcuts: shortcutsConfig,
 

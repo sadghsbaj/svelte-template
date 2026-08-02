@@ -12,7 +12,8 @@
         "lint": "eslint .",
         "test:unit": "vitest",
         "test": "npm run test:unit -- --run",
-        "export": "./scripts/export.sh"
+        "export": "./scripts/export.sh",
+        "stats": "./scripts/stats.sh"
     },
     "devDependencies": {
         "@eslint/js": "^10.0.1",

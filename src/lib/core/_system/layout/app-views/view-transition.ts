@@ -1,12 +1,6 @@
 /**
  * @file view-transition.ts
- * JavaScript Svelte transition functions for view switching.
- *
- * Primary vs Fallback Role:
- * - `view-transition.css` provides the default GPU-accelerated CSS View Transitions API rules.
- * - This module (`view-transition.ts`) serves as the Svelte JS transition counterpart (`viewIn` / `viewOut`).
- *   It is used when Native View Transitions are unsupported by the browser or when `mode: "svelte"`
- *   is explicitly configured in `ViewState`.
+ * JavaScript Svelte transition functions for view switching (`viewIn` / `viewOut`).
  */
 
 import { cubicOut, quintOut } from "svelte/easing";

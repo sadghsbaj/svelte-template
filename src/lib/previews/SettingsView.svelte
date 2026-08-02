@@ -1,12 +1,13 @@
 <script lang="ts">
     import { Bell, Check, Key, Moon, Palette, ShieldCheck, Sun, User } from "@lucide/svelte";
 
-    let selectedTheme = $state("system");
+    import { theme, type ThemeMode } from "$core/_system/theme";
+
     let emailNotifications = $state(true);
     let securityAlerts = $state(true);
     let marketingUpdates = $state(false);
 
-    const themeOptions = [
+    const themeOptions: { id: ThemeMode; label: string; icon: typeof Sun }[] = [
         { id: "system", label: "System", icon: Palette },
         { id: "light", label: "Helle Ansicht", icon: Sun },
         { id: "dark", label: "Dunkle Ansicht", icon: Moon },
@@ -166,13 +167,13 @@
                 </h3>
 
                 <div class="flex flex-col gap-2">
-                    {#each themeOptions as theme (theme.id)}
-                        {const ThemeIcon = theme.icon}
+                    {#each themeOptions as item (item.id)}
+                        {const ThemeIcon = item.icon}
                         <button
                             type="button"
-                            onclick={() => (selectedTheme = theme.id)}
-                            class="p-3.5 rounded-2xl bg-elevation-2 flex items-center justify-between {selectedTheme ===
-                            theme.id
+                            onclick={() => theme.set(item.id)}
+                            class="p-3.5 rounded-2xl bg-elevation-2 flex items-center justify-between {theme.mode ===
+                            item.id
                                 ? 'text-strong ring-2 ring-accent-500/40'
                                 : 'text-weak hover:text-strong'}"
                         >
@@ -180,9 +181,9 @@
                                 <div class="text-strong p-2 rounded-xl bg-elevation-1">
                                     <ThemeIcon size={16} />
                                 </div>
-                                <span class="text-sm font-semibold">{theme.label}</span>
+                                <span class="text-sm font-semibold">{item.label}</span>
                             </div>
-                            {#if selectedTheme === theme.id}
+                            {#if theme.mode === item.id}
                                 <div class="text-white p-1 rounded-full bg-accent-500">
                                     <Check size={12} />
                                 </div>

@@ -18,6 +18,7 @@
     }
 
     const viewState = $derived(getViewState());
+    const isCurrent = $derived(viewState.activeView === view);
     const inTransition = $derived(viewState.getInTransition(view));
     const outTransition = $derived(viewState.getOutTransition(view));
     const transitionParams = $derived(viewState.isAnimated(view) ? {} : { duration: 0 });
@@ -66,7 +67,7 @@
     };
 </script>
 
-{#if viewState.isCurrent(view)}
+{#if isCurrent}
     <div
         class="app-view"
         in:inTransition={transitionParams}

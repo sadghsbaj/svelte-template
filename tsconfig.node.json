@@ -25,6 +25,7 @@
     "include": [
         "vite.config.ts",
         "uno.config.ts",
+        "uno/**/*.ts",
         "svelte.config.js",
         "eslint.config.js",
         "plugins/**/*.ts",

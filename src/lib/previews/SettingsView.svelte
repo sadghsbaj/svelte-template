@@ -66,7 +66,7 @@
                             type="text"
                             value="Alex Vance"
                             readonly
-                            class="text-sm text-strong font-medium px-4 py-3 rounded-2xl bg-elevation-2 transition-all focus:outline-none focus:ring-2 focus:ring-accent-500/30"
+                            class="text-sm text-strong font-medium px-4 py-3 rounded-2xl bg-elevation-2 focus:outline-none focus:ring-2 focus:ring-accent-500/30"
                         />
                     </div>
                     <div class="flex flex-col gap-1.5">
@@ -78,7 +78,7 @@
                             type="email"
                             value="alex.vance@example.com"
                             readonly
-                            class="text-sm text-strong font-medium px-4 py-3 rounded-2xl bg-elevation-2 transition-all focus:outline-none focus:ring-2 focus:ring-accent-500/30"
+                            class="text-sm text-strong font-medium px-4 py-3 rounded-2xl bg-elevation-2 focus:outline-none focus:ring-2 focus:ring-accent-500/30"
                         />
                     </div>
                 </div>
@@ -105,7 +105,7 @@
                             type="button"
                             aria-label="E-Mail Zusammenfassung umschalten"
                             onclick={() => (emailNotifications = !emailNotifications)}
-                            class="p-1 rounded-full flex h-7 w-12 transition-colors items-center relative {emailNotifications
+                            class="p-1 rounded-full flex h-7 w-12 items-center relative {emailNotifications
                                 ? 'bg-accent-500 justify-end'
                                 : 'bg-elevation-1 justify-start'}"
                         >
@@ -126,7 +126,7 @@
                             type="button"
                             aria-label="Sicherheitswarnungen umschalten"
                             onclick={() => (securityAlerts = !securityAlerts)}
-                            class="p-1 rounded-full flex h-7 w-12 transition-colors items-center relative {securityAlerts
+                            class="p-1 rounded-full flex h-7 w-12 items-center relative {securityAlerts
                                 ? 'bg-accent-500 justify-end'
                                 : 'bg-elevation-1 justify-start'}"
                         >
@@ -145,7 +145,7 @@
                             type="button"
                             aria-label="Produkt-Updates umschalten"
                             onclick={() => (marketingUpdates = !marketingUpdates)}
-                            class="p-1 rounded-full flex h-7 w-12 transition-colors items-center relative {marketingUpdates
+                            class="p-1 rounded-full flex h-7 w-12 items-center relative {marketingUpdates
                                 ? 'bg-accent-500 justify-end'
                                 : 'bg-elevation-1 justify-start'}"
                         >
@@ -171,7 +171,7 @@
                         <button
                             type="button"
                             onclick={() => (selectedTheme = theme.id)}
-                            class="p-3.5 rounded-2xl bg-elevation-2 flex transition-all items-center justify-between {selectedTheme ===
+                            class="p-3.5 rounded-2xl bg-elevation-2 flex items-center justify-between {selectedTheme ===
                             theme.id
                                 ? 'text-strong ring-2 ring-accent-500/40'
                                 : 'text-weak hover:text-strong'}"

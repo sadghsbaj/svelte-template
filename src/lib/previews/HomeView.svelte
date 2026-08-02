@@ -111,7 +111,7 @@
         </div>
         <button
             type="button"
-            class="text-white font-medium px-5 py-3 rounded-2xl bg-accent-500 flex gap-2 shadow-accent-500/20 shadow-md transition-all items-center z-10 hover:bg-accent-600 active:scale-98"
+            class="text-white font-medium px-5 py-3 rounded-2xl bg-accent-500 flex gap-2 shadow-accent-500/20 shadow-md items-center z-10 hover:bg-accent-600 active:scale-98"
         >
             <Plus size={18} />
             <span>Neues Projekt</span>
@@ -123,7 +123,7 @@
         {#each metrics as metric (metric.title)}
             {const IconComponent = metric.icon}
             <div
-                class="p-5 rounded-2xl bg-elevation-1 flex flex-col gap-3 transition-transform duration-200 squircle hover:-translate-y-0.5"
+                class="p-5 rounded-2xl bg-elevation-1 flex flex-col gap-3 squircle hover:-translate-y-0.5"
             >
                 <div class="flex items-center justify-between">
                     <span class="text-xs text-weak font-medium">{metric.title}</span>
@@ -160,7 +160,7 @@
                 {#each recentActivities as activity (activity.id)}
                     {const ActivityIcon = activity.icon}
                     <div
-                        class="p-4 rounded-2xl bg-elevation-2 flex gap-4 transition-colors items-center justify-between hover:bg-elevation-2/80"
+                        class="p-4 rounded-2xl bg-elevation-2 flex gap-4 items-center justify-between hover:bg-elevation-2/80"
                     >
                         <div class="flex gap-3.5 items-center">
                             <div class="text-strong p-2.5 rounded-xl bg-elevation-1">
@@ -218,7 +218,7 @@
                 <button
                     type="button"
                     onclick={() => viewState.setView("stats")}
-                    class="text-sm text-strong font-medium py-3 rounded-2xl bg-elevation-2 flex gap-2 w-full transition-colors items-center justify-center hover:bg-elevation-2/80"
+                    class="text-sm text-strong font-medium py-3 rounded-2xl bg-elevation-2 flex gap-2 w-full items-center justify-center hover:bg-elevation-2/80"
                 >
                     Detaillierte Stats ansehen
                 </button>

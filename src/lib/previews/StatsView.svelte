@@ -58,8 +58,7 @@
                     <button
                         type="button"
                         onclick={() => (selectedRange = range)}
-                        class="text-xs font-semibold px-3 py-1.5 rounded-lg transition-all {selectedRange ===
-                        range
+                        class="text-xs font-semibold px-3 py-1.5 rounded-lg {selectedRange === range
                             ? 'text-strong bg-elevation-1 shadow-xs'
                             : 'text-weak hover:text-strong'}"
                     >
@@ -77,17 +76,16 @@
                 <div class="group flex flex-1 flex-col gap-3 items-center">
                     <div class="flex w-full items-end justify-center">
                         <div
-                            class="rounded-2xl bg-accent-500/80 flex max-w-[48px] w-full transition-all duration-300 justify-center relative group-hover:bg-accent-500 {bar.height}"
+                            class="rounded-2xl bg-accent-500/80 flex max-w-[48px] w-full justify-center relative group-hover:bg-accent-500 {bar.height}"
                         >
                             <span
-                                class="text-xs text-strong font-bold px-2 py-0.5 rounded-md bg-elevation-1 opacity-0 shadow-xs transition-opacity absolute group-hover:opacity-100 -top-8"
+                                class="text-xs text-strong font-bold px-2 py-0.5 rounded-md bg-elevation-1 opacity-0 shadow-xs absolute group-hover:opacity-100 -top-8"
                             >
                                 {bar.value}%
                             </span>
                         </div>
                     </div>
-                    <span
-                        class="text-xs text-weak font-medium transition-colors group-hover:text-strong"
+                    <span class="text-xs text-weak font-medium group-hover:text-strong"
                         >{bar.label}</span
                     >
                 </div>

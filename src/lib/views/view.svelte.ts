@@ -3,6 +3,7 @@ import { createViewState } from "$core/_system/layout/app-views/viewState.svelte
 export const viewState = createViewState({
     persistKey: "svelte-template-views",
     views: [
+        // @template-remove-start
         {
             view: "home",
             label: "Home",
@@ -18,5 +19,6 @@ export const viewState = createViewState({
             label: "Settings",
             parent: "root",
         },
+        // @template-remove-end
     ] as const,
 });

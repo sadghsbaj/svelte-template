@@ -1,6 +1,7 @@
 import { untrack } from "svelte";
 import { SvelteMap, SvelteSet } from "svelte/reactivity";
 
+import { onViewScopeChange } from "$core/_system/layout/app-views/viewState.svelte";
 import { getOS, uuid } from "$utils/_system";
 
 import {
@@ -550,6 +551,11 @@ export class AppShortcutManager {
 }
 
 export const appShortcut = new AppShortcutManager();
+
+// eslint-disable-next-line unicorn/no-top-level-side-effects
+onViewScopeChange((rootScope) => {
+    appShortcut.setScope(rootScope);
+});
 
 /**
  * Svelte 5 Attachment helper to register single or multiple shortcuts on element mount,

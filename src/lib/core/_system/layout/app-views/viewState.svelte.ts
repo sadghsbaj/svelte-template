@@ -1,5 +1,4 @@
 import { SvelteSet } from "svelte/reactivity";
-import { appShortcut } from "$modules/shortcut/appShortcut.svelte";
 
 import { appStack } from "$core/_system/stack/appStack.svelte";
 
@@ -13,6 +12,22 @@ import type {
 } from "./types";
 import { ViewScrollManager } from "./view-scroll";
 import { viewIn, viewOut } from "./view-transition";
+
+export type ViewScopeChangeListener = (rootView: string) => void;
+const scopeChangeListeners = new SvelteSet<ViewScopeChangeListener>();
+
+/**
+ * Registers a listener callback invoked when the active view root scope changes.
+ *
+ * @param listener - Callback receiving the active root view scope name.
+ * @returns Cleanup function to unregister the listener.
+ */
+export function onViewScopeChange(listener: ViewScopeChangeListener): () => void {
+    scopeChangeListeners.add(listener);
+    return () => {
+        scopeChangeListeners.delete(listener);
+    };
+}
 
 export class ViewState<T extends string> {
     activeView = $state<T>(undefined as unknown as T);
@@ -137,7 +152,10 @@ export class ViewState<T extends string> {
     private syncStack(targetView: T): void {
         const root = this.getRootView(targetView);
         appStack.setScope(root);
-        appShortcut.setScope(root);
+
+        for (const listener of scopeChangeListeners) {
+            listener(root);
+        }
 
         if (this.subviewUnregister) {
             this.subviewUnregister();

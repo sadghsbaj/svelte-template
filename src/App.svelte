@@ -8,27 +8,21 @@
     import PerformanceHost from "$core/_system/performance/PerformanceHost.svelte";
     import { viewState } from "$views/view.svelte";
 
-    // @template-remove-start
-    import DemoView from "$lib/previews/DemoView.svelte";
-
-    // @template-remove-end
-
     onMount(() => {
         return initPreload();
     });
 </script>
 
-<!--  AppStage -->
 <AppViews {viewState}>
-    <!-- @template-remove-start -->
-    <AppView view="demo">
-        <DemoView />
+    <AppView view="home">
+        <main class="text-center flex-center flex-col gap-2 h-full">
+            <h1 class="text-2xl text-neutral-100 tracking-tight font-semibold">Svelte 5 App</h1>
+            <p class="text-sm text-neutral-400">Clean starter canvas</p>
+        </main>
     </AppView>
-    <!-- @template-remove-end -->
 </AppViews>
-<!--  /AppStage -->
 
-<!--  AppLayers -->
+<!-- AppLayers -->
 {#if import.meta.env.DEV}
     <AppLayer z="top-layer" layer="performance">
         <PerformanceHost />

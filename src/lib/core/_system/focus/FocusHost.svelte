@@ -23,6 +23,7 @@
     let lastObservedW = 0;
     let lastObservedH = 0;
     let scrollTicking = false;
+    let pendingFocusOutTimer: number | null = null;
 
     const animController = new FocusAnimationController();
     const OFFSET = 4;
@@ -100,6 +101,11 @@
     }
 
     function handleFocusIn(e: FocusEvent) {
+        if (pendingFocusOutTimer !== null) {
+            cancelAnimationFrame(pendingFocusOutTimer);
+            pendingFocusOutTimer = null;
+        }
+
         const target = (document.activeElement as HTMLElement) ?? (e.target as HTMLElement);
         if (!target || typeof target.matches !== "function") return;
 
@@ -213,28 +219,35 @@
     }
 
     function handleFocusOut(e: FocusEvent) {
-        const related = e.relatedTarget as HTMLElement | null;
-        if (related && isTargetFocusVisible(related)) {
-            return;
+        const target = e.target as HTMLElement | null;
+        if (!target || target !== activeElement) return;
+
+        if (pendingFocusOutTimer !== null) {
+            cancelAnimationFrame(pendingFocusOutTimer);
         }
 
-        activeElement = null;
+        pendingFocusOutTimer = requestAnimationFrame(() => {
+            pendingFocusOutTimer = null;
+            if (activeElement !== target) return;
 
-        animController.startPulseOut(
-            currentBox,
-            currentClip,
-            (cBox, cClip, paint) => {
-                currentBox = cBox;
-                currentClip = cClip;
-                draw(paint);
-            },
-            () => {
-                isVisible = false;
-                elementObserver?.disconnect();
-                if (ctx && canvas) clearCanvas(ctx, canvas);
-            },
-            overrides?.lineWidth ?? 2
-        );
+            activeElement = null;
+
+            animController.startPulseOut(
+                currentBox,
+                currentClip,
+                (cBox, cClip, paint) => {
+                    currentBox = cBox;
+                    currentClip = cClip;
+                    draw(paint);
+                },
+                () => {
+                    isVisible = false;
+                    elementObserver?.disconnect();
+                    if (ctx && canvas) clearCanvas(ctx, canvas);
+                },
+                overrides?.lineWidth ?? 2
+            );
+        });
     }
 
     function handleScroll() {

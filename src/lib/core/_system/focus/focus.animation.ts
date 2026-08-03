@@ -19,6 +19,21 @@ const TELEPORT_THRESHOLD = 120;
 export class FocusAnimationController {
     private animFrame: number = 0;
     private phase: 1 | 2 = 1;
+    private currentTargetBox: FocusBox | null = null;
+    private currentTargetClip: ClipBox | null = null;
+
+    public isAnimating(): boolean {
+        return this.animFrame !== 0;
+    }
+
+    public updateTarget(newTargetBox: FocusBox, newTargetClip: ClipBox): void {
+        if (this.currentTargetBox) {
+            Object.assign(this.currentTargetBox, newTargetBox);
+        }
+        if (this.currentTargetClip) {
+            Object.assign(this.currentTargetClip, newTargetClip);
+        }
+    }
 
     /**
      * Animates an initial focus appearance pulse-in at targetBox (when no focus ring was previously active).
@@ -32,9 +47,13 @@ export class FocusAnimationController {
     ): void {
         this.stop();
 
+        this.currentTargetBox = { ...targetBox };
+        this.currentTargetClip = { ...targetClip };
+
         const prefersReduced = motionPreference.resolved === "reduce";
         if (prefersReduced) {
-            onFrame(targetBox, targetClip, { opacity: 1, offsetDelta: 0, scale: 1 });
+            this.animFrame = 0;
+            onFrame(targetBox, targetClip, { opacity: 1, scale: 1 });
             onDone?.();
             return;
         }
@@ -54,14 +73,18 @@ export class FocusAnimationController {
             scale = lerp(scale, 1, 0.16);
             lineWidthOverride = lerp(lineWidthOverride, targetLineWidth, 0.16);
 
-            onFrame(cur, curClip, {
+            const tBox = this.currentTargetBox || targetBox;
+            const tClip = this.currentTargetClip || targetClip;
+
+            onFrame(cur, tClip, {
                 opacity: Math.min(1, opacity),
                 scale,
                 lineWidthOverride,
             });
 
             if (opacity > 0.95 && Math.abs(scale - 1) < 0.005) {
-                onFrame(targetBox, targetClip, { opacity: 1, offsetDelta: 0, scale: 1 });
+                this.animFrame = 0;
+                onFrame(tBox, tClip, { opacity: 1, scale: 1 });
                 onDone?.();
                 return;
             }
@@ -86,6 +109,7 @@ export class FocusAnimationController {
 
         const prefersReduced = motionPreference.resolved === "reduce";
         if (prefersReduced) {
+            this.animFrame = 0;
             onFrame(currentBox, currentClip, { opacity: 0 });
             onDone?.();
             return;
@@ -110,6 +134,7 @@ export class FocusAnimationController {
             });
 
             if (opacity <= 0.05) {
+                this.animFrame = 0;
                 onFrame(currentBox, currentClip, { opacity: 0, scale: 1 });
                 onDone?.();
                 return;
@@ -136,12 +161,16 @@ export class FocusAnimationController {
     ): void {
         this.stop();
 
+        this.currentTargetBox = { ...targetBox };
+        this.currentTargetClip = { ...targetClip };
+
         const dist = boxDistance(initialBox, targetBox);
         const prefersReduced = motionPreference.resolved === "reduce";
 
         // Reduced motion: instant snap
         if (prefersReduced) {
-            onFrame(targetBox, targetClip, { opacity: 1, offsetDelta: 0, scale: 1 });
+            this.animFrame = 0;
+            onFrame(targetBox, targetClip, { opacity: 1, scale: 1 });
             onDone?.();
             return;
         }
@@ -152,27 +181,33 @@ export class FocusAnimationController {
             const curClip = { ...initialClip };
 
             const loop = () => {
-                cur.x = lerp(cur.x, targetBox.x, 0.22);
-                cur.y = lerp(cur.y, targetBox.y, 0.22);
-                cur.w = lerp(cur.w, targetBox.w, 0.22);
-                cur.h = lerp(cur.h, targetBox.h, 0.22);
-                cur.r = lerp(cur.r, targetBox.r, 0.22);
+                const tBox = this.currentTargetBox || targetBox;
+                const tClip = this.currentTargetClip || targetClip;
 
-                curClip.x = lerp(curClip.x, targetClip.x, 0.22);
-                curClip.y = lerp(curClip.y, targetClip.y, 0.22);
-                curClip.w = lerp(curClip.w, targetClip.w, 0.22);
-                curClip.h = lerp(curClip.h, targetClip.h, 0.22);
+                cur.x = lerp(cur.x, tBox.x, 0.22);
+                cur.y = lerp(cur.y, tBox.y, 0.22);
+                cur.w = lerp(cur.w, tBox.w, 0.22);
+                cur.h = lerp(cur.h, tBox.h, 0.22);
+                cur.r = lerp(cur.r, tBox.r, 0.22);
 
-                onFrame(cur, curClip, { opacity: 1, offsetDelta: 0, scale: 1 });
+                curClip.x = lerp(curClip.x, tClip.x, 0.22);
+                curClip.y = lerp(curClip.y, tClip.y, 0.22);
+                curClip.w = lerp(curClip.w, tClip.w, 0.22);
+                curClip.h = lerp(curClip.h, tClip.h, 0.22);
+
+                onFrame(cur, curClip, { opacity: 1, scale: 1 });
 
                 if (
-                    Math.abs(cur.x - targetBox.x) > 0.5 ||
-                    Math.abs(cur.y - targetBox.y) > 0.5 ||
-                    Math.abs(cur.w - targetBox.w) > 0.5
+                    Math.abs(cur.x - tBox.x) > 0.5 ||
+                    Math.abs(cur.y - tBox.y) > 0.5 ||
+                    Math.abs(cur.w - tBox.w) > 0.5 ||
+                    Math.abs(cur.h - tBox.h) > 0.5 ||
+                    Math.abs(cur.r - tBox.r) > 0.5
                 ) {
                     this.animFrame = requestAnimationFrame(loop);
                 } else {
-                    onFrame(targetBox, targetClip, { opacity: 1, offsetDelta: 0, scale: 1 });
+                    this.animFrame = 0;
+                    onFrame(tBox, tClip, { opacity: 1, scale: 1 });
                     onDone?.();
                 }
             };
@@ -190,6 +225,9 @@ export class FocusAnimationController {
         let lineWidthOverride = targetLineWidth;
 
         const loop = () => {
+            const tBox = this.currentTargetBox || targetBox;
+            const tClip = this.currentTargetClip || targetClip;
+
             if (this.phase === 1) {
                 // Phase 1: Dissolve Out at Origin (collapse scale & thin line, stay at initial position)
                 opacity = lerp(opacity, 0, 0.22);
@@ -201,8 +239,8 @@ export class FocusAnimationController {
                 if (opacity <= 0.08) {
                     // Switch to target position immediately
                     this.phase = 2;
-                    cur = { ...targetBox };
-                    curClip = { ...targetClip };
+                    cur = { ...tBox };
+                    curClip = { ...tClip };
                     opacity = 0;
                     scale = 1.08;
                     lineWidthOverride = 0.5;
@@ -216,14 +254,15 @@ export class FocusAnimationController {
             scale = lerp(scale, 1, 0.16);
             lineWidthOverride = lerp(lineWidthOverride, targetLineWidth, 0.16);
 
-            onFrame(cur, curClip, {
+            onFrame(cur, tClip, {
                 opacity: Math.min(1, opacity),
                 scale,
                 lineWidthOverride,
             });
 
             if (opacity > 0.95 && Math.abs(scale - 1) < 0.005) {
-                onFrame(targetBox, targetClip, { opacity: 1, offsetDelta: 0, scale: 1 });
+                this.animFrame = 0;
+                onFrame(tBox, tClip, { opacity: 1, scale: 1 });
                 onDone?.();
                 return;
             }
@@ -239,5 +278,8 @@ export class FocusAnimationController {
         if (!this.animFrame) return;
         cancelAnimationFrame(this.animFrame);
         this.animFrame = 0;
+        this.currentTargetBox = null;
+        this.currentTargetClip = null;
     }
 }
+

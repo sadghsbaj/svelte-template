@@ -12,26 +12,55 @@ export function boxDistance(a: FocusBox, b: FocusBox): number {
     return Math.sqrt(Math.pow(cxA - cxB, 2) + Math.pow(cyA - cyB, 2));
 }
 
+export function getParentElement(el: Element): HTMLElement | null {
+    if (el.parentElement) return el.parentElement as HTMLElement;
+    const root = el.getRootNode?.();
+    if (root && "host" in root && root.host) {
+        return root.host as HTMLElement;
+    }
+    return null;
+}
+
+function parseBorderRadius(computedStyle: CSSStyleDeclaration, rectWidth: number, rectHeight: number): number {
+    const raw = (computedStyle.borderRadius || computedStyle.borderTopLeftRadius || "").trim();
+    if (!raw) return 0;
+
+    const token = raw.split(/\s+/, 1)[0];
+    if (token.endsWith("%")) {
+        // eslint-disable-next-line unicorn/prefer-number-coercion
+        const pct = Number.parseFloat(token) || 0;
+        return (pct / 100) * Math.min(rectWidth, rectHeight);
+    }
+
+    // eslint-disable-next-line unicorn/prefer-number-coercion
+    return Number.parseFloat(token) || 0;
+}
+
 export function getClipBox(el: HTMLElement): ClipBox {
     let top = 0;
     let left = 0;
     let bottom = window.innerHeight;
     let right = window.innerWidth;
 
-    let parent = el.parentElement;
+    let parent = getParentElement(el);
 
-    while (parent && parent !== document.body && parent !== document.documentElement) {
+    while (parent && parent !== document.documentElement) {
         const style = window.getComputedStyle(parent);
         const overflow = style.overflow + style.overflowX + style.overflowY;
 
-        if (/(auto|scroll|hidden)/.test(overflow)) {
+        if (/(auto|scroll|hidden|clip)/.test(overflow)) {
             const rect = parent.getBoundingClientRect();
             top = Math.max(top, rect.top);
             left = Math.max(left, rect.left);
             bottom = Math.min(bottom, rect.bottom);
             right = Math.min(right, rect.right);
         }
-        parent = parent.parentElement;
+
+        if (style.position === "fixed") {
+            break;
+        }
+
+        parent = getParentElement(parent);
     }
 
     return {
@@ -45,13 +74,12 @@ export function getClipBox(el: HTMLElement): ClipBox {
 export function computeTargetBox(el: HTMLElement, offset: number): { box: FocusBox; clip: ClipBox } | null {
     const rect = el.getBoundingClientRect();
 
-    if (rect.width === 0 && rect.height === 0) {
+    if (rect.width === 0 || rect.height === 0) {
         return null;
     }
 
     const computedStyle = window.getComputedStyle(el);
-    // eslint-disable-next-line unicorn/prefer-number-coercion
-    let borderRadius = Number.parseFloat(computedStyle.borderRadius) || 0;
+    let borderRadius = parseBorderRadius(computedStyle, rect.width, rect.height);
 
     const maxRadius = Math.min(rect.width, rect.height) / 2;
     borderRadius = Math.min(borderRadius, maxRadius);
@@ -61,10 +89,11 @@ export function computeTargetBox(el: HTMLElement, offset: number): { box: FocusB
         y: rect.y - offset,
         w: rect.width + offset * 2,
         h: rect.height + offset * 2,
-        r: borderRadius + offset / 2,
+        r: Math.max(0, borderRadius + offset / 2),
     };
 
     const clip = getClipBox(el);
 
     return { box, clip };
 }
+

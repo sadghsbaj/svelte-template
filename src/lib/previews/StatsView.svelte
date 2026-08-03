@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { focusAttach } from "$core/_system/focus/focus.attach";
 </script>
 
 <div class="mx-auto p-6 pb-28 flex flex-col gap-8 max-w-6xl md:p-10 md:pb-28">

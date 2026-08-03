@@ -32,19 +32,26 @@ describe("focus.renderer", () => {
         expect(() => drawFocusRing(ctx, canvas, box, clip)).not.toThrow();
     });
 
-    it("drawFocusRing applies offsetDelta transform correctly when offsetDelta !== 0", () => {
+    it("drawFocusRing clamps negative radius to 0", () => {
         const ctx = makeMockCtx();
+        const canvas = {} as HTMLCanvasElement;
+        const box: FocusBox = { x: 10, y: 10, w: 100, h: 100, r: -4 };
+        const clip: ClipBox = { x: 0, y: 0, w: 1000, h: 1000 };
+
+        drawFocusRing(ctx, canvas, box, clip);
+        const args = (ctx.roundRect as ReturnType<typeof vi.fn>).mock.calls[0];
+        expect(args[4]).toBe(0);
+    });
+
+    it("drawFocusRing falls back to ctx.rect when ctx.roundRect is not available", () => {
+        const ctx = makeMockCtx();
+        delete (ctx as unknown as Record<string, unknown>).roundRect;
         const canvas = {} as HTMLCanvasElement;
         const box: FocusBox = { x: 10, y: 10, w: 100, h: 100, r: 4 };
         const clip: ClipBox = { x: 0, y: 0, w: 1000, h: 1000 };
-        const paint: FocusPaintState = { opacity: 0.8, offsetDelta: -3.85 };
 
-        drawFocusRing(ctx, canvas, box, clip, undefined, undefined, paint);
-        const args = (ctx.roundRect as ReturnType<typeof vi.fn>).mock.calls[0];
-        expect(args[0]).toBeCloseTo(13.85, 1);
-        expect(args[1]).toBeCloseTo(13.85, 1);
-        expect(args[2]).toBeCloseTo(92.3, 1);
-        expect(args[3]).toBeCloseTo(92.3, 1);
+        expect(() => drawFocusRing(ctx, canvas, box, clip)).not.toThrow();
+        expect(ctx.rect).toHaveBeenCalledWith(10, 10, 100, 100);
     });
 
     it("drawFocusRing respects overrides color", () => {
@@ -82,6 +89,23 @@ describe("focus.geometry DOM functions", () => {
         expect(computeTargetBox(el, 4)).toBeNull();
     });
 
+    it("computeTargetBox returns null when element has 0 width even with height", () => {
+        const el = document.createElement("div");
+        vi.spyOn(el, "getBoundingClientRect").mockReturnValue({
+            width: 0,
+            height: 50,
+            x: 0,
+            y: 0,
+            top: 0,
+            left: 0,
+            bottom: 50,
+            right: 0,
+            toJSON: () => {},
+        } as DOMRect);
+
+        expect(computeTargetBox(el, 4)).toBeNull();
+    });
+
     it("computeTargetBox returns a valid box when element has size", () => {
         const el = document.createElement("div");
         vi.spyOn(el, "getBoundingClientRect").mockReturnValue({
@@ -102,7 +126,7 @@ describe("focus.geometry DOM functions", () => {
         expect(result?.box.h).toBe(108);
     });
 
-    it("computeTargetBox reads borderRadius via Number.parseFloat (fixes '8px' returning 0)", () => {
+    it("computeTargetBox reads borderRadius via parseBorderRadius (fixes '8px' returning 0)", () => {
         const el = document.createElement("div");
         vi.spyOn(el, "getBoundingClientRect").mockReturnValue({
             width: 100,
@@ -125,6 +149,31 @@ describe("focus.geometry DOM functions", () => {
         const result = computeTargetBox(el, 4);
         expect(result).not.toBeNull();
         expect(result?.box.r).toBeGreaterThan(0);
+    });
+
+    it("computeTargetBox handles percentage border-radius correctly", () => {
+        const el = document.createElement("div");
+        vi.spyOn(el, "getBoundingClientRect").mockReturnValue({
+            width: 100,
+            height: 100,
+            x: 0,
+            y: 0,
+            top: 0,
+            left: 0,
+            bottom: 100,
+            right: 100,
+            toJSON: () => {},
+        } as DOMRect);
+        vi.spyOn(window, "getComputedStyle").mockReturnValue({
+            borderRadius: "50%",
+            overflow: "",
+            overflowX: "",
+            overflowY: "",
+        } as unknown as CSSStyleDeclaration);
+
+        const result = computeTargetBox(el, 0);
+        expect(result).not.toBeNull();
+        expect(result?.box.r).toBe(50);
     });
 });
 
@@ -162,7 +211,7 @@ describe("FocusAnimationController (Houdini Pulse & Same-Element Handling)", () 
         controller = new FocusAnimationController();
     });
 
-    it("reduced motion: calls onDone immediately with opacity=1 offsetDelta=0", () => {
+    it("reduced motion: calls onDone immediately with opacity=1", () => {
         vi.spyOn(motionPreference, "resolved", "get").mockReturnValue("reduce");
 
         const frames: FocusPaintState[] = [];
@@ -177,7 +226,6 @@ describe("FocusAnimationController (Houdini Pulse & Same-Element Handling)", () 
 
         expect(frames).toHaveLength(1);
         expect(frames[0].opacity).toBe(1);
-        expect(frames[0].offsetDelta).toBe(0);
         expect(onDone).toHaveBeenCalled();
     });
 
@@ -202,10 +250,10 @@ describe("FocusAnimationController (Houdini Pulse & Same-Element Handling)", () 
             true // isSameElement
         );
 
-        await new Promise((r) => setTimeout(r, 500));
+        await new Promise((r) => setTimeout(r, 600));
 
         expect(onDone).toHaveBeenCalled();
-        expect(paintStates.every((p) => p.opacity === 1 && p.offsetDelta === 0)).toBe(true);
+        expect(paintStates.every((p) => p.opacity === 1)).toBe(true);
     });
 
     it("calling stop() before onDone cancels animation", () => {
@@ -221,7 +269,7 @@ describe("FocusAnimationController (Houdini Pulse & Same-Element Handling)", () 
         expect(onDone).not.toHaveBeenCalled();
     });
 
-    it("short distance (< 120px): snappy morph onFrame receives opacity=1 offsetDelta=0", async () => {
+    it("short distance (< 120px): snappy morph onFrame receives opacity=1", async () => {
         vi.spyOn(motionPreference, "resolved", "get").mockReturnValue("no-preference");
         const paintStates: FocusPaintState[] = [];
         const onDone = vi.fn();
@@ -236,7 +284,7 @@ describe("FocusAnimationController (Houdini Pulse & Same-Element Handling)", () 
         await new Promise((r) => setTimeout(r, 300));
 
         expect(onDone).toHaveBeenCalled();
-        expect(paintStates.every((p) => p.opacity === 1 && p.offsetDelta === 0)).toBe(true);
+        expect(paintStates.every((p) => p.opacity === 1)).toBe(true);
     });
 
     it("long distance (>= 120px): Houdini pulse runs Phase 1 dissolve-out then Phase 2 pulse-in", async () => {
@@ -265,10 +313,10 @@ describe("FocusAnimationController (Houdini Pulse & Same-Element Handling)", () 
         });
 
         expect(paintStates.length).toBeGreaterThan(0);
-        expect(paintStates.some((p) => (p.offsetDelta ?? 0) !== 0 || (p.opacity ?? 1) !== 1)).toBe(true);
+        expect(paintStates.some((p) => (p.opacity ?? 1) !== 1)).toBe(true);
     });
 
-    it("startPulseIn animates initial focus appearance smoothly with offsetDelta and opacity", async () => {
+    it("startPulseIn animates initial focus appearance smoothly with scale and opacity", async () => {
         const paintStates: FocusPaintState[] = [];
 
         await new Promise<void>((resolve) => {
@@ -288,8 +336,9 @@ describe("FocusAnimationController (Houdini Pulse & Same-Element Handling)", () 
         });
 
         expect(paintStates.length).toBeGreaterThan(0);
-        expect(paintStates.some((p) => p.opacity < 1 || (p.offsetDelta ?? 0) !== 0)).toBe(true);
+        expect(paintStates.some((p) => p.opacity < 1)).toBe(true);
     });
+
 });
 
 // ── Helpers ───────────────────────────────────────────────────────────────────

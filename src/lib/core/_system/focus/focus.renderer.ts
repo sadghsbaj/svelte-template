@@ -1,16 +1,24 @@
 import type { ClipBox, FocusBox, FocusOverrides, FocusPaintState } from "./focus.types.js";
 
+let cachedAccentColor: string | null = null;
+
+export function invalidateAccentColorCache(): void {
+    cachedAccentColor = null;
+}
+
 /**
  * Reads `--color-accent-500` from the document's CSS custom properties.
  * Falls back to the project's blue-500 oklch value if not found.
  */
 export function resolveAccentColor(): string {
     if (typeof window === "undefined") return "oklch(62.3% 0.214 259.815)";
+    if (cachedAccentColor !== null) return cachedAccentColor;
     const color = window
         .getComputedStyle(document.documentElement)
         .getPropertyValue("--color-accent-500")
         .trim();
-    return color || "oklch(62.3% 0.214 259.815)";
+    cachedAccentColor = color || "oklch(62.3% 0.214 259.815)";
+    return cachedAccentColor;
 }
 
 /**
@@ -21,7 +29,7 @@ export function clearCanvas(ctx: CanvasRenderingContext2D, canvas: HTMLCanvasEle
 }
 
 /**
- * Draws the focus ring on the canvas with Houdini-inspired offset, scale, and width pulse animations.
+ * Draws the focus ring on the canvas with scale and width pulse animations.
  *
  * @param ctx           - The 2D rendering context.
  * @param canvas        - The canvas element.
@@ -29,7 +37,7 @@ export function clearCanvas(ctx: CanvasRenderingContext2D, canvas: HTMLCanvasEle
  * @param currentClip   - The current clipping region.
  * @param overrides     - Optional per-element color/offset/lineWidth overrides.
  * @param resolvedColor - Pre-resolved CSS accent color string.
- * @param paint         - Paint state controlling opacity, scale, offsetDelta, and lineWidth.
+ * @param paint         - Paint state controlling opacity, scale, and lineWidth.
  */
 export function drawFocusRing(
     ctx: CanvasRenderingContext2D,
@@ -43,10 +51,9 @@ export function drawFocusRing(
     const opacity = paint?.opacity ?? 1;
     if (opacity <= 0.01) return;
 
-    const accentColor = overrides?.color ?? resolvedColor ?? "oklch(62.3% 0.214 259.815)";
+    const accentColor = overrides?.color ?? resolvedColor ?? resolveAccentColor();
     const baseLineWidth = overrides?.lineWidth ?? 2;
     const lineWidth = paint?.lineWidthOverride ?? baseLineWidth;
-    const offsetDelta = paint?.offsetDelta ?? 0;
     const scale = paint?.scale ?? 1;
 
     ctx.save();
@@ -56,20 +63,12 @@ export function drawFocusRing(
     ctx.rect(currentClip.x, currentClip.y, currentClip.w, currentClip.h);
     ctx.clip();
 
-    // Compute offset-adjusted box dimensions
+    // Compute dimensions
     let drawX = currentBox.x;
     let drawY = currentBox.y;
     let drawW = currentBox.w;
     let drawH = currentBox.h;
-    let drawR = currentBox.r;
-
-    if (offsetDelta !== 0) {
-        drawX = currentBox.x - offsetDelta;
-        drawY = currentBox.y - offsetDelta;
-        drawW = Math.max(0, currentBox.w + offsetDelta * 2);
-        drawH = Math.max(0, currentBox.h + offsetDelta * 2);
-        drawR = Math.max(0, currentBox.r + offsetDelta / 2);
-    }
+    const drawR = Math.max(0, currentBox.r);
 
     if (scale !== 1) {
         const cx = drawX + drawW / 2;
@@ -83,10 +82,15 @@ export function drawFocusRing(
     // Draw main focus ring outline
     ctx.globalAlpha = opacity;
     ctx.beginPath();
-    ctx.roundRect(drawX, drawY, drawW, drawH, drawR);
+    if (typeof ctx.roundRect === "function") {
+        ctx.roundRect(drawX, drawY, drawW, drawH, drawR);
+    } else {
+        ctx.rect(drawX, drawY, drawW, drawH);
+    }
     ctx.strokeStyle = accentColor;
     ctx.lineWidth = lineWidth;
     ctx.stroke();
 
     ctx.restore();
 }
+

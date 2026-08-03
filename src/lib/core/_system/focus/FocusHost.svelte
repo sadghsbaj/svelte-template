@@ -1,7 +1,7 @@
 <script lang="ts">
     import { layerAttach } from "$core/_system/layout/app-layer/layer.svelte";
-    import { computeTargetBox } from "./focus.geometry.js";
-    import { drawFocusRing, clearCanvas, resolveAccentColor } from "./focus.renderer.js";
+    import { computeTargetBox, getParentElement } from "./focus.geometry.js";
+    import { drawFocusRing, clearCanvas, resolveAccentColor, invalidateAccentColorCache } from "./focus.renderer.js";
     import { FocusAnimationController } from "./focus.animation.js";
     import { focusOverridesMap } from "./focus.attach.js";
     import type { FocusBox, ClipBox, FocusOverrides, FocusPaintState } from "./focus.types.js";
@@ -19,6 +19,10 @@
     let activeElement: HTMLElement | null = null;
     let elementObserver: ResizeObserver | null = null;
     let overrides: FocusOverrides | undefined;
+
+    let lastObservedW = 0;
+    let lastObservedH = 0;
+    let scrollTicking = false;
 
     const animController = new FocusAnimationController();
     const OFFSET = 4;
@@ -46,11 +50,11 @@
 
     function getOverridesFor(el: HTMLElement): FocusOverrides | undefined {
         let current: HTMLElement | null = el;
-        while (current && current !== document.body) {
+        while (current && current !== document.documentElement) {
             if (focusOverridesMap.has(current)) {
                 return focusOverridesMap.get(current);
             }
-            current = current.parentElement;
+            current = getParentElement(current);
         }
         return undefined;
     }
@@ -68,9 +72,15 @@
     }
 
     function handleResize() {
-        if (!canvas) return;
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+        if (!canvas || !ctx) return;
+        const dpr = window.devicePixelRatio || 1;
+        canvas.width = Math.round(window.innerWidth * dpr);
+        canvas.height = Math.round(window.innerHeight * dpr);
+        canvas.style.width = `${window.innerWidth}px`;
+        canvas.style.height = `${window.innerHeight}px`;
+        ctx.scale(dpr, dpr);
+
+        invalidateAccentColorCache();
 
         if (isVisible && activeElement && doUpdateTargetBox(activeElement)) {
             currentBox = { ...targetBox };
@@ -79,19 +89,23 @@
         }
     }
 
+    function isTargetFocusVisible(el: HTMLElement | null): boolean {
+        if (!el || typeof el.matches !== "function") return false;
+        const isTextInput =
+            el.tagName === "INPUT" ||
+            el.tagName === "TEXTAREA" ||
+            el.isContentEditable;
+        const isNoCanvas = !!el.closest?.("[data-no-canvas-focus]");
+        return (el.matches(":focus-visible") || isTextInput) && !isNoCanvas;
+    }
+
     function handleFocusIn(e: FocusEvent) {
         const target = (document.activeElement as HTMLElement) ?? (e.target as HTMLElement);
         if (!target || typeof target.matches !== "function") return;
 
-        const isTextInput =
-            target.tagName === "INPUT" ||
-            target.tagName === "TEXTAREA" ||
-            target.isContentEditable;
+        const isFocusVisible = isTargetFocusVisible(target);
 
-        const isFocusVisible = target.matches(":focus-visible") || isTextInput;
-        const isNoCanvas = !!target.closest?.("[data-no-canvas-focus]");
-
-        if (!isFocusVisible || isNoCanvas) {
+        if (!isFocusVisible) {
             if (isVisible) {
                 animController.startPulseOut(
                     currentBox,
@@ -117,26 +131,35 @@
             return;
         }
 
+        invalidateAccentColorCache();
+
         const isInitialFocus = activeElement === null || activeElement === target;
         isVisible = true;
 
         overrides = getOverridesFor(target);
+
+        if (!doUpdateTargetBox(target)) return;
+
+        const prevActiveElement = activeElement;
+        activeElement = target;
+
+        lastObservedW = targetBox.w;
+        lastObservedH = targetBox.h;
 
         if (!elementObserver) {
             elementObserver = new ResizeObserver(() => {
                 const el = activeElement;
                 if (!isVisible || !el) return;
 
-                const prevW = targetBox.w;
-                const prevH = targetBox.h;
-
                 const ok = doUpdateTargetBox(el);
                 if (!ok) return;
 
-                // Ignore the initial ResizeObserver notification when observing a new element
-                if (Math.abs(targetBox.w - prevW) < 1 && Math.abs(targetBox.h - prevH) < 1) {
+                if (Math.abs(targetBox.w - lastObservedW) < 1 && Math.abs(targetBox.h - lastObservedH) < 1) {
                     return;
                 }
+
+                lastObservedW = targetBox.w;
+                lastObservedH = targetBox.h;
 
                 animController.start(
                     targetBox,
@@ -156,11 +179,6 @@
         }
         elementObserver.disconnect();
         elementObserver.observe(target);
-
-        if (!doUpdateTargetBox(target)) return;
-
-        const prevActiveElement = activeElement;
-        activeElement = target;
 
         if (isInitialFocus || !prevActiveElement) {
             currentBox = { ...targetBox };
@@ -195,7 +213,8 @@
     }
 
     function handleFocusOut(e: FocusEvent) {
-        if (e.relatedTarget) {
+        const related = e.relatedTarget as HTMLElement | null;
+        if (related && isTargetFocusVisible(related)) {
             return;
         }
 
@@ -219,13 +238,22 @@
     }
 
     function handleScroll() {
-        if (!(isVisible && activeElement)) return;
+        if (scrollTicking) return;
+        scrollTicking = true;
+        requestAnimationFrame(() => {
+            scrollTicking = false;
+            if (!(isVisible && activeElement)) return;
 
-        if (doUpdateTargetBox(activeElement)) {
-            currentBox = { ...targetBox };
-            currentClip = { ...targetClip };
-            draw();
-        }
+            if (doUpdateTargetBox(activeElement)) {
+                if (animController.isAnimating()) {
+                    animController.updateTarget(targetBox, targetClip);
+                } else {
+                    currentBox = { ...targetBox };
+                    currentClip = { ...targetClip };
+                    draw();
+                }
+            }
+        });
     }
 
     function draw(paint?: FocusPaintState) {
@@ -252,3 +280,4 @@
     class="h-full w-full pointer-events-none inset-0 fixed"
     {@attach layerAttach}
 ></canvas>
+

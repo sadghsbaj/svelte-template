@@ -80,18 +80,45 @@
     }
 
     function handleFocusIn(e: FocusEvent) {
-        const target = e.target as HTMLElement;
+        const target = (document.activeElement as HTMLElement) ?? (e.target as HTMLElement);
+        if (!target || typeof target.matches !== "function") return;
 
-        if (!target.matches(":focus-visible") || target.closest?.("[data-no-canvas-focus]")) {
-            isVisible = false;
-            activeElement = null;
-            if (ctx && canvas) clearCanvas(ctx, canvas);
+        const isTextInput =
+            target.tagName === "INPUT" ||
+            target.tagName === "TEXTAREA" ||
+            target.isContentEditable;
+
+        const isFocusVisible = target.matches(":focus-visible") || isTextInput;
+        const isNoCanvas = !!target.closest?.("[data-no-canvas-focus]");
+
+        if (!isFocusVisible || isNoCanvas) {
+            if (isVisible) {
+                animController.startPulseOut(
+                    currentBox,
+                    currentClip,
+                    (cBox, cClip, paint) => {
+                        currentBox = cBox;
+                        currentClip = cClip;
+                        draw(paint);
+                    },
+                    () => {
+                        isVisible = false;
+                        activeElement = null;
+                        elementObserver?.disconnect();
+                        if (ctx && canvas) clearCanvas(ctx, canvas);
+                    },
+                    overrides?.lineWidth ?? 2
+                );
+            } else {
+                isVisible = false;
+                activeElement = null;
+                if (ctx && canvas) clearCanvas(ctx, canvas);
+            }
             return;
         }
 
-        const wasVisible = isVisible;
+        const isInitialFocus = activeElement === null || activeElement === target;
         isVisible = true;
-        activeElement = target;
 
         overrides = getOverridesFor(target);
 
@@ -132,10 +159,23 @@
 
         if (!doUpdateTargetBox(target)) return;
 
-        if (!wasVisible) {
+        const prevActiveElement = activeElement;
+        activeElement = target;
+
+        if (isInitialFocus || !prevActiveElement) {
             currentBox = { ...targetBox };
             currentClip = { ...targetClip };
-            draw();
+            animController.startPulseIn(
+                targetBox,
+                targetClip,
+                (cBox, cClip, paint) => {
+                    currentBox = cBox;
+                    currentClip = cClip;
+                    draw(paint);
+                },
+                undefined,
+                overrides?.lineWidth ?? 2
+            );
         } else {
             animController.start(
                 targetBox,
@@ -159,11 +199,23 @@
             return;
         }
 
-        isVisible = false;
         activeElement = null;
-        elementObserver?.disconnect();
-        animController.stop();
-        if (ctx && canvas) clearCanvas(ctx, canvas);
+
+        animController.startPulseOut(
+            currentBox,
+            currentClip,
+            (cBox, cClip, paint) => {
+                currentBox = cBox;
+                currentClip = cClip;
+                draw(paint);
+            },
+            () => {
+                isVisible = false;
+                elementObserver?.disconnect();
+                if (ctx && canvas) clearCanvas(ctx, canvas);
+            },
+            overrides?.lineWidth ?? 2
+        );
     }
 
     function handleScroll() {

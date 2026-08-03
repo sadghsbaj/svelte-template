@@ -5,24 +5,124 @@ import { boxDistance, lerp } from "./focus.geometry.js";
 /** Distance threshold (in px). Short distance (< 120px) morph glides. Long distance (>= 120px) teleports with Houdini pulse. */
 const TELEPORT_THRESHOLD = 120;
 
-/** Houdini-style offset collapse shift in px. */
-const HOUDINI_OFFSET_COLLAPSE = -3.85;
-
 /**
  * FocusAnimationController:
  *
- * 1. Same Element Resize (`isSameElement = true`): Pure smooth lerp without teleport or pulse.
- * 2. Short Distance (< 120px): Snappy morph glide (factor 0.35) between adjacent items.
- * 3. Long Distance (>= 120px): Houdini Dissolve & Pulse:
- *    - Phase 1 (Dissolve-Out at Origin): Ring dissolves out at old element (~40ms). No flying/sliding across screen.
- *    - Phase 2 (Pulse-In at Target): Ring appears at new element, expanding outward from inside border (-3.85px -> 0px) and fading in (~100ms).
+ * 1. Initial Focus Appearance (`startPulseIn`): Smooth 200ms scale-down pulse (opacity 0->1, scale 1.08->1.0, lineWidth 0.5px->2px).
+ * 2. Focus Disappearance (`startPulseOut`): Smooth ~100ms dissolve-out (opacity 1->0, scale 1.0->0.94).
+ * 3. Same Element Resize (`isSameElement = true`): Pure smooth lerp without teleport or pulse.
+ * 4. Short Distance (< 120px): Buttery smooth morph glide (factor 0.22, ~150ms) between adjacent items.
+ * 5. Long Distance (>= 120px): Houdini Dissolve & Pulse:
+ *    - Phase 1 (Dissolve-Out at Origin): Ring dissolves & shrinks at old element (~80ms).
+ *    - Phase 2 (Pulse-In at Target): Ring appears at new element, scaling down (1.08 -> 1.0) and fading in (~180ms).
  */
 export class FocusAnimationController {
     private animFrame: number = 0;
     private phase: 1 | 2 = 1;
 
     /**
-     * Starts animation toward targetBox.
+     * Animates an initial focus appearance pulse-in at targetBox (when no focus ring was previously active).
+     */
+    startPulseIn(
+        targetBox: FocusBox,
+        targetClip: ClipBox,
+        onFrame: (curBox: FocusBox, curClip: ClipBox, paint: FocusPaintState) => void,
+        onDone?: () => void,
+        targetLineWidth = 2
+    ): void {
+        this.stop();
+
+        const prefersReduced = motionPreference.resolved === "reduce";
+        if (prefersReduced) {
+            onFrame(targetBox, targetClip, { opacity: 1, offsetDelta: 0, scale: 1 });
+            onDone?.();
+            return;
+        }
+
+        let opacity = 0;
+        let scale = 1.08;
+        let lineWidthOverride = 0.5;
+
+        const cur = { ...targetBox };
+        const curClip = { ...targetClip };
+
+        // Synchronous frame 0 render to initialize zero opacity
+        onFrame(cur, curClip, { opacity: 0, scale: 1.08, lineWidthOverride: 0.5 });
+
+        const loop = () => {
+            opacity = lerp(opacity, 1, 0.16);
+            scale = lerp(scale, 1, 0.16);
+            lineWidthOverride = lerp(lineWidthOverride, targetLineWidth, 0.16);
+
+            onFrame(cur, curClip, {
+                opacity: Math.min(1, opacity),
+                scale,
+                lineWidthOverride,
+            });
+
+            if (opacity > 0.95 && Math.abs(scale - 1) < 0.005) {
+                onFrame(targetBox, targetClip, { opacity: 1, offsetDelta: 0, scale: 1 });
+                onDone?.();
+                return;
+            }
+
+            this.animFrame = requestAnimationFrame(loop);
+        };
+
+        this.animFrame = requestAnimationFrame(loop);
+    }
+
+    /**
+     * Animates a smooth dissolve-out when focus is lost (clicking outside on blank space).
+     */
+    startPulseOut(
+        currentBox: FocusBox,
+        currentClip: ClipBox,
+        onFrame: (curBox: FocusBox, curClip: ClipBox, paint: FocusPaintState) => void,
+        onDone?: () => void,
+        targetLineWidth = 2
+    ): void {
+        this.stop();
+
+        const prefersReduced = motionPreference.resolved === "reduce";
+        if (prefersReduced) {
+            onFrame(currentBox, currentClip, { opacity: 0 });
+            onDone?.();
+            return;
+        }
+
+        let opacity = 1;
+        let scale = 1;
+        let lineWidthOverride = targetLineWidth;
+
+        const cur = { ...currentBox };
+        const curClip = { ...currentClip };
+
+        const loop = () => {
+            opacity = lerp(opacity, 0, 0.22);
+            scale = lerp(scale, 0.94, 0.22);
+            lineWidthOverride = lerp(lineWidthOverride, 0.5, 0.22);
+
+            onFrame(cur, curClip, {
+                opacity,
+                scale,
+                lineWidthOverride,
+            });
+
+            if (opacity <= 0.05) {
+                onFrame(currentBox, currentClip, { opacity: 0, scale: 1 });
+                onDone?.();
+                return;
+            }
+
+            this.animFrame = requestAnimationFrame(loop);
+        };
+
+        this.animFrame = requestAnimationFrame(loop);
+    }
+
+    /**
+     * Starts animation toward targetBox from initialBox.
      */
     start(
         targetBox: FocusBox,
@@ -41,29 +141,29 @@ export class FocusAnimationController {
 
         // Reduced motion: instant snap
         if (prefersReduced) {
-            onFrame(targetBox, targetClip, { opacity: 1, offsetDelta: 0 });
+            onFrame(targetBox, targetClip, { opacity: 1, offsetDelta: 0, scale: 1 });
             onDone?.();
             return;
         }
 
-        // Same element resize OR short distance (< 120px): fast smooth lerp without teleport
+        // Same element resize OR short distance (< 120px): smooth lerp without teleport
         if (isSameElement || dist < TELEPORT_THRESHOLD) {
             const cur = { ...initialBox };
             const curClip = { ...initialClip };
 
             const loop = () => {
-                cur.x = lerp(cur.x, targetBox.x, 0.35);
-                cur.y = lerp(cur.y, targetBox.y, 0.35);
-                cur.w = lerp(cur.w, targetBox.w, 0.35);
-                cur.h = lerp(cur.h, targetBox.h, 0.35);
-                cur.r = lerp(cur.r, targetBox.r, 0.35);
+                cur.x = lerp(cur.x, targetBox.x, 0.22);
+                cur.y = lerp(cur.y, targetBox.y, 0.22);
+                cur.w = lerp(cur.w, targetBox.w, 0.22);
+                cur.h = lerp(cur.h, targetBox.h, 0.22);
+                cur.r = lerp(cur.r, targetBox.r, 0.22);
 
-                curClip.x = lerp(curClip.x, targetClip.x, 0.35);
-                curClip.y = lerp(curClip.y, targetClip.y, 0.35);
-                curClip.w = lerp(curClip.w, targetClip.w, 0.35);
-                curClip.h = lerp(curClip.h, targetClip.h, 0.35);
+                curClip.x = lerp(curClip.x, targetClip.x, 0.22);
+                curClip.y = lerp(curClip.y, targetClip.y, 0.22);
+                curClip.w = lerp(curClip.w, targetClip.w, 0.22);
+                curClip.h = lerp(curClip.h, targetClip.h, 0.22);
 
-                onFrame(cur, curClip, { opacity: 1, offsetDelta: 0 });
+                onFrame(cur, curClip, { opacity: 1, offsetDelta: 0, scale: 1 });
 
                 if (
                     Math.abs(cur.x - targetBox.x) > 0.5 ||
@@ -72,7 +172,7 @@ export class FocusAnimationController {
                 ) {
                     this.animFrame = requestAnimationFrame(loop);
                 } else {
-                    onFrame(targetBox, targetClip, { opacity: 1, offsetDelta: 0 });
+                    onFrame(targetBox, targetClip, { opacity: 1, offsetDelta: 0, scale: 1 });
                     onDone?.();
                 }
             };
@@ -86,17 +186,17 @@ export class FocusAnimationController {
         let curClip = { ...initialClip };
 
         let opacity = 1;
-        let offsetDelta = 0;
+        let scale = 1;
         let lineWidthOverride = targetLineWidth;
 
         const loop = () => {
             if (this.phase === 1) {
-                // Phase 1: Dissolve Out at Origin (collapse offset & thin line, stay at initial position)
-                opacity = lerp(opacity, 0, 0.5);
-                offsetDelta = lerp(offsetDelta, HOUDINI_OFFSET_COLLAPSE, 0.5);
-                lineWidthOverride = lerp(lineWidthOverride, 0.5, 0.5);
+                // Phase 1: Dissolve Out at Origin (collapse scale & thin line, stay at initial position)
+                opacity = lerp(opacity, 0, 0.22);
+                scale = lerp(scale, 0.94, 0.22);
+                lineWidthOverride = lerp(lineWidthOverride, 0.5, 0.22);
 
-                onFrame(cur, curClip, { opacity, offsetDelta, lineWidthOverride });
+                onFrame(cur, curClip, { opacity, scale, lineWidthOverride });
 
                 if (opacity <= 0.08) {
                     // Switch to target position immediately
@@ -104,26 +204,26 @@ export class FocusAnimationController {
                     cur = { ...targetBox };
                     curClip = { ...targetClip };
                     opacity = 0;
-                    offsetDelta = HOUDINI_OFFSET_COLLAPSE;
+                    scale = 1.08;
                     lineWidthOverride = 0.5;
                 }
                 this.animFrame = requestAnimationFrame(loop);
                 return;
             }
 
-            // Phase 2: Pulse In at Target (expand offset to 0 & grow line width to target)
-            opacity = lerp(opacity, 1, 0.35);
-            offsetDelta = lerp(offsetDelta, 0, 0.35);
-            lineWidthOverride = lerp(lineWidthOverride, targetLineWidth, 0.35);
+            // Phase 2: Pulse In at Target (scale down from 1.08 -> 1.0 & grow line width to target)
+            opacity = lerp(opacity, 1, 0.16);
+            scale = lerp(scale, 1, 0.16);
+            lineWidthOverride = lerp(lineWidthOverride, targetLineWidth, 0.16);
 
             onFrame(cur, curClip, {
                 opacity: Math.min(1, opacity),
-                offsetDelta,
+                scale,
                 lineWidthOverride,
             });
 
-            if (opacity > 0.96 && Math.abs(offsetDelta) < 0.05) {
-                onFrame(targetBox, targetClip, { opacity: 1, offsetDelta: 0 });
+            if (opacity > 0.95 && Math.abs(scale - 1) < 0.005) {
+                onFrame(targetBox, targetClip, { opacity: 1, offsetDelta: 0, scale: 1 });
                 onDone?.();
                 return;
             }

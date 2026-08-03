@@ -267,6 +267,29 @@ describe("FocusAnimationController (Houdini Pulse & Same-Element Handling)", () 
         expect(paintStates.length).toBeGreaterThan(0);
         expect(paintStates.some((p) => (p.offsetDelta ?? 0) !== 0 || (p.opacity ?? 1) !== 1)).toBe(true);
     });
+
+    it("startPulseIn animates initial focus appearance smoothly with offsetDelta and opacity", async () => {
+        const paintStates: FocusPaintState[] = [];
+
+        await new Promise<void>((resolve) => {
+            const ctrl = new FocusAnimationController();
+            ctrl.startPulseIn(
+                targetBox,
+                targetClip,
+                (_b, _c, paint) => {
+                    paintStates.push({ ...paint });
+                    if (paintStates.length >= 3) {
+                        ctrl.stop();
+                        resolve();
+                    }
+                },
+                resolve
+            );
+        });
+
+        expect(paintStates.length).toBeGreaterThan(0);
+        expect(paintStates.some((p) => p.opacity < 1 || (p.offsetDelta ?? 0) !== 0)).toBe(true);
+    });
 });
 
 // ── Helpers ───────────────────────────────────────────────────────────────────

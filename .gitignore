@@ -5,7 +5,13 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+bun-debug.log*
 lerna-debug.log*
+
+# Prevent NPM / PNPM lockfiles from being tracked
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
 
 # Dependencies
 node_modules
@@ -14,7 +20,7 @@ node_modules
 dist
 dist-ssr
 
-# Environment Variables (SEHR WICHTIG)
+# Environment Variables
 .env
 .env.*
 !.env.example
@@ -23,6 +29,10 @@ dist-ssr
 .vite/
 *.tsbuildinfo
 .vitest-attachments/
+test-results/
+playwright-report/
+blob-report/
+coverage/
 
 # Editor directories and files
 .vscode/*

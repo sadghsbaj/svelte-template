@@ -21,7 +21,10 @@
     <!-- Main Chart Section -->
     <section class="p-6 rounded-3xl bg-elevation-1 flex flex-col gap-6 squircle md:p-8">
         <div class="flex flex-col gap-4 justify-between sm:flex-row sm:items-center">
-            <input placeholder="test" />
+            <input
+                class="text-zinc-700 px-2 py-1 rounded-full bg-zinc-100 squircle-smooth dark:text-zinc-200 dark:bg-zinc-700 placeholder-zinc-700 dark:placeholder-zinc-200"
+                placeholder="test"
+            />
         </div>
     </section>
 </div>

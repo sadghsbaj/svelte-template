@@ -3,15 +3,20 @@
     "private": true,
     "version": "0.0.0",
     "type": "module",
+    "engines": {
+        "npm": "DO_NOT_USE_NPM_USE_BUN",
+        "pnpm": "DO_NOT_USE_PNPM_USE_BUN"
+    },
     "scripts": {
-        "dev": "vite",
-        "build": "npm run check && vite build",
-        "preview": "vite preview",
+        "preinstall": "npx -y only-allow bun",
+        "dev": "bun x --bun vite",
+        "build": "bun run check && vite build",
+        "preview": "bun x --bun vite preview",
         "check": "svelte-check --tsconfig ./tsconfig.app.json && tsc -p tsconfig.node.json",
         "format": "prettier --write .",
         "lint": "eslint .",
         "test:unit": "vitest",
-        "test": "npm run test:unit -- --run",
+        "test": "bun run test:unit -- --run",
         "export": "./scripts/export.sh",
         "stats": "./scripts/stats.sh"
     },

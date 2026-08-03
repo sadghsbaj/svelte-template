@@ -50,7 +50,8 @@ export function computeTargetBox(el: HTMLElement, offset: number): { box: FocusB
     }
 
     const computedStyle = window.getComputedStyle(el);
-    let borderRadius = Number(computedStyle.borderRadius) || 0;
+    // eslint-disable-next-line unicorn/prefer-number-coercion
+    let borderRadius = Number.parseFloat(computedStyle.borderRadius) || 0;
 
     const maxRadius = Math.min(rect.width, rect.height) / 2;
     borderRadius = Math.min(borderRadius, maxRadius);

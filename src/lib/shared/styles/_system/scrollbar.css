@@ -3,16 +3,23 @@
     ========================================================================== */
 
 :root {
-    --scrollbar-track: light-dark(var(--color-base-50), var(--color-base-950));
-    --scrollbar-thumb: light-dark(var(--color-base-300), var(--color-base-800));
-    --scrollbar-thumb-hover: light-dark(var(--color-base-400), var(--color-base-700));
+    --scrollbar-track: transparent;
+    --scrollbar-thumb: light-dark(
+        color-mix(in srgb, var(--color-base-900) 20%, transparent),
+        color-mix(in srgb, var(--color-base-100) 22%, transparent)
+    );
+
+    --scrollbar-thumb-hover: light-dark(
+        color-mix(in srgb, var(--color-base-900) 35%, transparent),
+        color-mix(in srgb, var(--color-base-100) 38%, transparent)
+    );
 }
 
 /* Firefox */
-@supports not selector(::-webkit-scrollbar) {
+@supports (-moz-appearance: none) {
     * {
         scrollbar-width: thin;
-        scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+        scrollbar-color: var(--scrollbar-thumb) transparent;
     }
 }
 
@@ -32,6 +39,7 @@
 ::-webkit-scrollbar-thumb {
     min-height: 50px;
     background-color: var(--scrollbar-thumb);
+    background-clip: padding-box;
     border: 2px solid var(--scrollbar-track);
     border-radius: 9999px;
 }

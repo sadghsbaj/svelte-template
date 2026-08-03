@@ -4,7 +4,7 @@
     import { drawFocusRing, clearCanvas, resolveAccentColor } from "./focus.renderer.js";
     import { FocusAnimationController } from "./focus.animation.js";
     import { focusOverridesMap } from "./focus.attach.js";
-    import type { FocusBox, ClipBox, FocusOverrides } from "./focus.types.js";
+    import type { FocusBox, ClipBox, FocusOverrides, FocusPaintState } from "./focus.types.js";
 
     let isVisible = $state(false);
     let canvas: HTMLCanvasElement | undefined = $state();
@@ -92,7 +92,7 @@
         const wasVisible = isVisible;
         isVisible = true;
         activeElement = target;
-        
+
         overrides = getOverridesFor(target);
 
         if (!elementObserver) {
@@ -100,11 +100,14 @@
                 if (!isVisible || !activeElement) return;
                 doUpdateTargetBox(activeElement);
                 animController.start(
-                    targetBox, targetClip, currentBox, currentClip,
-                    (cBox, cClip) => {
+                    targetBox,
+                    targetClip,
+                    currentBox,
+                    currentClip,
+                    (cBox, cClip, paint) => {
                         currentBox = cBox;
                         currentClip = cClip;
-                        draw();
+                        draw(paint);
                     }
                 );
             });
@@ -120,11 +123,14 @@
             draw();
         } else {
             animController.start(
-                targetBox, targetClip, currentBox, currentClip,
-                (cBox, cClip) => {
+                targetBox,
+                targetClip,
+                currentBox,
+                currentClip,
+                (cBox, cClip, paint) => {
                     currentBox = cBox;
                     currentClip = cClip;
-                    draw();
+                    draw(paint);
                 }
             );
         }
@@ -152,12 +158,20 @@
         }
     }
 
-    function draw() {
+    function draw(paint?: FocusPaintState) {
         if (!ctx || !canvas || !isVisible) return;
-        
+
         const resolvedColor = resolveAccentColor();
         clearCanvas(ctx, canvas);
-        drawFocusRing(ctx, canvas, currentBox, currentClip, overrides, resolvedColor);
+        drawFocusRing(
+            ctx,
+            canvas,
+            currentBox,
+            currentClip,
+            overrides,
+            resolvedColor,
+            paint ?? { opacity: 1 }
+        );
     }
 </script>
 

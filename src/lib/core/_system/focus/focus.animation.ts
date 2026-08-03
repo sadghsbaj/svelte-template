@@ -2,20 +2,20 @@ import { motionPreference } from "$core/_system/motion/motion.svelte.js";
 import type { ClipBox, FocusBox, FocusPaintState } from "./focus.types.js";
 import { boxDistance, lerp } from "./focus.geometry.js";
 
-/** Distance threshold (in px) above which Houdini Dissolve & Pulse activates instead of lerp glide. */
+/** Distance threshold (in px). Short distance (< 120px) morph glides. Long distance (>= 120px) teleports with Houdini pulse. */
 const TELEPORT_THRESHOLD = 120;
 
-/** Default Houdini-style initial offset collapse shift (-3.85px). */
+/** Houdini-style offset collapse shift in px. */
 const HOUDINI_OFFSET_COLLAPSE = -3.85;
 
 /**
- * FocusAnimationController with 2 distinct distance-based modes + same-element resize handling:
+ * FocusAnimationController:
  *
  * 1. Same Element Resize (`isSameElement = true`): Pure smooth lerp without teleport or pulse.
- * 2. Short Distance (< 120px): Fast, snappy morph glide (factor 0.32) between adjacent items.
- * 3. Long Distance (>= 120px): Houdini-inspired Dissolve & Pulse:
- *    - Phase 1 (Dissolve-Out): Origin ring collapses offset (0 -> -3.85px), thins line (lineWidth -> 0.5px), and fades (1 -> 0).
- *    - Phase 2 (Pulse-In): Target ring snaps to target, expanding offset (-3.85px -> 0px) and line width (0.5px -> lineWidth) while fading in (0 -> 1).
+ * 2. Short Distance (< 120px): Snappy morph glide (factor 0.35) between adjacent items.
+ * 3. Long Distance (>= 120px): Houdini Dissolve & Pulse:
+ *    - Phase 1 (Dissolve-Out at Origin): Ring dissolves out at old element (~40ms). No flying/sliding across screen.
+ *    - Phase 2 (Pulse-In at Target): Ring appears at new element, expanding outward from inside border (-3.85px -> 0px) and fading in (~100ms).
  */
 export class FocusAnimationController {
     private animFrame: number = 0;
@@ -23,15 +23,6 @@ export class FocusAnimationController {
 
     /**
      * Starts animation toward targetBox.
-     *
-     * @param targetBox     - Destination FocusBox.
-     * @param targetClip    - Destination ClipBox.
-     * @param initialBox    - Starting FocusBox.
-     * @param initialClip   - Starting ClipBox.
-     * @param onFrame       - Called each rAF tick with curBox, curClip, paintState.
-     * @param onDone        - Fired when animation completes.
-     * @param isSameElement - True if resizing/scrolling the currently focused element.
-     * @param targetLineWidth - Base stroke width (defaults to 2).
      */
     start(
         targetBox: FocusBox,
@@ -55,22 +46,22 @@ export class FocusAnimationController {
             return;
         }
 
-        // Same element resize OR short distance: fast smooth lerp without teleport
+        // Same element resize OR short distance (< 120px): fast smooth lerp without teleport
         if (isSameElement || dist < TELEPORT_THRESHOLD) {
             const cur = { ...initialBox };
             const curClip = { ...initialClip };
 
             const loop = () => {
-                cur.x = lerp(cur.x, targetBox.x, 0.32);
-                cur.y = lerp(cur.y, targetBox.y, 0.32);
-                cur.w = lerp(cur.w, targetBox.w, 0.32);
-                cur.h = lerp(cur.h, targetBox.h, 0.32);
-                cur.r = lerp(cur.r, targetBox.r, 0.32);
+                cur.x = lerp(cur.x, targetBox.x, 0.35);
+                cur.y = lerp(cur.y, targetBox.y, 0.35);
+                cur.w = lerp(cur.w, targetBox.w, 0.35);
+                cur.h = lerp(cur.h, targetBox.h, 0.35);
+                cur.r = lerp(cur.r, targetBox.r, 0.35);
 
-                curClip.x = lerp(curClip.x, targetClip.x, 0.32);
-                curClip.y = lerp(curClip.y, targetClip.y, 0.32);
-                curClip.w = lerp(curClip.w, targetClip.w, 0.32);
-                curClip.h = lerp(curClip.h, targetClip.h, 0.32);
+                curClip.x = lerp(curClip.x, targetClip.x, 0.35);
+                curClip.y = lerp(curClip.y, targetClip.y, 0.35);
+                curClip.w = lerp(curClip.w, targetClip.w, 0.35);
+                curClip.h = lerp(curClip.h, targetClip.h, 0.35);
 
                 onFrame(cur, curClip, { opacity: 1, offsetDelta: 0 });
 
@@ -89,7 +80,7 @@ export class FocusAnimationController {
             return;
         }
 
-        // Long distance: Houdini Dissolve-Out at Origin -> Pulse-In at Target
+        // Long distance (>= 120px): Houdini Dissolve-Out at Origin -> Pulse-In at Target
         this.phase = 1;
         let cur = { ...initialBox };
         let curClip = { ...initialClip };
@@ -100,14 +91,14 @@ export class FocusAnimationController {
 
         const loop = () => {
             if (this.phase === 1) {
-                // Phase 1: Dissolve Out at Origin (collapse offset & thin line)
-                opacity = lerp(opacity, 0, 0.35);
-                offsetDelta = lerp(offsetDelta, HOUDINI_OFFSET_COLLAPSE, 0.35);
-                lineWidthOverride = lerp(lineWidthOverride, 0.5, 0.35);
+                // Phase 1: Dissolve Out at Origin (collapse offset & thin line, stay at initial position)
+                opacity = lerp(opacity, 0, 0.5);
+                offsetDelta = lerp(offsetDelta, HOUDINI_OFFSET_COLLAPSE, 0.5);
+                lineWidthOverride = lerp(lineWidthOverride, 0.5, 0.5);
 
                 onFrame(cur, curClip, { opacity, offsetDelta, lineWidthOverride });
 
-                if (opacity <= 0.05) {
+                if (opacity <= 0.08) {
                     // Switch to target position immediately
                     this.phase = 2;
                     cur = { ...targetBox };
@@ -121,14 +112,9 @@ export class FocusAnimationController {
             }
 
             // Phase 2: Pulse In at Target (expand offset to 0 & grow line width to target)
-            opacity = lerp(opacity, 1, 0.28);
-            offsetDelta = lerp(offsetDelta, 0, 0.28);
-            lineWidthOverride = lerp(lineWidthOverride, targetLineWidth, 0.28);
-
-            curClip.x = lerp(curClip.x, targetClip.x, 0.35);
-            curClip.y = lerp(curClip.y, targetClip.y, 0.35);
-            curClip.w = lerp(curClip.w, targetClip.w, 0.35);
-            curClip.h = lerp(curClip.h, targetClip.h, 0.35);
+            opacity = lerp(opacity, 1, 0.35);
+            offsetDelta = lerp(offsetDelta, 0, 0.35);
+            lineWidthOverride = lerp(lineWidthOverride, targetLineWidth, 0.35);
 
             onFrame(cur, curClip, {
                 opacity: Math.min(1, opacity),

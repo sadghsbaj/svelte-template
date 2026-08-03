@@ -97,8 +97,20 @@
 
         if (!elementObserver) {
             elementObserver = new ResizeObserver(() => {
-                if (!isVisible || !activeElement) return;
-                doUpdateTargetBox(activeElement);
+                const el = activeElement;
+                if (!isVisible || !el) return;
+
+                const prevW = targetBox.w;
+                const prevH = targetBox.h;
+
+                const ok = doUpdateTargetBox(el);
+                if (!ok) return;
+
+                // Ignore the initial ResizeObserver notification when observing a new element
+                if (Math.abs(targetBox.w - prevW) < 1 && Math.abs(targetBox.h - prevH) < 1) {
+                    return;
+                }
+
                 animController.start(
                     targetBox,
                     targetClip,

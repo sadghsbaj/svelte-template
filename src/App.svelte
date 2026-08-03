@@ -28,21 +28,19 @@
     <Sidebar />
     <!-- @template-remove-end -->
 
-    <main class="flex-1 h-full min-w-0 relative">
-        <AppViews {viewState}>
-            <!-- @template-remove-start -->
-            <AppView view="home">
-                <HomeView />
-            </AppView>
-            <AppView view="stats">
-                <StatsView />
-            </AppView>
-            <AppView view="settings">
-                <SettingsView />
-            </AppView>
-            <!-- @template-remove-end -->
-        </AppViews>
-    </main>
+    <AppViews {viewState}>
+        <!-- @template-remove-start -->
+        <AppView view="home">
+            <HomeView />
+        </AppView>
+        <AppView view="stats">
+            <StatsView />
+        </AppView>
+        <AppView view="settings">
+            <SettingsView />
+        </AppView>
+        <!-- @template-remove-end -->
+    </AppViews>
 </div>
 
 <!-- AppLayers -->

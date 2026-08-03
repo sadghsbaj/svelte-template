@@ -1,7 +1,8 @@
 <script lang="ts">
-    import { Activity, BarChart3, Globe, Layers, PieChart, Share2, Zap } from "@lucide/svelte";
+    import { Activity, BarChart3, Globe, Layers, Maximize2, PieChart, Share2, Zap } from "@lucide/svelte";
 
     let selectedRange = $state("30T");
+    let isExpanded = $state(false);
 
     const ranges = ["7T", "30T", "90T", "1J"];
 
@@ -179,4 +180,85 @@
             </div>
         </section>
     </div>
+
+    <!-- Focus Test Suite -->
+    <div class="gap-6 grid grid-cols-1 lg:grid-cols-2">
+        <!-- Test 1: Dynamic Resizable Focusable Element -->
+        <section class="p-6 rounded-3xl bg-elevation-1 flex flex-col gap-4 squircle">
+            <div class="flex items-center justify-between">
+                <h3 class="text-base text-strong font-bold flex gap-2 items-center">
+                    <Maximize2 size={18} class="text-accent-500" />
+                    <span>Focus Test: Größendynamisches Element</span>
+                </h3>
+                <span class="text-xs text-weak font-medium">Resize on Focus / Click</span>
+            </div>
+
+            <p class="text-xs text-weak">
+                Dieses fokussierbare Element verändert seine Dimensionen dynamisch bei Interaktion/Fokus.
+            </p>
+
+            <button
+                type="button"
+                tabindex="0"
+                onclick={() => (isExpanded = !isExpanded)}
+                class="text-white font-medium p-4 rounded-2xl bg-accent-500 flex flex-col cursor-pointer shadow-md items-center justify-center focus:outline-none focus:ring-4 focus:ring-accent-500/50 {isExpanded
+                    ? 'bg-accent-600 h-48 w-full shadow-xl'
+                    : 'h-16 w-64'}"
+            >
+                <span class="text-sm font-bold">
+                    {isExpanded ? 'Großer Zustand (100% × 192px)' : 'Kompakter Zustand (256px × 64px)'}
+                </span>
+                <span class="text-xs mt-1 opacity-80">
+                    Klicken / Enter drücken zum Umschalten
+                </span>
+            </button>
+        </section>
+
+        <!-- Test 2: Scroll Container with Top & Bottom Focusable Targets -->
+        <section class="p-6 rounded-3xl bg-elevation-1 flex flex-col gap-4 squircle">
+            <div class="flex items-center justify-between">
+                <h3 class="text-base text-strong font-bold flex gap-2 items-center">
+                    <Layers size={18} class="text-info-500" />
+                    <span>Focus Test: Scroll-Container</span>
+                </h3>
+                <span class="text-xs text-weak font-medium">Top & Bottom Targets</span>
+            </div>
+
+            <div
+                class="border-elevation-3 p-4 border rounded-2xl bg-elevation-2 flex flex-col h-64 justify-between overflow-y-auto focus-within:ring-2 focus-within:ring-info-500/30"
+            >
+                <!-- TOP Focus Target -->
+                <div class="p-3 rounded-xl bg-elevation-1 flex shadow-xs items-center justify-between">
+                    <span class="text-xs text-strong font-semibold">Ganz oben im Scroll-Bereich</span>
+                    <button
+                        type="button"
+                        tabindex="0"
+                        class="text-xs text-white font-bold px-3.5 py-1.5 rounded-lg bg-info-500 focus:outline-none hover:bg-info-600 focus:ring-2 focus:ring-info-400 focus:ring-offset-2"
+                    >
+                        [Focus Oben]
+                    </button>
+                </div>
+
+                <!-- Scroll Spacer Content -->
+                <div class="border-elevation-3 text-xs text-weak my-24 p-6 text-center border rounded-xl border-dashed">
+                    <p class="text-main font-semibold mb-1">↑ Scroll-Inhalt (Abstand) ↓</p>
+                    <p>Scrolle nach unten für das untere fokussierbare Element.</p>
+                </div>
+
+                <!-- BOTTOM Focus Target -->
+                <div class="p-3 rounded-xl bg-elevation-1 flex shadow-xs items-center justify-between">
+                    <span class="text-xs text-strong font-semibold">Ganz unten im Scroll-Bereich</span>
+                    <button
+                        type="button"
+                        tabindex="0"
+                        class="text-xs text-white font-bold px-3.5 py-1.5 rounded-lg bg-success-500 focus:outline-none hover:bg-success-600 focus:ring-2 focus:ring-success-400 focus:ring-offset-2"
+                    >
+                        [Focus Unten]
+                    </button>
+                </div>
+            </div>
+        </section>
+    </div>
+
 </div>
+

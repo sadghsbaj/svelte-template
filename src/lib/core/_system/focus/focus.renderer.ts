@@ -21,10 +21,11 @@ export function clearCanvas(ctx: CanvasRenderingContext2D, canvas: HTMLCanvasEle
 }
 
 /**
- * Draws the focus ring on the canvas with optional opacity and scale transforms.
+ * Draws the focus ring on the canvas with Houdini-inspired offset & width pulse animations.
  *
  * - Short distance: Crisp outline ring smoothly morphs between neighbor elements.
- * - Long distance: Dissolves out at origin, then pulses in at target with scale damping.
+ * - Long distance: Dissolves out at origin (collapsing offsetDelta -> -3.85px), then pulses in at target
+ *   expanding offsetDelta -> 0px and growing stroke width.
  *
  * @param ctx           - The 2D rendering context.
  * @param canvas        - The canvas element.
@@ -32,7 +33,7 @@ export function clearCanvas(ctx: CanvasRenderingContext2D, canvas: HTMLCanvasEle
  * @param currentClip   - The current clipping region.
  * @param overrides     - Optional per-element color/offset/lineWidth overrides.
  * @param resolvedColor - Pre-resolved CSS accent color string.
- * @param paint         - Paint state controlling opacity and scale transform.
+ * @param paint         - Paint state controlling opacity, offsetDelta, and lineWidth.
  */
 export function drawFocusRing(
     ctx: CanvasRenderingContext2D,
@@ -47,8 +48,9 @@ export function drawFocusRing(
     if (opacity <= 0.01) return;
 
     const accentColor = overrides?.color ?? resolvedColor ?? "oklch(62.3% 0.214 259.815)";
-    const lineWidth = overrides?.lineWidth ?? 2;
-    const scale = paint?.scale ?? 1;
+    const baseLineWidth = overrides?.lineWidth ?? 2;
+    const lineWidth = paint?.lineWidthOverride ?? baseLineWidth;
+    const offsetDelta = paint?.offsetDelta ?? 0;
 
     ctx.save();
 
@@ -57,25 +59,25 @@ export function drawFocusRing(
     ctx.rect(currentClip.x, currentClip.y, currentClip.w, currentClip.h);
     ctx.clip();
 
-    // Compute scaled box dimensions centered around (cx, cy)
+    // Compute offset-adjusted box dimensions for Houdini expansion effect
     let drawX = currentBox.x;
     let drawY = currentBox.y;
     let drawW = currentBox.w;
     let drawH = currentBox.h;
+    let drawR = currentBox.r;
 
-    if (scale !== 1) {
-        const cx = currentBox.x + currentBox.w / 2;
-        const cy = currentBox.y + currentBox.h / 2;
-        drawW = currentBox.w * scale;
-        drawH = currentBox.h * scale;
-        drawX = cx - drawW / 2;
-        drawY = cy - drawH / 2;
+    if (offsetDelta !== 0) {
+        drawX = currentBox.x - offsetDelta;
+        drawY = currentBox.y - offsetDelta;
+        drawW = Math.max(0, currentBox.w + offsetDelta * 2);
+        drawH = Math.max(0, currentBox.h + offsetDelta * 2);
+        drawR = Math.max(0, currentBox.r + offsetDelta / 2);
     }
 
     // Draw main focus ring outline
     ctx.globalAlpha = opacity;
     ctx.beginPath();
-    ctx.roundRect(drawX, drawY, drawW, drawH, currentBox.r);
+    ctx.roundRect(drawX, drawY, drawW, drawH, drawR);
     ctx.strokeStyle = accentColor;
     ctx.lineWidth = lineWidth;
     ctx.stroke();

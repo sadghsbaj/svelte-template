@@ -108,7 +108,10 @@
                         currentBox = cBox;
                         currentClip = cClip;
                         draw(paint);
-                    }
+                    },
+                    undefined,
+                    true,
+                    overrides?.lineWidth ?? 2
                 );
             });
         }
@@ -131,7 +134,10 @@
                     currentBox = cBox;
                     currentClip = cClip;
                     draw(paint);
-                }
+                },
+                undefined,
+                false,
+                overrides?.lineWidth ?? 2
             );
         }
     }

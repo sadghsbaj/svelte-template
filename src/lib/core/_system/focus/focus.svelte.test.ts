@@ -32,19 +32,19 @@ describe("focus.renderer", () => {
         expect(() => drawFocusRing(ctx, canvas, box, clip)).not.toThrow();
     });
 
-    it("drawFocusRing applies scale transform correctly when scale !== 1", () => {
+    it("drawFocusRing applies offsetDelta transform correctly when offsetDelta !== 0", () => {
         const ctx = makeMockCtx();
         const canvas = {} as HTMLCanvasElement;
         const box: FocusBox = { x: 10, y: 10, w: 100, h: 100, r: 4 };
         const clip: ClipBox = { x: 0, y: 0, w: 1000, h: 1000 };
-        const paint: FocusPaintState = { opacity: 0.8, scale: 1.1 };
+        const paint: FocusPaintState = { opacity: 0.8, offsetDelta: -3.85 };
 
         drawFocusRing(ctx, canvas, box, clip, undefined, undefined, paint);
         const args = (ctx.roundRect as ReturnType<typeof vi.fn>).mock.calls[0];
-        expect(Math.round(args[0] as number)).toBe(5);
-        expect(Math.round(args[1] as number)).toBe(5);
-        expect(Math.round(args[2] as number)).toBe(110);
-        expect(Math.round(args[3] as number)).toBe(110);
+        expect(args[0]).toBeCloseTo(13.85, 1);
+        expect(args[1]).toBeCloseTo(13.85, 1);
+        expect(args[2]).toBeCloseTo(92.3, 1);
+        expect(args[3]).toBeCloseTo(92.3, 1);
     });
 
     it("drawFocusRing respects overrides color", () => {
@@ -153,7 +153,7 @@ describe("focus.attach", () => {
     });
 });
 
-describe("FocusAnimationController (Dual-Mode: Snappy Morph & Teleport Pulse)", () => {
+describe("FocusAnimationController (Houdini Pulse & Same-Element Handling)", () => {
     let controller: FocusAnimationController;
     const targetBox: FocusBox = { x: 100, y: 100, w: 50, h: 50, r: 5 };
     const targetClip: ClipBox = { x: 0, y: 0, w: 1000, h: 1000 };
@@ -162,7 +162,7 @@ describe("FocusAnimationController (Dual-Mode: Snappy Morph & Teleport Pulse)", 
         controller = new FocusAnimationController();
     });
 
-    it("reduced motion: calls onDone immediately with opacity=1 scale=1", () => {
+    it("reduced motion: calls onDone immediately with opacity=1 offsetDelta=0", () => {
         vi.spyOn(motionPreference, "resolved", "get").mockReturnValue("reduce");
 
         const frames: FocusPaintState[] = [];
@@ -177,8 +177,35 @@ describe("FocusAnimationController (Dual-Mode: Snappy Morph & Teleport Pulse)", 
 
         expect(frames).toHaveLength(1);
         expect(frames[0].opacity).toBe(1);
-        expect(frames[0].scale).toBe(1);
+        expect(frames[0].offsetDelta).toBe(0);
         expect(onDone).toHaveBeenCalled();
+    });
+
+    it("same element resize (isSameElement = true): always runs lerp without Houdini pulse", async () => {
+        vi.spyOn(motionPreference, "resolved", "get").mockReturnValue("no-preference");
+        const paintStates: FocusPaintState[] = [];
+        const onDone = vi.fn();
+
+        // Far distance box, but isSameElement = true!
+        const initialBox: FocusBox = { x: 0, y: 0, w: 1000, h: 1000, r: 0 };
+        const initialClip: ClipBox = { x: 0, y: 0, w: 1000, h: 1000 };
+
+        controller.start(
+            targetBox,
+            targetClip,
+            initialBox,
+            initialClip,
+            (_b, _c, paint) => {
+                paintStates.push(paint);
+            },
+            onDone,
+            true // isSameElement
+        );
+
+        await new Promise((r) => setTimeout(r, 500));
+
+        expect(onDone).toHaveBeenCalled();
+        expect(paintStates.every((p) => p.opacity === 1 && p.offsetDelta === 0)).toBe(true);
     });
 
     it("calling stop() before onDone cancels animation", () => {
@@ -194,7 +221,7 @@ describe("FocusAnimationController (Dual-Mode: Snappy Morph & Teleport Pulse)", 
         expect(onDone).not.toHaveBeenCalled();
     });
 
-    it("short distance (< 120px): snappy morph onFrame receives opacity=1 scale=1", async () => {
+    it("short distance (< 120px): snappy morph onFrame receives opacity=1 offsetDelta=0", async () => {
         vi.spyOn(motionPreference, "resolved", "get").mockReturnValue("no-preference");
         const paintStates: FocusPaintState[] = [];
         const onDone = vi.fn();
@@ -209,10 +236,10 @@ describe("FocusAnimationController (Dual-Mode: Snappy Morph & Teleport Pulse)", 
         await new Promise((r) => setTimeout(r, 300));
 
         expect(onDone).toHaveBeenCalled();
-        expect(paintStates.every((p) => p.opacity === 1 && p.scale === 1)).toBe(true);
+        expect(paintStates.every((p) => p.opacity === 1 && p.offsetDelta === 0)).toBe(true);
     });
 
-    it("long distance (>= 120px): teleport pulse runs Phase 1 dissolve-out then Phase 2 pulse-in", async () => {
+    it("long distance (>= 120px): Houdini pulse runs Phase 1 dissolve-out then Phase 2 pulse-in", async () => {
         const paintStates: FocusPaintState[] = [];
 
         const farBox: FocusBox = { x: 0, y: 0, w: 50, h: 30, r: 4 };
@@ -238,8 +265,7 @@ describe("FocusAnimationController (Dual-Mode: Snappy Morph & Teleport Pulse)", 
         });
 
         expect(paintStates.length).toBeGreaterThan(0);
-        // Paint states should reflect scaling/dissolve during teleport
-        expect(paintStates.some((p) => (p.scale ?? 1) !== 1 || (p.opacity ?? 1) !== 1)).toBe(true);
+        expect(paintStates.some((p) => (p.offsetDelta ?? 0) !== 0 || (p.opacity ?? 1) !== 1)).toBe(true);
     });
 });
 

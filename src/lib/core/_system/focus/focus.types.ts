@@ -22,14 +22,12 @@ export interface FocusOverrides {
 /**
  * Paint state passed each rAF tick to the renderer.
  *
- * - `opacity`      – main ring opacity (0.0 to 1.0)
- * - `scale`        – scaling factor applied relative to the box center (defaults to 1.0)
- * - `ghost`        – optional static origin ring snapshot that lingers briefly
- * - `ghostOpacity` – opacity for the origin ghost (fades 0.25 → 0)
+ * - `opacity`           – main ring opacity (0.0 to 1.0)
+ * - `offsetDelta`       – offset adjustment in px (Houdini style: -3.85px to 0px)
+ * - `lineWidthOverride` – stroke width override in px (Houdini style: 0.5px to targetLineWidth)
  */
 export interface FocusPaintState {
     opacity: number;
-    scale?: number;
-    ghost?: FocusBox;
-    ghostOpacity?: number;
+    offsetDelta?: number;
+    lineWidthOverride?: number;
 }

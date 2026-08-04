@@ -261,7 +261,6 @@
 
                     ctx.save();
                     ctx.lineWidth = strokeWidth;
-                    ctx.lineCap = "round";
                     ctx.lineJoin = "round";
                     ctx.shadowColor = `rgba(${accentRgb.join(",")}, 0.65)`;
                     ctx.shadowBlur = 14 * dpr;
@@ -278,6 +277,7 @@
 
                         const alpha = Math.pow(frac2, 1.8) * (isDark ? 0.95 : 0.85);
                         ctx.strokeStyle = `rgba(${accentRgb.join(",")}, ${alpha})`;
+                        ctx.lineCap = i === segments - 1 ? "round" : "butt";
 
                         ctx.beginPath();
                         ctx.moveTo(pt1[0], pt1[1]);

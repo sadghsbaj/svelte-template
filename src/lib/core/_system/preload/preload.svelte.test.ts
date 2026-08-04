@@ -32,7 +32,7 @@ describe("initPreload & dismissLoadingScreen (Browser Client)", () => {
         });
     });
 
-    test("should animate fade-out and remove loading screen and script via dismissLoadingScreen", async () => {
+    test("should immediately remove loading screen and script on fast loads when not yet visible", async () => {
         const loadingEl = document.createElement("div");
         loadingEl.id = "app-loading";
         document.body.append(loadingEl);
@@ -42,6 +42,23 @@ describe("initPreload & dismissLoadingScreen (Browser Client)", () => {
         document.body.append(scriptEl);
 
         dismissLoadingScreen();
+
+        expect(document.getElementById("app-loading")).toBeNull();
+        expect(document.getElementById("app-loading-script")).toBeNull();
+    });
+
+    test("should animate fade-out and remove visible loading screen after minimum display duration", async () => {
+        const loadingEl = document.createElement("div");
+        loadingEl.id = "app-loading";
+        loadingEl.classList.add("visible");
+        document.body.append(loadingEl);
+
+        const scriptEl = document.createElement("script");
+        scriptEl.id = "app-loading-script";
+        document.body.append(scriptEl);
+
+        // Pass 0 for minShowDuration so it triggers fade-out immediately
+        dismissLoadingScreen("app-loading", "app-loading-script", 0, 0);
 
         expect(loadingEl.classList.contains("fade-out")).toBe(true);
 

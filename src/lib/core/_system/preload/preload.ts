@@ -13,19 +13,36 @@ const safeCaf = (id: number): void => {
     }
 };
 
+interface WindowWithLoadingState {
+    __appLoadingShowTimer?: ReturnType<typeof setTimeout>;
+    __appLoadingStartTime?: number;
+}
+
 /**
  * Dismisses the initial application loading screen (#app-loading) and its associated
  * inline script (#app-loading-script) with a smooth transition and cleans them up from the DOM.
+ * Enforces a show delay (default 200ms) to prevent flashes on fast loads, and a minimum
+ * display duration (default 500ms) if shown to avoid jarring UI flickers.
  *
  * @param targetId Optional ID of the loading container (defaults to "app-loading").
  * @param scriptId Optional ID of the inline script element (defaults to "app-loading-script").
+ * @param minShowDuration Optional minimum display duration in ms (defaults to 500).
+ * @param showDelay Optional delay before loading screen is shown in ms (defaults to 200).
  */
 export function dismissLoadingScreen(
     targetId = "app-loading",
-    scriptId = "app-loading-script"
+    scriptId = "app-loading-script",
+    minShowDuration = 500,
+    showDelay = 200
 ): void {
     if (typeof document === "undefined") {
         return;
+    }
+
+    const win = typeof window !== "undefined" ? (window as unknown as WindowWithLoadingState) : undefined;
+    if (win?.__appLoadingShowTimer !== undefined) {
+        clearTimeout(win.__appLoadingShowTimer);
+        delete win.__appLoadingShowTimer;
     }
 
     const loadingEl = document.getElementById(targetId);
@@ -36,8 +53,20 @@ export function dismissLoadingScreen(
         return;
     }
 
+    const isVisible = loadingEl.classList.contains("visible");
+    const startTime = win?.__appLoadingStartTime ?? performance.now();
+    const elapsed = performance.now() - startTime;
+
+    // Fast load case: if loading screen was never shown (or load took < showDelay), remove immediately
+    if (!isVisible && elapsed < showDelay) {
+        loadingEl.remove();
+        scriptEl?.remove();
+        return;
+    }
+
     let isRemoved = false;
     let fallbackTimer: ReturnType<typeof setTimeout> | null = null;
+    let fadeOutTimer: ReturnType<typeof setTimeout> | null = null;
 
     const removeElements = () => {
         if (isRemoved) return;
@@ -46,6 +75,10 @@ export function dismissLoadingScreen(
         if (fallbackTimer !== null) {
             clearTimeout(fallbackTimer);
             fallbackTimer = null;
+        }
+        if (fadeOutTimer !== null) {
+            clearTimeout(fadeOutTimer);
+            fadeOutTimer = null;
         }
         loadingEl.remove();
         scriptEl?.remove();
@@ -57,11 +90,19 @@ export function dismissLoadingScreen(
         }
     };
 
-    loadingEl.classList.add("fade-out");
-    loadingEl.addEventListener("transitionend", handleTransitionEnd);
+    const triggerFadeOut = () => {
+        loadingEl.classList.add("fade-out");
+        loadingEl.addEventListener("transitionend", handleTransitionEnd);
+        // Fallback timer to guarantee DOM removal if transitionend does not fire
+        fallbackTimer = setTimeout(removeElements, 400);
+    };
 
-    // Fallback timer to guarantee DOM removal if transitionend does not fire
-    fallbackTimer = setTimeout(removeElements, 400);
+    const remaining = minShowDuration - elapsed;
+    if (remaining > 0) {
+        fadeOutTimer = setTimeout(triggerFadeOut, remaining);
+    } else {
+        triggerFadeOut();
+    }
 }
 
 /**

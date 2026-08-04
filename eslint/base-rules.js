@@ -1,5 +1,6 @@
 export const baseRulesConfig = {
     rules: {
+        "@typescript-eslint/no-non-null-assertion": "error",
         "no-console": ["warn", { allow: ["warn", "error"] }],
         "prefer-const": "warn",
 

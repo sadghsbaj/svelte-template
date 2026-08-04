@@ -238,7 +238,6 @@
                             .getPropertyValue("--color-app")
                             .trim() || (isDark ? "oklch(14.1% 0.005 285.823)" : "oklch(98.5% 0 0)");
                     const accentRgb = isDark ? [96, 165, 250] : [37, 99, 235];
-                    const textCol = isDark ? "rgba(226, 232, 240, " : "rgba(30, 41, 59, ";
 
                     ctx.fillStyle = bg;
                     ctx.fillRect(0, 0, w, h);
@@ -284,17 +283,6 @@
                         ctx.lineTo(pt2[0], pt2[1]);
                         ctx.stroke();
                     }
-                    ctx.restore();
-
-                    const textAlpha = 0.4 + (Math.sin(elapsed * 2.8) + 1) * 0.275;
-                    ctx.save();
-                    ctx.font = `600 ${Math.round(13.5 * dpr)}px "Google Sans Flex", system-ui, sans-serif`;
-                    ctx.textAlign = "center";
-                    ctx.textBaseline = "middle";
-                    ctx.fillStyle = `${textCol}${textAlpha})`;
-                    ctx.shadowColor = `rgba(${accentRgb.join(",")}, 0.35)`;
-                    ctx.shadowBlur = 10 * dpr;
-                    ctx.fillText("LOADING", cx, cy);
                     ctx.restore();
 
                     animId = requestAnimationFrame(render);

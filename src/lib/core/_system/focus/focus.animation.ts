@@ -190,6 +190,15 @@ export class FocusAnimationController {
                 cur.h = lerp(cur.h, tBox.h, 0.22);
                 cur.r = lerp(cur.r, tBox.r, 0.22);
 
+                const curExp = cur.cornerShape?.type === "squircle" ? cur.cornerShape.exponent : 1;
+                const targetExp = tBox.cornerShape?.type === "squircle" ? tBox.cornerShape.exponent : 1;
+                if (Math.abs(curExp - targetExp) > 0.01) {
+                    const nextExp = lerp(curExp, targetExp, 0.22);
+                    cur.cornerShape = { type: "squircle", exponent: nextExp };
+                } else {
+                    cur.cornerShape = tBox.cornerShape;
+                }
+
                 curClip.x = lerp(curClip.x, tClip.x, 0.22);
                 curClip.y = lerp(curClip.y, tClip.y, 0.22);
                 curClip.w = lerp(curClip.w, tClip.w, 0.22);

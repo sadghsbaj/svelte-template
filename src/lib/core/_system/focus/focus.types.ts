@@ -1,9 +1,14 @@
+export type CornerShape =
+    | { type: "round" }
+    | { type: "squircle"; exponent: number };
+
 export interface FocusBox {
     x: number;
     y: number;
     w: number;
     h: number;
     r: number;
+    cornerShape?: CornerShape;
 }
 
 export interface ClipBox {

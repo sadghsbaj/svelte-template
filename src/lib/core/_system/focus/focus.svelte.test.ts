@@ -6,7 +6,13 @@ import { motionPreference } from "$core/_system/motion/motion.svelte.js";
 import { FocusAnimationController } from "./focus.animation.js";
 import { focusAttach, focusOverridesMap } from "./focus.attach.js";
 import { computeTargetBox } from "./focus.geometry.js";
-import { clearCanvas, drawFocusRing, resolveAccentColor } from "./focus.renderer.js";
+import {
+    clearCanvas,
+    drawFocusRing,
+    drawSquirclePath,
+    getSuperellipseKappa,
+    resolveAccentColor,
+} from "./focus.renderer.js";
 import type { ClipBox, FocusBox, FocusPaintState } from "./focus.types.js";
 
 describe("focus.renderer", () => {
@@ -341,6 +347,112 @@ describe("FocusAnimationController (Houdini Pulse & Same-Element Handling)", () 
 
 });
 
+describe("focus.geometry corner-shape parsing", () => {
+    it("parseCornerShape returns round by default when corner-shape is empty or round", () => {
+        const el = document.createElement("div");
+        vi.spyOn(el, "getBoundingClientRect").mockReturnValue({
+            width: 100,
+            height: 40,
+            x: 0,
+            y: 0,
+            top: 0,
+            left: 0,
+            bottom: 40,
+            right: 100,
+            toJSON: () => {},
+        } as DOMRect);
+        vi.spyOn(window, "getComputedStyle").mockReturnValue({
+            borderRadius: "8px",
+            getPropertyValue: (prop: string) => (prop === "corner-shape" ? "round" : ""),
+        } as unknown as CSSStyleDeclaration);
+
+        const result = computeTargetBox(el, 4);
+        expect(result?.box.cornerShape).toEqual({ type: "round" });
+    });
+
+    it("parseCornerShape parses 'squircle' keyword correctly", () => {
+        const el = document.createElement("div");
+        vi.spyOn(el, "getBoundingClientRect").mockReturnValue({
+            width: 100,
+            height: 40,
+            x: 0,
+            y: 0,
+            top: 0,
+            left: 0,
+            bottom: 40,
+            right: 100,
+            toJSON: () => {},
+        } as DOMRect);
+        vi.spyOn(window, "getComputedStyle").mockReturnValue({
+            borderRadius: "8px",
+            getPropertyValue: (prop: string) => (prop === "corner-shape" ? "squircle" : ""),
+        } as unknown as CSSStyleDeclaration);
+
+        const result = computeTargetBox(el, 4);
+        expect(result?.box.cornerShape).toEqual({ type: "squircle", exponent: 2 });
+    });
+
+    it("parseCornerShape parses 'superellipse(1.6)' function correctly", () => {
+        const el = document.createElement("div");
+        vi.spyOn(el, "getBoundingClientRect").mockReturnValue({
+            width: 100,
+            height: 40,
+            x: 0,
+            y: 0,
+            top: 0,
+            left: 0,
+            bottom: 40,
+            right: 100,
+            toJSON: () => {},
+        } as DOMRect);
+        vi.spyOn(window, "getComputedStyle").mockReturnValue({
+            borderRadius: "8px",
+            getPropertyValue: (prop: string) => (prop === "corner-shape" ? "superellipse(1.6)" : ""),
+        } as unknown as CSSStyleDeclaration);
+
+        const result = computeTargetBox(el, 4);
+        expect(result?.box.cornerShape).toEqual({ type: "squircle", exponent: 1.6 });
+    });
+});
+
+describe("focus.renderer squircle path drawing", () => {
+    it("getSuperellipseKappa interpolates kappa between round and squircle", () => {
+        const kRound = getSuperellipseKappa(1);
+        const kSquircle = getSuperellipseKappa(2);
+
+        expect(kRound).toBeCloseTo(0.55228, 4);
+        expect(kSquircle).toBeCloseTo(0.75253, 4);
+        expect(getSuperellipseKappa(1.5)).toBeCloseTo((kRound + kSquircle) / 2, 4);
+    });
+
+    it("drawSquirclePath draws path using bezierCurveTo", () => {
+        const ctx = makeMockCtx();
+        drawSquirclePath(ctx, 10, 10, 100, 100, 10, 2);
+
+        expect(ctx.moveTo).toHaveBeenCalled();
+        expect(ctx.lineTo).toHaveBeenCalled();
+        expect(ctx.bezierCurveTo).toHaveBeenCalledTimes(4);
+        expect(ctx.closePath).toHaveBeenCalled();
+    });
+
+    it("drawFocusRing invokes drawSquirclePath when cornerShape is squircle", () => {
+        const ctx = makeMockCtx();
+        const canvas = {} as HTMLCanvasElement;
+        const box: FocusBox = {
+            x: 10,
+            y: 10,
+            w: 100,
+            h: 100,
+            r: 10,
+            cornerShape: { type: "squircle", exponent: 2 },
+        };
+        const clip: ClipBox = { x: 0, y: 0, w: 1000, h: 1000 };
+
+        drawFocusRing(ctx, canvas, box, clip);
+        expect(ctx.bezierCurveTo).toHaveBeenCalledTimes(4);
+    });
+});
+
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 function makeMockCtx(): CanvasRenderingContext2D {
@@ -351,6 +463,10 @@ function makeMockCtx(): CanvasRenderingContext2D {
         rect: vi.fn(),
         clip: vi.fn(),
         roundRect: vi.fn(),
+        moveTo: vi.fn(),
+        lineTo: vi.fn(),
+        bezierCurveTo: vi.fn(),
+        closePath: vi.fn(),
         stroke: vi.fn(),
         fill: vi.fn(),
         set strokeStyle(_: string) {},

@@ -29,6 +29,88 @@ export function clearCanvas(ctx: CanvasRenderingContext2D, canvas: HTMLCanvasEle
 }
 
 /**
+ * Computes cubic Bezier handle coefficient k for a superellipse exponent p.
+ * For p = 1.0 (round), k = (4/3)*(sqrt(2)-1) ≈ 0.5522847.
+ * For p = 2.0 (squircle), k ≈ 0.752538 (Skia / Chromium cubic Bezier approximation for squircle).
+ */
+export function getSuperellipseKappa(exponent: number): number {
+    const KAPPA_ROUND = 0.5522847498307935;
+    const KAPPA_SQUIRCLE = 0.752538;
+    const clampedExp = Math.max(1, Math.min(3, exponent));
+    return KAPPA_ROUND + (clampedExp - 1) * (KAPPA_SQUIRCLE - KAPPA_ROUND);
+}
+
+/**
+ * Draws a squircle / superellipse path onto the 2D canvas context.
+ */
+export function drawSquirclePath(
+    ctx: CanvasRenderingContext2D,
+    x: number,
+    y: number,
+    w: number,
+    h: number,
+    r: number,
+    exponent: number
+): void {
+    const clampedR = Math.max(0, Math.min(r, Math.min(w, h) / 2));
+    if (clampedR === 0) {
+        ctx.rect(x, y, w, h);
+        return;
+    }
+
+    const k = getSuperellipseKappa(exponent);
+    const handle = clampedR * k;
+
+    ctx.moveTo(x + clampedR, y);
+
+    // Top-right corner
+    ctx.lineTo(x + w - clampedR, y);
+    ctx.bezierCurveTo(
+        x + w - clampedR + handle,
+        y,
+        x + w,
+        y + clampedR - handle,
+        x + w,
+        y + clampedR
+    );
+
+    // Bottom-right corner
+    ctx.lineTo(x + w, y + h - clampedR);
+    ctx.bezierCurveTo(
+        x + w,
+        y + h - clampedR + handle,
+        x + w - clampedR + handle,
+        y + h,
+        x + w - clampedR,
+        y + h
+    );
+
+    // Bottom-left corner
+    ctx.lineTo(x + clampedR, y + h);
+    ctx.bezierCurveTo(
+        x + clampedR - handle,
+        y + h,
+        x,
+        y + h - clampedR + handle,
+        x,
+        y + h - clampedR
+    );
+
+    // Top-left corner
+    ctx.lineTo(x, y + clampedR);
+    ctx.bezierCurveTo(
+        x,
+        y + clampedR - handle,
+        x + clampedR - handle,
+        y,
+        x + clampedR,
+        y
+    );
+
+    ctx.closePath();
+}
+
+/**
  * Draws the focus ring on the canvas with scale and width pulse animations.
  *
  * @param ctx           - The 2D rendering context.
@@ -82,7 +164,9 @@ export function drawFocusRing(
     // Draw main focus ring outline
     ctx.globalAlpha = opacity;
     ctx.beginPath();
-    if (typeof ctx.roundRect === "function") {
+    if (currentBox.cornerShape?.type === "squircle" && drawR > 0) {
+        drawSquirclePath(ctx, drawX, drawY, drawW, drawH, drawR, currentBox.cornerShape.exponent);
+    } else if (typeof ctx.roundRect === "function") {
         ctx.roundRect(drawX, drawY, drawW, drawH, drawR);
     } else {
         ctx.rect(drawX, drawY, drawW, drawH);

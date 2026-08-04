@@ -1,4 +1,4 @@
-import type { FocusBox, ClipBox } from "./focus.types.js";
+import type { CornerShape, FocusBox, ClipBox } from "./focus.types.js";
 
 export function lerp(start: number, end: number, factor = 0.25): number {
     return start + (end - start) * factor;
@@ -19,6 +19,35 @@ export function getParentElement(el: Element): HTMLElement | null {
         return root.host as HTMLElement;
     }
     return null;
+}
+
+export function parseCornerShape(computedStyle: CSSStyleDeclaration): CornerShape {
+    const rawVal =
+        typeof computedStyle.getPropertyValue === "function"
+            ? computedStyle.getPropertyValue("corner-shape") ||
+              computedStyle.getPropertyValue("-webkit-corner-shape")
+            : (computedStyle as unknown as Record<string, string | undefined>)["corner-shape"] ||
+              (computedStyle as unknown as Record<string, string | undefined>)["cornerShape"] ||
+              "";
+
+    const raw = (rawVal || "").trim();
+
+    if (!raw || raw === "round") {
+        return { type: "round" };
+    }
+
+    if (raw === "squircle") {
+        return { type: "squircle", exponent: 2 };
+    }
+
+    const match = /^superellipse\(\s*([\d.]+)\s*\)$/i.exec(raw);
+    if (match) {
+        // eslint-disable-next-line unicorn/prefer-number-coercion
+        const exp = Number.parseFloat(match[1]) || 2;
+        return { type: "squircle", exponent: exp };
+    }
+
+    return { type: "round" };
 }
 
 function parseBorderRadius(computedStyle: CSSStyleDeclaration, rectWidth: number, rectHeight: number): number {
@@ -84,12 +113,15 @@ export function computeTargetBox(el: HTMLElement, offset: number): { box: FocusB
     const maxRadius = Math.min(rect.width, rect.height) / 2;
     borderRadius = Math.min(borderRadius, maxRadius);
 
+    const cornerShape = parseCornerShape(computedStyle);
+
     const box: FocusBox = {
         x: rect.x - offset,
         y: rect.y - offset,
         w: rect.width + offset * 2,
         h: rect.height + offset * 2,
         r: Math.max(0, borderRadius + offset / 2),
+        cornerShape,
     };
 
     const clip = getClipBox(el);

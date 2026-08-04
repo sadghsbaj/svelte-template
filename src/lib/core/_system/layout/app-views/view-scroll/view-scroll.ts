@@ -73,7 +73,7 @@ export class ViewScrollManager<T extends string> {
         let saved: StoredScrollState | null = null;
 
         if (session && this.sessionScrollMap.has(view)) {
-            saved = this.sessionScrollMap.get(view)!;
+            saved = this.sessionScrollMap.get(view) ?? null;
         } else if (persist && this.scrollStorageKey) {
             const all = this.readPersistedScrollPositions();
             saved = all[view] ?? null;

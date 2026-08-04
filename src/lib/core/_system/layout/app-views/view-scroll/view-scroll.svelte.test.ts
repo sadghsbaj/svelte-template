@@ -130,7 +130,7 @@ describe("ViewScrollManager (Browser Client)", () => {
             // Verify raw localStorage entry
             const rawStored = localStorage.getItem("test-app-views_scroll_state");
             expect(rawStored).toBeTruthy();
-            expect(JSON.parse(rawStored!)).toEqual({ stats: { pos: 280, height: 900 } });
+            expect(JSON.parse(rawStored ?? "{}")).toEqual({ stats: { pos: 280, height: 900 } });
 
             const restoreEl = { scrollTop: 0, scrollHeight: 900 } as HTMLElement;
             manager.restoreScroll(restoreEl, "stats");

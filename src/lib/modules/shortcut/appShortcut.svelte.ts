@@ -475,7 +475,10 @@ export class AppShortcutManager {
                 return false;
             }
 
-            const lastParsedStep = entry.parsedSequenceSteps.at(-1)!;
+            const lastParsedStep = entry.parsedSequenceSteps.at(-1);
+            if (!lastParsedStep) {
+                return false;
+            }
 
             // Race-condition protection for keyup: If shortcut was primed during keydown
             // (stored in keyPressTimes or holdTimers), match by main key release without
@@ -800,7 +803,7 @@ export function parseComboStep(normalizedStep: string): ParsedComboStep {
         modifiers = [];
     } else {
         const parts = normalizedStep.split("+");
-        mainKey = parts.at(-1)!;
+        mainKey = parts.at(-1) ?? "";
         modifiers = parts.slice(0, -1);
     }
 

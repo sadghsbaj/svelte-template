@@ -107,7 +107,11 @@ export class ViewState<T extends string> {
     }
 
     get lastView(): T {
-        return this.config.views.at(-1)!.view;
+        const last = this.config.views.at(-1);
+        if (!last) {
+            throw new Error("No views configured");
+        }
+        return last.view;
     }
 
     get currentIndex(): number {
@@ -253,8 +257,9 @@ export class ViewState<T extends string> {
         }
 
         if (typeof option === "object" && option !== null) {
-            if (typeof option[type] === "function") {
-                return option[type]!;
+            const customTransition = option[type];
+            if (typeof customTransition === "function") {
+                return customTransition;
             }
             const mode = option.mode ?? "waapi";
             if (mode === "none") return noneTransition;

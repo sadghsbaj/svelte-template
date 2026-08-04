@@ -8,6 +8,7 @@ import { createHtmlPlugin } from "vite-plugin-html";
 import { defineConfig } from "vitest/config";
 
 import { debugGuardPlugin } from "./plugins/debug-guard.ts";
+import { inlineHtmlPlugin } from "./plugins/inline-html.ts";
 import { layerGuardPlugin } from "./plugins/layer-guard.ts";
 import { motionGuardPlugin } from "./plugins/motion-guard.ts";
 
@@ -18,6 +19,7 @@ export default defineConfig({
     },
 
     plugins: [
+        inlineHtmlPlugin(),
         debugGuardPlugin(),
         layerGuardPlugin(),
         motionGuardPlugin(),

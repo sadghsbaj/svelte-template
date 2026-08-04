@@ -46,8 +46,9 @@ export function motionGuardPlugin(options: MotionGuardOptions = {}): Plugin {
                 /import\s*\(\s*['"]svelte\/(transition|animate|motion)['"]\s*\)/
             );
 
-            if (forbiddenMatch || forbiddenDynamicMatch) {
-                const matchedPkg = (forbiddenMatch || forbiddenDynamicMatch)![1];
+            const match = forbiddenMatch || forbiddenDynamicMatch;
+            if (match) {
+                const matchedPkg = match[1];
 
                 // eslint-disable-next-line unicorn/no-this-outside-of-class
                 this.error(

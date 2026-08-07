@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { untrack } from "svelte";
     import { layerAttach } from "$core/_system/layout/app-layer/layer.svelte";
     import { computeTargetBox, getParentElement } from "./focus.geometry.js";
     import { drawFocusRing, clearCanvas, resolveAccentColor, invalidateAccentColorCache } from "./focus.renderer.js";
@@ -6,7 +7,13 @@
     import { focusOverridesMap } from "./focus.attach.js";
     import type { FocusBox, ClipBox, FocusOverrides, FocusPaintState } from "./focus.types.js";
 
-    let isVisible = $state(false);
+    // NOTE: Must be a plain variable, NOT $state. It is only read imperatively (never in
+    // the template), and the setup $effect below calls handleResize() which reads it.
+    // As $state it became a tracked dependency of that effect: the very first focusin
+    // (isVisible false -> true) re-ran the effect, whose cleanup called animController.stop()
+    // (killing the just-started pulse-in) and whose body re-drew synchronously at full
+    // opacity - producing a hard, unanimated ring on every initial focus.
+    let isVisible = false;
     let canvas: HTMLCanvasElement | undefined = $state();
     let ctx: CanvasRenderingContext2D | null = null;
 
@@ -32,7 +39,10 @@
         if (!canvas) return;
         ctx = canvas.getContext("2d");
 
-        handleResize();
+        // This setup effect must only depend on `canvas`. untrack() guards against any
+        // reactive reads inside handleResize()/draw() accidentally re-running the effect
+        // (its cleanup would stop() running focus animations mid-flight).
+        untrack(() => handleResize());
 
         const viewportObserver = new ResizeObserver(() => {
             handleResize();

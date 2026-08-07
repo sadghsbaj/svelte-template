@@ -2,25 +2,51 @@ import { motionPreference } from "$core/_system/motion/motion.svelte.js";
 import type { ClipBox, FocusBox, FocusPaintState } from "./focus.types.js";
 import { boxDistance, lerp } from "./focus.geometry.js";
 
-/** Distance threshold (in px). Short distance (< 120px) morph glides. Long distance (>= 120px) teleports with Houdini pulse. */
+/** Distance threshold (in px). Short distance (< 120px) morph glides. Long distance (>= 120px) teleports with dissolve & pulse. */
 const TELEPORT_THRESHOLD = 120;
 
+/** Duration of the initial focus appearance pulse-in (ms). */
+const PULSE_IN_MS = 160;
+/** Duration of the focus-lost dissolve-out (ms). */
+const PULSE_OUT_MS = 90;
+/** Teleport: dissolve-out duration at the origin (ms). */
+const TELEPORT_OUT_MS = 70;
+/** Teleport: pulse-in duration at the target (ms). Starts immediately after the out phase (zero gap). */
+const TELEPORT_IN_MS = 150;
+
+/** Minimum line width during pulses, as a fraction of the target line width (avoids the harsh "double thinning" of opacity + hairline). */
+const LINE_WIDTH_MIN = 0.6;
+/** Scale the ring shrinks to while dissolving out. */
+const SCALE_OUT = 0.96;
+/** Scale the ring settles from while pulsing in. */
+const SCALE_IN = 1.05;
+
+/** Ease-in cubic: gentle start, accelerates — correct energy profile for exits. */
+const cubicIn = (t: number): number => t * t * t;
+/** Ease-out cubic: fast start, gentle settle — correct energy profile for entrances. */
+const cubicOut = (t: number): number => 1 - (1 - t) ** 3;
+
 /**
- * FocusAnimationController:
+ * FocusAnimationController — time-based (refresh-rate independent) focus ring animations.
  *
- * 1. Initial Focus Appearance (`startPulseIn`): Smooth 200ms scale-down pulse (opacity 0->1, scale 1.08->1.0, lineWidth 0.5px->2px).
- * 2. Focus Disappearance (`startPulseOut`): Smooth ~100ms dissolve-out (opacity 1->0, scale 1.0->0.94).
- * 3. Same Element Resize (`isSameElement = true`): Pure smooth lerp without teleport or pulse.
- * 4. Short Distance (< 120px): Buttery smooth morph glide (factor 0.22, ~150ms) between adjacent items.
- * 5. Long Distance (>= 120px): Houdini Dissolve & Pulse:
- *    - Phase 1 (Dissolve-Out at Origin): Ring dissolves & shrinks at old element (~80ms).
- *    - Phase 2 (Pulse-In at Target): Ring appears at new element, scaling down (1.08 -> 1.0) and fading in (~180ms).
+ * 1. Initial Focus Appearance (`startPulseIn`): 160ms cubic-out pulse (opacity 0->1, scale 1.05->1).
+ * 2. Focus Disappearance (`startPulseOut`): 90ms cubic-in dissolve (opacity ->0, scale ->0.96).
+ * 3. Same Element Resize (`isSameElement = true`): pure smooth lerp without teleport or pulse.
+ * 4. Short Distance (< 120px): buttery smooth morph glide (frame lerp, factor 0.22) between adjacent items.
+ * 5. Long Distance (>= 120px): single-timeline Dissolve & Pulse with zero gap:
+ *    - 0..70ms   Dissolve-Out at origin (cubic-in: starts gentle, accelerates away).
+ *    - 70..220ms Pulse-In at target (cubic-out: appears fast, settles gently), tracking the
+ *      live target box each frame so scrollIntoView during the animation cannot end-snap.
+ *
+ * Every animation takes over from the last painted state (`lastPaint`), so rapid focus
+ * changes mid-flight never jump back to full opacity (no flicker while fast-tabbing).
  */
 export class FocusAnimationController {
     private animFrame: number = 0;
-    private phase: 1 | 2 = 1;
     private currentTargetBox: FocusBox | null = null;
     private currentTargetClip: ClipBox | null = null;
+    /** The most recently painted state. Steady state is `{ opacity: 1, scale: 1 }`. */
+    private lastPaint: FocusPaintState = { opacity: 1, scale: 1 };
 
     public isAnimating(): boolean {
         return this.animFrame !== 0;
@@ -37,6 +63,7 @@ export class FocusAnimationController {
 
     /**
      * Animates an initial focus appearance pulse-in at targetBox (when no focus ring was previously active).
+     * Time-based: 160ms cubic-out (opacity 0->1, scale 1.05->1, lineWidth 60%->100%).
      */
     startPulseIn(
         targetBox: FocusBox,
@@ -53,41 +80,44 @@ export class FocusAnimationController {
         const prefersReduced = motionPreference.resolved === "reduce";
         if (prefersReduced) {
             this.animFrame = 0;
+            this.lastPaint = { opacity: 1, scale: 1 };
             onFrame(targetBox, targetClip, { opacity: 1, scale: 1 });
             onDone?.();
             return;
         }
 
-        let opacity = 0;
-        let scale = 1.08;
-        let lineWidthOverride = 0.5;
-
         const cur = { ...targetBox };
         const curClip = { ...targetClip };
 
-        // Synchronous frame 0 render to initialize zero opacity
-        onFrame(cur, curClip, { opacity: 0, scale: 1.08, lineWidthOverride: 0.5 });
+        // Synchronous frame 0 render: clears any stale ring before the fade begins
+        this.lastPaint = { opacity: 0, scale: SCALE_IN, lineWidthOverride: targetLineWidth * LINE_WIDTH_MIN };
+        onFrame(cur, curClip, this.lastPaint);
+
+        const startTime = performance.now();
 
         const loop = () => {
-            opacity = lerp(opacity, 1, 0.16);
-            scale = lerp(scale, 1, 0.16);
-            lineWidthOverride = lerp(lineWidthOverride, targetLineWidth, 0.16);
+            // Live target tracking: follow scroll / layout shifts during the pulse
+            Object.assign(cur, this.currentTargetBox || targetBox);
+            Object.assign(curClip, this.currentTargetClip || targetClip);
 
-            const tBox = this.currentTargetBox || targetBox;
-            const tClip = this.currentTargetClip || targetClip;
+            const t = Math.min(1, (performance.now() - startTime) / PULSE_IN_MS);
+            const e = cubicOut(t);
 
-            onFrame(cur, tClip, {
-                opacity: Math.min(1, opacity),
-                scale,
-                lineWidthOverride,
-            });
-
-            if (opacity > 0.95 && Math.abs(scale - 1) < 0.005) {
+            if (t >= 1) {
                 this.animFrame = 0;
-                onFrame(tBox, tClip, { opacity: 1, scale: 1 });
+                this.lastPaint = { opacity: 1, scale: 1 };
+                onFrame(cur, curClip, this.lastPaint);
                 onDone?.();
                 return;
             }
+
+            const paint: FocusPaintState = {
+                opacity: e,
+                scale: SCALE_IN - (SCALE_IN - 1) * e,
+                lineWidthOverride: targetLineWidth * (LINE_WIDTH_MIN + (1 - LINE_WIDTH_MIN) * e),
+            };
+            this.lastPaint = paint;
+            onFrame(cur, curClip, paint);
 
             this.animFrame = requestAnimationFrame(loop);
         };
@@ -97,6 +127,8 @@ export class FocusAnimationController {
 
     /**
      * Animates a smooth dissolve-out when focus is lost (clicking outside on blank space).
+     * Time-based: 90ms cubic-in (starts gentle, accelerates away), taking over from the
+     * last painted opacity so an interrupted pulse-in never jumps back to full opacity.
      */
     startPulseOut(
         currentBox: FocusBox,
@@ -105,40 +137,44 @@ export class FocusAnimationController {
         onDone?: () => void,
         targetLineWidth = 2
     ): void {
+        const fromOpacity = Math.min(1, this.lastPaint.opacity);
+        const fromScale = this.lastPaint.scale ?? 1;
+        const fromLineWidth = this.lastPaint.lineWidthOverride ?? targetLineWidth;
+
         this.stop();
 
         const prefersReduced = motionPreference.resolved === "reduce";
         if (prefersReduced) {
             this.animFrame = 0;
+            this.lastPaint = { opacity: 0, scale: 1 };
             onFrame(currentBox, currentClip, { opacity: 0 });
             onDone?.();
             return;
         }
 
-        let opacity = 1;
-        let scale = 1;
-        let lineWidthOverride = targetLineWidth;
-
         const cur = { ...currentBox };
         const curClip = { ...currentClip };
+        const startTime = performance.now();
 
         const loop = () => {
-            opacity = lerp(opacity, 0, 0.22);
-            scale = lerp(scale, 0.94, 0.22);
-            lineWidthOverride = lerp(lineWidthOverride, 0.5, 0.22);
+            const t = Math.min(1, (performance.now() - startTime) / PULSE_OUT_MS);
+            const e = cubicIn(t);
 
-            onFrame(cur, curClip, {
-                opacity,
-                scale,
-                lineWidthOverride,
-            });
-
-            if (opacity <= 0.05) {
+            if (t >= 1) {
                 this.animFrame = 0;
-                onFrame(currentBox, currentClip, { opacity: 0, scale: 1 });
+                this.lastPaint = { opacity: 0, scale: 1 };
+                onFrame(cur, curClip, this.lastPaint);
                 onDone?.();
                 return;
             }
+
+            const paint: FocusPaintState = {
+                opacity: fromOpacity * (1 - e),
+                scale: fromScale + (SCALE_OUT - fromScale) * e,
+                lineWidthOverride: fromLineWidth - (fromLineWidth - targetLineWidth * LINE_WIDTH_MIN) * e,
+            };
+            this.lastPaint = paint;
+            onFrame(cur, curClip, paint);
 
             this.animFrame = requestAnimationFrame(loop);
         };
@@ -148,6 +184,9 @@ export class FocusAnimationController {
 
     /**
      * Starts animation toward targetBox from initialBox.
+     *
+     * - Same element / short distance: morph glide (frame lerp — feel intentionally unchanged).
+     * - Long distance: single-timeline teleport (dissolve-out at origin, pulse-in at target).
      */
     start(
         targetBox: FocusBox,
@@ -159,6 +198,10 @@ export class FocusAnimationController {
         isSameElement = false,
         targetLineWidth = 2
     ): void {
+        const fromOpacity = Math.min(1, this.lastPaint.opacity);
+        const fromScale = this.lastPaint.scale ?? 1;
+        const fromLineWidth = this.lastPaint.lineWidthOverride ?? targetLineWidth;
+
         this.stop();
 
         this.currentTargetBox = { ...targetBox };
@@ -170,15 +213,22 @@ export class FocusAnimationController {
         // Reduced motion: instant snap
         if (prefersReduced) {
             this.animFrame = 0;
+            this.lastPaint = { opacity: 1, scale: 1 };
             onFrame(targetBox, targetClip, { opacity: 1, scale: 1 });
             onDone?.();
             return;
         }
 
-        // Same element resize OR short distance (< 120px): smooth lerp without teleport
+        // Same element resize OR short distance (< 120px): smooth lerp without teleport.
+        // opacity/scale/lineWidth only recover toward steady state when a previous animation
+        // was interrupted mid-flight; in steady state they stay at 1 / 1 / target (no-op).
         if (isSameElement || dist < TELEPORT_THRESHOLD) {
             const cur = { ...initialBox };
             const curClip = { ...initialClip };
+
+            let opacity = fromOpacity;
+            let scale = fromScale;
+            let lineWidth = fromLineWidth;
 
             const loop = () => {
                 const tBox = this.currentTargetBox || targetBox;
@@ -204,7 +254,13 @@ export class FocusAnimationController {
                 curClip.w = lerp(curClip.w, tClip.w, 0.22);
                 curClip.h = lerp(curClip.h, tClip.h, 0.22);
 
-                onFrame(cur, curClip, { opacity: 1, scale: 1 });
+                opacity = Math.min(1, lerp(opacity, 1, 0.22));
+                scale = lerp(scale, 1, 0.22);
+                lineWidth = lerp(lineWidth, targetLineWidth, 0.22);
+
+                const paint: FocusPaintState = { opacity, scale, lineWidthOverride: lineWidth };
+                this.lastPaint = paint;
+                onFrame(cur, curClip, paint);
 
                 if (
                     Math.abs(cur.x - tBox.x) > 0.5 ||
@@ -216,7 +272,10 @@ export class FocusAnimationController {
                     this.animFrame = requestAnimationFrame(loop);
                 } else {
                     this.animFrame = 0;
-                    onFrame(tBox, tClip, { opacity: 1, scale: 1 });
+                    Object.assign(cur, tBox);
+                    Object.assign(curClip, tClip);
+                    this.lastPaint = { opacity: 1, scale: 1 };
+                    onFrame(cur, curClip, this.lastPaint);
                     onDone?.();
                 }
             };
@@ -224,57 +283,52 @@ export class FocusAnimationController {
             return;
         }
 
-        // Long distance (>= 120px): Houdini Dissolve-Out at Origin -> Pulse-In at Target
-        this.phase = 1;
-        let cur = { ...initialBox };
-        let curClip = { ...initialClip };
-
-        let opacity = 1;
-        let scale = 1;
-        let lineWidthOverride = targetLineWidth;
+        // Long distance (>= 120px): single timeline — Dissolve-Out at origin, Pulse-In at target
+        const cur = { ...initialBox };
+        const curClip = { ...initialClip };
+        const startTime = performance.now();
 
         const loop = () => {
-            const tBox = this.currentTargetBox || targetBox;
-            const tClip = this.currentTargetClip || targetClip;
+            const elapsed = performance.now() - startTime;
 
-            if (this.phase === 1) {
-                // Phase 1: Dissolve Out at Origin (collapse scale & thin line, stay at initial position)
-                opacity = lerp(opacity, 0, 0.22);
-                scale = lerp(scale, 0.94, 0.22);
-                lineWidthOverride = lerp(lineWidthOverride, 0.5, 0.22);
+            // Phase 1 (0..TELEPORT_OUT_MS): dissolve out at the origin (cubic-in exit)
+            if (elapsed < TELEPORT_OUT_MS) {
+                const e = cubicIn(elapsed / TELEPORT_OUT_MS);
 
-                onFrame(cur, curClip, { opacity, scale, lineWidthOverride });
+                const paint: FocusPaintState = {
+                    opacity: fromOpacity * (1 - e),
+                    scale: fromScale + (SCALE_OUT - fromScale) * e,
+                    lineWidthOverride: fromLineWidth - (fromLineWidth - targetLineWidth * LINE_WIDTH_MIN) * e,
+                };
+                this.lastPaint = paint;
+                onFrame(cur, curClip, paint);
 
-                if (opacity <= 0.08) {
-                    // Switch to target position immediately
-                    this.phase = 2;
-                    cur = { ...tBox };
-                    curClip = { ...tClip };
-                    opacity = 0;
-                    scale = 1.08;
-                    lineWidthOverride = 0.5;
-                }
                 this.animFrame = requestAnimationFrame(loop);
                 return;
             }
 
-            // Phase 2: Pulse In at Target (scale down from 1.08 -> 1.0 & grow line width to target)
-            opacity = lerp(opacity, 1, 0.16);
-            scale = lerp(scale, 1, 0.16);
-            lineWidthOverride = lerp(lineWidthOverride, targetLineWidth, 0.16);
+            // Phase 2 (..TELEPORT_IN_MS): pulse in at the live target (cubic-out entrance)
+            Object.assign(cur, this.currentTargetBox || targetBox);
+            Object.assign(curClip, this.currentTargetClip || targetClip);
 
-            onFrame(cur, tClip, {
-                opacity: Math.min(1, opacity),
-                scale,
-                lineWidthOverride,
-            });
+            const t = Math.min(1, (elapsed - TELEPORT_OUT_MS) / TELEPORT_IN_MS);
+            const e = cubicOut(t);
 
-            if (opacity > 0.95 && Math.abs(scale - 1) < 0.005) {
+            if (t >= 1) {
                 this.animFrame = 0;
-                onFrame(tBox, tClip, { opacity: 1, scale: 1 });
+                this.lastPaint = { opacity: 1, scale: 1 };
+                onFrame(cur, curClip, this.lastPaint);
                 onDone?.();
                 return;
             }
+
+            const paint: FocusPaintState = {
+                opacity: e,
+                scale: SCALE_IN - (SCALE_IN - 1) * e,
+                lineWidthOverride: targetLineWidth * (LINE_WIDTH_MIN + (1 - LINE_WIDTH_MIN) * e),
+            };
+            this.lastPaint = paint;
+            onFrame(cur, curClip, paint);
 
             this.animFrame = requestAnimationFrame(loop);
         };
@@ -291,4 +345,3 @@ export class FocusAnimationController {
         this.currentTargetClip = null;
     }
 }
-

@@ -30,6 +30,37 @@ export function clearCanvas(ctx: CanvasRenderingContext2D, canvas: HTMLCanvasEle
 
 type Corner = "top-right" | "bottom-right" | "bottom-left" | "top-left";
 
+interface CachedCornerPoint {
+    cos: number;
+    sin: number;
+}
+
+/** Cache for normalized superellipse corner points per exponent (16 steps). */
+const superellipsePointCache = new Map<number, CachedCornerPoint[]>();
+
+/** Returns cached superellipse sample points for the given exponent, computing them once. */
+function getSuperellipsePoints(exponent: number): CachedCornerPoint[] {
+    const cached = superellipsePointCache.get(exponent);
+    if (cached) return cached;
+
+    const STEPS = 16;
+    const invExp = 1 / exponent;
+    const points: CachedCornerPoint[] = [];
+
+    for (let i = 0; i <= STEPS; i++) {
+        const theta = (i / STEPS) * (Math.PI / 2);
+        const cosAbs = Math.abs(Math.cos(theta));
+        const sinAbs = Math.abs(Math.sin(theta));
+        points.push({
+            cos: Math.pow(cosAbs, invExp),
+            sin: Math.pow(sinAbs, invExp),
+        });
+    }
+
+    superellipsePointCache.set(exponent, points);
+    return points;
+}
+
 /** Maps a superellipse sample point (cosPow, sinPow) to canvas coordinates for the given corner. */
 function cornerPoint(
     cx: number,
@@ -62,9 +93,9 @@ function cornerPoint(
  *   x = r * |cos(θ)|^(1/exponent)
  *   y = r * |sin(θ)|^(1/exponent)     θ ∈ [0, π/2]
  *
- * Each corner is centered at the corner of the bounding box, inset by r
- * from both adjacent edges. This produces a curve identical to the browser's
- * native `corner-shape` rendering (no Bézier approximation).
+ * Uses cached normalized superellipse points — Math.pow is computed once per
+ * exponent, then only multiplication and addition per frame. Each corner is
+ * centered at the corner of the bounding box, inset by r from both adjacent edges.
  */
 function drawSuperellipseCorner(
     ctx: CanvasRenderingContext2D,
@@ -74,15 +105,10 @@ function drawSuperellipseCorner(
     exponent: number,
     corner: Corner
 ): void {
-    const STEPS = 16;
-    const invExp = 1 / exponent;
+    const points = getSuperellipsePoints(exponent);
 
-    for (let i = 0; i <= STEPS; i++) {
-        const theta = (i / STEPS) * (Math.PI / 2);
-        const cosPow = Math.pow(Math.abs(Math.cos(theta)), invExp);
-        const sinPow = Math.pow(Math.abs(Math.sin(theta)), invExp);
-
-        const pt = cornerPoint(cx, cy, r, corner, cosPow, sinPow);
+    for (const { cos, sin } of points) {
+        const pt = cornerPoint(cx, cy, r, corner, cos, sin);
         ctx.lineTo(pt.x, pt.y);
     }
 }

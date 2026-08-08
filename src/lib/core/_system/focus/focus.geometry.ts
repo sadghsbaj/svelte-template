@@ -9,7 +9,9 @@ export function boxDistance(a: FocusBox, b: FocusBox): number {
     const cyA = a.y + a.h / 2;
     const cxB = b.x + b.w / 2;
     const cyB = b.y + b.h / 2;
-    return Math.sqrt(Math.pow(cxA - cxB, 2) + Math.pow(cyA - cyB, 2));
+    const dx = cxA - cxB;
+    const dy = cyA - cyB;
+    return Math.hypot(dx, dy);
 }
 
 export function getParentElement(el: Element): HTMLElement | null {
@@ -69,12 +71,50 @@ function parseBorderRadius(
     return Number.parseFloat(token) || 0;
 }
 
-export function getClipBox(el: HTMLElement): ClipBox {
-    let top = 0;
-    let left = 0;
-    let bottom = window.innerHeight;
-    let right = window.innerWidth;
+// ── Geometry Caching ─────────────────────────────────────────────────────────
 
+interface StaticParams {
+    borderRadius: number;
+    cornerShape: CornerShape;
+}
+
+/** Cache for borderRadius + cornerShape per element (avoids repeated getComputedStyle). */
+const staticParamsCache = new WeakMap<HTMLElement, StaticParams>();
+
+/** Cache for scrollable parent list per element (avoids repeated getComputedStyle on ancestors). */
+const scrollableParentsCache = new WeakMap<HTMLElement, HTMLElement[]>();
+
+/**
+ * Invalidates all geometry caches for a given element.
+ * Call when element styles may have changed (resize, class change, etc.).
+ */
+export function invalidateGeometryCache(el: HTMLElement): void {
+    staticParamsCache.delete(el);
+    scrollableParentsCache.delete(el);
+}
+
+/** Returns cached static params (borderRadius, cornerShape) or computes them once. */
+function getStaticParams(el: HTMLElement, rectWidth: number, rectHeight: number): StaticParams {
+    const cached = staticParamsCache.get(el);
+    if (cached) return cached;
+
+    const computedStyle = window.getComputedStyle(el);
+    let borderRadius = parseBorderRadius(computedStyle, rectWidth, rectHeight);
+    const maxRadius = Math.min(rectWidth, rectHeight) / 2;
+    borderRadius = Math.min(borderRadius, maxRadius);
+    const cornerShape = parseCornerShape(computedStyle);
+
+    const params: StaticParams = { borderRadius, cornerShape };
+    staticParamsCache.set(el, params);
+    return params;
+}
+
+/** Returns cached scrollable parents for the element or computes them once via DOM walk. */
+function getScrollableParents(el: HTMLElement): HTMLElement[] {
+    const cached = scrollableParentsCache.get(el);
+    if (cached) return cached;
+
+    const parents: HTMLElement[] = [];
     let parent = getParentElement(el);
 
     while (parent && parent !== document.documentElement) {
@@ -82,11 +122,7 @@ export function getClipBox(el: HTMLElement): ClipBox {
         const overflow = style.overflow + style.overflowX + style.overflowY;
 
         if (/(auto|scroll|hidden|clip)/.test(overflow)) {
-            const rect = parent.getBoundingClientRect();
-            top = Math.max(top, rect.top);
-            left = Math.max(left, rect.left);
-            bottom = Math.min(bottom, rect.bottom);
-            right = Math.min(right, rect.right);
+            parents.push(parent);
         }
 
         if (style.position === "fixed") {
@@ -94,6 +130,26 @@ export function getClipBox(el: HTMLElement): ClipBox {
         }
 
         parent = getParentElement(parent);
+    }
+
+    scrollableParentsCache.set(el, parents);
+    return parents;
+}
+
+export function getClipBox(el: HTMLElement): ClipBox {
+    let top = 0;
+    let left = 0;
+    let bottom = window.innerHeight;
+    let right = window.innerWidth;
+
+    const parents = getScrollableParents(el);
+
+    for (const parent of parents) {
+        const rect = parent.getBoundingClientRect();
+        top = Math.max(top, rect.top);
+        left = Math.max(left, rect.left);
+        bottom = Math.min(bottom, rect.bottom);
+        right = Math.min(right, rect.right);
     }
 
     return {
@@ -114,13 +170,7 @@ export function computeTargetBox(
         return null;
     }
 
-    const computedStyle = window.getComputedStyle(el);
-    let borderRadius = parseBorderRadius(computedStyle, rect.width, rect.height);
-
-    const maxRadius = Math.min(rect.width, rect.height) / 2;
-    borderRadius = Math.min(borderRadius, maxRadius);
-
-    const cornerShape = parseCornerShape(computedStyle);
+    const { borderRadius, cornerShape } = getStaticParams(el, rect.width, rect.height);
 
     const box: FocusBox = {
         x: rect.x - offset,

@@ -5,7 +5,7 @@
 
     import { FocusAnimationController } from "./focus.animation.js";
     import { focusOverridesMap } from "./focus.attach.js";
-    import { computeTargetBox, getParentElement } from "./focus.geometry.js";
+    import { computeTargetBox, getParentElement, invalidateGeometryCache } from "./focus.geometry.js";
     import {
         clearCanvas,
         drawFocusRing,
@@ -103,6 +103,7 @@
         ctx.scale(dpr, dpr);
 
         invalidateAccentColorCache();
+        if (activeElement) invalidateGeometryCache(activeElement);
 
         if (isVisible && activeElement && doUpdateTargetBox(activeElement)) {
             currentBox = { ...targetBox };
@@ -167,6 +168,10 @@
 
         const prevActiveElement = activeElement;
         activeElement = target;
+
+        if (prevActiveElement && prevActiveElement !== target) {
+            invalidateGeometryCache(prevActiveElement);
+        }
 
         lastObservedW = targetBox.w;
         lastObservedH = targetBox.h;

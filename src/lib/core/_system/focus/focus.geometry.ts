@@ -1,4 +1,4 @@
-import type { CornerShape, FocusBox, ClipBox } from "./focus.types.js";
+import type { ClipBox, CornerShape, FocusBox } from "./focus.types.js";
 
 export function lerp(start: number, end: number, factor = 0.25): number {
     return start + (end - start) * factor;
@@ -50,7 +50,11 @@ export function parseCornerShape(computedStyle: CSSStyleDeclaration): CornerShap
     return { type: "round" };
 }
 
-function parseBorderRadius(computedStyle: CSSStyleDeclaration, rectWidth: number, rectHeight: number): number {
+function parseBorderRadius(
+    computedStyle: CSSStyleDeclaration,
+    rectWidth: number,
+    rectHeight: number
+): number {
     const raw = (computedStyle.borderRadius || computedStyle.borderTopLeftRadius || "").trim();
     if (!raw) return 0;
 
@@ -100,7 +104,10 @@ export function getClipBox(el: HTMLElement): ClipBox {
     };
 }
 
-export function computeTargetBox(el: HTMLElement, offset: number): { box: FocusBox; clip: ClipBox } | null {
+export function computeTargetBox(
+    el: HTMLElement,
+    offset: number
+): { box: FocusBox; clip: ClipBox } | null {
     const rect = el.getBoundingClientRect();
 
     if (rect.width === 0 || rect.height === 0) {
@@ -120,7 +127,7 @@ export function computeTargetBox(el: HTMLElement, offset: number): { box: FocusB
         y: rect.y - offset,
         w: rect.width + offset * 2,
         h: rect.height + offset * 2,
-        r: Math.max(0, borderRadius + offset / 2),
+        r: Math.max(0, borderRadius + offset),
         cornerShape,
     };
 
@@ -128,4 +135,3 @@ export function computeTargetBox(el: HTMLElement, offset: number): { box: FocusB
 
     return { box, clip };
 }
-

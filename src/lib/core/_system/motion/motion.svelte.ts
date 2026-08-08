@@ -175,14 +175,18 @@ export const motionPreference = new MotionManager();
  * When global motion preference is resolved to 'reduce', the transition is automatically bypassed by setting `duration: 0`,
  * unless `forceAnimate: true` is explicitly passed in params.
  */
-export function withMotionGuard<T extends { forceAnimate?: boolean } = { forceAnimate?: boolean }>(
-    fn: (node: Element, params?: T) => TransitionConfig,
-    manager?: MotionManager
-) {
+export function withMotionGuard<
+    T extends { forceAnimate?: boolean; duration?: number } = {
+        forceAnimate?: boolean;
+        duration?: number;
+    },
+>(fn: (node: Element, params?: T) => TransitionConfig, manager?: MotionManager) {
     return (node: Element, params?: T): TransitionConfig => {
-        const config = fn(node, params);
         const activeManager = manager ?? motionPreference;
-        if (!params?.forceAnimate && activeManager.resolved === "reduce") {
+        const shouldReduce = !params?.forceAnimate && activeManager.resolved === "reduce";
+        const effectiveParams = shouldReduce ? ({ ...params, duration: 0 } as T) : params;
+        const config = fn(node, effectiveParams);
+        if (shouldReduce) {
             return { ...config, duration: 0 };
         }
         return config;

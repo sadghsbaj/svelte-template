@@ -122,13 +122,26 @@ describe("WAAPI View Transitions", () => {
         expect(viewWaapiTransition).toBe(viewWaapiIn);
     });
 
-    test("should return duration 0 when reduced motion is enabled", () => {
+    test("should return duration 0 and not call node.animate when reduced motion is enabled", () => {
         motionPreference.set("reduce");
 
-        const { node } = createMockNode();
+        const { node, animateMock } = createMockNode();
 
         const result = viewWaapiIn(node);
         expect(result.duration).toBe(0);
+        expect(animateMock).not.toHaveBeenCalled();
+
+        motionPreference.set("no-preference");
+    });
+
+    test("should respect forceAnimate: true even when reduced motion is enabled", () => {
+        motionPreference.set("reduce");
+
+        const { node, animateMock } = createMockNode();
+
+        const result = viewWaapiIn(node, { forceAnimate: true });
+        expect(result.duration).toBe(360);
+        expect(animateMock).toHaveBeenCalled();
 
         motionPreference.set("no-preference");
     });

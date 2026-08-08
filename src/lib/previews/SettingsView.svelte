@@ -1,6 +1,19 @@
 <script lang="ts">
-    import { Bell, Check, Key, Moon, Palette, ShieldCheck, Sun, User } from "@lucide/svelte";
+    import {
+        Bell,
+        Check,
+        EyeOff,
+        Key,
+        Moon,
+        Palette,
+        ShieldCheck,
+        Sparkles,
+        Sun,
+        User,
+        Zap,
+    } from "@lucide/svelte";
 
+    import { motionPreference, type MotionPreference } from "$core/_system/motion";
     import { theme, type ThemeMode } from "$core/_system/theme";
 
     let emailNotifications = $state(true);
@@ -11,6 +24,12 @@
         { id: "system", label: "System", icon: Palette },
         { id: "light", label: "Helle Ansicht", icon: Sun },
         { id: "dark", label: "Dunkle Ansicht", icon: Moon },
+    ];
+
+    const motionOptions: { id: MotionPreference; label: string; icon: typeof Zap }[] = [
+        { id: "system", label: "Systemstandard", icon: Sparkles },
+        { id: "no-preference", label: "Animationen aktiv", icon: Zap },
+        { id: "reduce", label: "Reduzierte Bewegung", icon: EyeOff },
     ];
 </script>
 
@@ -184,6 +203,49 @@
                                 <span class="text-sm font-semibold">{item.label}</span>
                             </div>
                             {#if theme.mode === item.id}
+                                <div class="text-white p-1 rounded-full bg-accent-500">
+                                    <Check size={12} />
+                                </div>
+                            {/if}
+                        </button>
+                    {/each}
+                </div>
+            </section>
+
+            <!-- Motion Section -->
+            <section class="p-6 rounded-3xl bg-elevation-1 flex flex-col gap-5 squircle">
+                <h3 class="text-lg text-strong font-bold flex gap-2 items-center">
+                    <Zap size={18} class="text-warning-500" />
+                    <span>Bewegung & Animationen</span>
+                </h3>
+
+                <div class="flex flex-col gap-2">
+                    {#each motionOptions as item (item.id)}
+                        {const MotionIcon = item.icon}
+                        <button
+                            type="button"
+                            onclick={() => motionPreference.set(item.id)}
+                            class="p-3.5 rounded-2xl bg-elevation-2 flex items-center justify-between {motionPreference.preference ===
+                            item.id
+                                ? 'text-strong ring-2 ring-accent-500/40'
+                                : 'text-weak hover:text-strong'}"
+                        >
+                            <div class="flex gap-3 items-center">
+                                <div class="text-strong p-2 rounded-xl bg-elevation-1">
+                                    <MotionIcon size={16} />
+                                </div>
+                                <div class="flex flex-col text-left">
+                                    <span class="text-sm font-semibold">{item.label}</span>
+                                    {#if item.id === "system"}
+                                        <span class="text-xs text-weak">
+                                            Aktiv: {motionPreference.resolved === "reduce"
+                                                ? "Reduziert"
+                                                : "Normal"}
+                                        </span>
+                                    {/if}
+                                </div>
+                            </div>
+                            {#if motionPreference.preference === item.id}
                                 <div class="text-white p-1 rounded-full bg-accent-500">
                                     <Check size={12} />
                                 </div>

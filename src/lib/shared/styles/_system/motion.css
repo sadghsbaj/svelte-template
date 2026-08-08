@@ -12,12 +12,12 @@
     --t-all: opacity 0s;
 }
 
-/* Disable all transitions and animations during initial page load (.preload) or theme switch (.theme-switching) */
+/* Disable all transitions and animations during initial page load ([data-preload]) or theme switch ([data-theme-switching]) */
 :where(
-    :is(.preload, .theme-switching),
-    :is(.preload, .theme-switching) *:not([data-force-animate], [data-force-animate] *),
-    :is(.preload, .theme-switching) *:not([data-force-animate], [data-force-animate] *)::before,
-    :is(.preload, .theme-switching) *:not([data-force-animate], [data-force-animate] *)::after
+    :is([data-preload], [data-theme-switching]),
+    :is([data-preload], [data-theme-switching]) *:not([data-force-animate], [data-force-animate] *),
+    :is([data-preload], [data-theme-switching]) *:not([data-force-animate], [data-force-animate] *)::before,
+    :is([data-preload], [data-theme-switching]) *:not([data-force-animate], [data-force-animate] *)::after
 ) {
     transition: none !important;
     animation: none !important;
@@ -88,23 +88,23 @@
 }
 
 /* Programmatic reduced motion override */
-.ui-reduce-motion {
+[data-reduce-motion] {
     scroll-behavior: auto !important;
 }
 
-.ui-reduce-motion
+[data-reduce-motion]
     :where(
         *:not([data-force-animate], [data-force-animate] *),
         *:not([data-force-animate], [data-force-animate] *)::before,
         *:not([data-force-animate], [data-force-animate] *)::after
     ),
-.ui-reduce-motion:not([data-force-animate], [data-force-animate] *) {
+[data-reduce-motion]:not([data-force-animate], [data-force-animate] *) {
     transition: none !important;
     animation: none !important;
 }
 
-.ui-reduce-motion::view-transition-group(*),
-.ui-reduce-motion::view-transition-old(*),
-.ui-reduce-motion::view-transition-new(*) {
+[data-reduce-motion]::view-transition-group(*),
+[data-reduce-motion]::view-transition-old(*),
+[data-reduce-motion]::view-transition-new(*) {
     animation: none !important;
 }

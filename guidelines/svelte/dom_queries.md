@@ -63,5 +63,5 @@ Note that global document property access and global event listeners (such as th
 
 ```ts
 document.addEventListener("keydown", handleKey); // ✅ Allowed for global listeners
-document.documentElement.classList.toggle("dark", isDark); // ✅ Allowed for global document root styling
+document.documentElement.dataset.theme = isDark ? "dark" : "light"; // ✅ Allowed for global document root styling
 ```

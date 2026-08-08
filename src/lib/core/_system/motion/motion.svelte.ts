@@ -6,10 +6,10 @@
  *
  * ### Architecture & FOUC Prevention
  * To prevent the Flash of Animated Motion (FOAM) during initial page load,
- * this manager cooperates with an inline script located in `app.html`. The inline script
- * immediately resolves the preferred motion state and applies the `.ui-reduce-motion`
- * class to `<html>` before first paint. Upon instantiation, the client-side `MotionManager`
- * reads the DOM class to initialize its state, ensuring a seamless hydration transition
+ * this manager cooperates with an inline script located in `index.html`. The inline script
+ * immediately resolves the preferred motion state and applies the `data-reduce-motion`
+ * attribute to `<html>` before first paint. Upon instantiation, the client-side `MotionManager`
+ * reads the DOM attribute to initialize its state, ensuring a seamless hydration transition
  * without visual layout jumps or unintended startup animations.
  *
  * ### SSR & Svelte Context Design
@@ -61,7 +61,7 @@ export class MotionManager {
     );
     #resolved = $state<"no-preference" | "reduce">(
         typeof document !== "undefined" &&
-            document.documentElement.classList.contains("ui-reduce-motion")
+            Object.hasOwn(document.documentElement.dataset, "reduceMotion")
             ? "reduce"
             : "no-preference"
     );
@@ -159,7 +159,11 @@ export class MotionManager {
         }
 
         this.#resolved = shouldBeReduced ? "reduce" : "no-preference";
-        document.documentElement.classList.toggle("ui-reduce-motion", shouldBeReduced);
+        if (shouldBeReduced) {
+            document.documentElement.dataset.reduceMotion = "";
+        } else {
+            delete document.documentElement.dataset.reduceMotion;
+        }
     }
 }
 

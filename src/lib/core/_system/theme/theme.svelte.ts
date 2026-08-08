@@ -9,17 +9,17 @@ import { flushSync } from "svelte";
  * ### Architecture & FOUC Prevention
  * To prevent the Flash of Unstyled Content (FOUC) during initial page load,
  * this manager cooperates with an inline script located in `index.html`. The inline script
- * immediately resolves the theme and applies the `.dark` class to `<html>` before first paint.
- * Upon instantiation, the client-side `ThemeManager` reads the DOM class to initialize
+ * immediately resolves the theme and applies the `data-theme="dark"` attribute to `<html>` before first paint.
+ * Upon instantiation, the client-side `ThemeManager` reads the DOM attribute to initialize
  * its state, ensuring a seamless hydration transition without visual glitches.
  *
  * ### Native View Transitions
  * Smooth theme morphing is achieved using the browser's native View Transition API.
  * The manager handles several constraints:
  * - **Initial Load**: Bypasses transitions to load instantly.
- * - **Browser Support**: Falls back to a hard class-swap if the API is unsupported.
+ * - **Browser Support**: Falls back to a hard swap if the API is unsupported.
  * - **Accessibility**: Respects `prefers-reduced-motion: reduce` by disabling animations.
- * - **Transition Suspension**: Temporarily applies the `.theme-switching` class to the DOM.
+ * - **Transition Suspension**: Temporarily applies the `data-theme-switching` attribute to the DOM.
  *   This disables standard CSS transitions globally during the snapshot phase, preventing
  *   individual elements from transition-animating concurrently behind the view transition.
  *
@@ -104,7 +104,8 @@ export class ThemeManager {
         this.#mode = validMode;
 
         const documentIsDark =
-            typeof document !== "undefined" && document.documentElement.classList.contains("dark");
+            typeof document !== "undefined" &&
+            document.documentElement.dataset.theme === "dark";
         this.#resolved = documentIsDark || initialResolved === "dark" ? "dark" : "light";
 
         // Initial apply to fully synchronize DOM states and meta tags
@@ -208,10 +209,10 @@ export class ThemeManager {
                 this.#resolved = shouldBeDark ? "dark" : "light";
 
                 if (shouldBeDark) {
-                    document.documentElement.classList.add("dark");
+                    document.documentElement.dataset.theme = "dark";
                     document.documentElement.style.colorScheme = "dark";
                 } else {
-                    document.documentElement.classList.remove("dark");
+                    document.documentElement.dataset.theme = "light";
                     document.documentElement.style.colorScheme = "light";
                 }
 
@@ -230,12 +231,12 @@ export class ThemeManager {
         const prefersReducedMotion =
             (typeof window !== "undefined" &&
                 window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches) ||
-            document.documentElement.classList.contains("ui-reduce-motion");
+            Object.hasOwn(document.documentElement.dataset, "reduceMotion");
         const useTransition =
             !this.#isInitial && "startViewTransition" in document && !prefersReducedMotion;
 
         if (useTransition) {
-            document.documentElement.classList.add("theme-switching");
+            document.documentElement.dataset.themeSwitching = "";
             const currentId = ++this.#transitionId;
 
             try {
@@ -246,7 +247,7 @@ export class ThemeManager {
                     };
                 };
                 if (!doc.startViewTransition) {
-                    document.documentElement.classList.remove("theme-switching");
+                    delete document.documentElement.dataset.themeSwitching;
                     performSwap();
                     return;
                 }
@@ -260,12 +261,12 @@ export class ThemeManager {
                     .catch(() => {})
                     .finally(() => {
                         if (this.#transitionId === currentId) {
-                            document.documentElement.classList.remove("theme-switching");
+                            delete document.documentElement.dataset.themeSwitching;
                         }
                     });
                 /* eslint-enable unicorn/prefer-await */
             } catch {
-                document.documentElement.classList.remove("theme-switching");
+                delete document.documentElement.dataset.themeSwitching;
                 performSwap();
             }
         } else {

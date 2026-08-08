@@ -5,13 +5,13 @@ try {
         activeVal: string,
         inactiveVal: string,
         query: string,
-        className: string
+        applyFn: (isActive: boolean) => void
     ): boolean {
         const saved = localStorage.getItem(key);
         const systemMatches = window.matchMedia(query).matches;
         const isActive = saved === activeVal || (saved !== inactiveVal && systemMatches);
 
-        document.documentElement.classList.toggle(className, isActive);
+        applyFn(isActive);
         return isActive;
     }
 
@@ -21,7 +21,9 @@ try {
         "dark",
         "light",
         "(prefers-color-scheme: dark)",
-        "dark"
+        (isActive) => {
+            document.documentElement.dataset.theme = isActive ? "dark" : "light";
+        }
     );
 
     document.documentElement.style.colorScheme = isDark ? "dark" : "light";
@@ -41,8 +43,15 @@ try {
         "reduce",
         "no-preference",
         "(prefers-reduced-motion: reduce)",
-        "ui-reduce-motion"
+        (isActive) => {
+            if (isActive) {
+                document.documentElement.dataset.reduceMotion = "";
+            } else {
+                delete document.documentElement.dataset.reduceMotion;
+            }
+        }
     );
 } catch (error) {
     console.warn("UI preference initialization failed:", error);
 }
+

@@ -14,6 +14,7 @@ describe("ThemeManager (Browser Client)", () => {
     beforeEach(() => {
         localStorage.clear();
         document.documentElement.className = "";
+        delete document.documentElement.dataset.theme;
         document.documentElement.style.cssText = "";
     });
 
@@ -36,7 +37,7 @@ describe("ThemeManager (Browser Client)", () => {
 
         expect(manager.mode).toBe("dark");
         expect(manager.resolved).toBe("dark");
-        expect(document.documentElement.classList.contains("dark")).toBe(true);
+        expect(document.documentElement.dataset.theme === "dark").toBe(true);
         expect(localStorage.getItem("ui-theme")).toBe("dark");
     });
 
@@ -50,14 +51,14 @@ describe("ThemeManager (Browser Client)", () => {
 
         expect(manager.mode).toBe("dark");
         expect(manager.resolved).toBe("dark");
-        expect(document.documentElement.classList.contains("dark")).toBe(true);
+        expect(document.documentElement.dataset.theme === "dark").toBe(true);
 
         manager.toggle();
         await waitForSwap();
 
         expect(manager.mode).toBe("light");
         expect(manager.resolved).toBe("light");
-        expect(document.documentElement.classList.contains("dark")).toBe(false);
+        expect(document.documentElement.dataset.theme === "dark").toBe(false);
     });
 
     test("should sync theme across tabs via storage event", async () => {
@@ -77,7 +78,7 @@ describe("ThemeManager (Browser Client)", () => {
 
         expect(manager.mode).toBe("dark");
         expect(manager.resolved).toBe("dark");
-        expect(document.documentElement.classList.contains("dark")).toBe(true);
+        expect(document.documentElement.dataset.theme === "dark").toBe(true);
     });
 
     test("should sync theme when storage is cleared (key === null)", async () => {

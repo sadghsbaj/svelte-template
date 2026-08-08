@@ -5,7 +5,7 @@
     --color-app: var(--color-base-50);
 }
 
-.dark {
+[data-theme="dark"] {
     --color-app: var(--color-base-950);
 }
 
@@ -25,12 +25,12 @@ body {
         transform 350ms cubic-bezier(0.16, 1, 0.3, 1);
     pointer-events: none;
 
-    &.visible {
+    &[data-visible] {
         opacity: 1;
         pointer-events: auto;
     }
 
-    &.fade-out {
+    &[data-fade-out] {
         opacity: 0;
         transform: scale(0.98);
         pointer-events: none;

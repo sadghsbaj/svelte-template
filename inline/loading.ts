@@ -39,7 +39,7 @@ export function initCanvas(): void {
     const startTime = win.__appLoadingStartTime || performance.now();
     win.__appLoadingStartTime = startTime;
     win.__appLoadingShowTimer = setTimeout(() => {
-        canvas.classList.add("visible");
+        canvas.dataset.visible = "";
     }, 200);
 
     const getSmoothPerimeterPoint = (
@@ -101,7 +101,7 @@ export function initCanvas(): void {
             return;
         }
 
-        const isDark = document.documentElement.classList.contains("dark");
+        const isDark = document.documentElement.dataset.theme === "dark";
         const dpr = window.devicePixelRatio || 1;
         const w = canvas.width;
         const h = canvas.height;

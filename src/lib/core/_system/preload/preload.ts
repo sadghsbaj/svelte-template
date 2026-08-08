@@ -53,7 +53,7 @@ export function dismissLoadingScreen(
         return;
     }
 
-    const isVisible = loadingEl.classList.contains("visible");
+    const isVisible = Object.hasOwn(loadingEl.dataset, "visible");
     const startTime = win?.__appLoadingStartTime ?? performance.now();
     const elapsed = performance.now() - startTime;
 
@@ -91,7 +91,7 @@ export function dismissLoadingScreen(
     };
 
     const triggerFadeOut = () => {
-        loadingEl.classList.add("fade-out");
+        loadingEl.dataset.fadeOut = "";
         loadingEl.addEventListener("transitionend", handleTransitionEnd);
         // Fallback timer to guarantee DOM removal if transitionend does not fire
         fallbackTimer = setTimeout(removeElements, 400);
@@ -106,7 +106,7 @@ export function dismissLoadingScreen(
 }
 
 /**
- * Initializes the preload removal flow. It ensures the '.preload' class
+ * Initializes the preload removal flow. It ensures the 'data-preload' attribute
  * is removed from the body only after browser paint cycles have completed,
  * avoiding flash of unstyled content (FOUC) and flash of animated motion (FOAM).
  * Also dismisses the initial loading screen (#app-loading) and script if present.
@@ -119,7 +119,7 @@ export function initPreload(): () => void {
         return () => {};
     }
 
-    if (document.body && !document.body.classList.contains("preload")) {
+    if (document.body && !Object.hasOwn(document.body.dataset, "preload")) {
         return () => {};
     }
 
@@ -147,7 +147,7 @@ export function initPreload(): () => void {
 
     const removeClass = () => {
         if (isCleanedUp) return;
-        document.body?.classList.remove("preload");
+        document.body?.removeAttribute("data-preload");
         dismissLoadingScreen();
         cleanup();
     };

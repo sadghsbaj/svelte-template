@@ -8,6 +8,7 @@ describe("MotionManager (Browser Client)", () => {
     beforeEach(() => {
         localStorage.clear();
         document.documentElement.className = "";
+        delete document.documentElement.dataset.reduceMotion;
     });
 
     afterEach(() => {
@@ -28,7 +29,7 @@ describe("MotionManager (Browser Client)", () => {
 
         expect(manager.preference).toBe("reduce");
         expect(manager.resolved).toBe("reduce");
-        expect(document.documentElement.classList.contains("ui-reduce-motion")).toBe(true);
+        expect(Object.hasOwn(document.documentElement.dataset, "reduceMotion")).toBe(true);
         expect(localStorage.getItem("ui-motion-preference")).toBe("reduce");
     });
 
@@ -38,7 +39,7 @@ describe("MotionManager (Browser Client)", () => {
 
         expect(manager.preference).toBe("no-preference");
         expect(manager.resolved).toBe("no-preference");
-        expect(document.documentElement.classList.contains("ui-reduce-motion")).toBe(false);
+        expect(Object.hasOwn(document.documentElement.dataset, "reduceMotion")).toBe(false);
         expect(localStorage.getItem("ui-motion-preference")).toBe("no-preference");
     });
 
@@ -56,7 +57,7 @@ describe("MotionManager (Browser Client)", () => {
 
         expect(manager.preference).toBe("reduce");
         expect(manager.resolved).toBe("reduce");
-        expect(document.documentElement.classList.contains("ui-reduce-motion")).toBe(true);
+        expect(Object.hasOwn(document.documentElement.dataset, "reduceMotion")).toBe(true);
     });
 
     test("should fallback to 'system' when localStorage contains invalid string", () => {

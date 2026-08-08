@@ -9,7 +9,11 @@ import { variantsConfig } from "./uno/variants.ts";
 
 export default defineConfig({
     presets: [
-        presetWind4(),
+        presetWind4({
+            dark: {
+                dark: '[data-theme="dark"]'
+            }
+        }),
     ],
 
     shortcuts: shortcutsConfig,

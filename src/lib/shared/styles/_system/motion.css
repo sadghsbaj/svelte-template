@@ -8,7 +8,17 @@
     --t-border: opacity 0s;
     --t-opacity: opacity 0s;
     --t-transform: opacity 0s;
+    --t-scale: opacity 0s;
     --t-shadow: opacity 0s;
+    --t-width: opacity 0s;
+    --t-height: opacity 0s;
+    --t-left: opacity 0s;
+    --t-top: opacity 0s;
+    --t-filter: opacity 0s;
+    --t-backdrop-filter: opacity 0s;
+    --t-outline: opacity 0s;
+    --t-fill: opacity 0s;
+    --t-stroke: opacity 0s;
     --t-all: opacity 0s;
 }
 
@@ -16,8 +26,10 @@
 :where(
     :is([data-preload], [data-theme-switching]),
     :is([data-preload], [data-theme-switching]) *:not([data-force-animate], [data-force-animate] *),
-    :is([data-preload], [data-theme-switching]) *:not([data-force-animate], [data-force-animate] *)::before,
-    :is([data-preload], [data-theme-switching]) *:not([data-force-animate], [data-force-animate] *)::after
+    :is([data-preload], [data-theme-switching])
+        *:not([data-force-animate], [data-force-animate] *)::before,
+    :is([data-preload], [data-theme-switching])
+        *:not([data-force-animate], [data-force-animate] *)::after
 ) {
     transition: none !important;
     animation: none !important;

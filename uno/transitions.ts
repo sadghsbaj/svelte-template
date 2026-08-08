@@ -14,7 +14,17 @@ const MASTER_TRANSITION_VARS = [
     "var(--t-border, opacity 0s)",
     "var(--t-opacity, opacity 0s)",
     "var(--t-transform, opacity 0s)",
+    "var(--t-scale, opacity 0s)",
     "var(--t-shadow, opacity 0s)",
+    "var(--t-width, opacity 0s)",
+    "var(--t-height, opacity 0s)",
+    "var(--t-left, opacity 0s)",
+    "var(--t-top, opacity 0s)",
+    "var(--t-filter, opacity 0s)",
+    "var(--t-backdrop-filter, opacity 0s)",
+    "var(--t-outline, opacity 0s)",
+    "var(--t-fill, opacity 0s)",
+    "var(--t-stroke, opacity 0s)",
     "var(--t-all, opacity 0s)",
 ];
 

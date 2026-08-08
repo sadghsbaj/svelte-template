@@ -21,18 +21,30 @@
             type="font/woff2"
             crossorigin
         />
-        <style>%inline:fonts.css%</style>
-        <style>%inline:fouc.css%</style>
+        <style>
+            /* prettier-ignore */
+            %inline: fonts.css%
+        </style>
+        <style>
+            /* prettier-ignore */
+            %inline: fouc.css%
+        </style>
 
-        <script>%inline:loading.ts#markStartTime%</script>
-        <script>%inline:preferences.ts%</script>
+        <script>
+            %inline:loading.ts#markStartTime%
+        </script>
+        <script>
+            %inline:preferences.ts%
+        </script>
 
         %unocss-svelte-scoped.global%
     </head>
     <body data-preload>
         <canvas id="app-loading" aria-hidden="true" aria-label="Loading"></canvas>
 
-        <script id="app-loading-script">%inline:loading.ts#initCanvas%</script>
+        <script id="app-loading-script">
+            %inline:loading.ts#initCanvas%
+        </script>
 
         <div id="app"></div>
         <script type="module" src="/src/main.ts"></script>

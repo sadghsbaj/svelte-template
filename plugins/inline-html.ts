@@ -77,12 +77,102 @@ function stripOtherExports(code: string, targetExport: string): string {
     return result;
 }
 
+async function processInlineHtml(
+    html: string,
+    baseInlineDir: string,
+    inlineDirName: string,
+    isBuild: boolean
+): Promise<string> {
+    // Match %inline:path/to/file.ext% or %inline:path/to/file.ext#exportName% (with optional whitespace)
+    const pattern = /%inline:\s*([a-zA-Z0-9_\-./]+)(?:#([a-zA-Z0-9_]+))?%/g;
+    const matches = [...(html.matchAll(pattern) as unknown as Iterable<RegExpExecArray>)];
+
+    if (matches.length === 0) return html;
+
+    let resultHtml = html;
+
+    for (const match of matches) {
+        const fullPlaceholder = match[0];
+        const fileRelPath = match[1];
+        const exportName = match[2];
+
+        const absolutePath = path.resolve(baseInlineDir, fileRelPath);
+
+        // Security check: ensure path is within baseInlineDir
+        if (!absolutePath.startsWith(baseInlineDir)) {
+            throw new Error(
+                `[inline-html] Security restriction: "${fileRelPath}" is outside of ${inlineDirName}/ directory.`
+            );
+        }
+
+        if (!fs.existsSync(absolutePath)) {
+            throw new Error(
+                `[inline-html] File not found: "${inlineDirName}/${fileRelPath}" (referenced by placeholder ${fullPlaceholder})`
+            );
+        }
+
+        let inlinedCode = "";
+
+        if (fileRelPath.endsWith(".css")) {
+            const rawCss = fs.readFileSync(absolutePath, "utf8");
+            inlinedCode = isBuild ? minifyCss(rawCss) : rawCss.trim();
+        } else if (fileRelPath.endsWith(".ts") || fileRelPath.endsWith(".js")) {
+            const rawCode = fs.readFileSync(absolutePath, "utf8");
+            let wrappedCode = rawCode;
+
+            if (exportName) {
+                // Check if the exportName exists in rawCode
+                const exportRegex = new RegExp(
+                    String.raw`\bexport\s+(?:async\s+)?(?:function|const|let|var|class)\s+${exportName}\b|\bexport\s*\{[^}]*\b${exportName}\b`
+                );
+                if (!exportRegex.test(rawCode)) {
+                    throw new Error(
+                        `[inline-html] Failed to bundle export "${exportName}" from "${inlineDirName}/${fileRelPath}": export not found.`
+                    );
+                }
+
+                // Strip other unrequested exports
+                const codeWithoutOtherExports = stripOtherExports(rawCode, exportName);
+
+                // Strip export keyword for target export
+                const cleanedCode = codeWithoutOtherExports
+                    .replaceAll(/\bexport\s+default\s+/g, "")
+                    .replaceAll(/\bexport\s+(?:async\s+)?(function|const|let|var|class)\b/g, "$1")
+                    .replaceAll(/export\s*\{[^}]*\};?/g, "");
+
+                wrappedCode = `(function() {\n${cleanedCode}\n  if (typeof ${exportName} === 'function') { ${exportName}(); }\n})();`;
+            }
+
+            const oxcResult = await transformWithOxc(wrappedCode, absolutePath, {
+                lang: fileRelPath.endsWith(".ts") ? "ts" : "js",
+            });
+
+            inlinedCode = isBuild ? minifyJs(oxcResult.code) : oxcResult.code.trim();
+        } else {
+            throw new Error(
+                `[inline-html] Unsupported file type for inline placeholder: "${fileRelPath}". Supported extensions: .ts, .js, .css`
+            );
+        }
+
+        resultHtml = resultHtml.replace(fullPlaceholder, () => inlinedCode);
+    }
+
+    return resultHtml;
+}
+
 export function inlineHtmlPlugin(options: InlineHtmlOptions = {}): Plugin {
     const inlineDirName = options.dir || "inline";
+    let rootDir = process.cwd();
+    let isBuild = false;
 
     return {
         name: "vite-plugin-inline-html",
         enforce: "pre",
+
+        configResolved(config) {
+            rootDir = config.root;
+            isBuild = config.command === "build";
+        },
 
         configureServer(server) {
             const inlineDir = path.resolve(server.config.root, inlineDirName);
@@ -96,91 +186,28 @@ export function inlineHtmlPlugin(options: InlineHtmlOptions = {}): Plugin {
             }
         },
 
+        async transform(code, id) {
+            const isTarget =
+                id.endsWith(".html") || id.includes(".html?") || id.includes("html-proxy");
+            if (!isTarget) return;
+
+            const baseInlineDir = path.resolve(rootDir, inlineDirName);
+            const transformedHtml = await processInlineHtml(
+                code,
+                baseInlineDir,
+                inlineDirName,
+                isBuild
+            );
+            return { code: transformedHtml, map: null };
+        },
+
         transformIndexHtml: {
             order: "pre",
             async handler(html, ctx) {
-                const isBuild = !ctx.server;
-                const rootDir = ctx.server?.config?.root ?? process.cwd();
-                const baseInlineDir = path.resolve(rootDir, inlineDirName);
-
-                // Match %inline:path/to/file.ext% or %inline:path/to/file.ext#exportName%
-                const pattern = /%inline:([a-zA-Z0-9_\-./]+)(?:#([a-zA-Z0-9_]+))?%/g;
-                const matches = [...(html.matchAll(pattern) as unknown as Iterable<RegExpExecArray>)];
-
-                if (matches.length === 0) return html;
-
-                let resultHtml = html;
-
-                for (const match of matches) {
-                    const fullPlaceholder = match[0];
-                    const fileRelPath = match[1];
-                    const exportName = match[2];
-
-                    const absolutePath = path.resolve(baseInlineDir, fileRelPath);
-
-                    // Security check: ensure path is within baseInlineDir
-                    if (!absolutePath.startsWith(baseInlineDir)) {
-                        throw new Error(
-                            `[inline-html] Security restriction: "${fileRelPath}" is outside of ${inlineDirName}/ directory.`
-                        );
-                    }
-
-                    if (!fs.existsSync(absolutePath)) {
-                        throw new Error(
-                            `[inline-html] File not found: "${inlineDirName}/${fileRelPath}" (referenced by placeholder ${fullPlaceholder})`
-                        );
-                    }
-
-                    let inlinedCode = "";
-
-                    if (fileRelPath.endsWith(".css")) {
-                        const rawCss = fs.readFileSync(absolutePath, "utf8");
-                        inlinedCode = isBuild ? minifyCss(rawCss) : rawCss.trim();
-                    } else if (fileRelPath.endsWith(".ts") || fileRelPath.endsWith(".js")) {
-                        const rawCode = fs.readFileSync(absolutePath, "utf8");
-                        let wrappedCode = rawCode;
-
-                        if (exportName) {
-                            // Check if the exportName exists in rawCode
-                            const exportRegex = new RegExp(
-                                String.raw`\bexport\s+(?:async\s+)?(?:function|const|let|var|class)\s+${exportName}\b|\bexport\s*\{[^}]*\b${exportName}\b`
-                            );
-                            if (!exportRegex.test(rawCode)) {
-                                throw new Error(
-                                    `[inline-html] Failed to bundle export "${exportName}" from "${inlineDirName}/${fileRelPath}": export not found.`
-                                );
-                            }
-
-                            // Strip other unrequested exports
-                            const codeWithoutOtherExports = stripOtherExports(rawCode, exportName);
-
-                            // Strip export keyword for target export
-                            const cleanedCode = codeWithoutOtherExports
-                                .replaceAll(/\bexport\s+default\s+/g, "")
-                                .replaceAll(
-                                    /\bexport\s+(?:async\s+)?(function|const|let|var|class)\b/g,
-                                    "$1"
-                                )
-                                .replaceAll(/export\s*\{[^}]*\};?/g, "");
-
-                            wrappedCode = `(function() {\n${cleanedCode}\n  if (typeof ${exportName} === 'function') { ${exportName}(); }\n})();`;
-                        }
-
-                        const oxcResult = await transformWithOxc(wrappedCode, absolutePath, {
-                            lang: fileRelPath.endsWith(".ts") ? "ts" : "js",
-                        });
-
-                        inlinedCode = isBuild ? minifyJs(oxcResult.code) : oxcResult.code.trim();
-                    } else {
-                        throw new Error(
-                            `[inline-html] Unsupported file type for inline placeholder: "${fileRelPath}". Supported extensions: .ts, .js, .css`
-                        );
-                    }
-
-                    resultHtml = resultHtml.replace(fullPlaceholder, () => inlinedCode);
-                }
-
-                return resultHtml;
+                const devIsBuild = !ctx.server;
+                const devRootDir = ctx.server?.config?.root ?? rootDir;
+                const baseInlineDir = path.resolve(devRootDir, inlineDirName);
+                return await processInlineHtml(html, baseInlineDir, inlineDirName, devIsBuild);
             },
         },
     };

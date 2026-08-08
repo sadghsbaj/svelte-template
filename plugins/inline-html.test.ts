@@ -1,13 +1,13 @@
 import fs from "node:fs";
 import path from "node:path";
-import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import type { IndexHtmlTransformContext, ViteDevServer } from "vite";
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 
 import { inlineHtmlPlugin } from "./inline-html.ts";
 
 const TEST_DIR = path.resolve(__dirname, "__tmp_inline_test__");
 
-function createTempFile(relPath: string, content: string) {
+function createTempFile(relPath: string, content: string): void {
     const fullPath = path.resolve(TEST_DIR, relPath);
     fs.mkdirSync(path.dirname(fullPath), { recursive: true });
     fs.writeFileSync(fullPath, content, "utf8");
@@ -171,5 +171,20 @@ describe("inlineHtmlPlugin", () => {
         const buildResult = await transformIndexHtml.call({}, html, mockBuildCtx);
 
         expect(buildResult.length).toBeLessThan(devResult.length);
+    });
+
+    test("should inline via plugin.transform hook for .html files", async () => {
+        createTempFile("styles.css", "h1 { color: blue; }");
+
+        const plugin = inlineHtmlPlugin({ dir: "plugins/__tmp_inline_test__" });
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const transformHook = (plugin as any).transform;
+
+        const html = "<style>%inline:styles.css%</style>";
+        const result = await transformHook.call({}, html, "index.html");
+
+        expect(result).toBeDefined();
+        expect(result.code).toContain("h1");
+        expect(result.code).toContain("color: blue");
     });
 });

@@ -3,6 +3,15 @@ export const baseRulesConfig = {
         "@typescript-eslint/no-non-null-assertion": "error",
         "no-console": ["warn", { allow: ["warn", "error"] }],
         "prefer-const": "warn",
+        "@typescript-eslint/explicit-function-return-type": [
+            "error",
+            {
+                allowExpressions: true,
+                allowTypedFunctionExpressions: true,
+                allowHigherOrderFunctions: true,
+                allowDirectConstAssertionInArrowFunctions: true,
+            },
+        ],
 
         "@typescript-eslint/no-unused-vars": [
             "warn",

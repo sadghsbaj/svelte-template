@@ -1,11 +1,18 @@
 <script lang="ts">
     import { untrack } from "svelte";
+
     import { layerAttach } from "$core/_system/layout/app-layer/layer.svelte";
-    import { computeTargetBox, getParentElement } from "./focus.geometry.js";
-    import { drawFocusRing, clearCanvas, resolveAccentColor, invalidateAccentColorCache } from "./focus.renderer.js";
+
     import { FocusAnimationController } from "./focus.animation.js";
     import { focusOverridesMap } from "./focus.attach.js";
-    import type { FocusBox, ClipBox, FocusOverrides, FocusPaintState } from "./focus.types.js";
+    import { computeTargetBox, getParentElement } from "./focus.geometry.js";
+    import {
+        clearCanvas,
+        drawFocusRing,
+        invalidateAccentColorCache,
+        resolveAccentColor,
+    } from "./focus.renderer.js";
+    import type { ClipBox, FocusBox, FocusOverrides, FocusPaintState } from "./focus.types.js";
 
     // NOTE: Must be a plain variable, NOT $state. It is only read imperatively (never in
     // the template), and the setup $effect below calls handleResize() which reads it.
@@ -39,6 +46,8 @@
         if (!canvas) return;
         ctx = canvas.getContext("2d");
 
+        document.documentElement.dataset.canvasFocus = "";
+
         // This setup effect must only depend on `canvas`. untrack() guards against any
         // reactive reads inside handleResize()/draw() accidentally re-running the effect
         // (its cleanup would stop() running focus animations mid-flight).
@@ -52,6 +61,8 @@
         window.addEventListener("scroll", handleScroll, { capture: true, passive: true });
 
         return () => {
+            delete document.documentElement.dataset.canvasFocus;
+
             viewportObserver.disconnect();
             window.removeEventListener("scroll", handleScroll, { capture: true });
             elementObserver?.disconnect();
@@ -103,9 +114,7 @@
     function isTargetFocusVisible(el: HTMLElement | null): boolean {
         if (!el || typeof el.matches !== "function") return false;
         const isTextInput =
-            el.tagName === "INPUT" ||
-            el.tagName === "TEXTAREA" ||
-            el.isContentEditable;
+            el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.isContentEditable;
         const isNoCanvas = !!el.closest?.("[data-no-canvas-focus]");
         return (el.matches(":focus-visible") || isTextInput) && !isNoCanvas;
     }
@@ -170,7 +179,10 @@
                 const ok = doUpdateTargetBox(el);
                 if (!ok) return;
 
-                if (Math.abs(targetBox.w - lastObservedW) < 1 && Math.abs(targetBox.h - lastObservedH) < 1) {
+                if (
+                    Math.abs(targetBox.w - lastObservedW) < 1 &&
+                    Math.abs(targetBox.h - lastObservedH) < 1
+                ) {
                     return;
                 }
 
@@ -303,4 +315,3 @@
     class="h-full w-full pointer-events-none inset-0 fixed"
     {@attach layerAttach}
 ></canvas>
-

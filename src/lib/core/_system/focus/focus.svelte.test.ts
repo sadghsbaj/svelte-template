@@ -6,13 +6,7 @@ import { motionPreference } from "$core/_system/motion/motion.svelte.js";
 import { FocusAnimationController } from "./focus.animation.js";
 import { focusAttach, focusOverridesMap } from "./focus.attach.js";
 import { computeTargetBox } from "./focus.geometry.js";
-import {
-    clearCanvas,
-    drawFocusRing,
-    drawSquirclePath,
-    getSuperellipseKappa,
-    resolveAccentColor,
-} from "./focus.renderer.js";
+import { clearCanvas, drawFocusRing, drawSquirclePath, resolveAccentColor } from "./focus.renderer.js";
 import type { ClipBox, FocusBox, FocusPaintState } from "./focus.types.js";
 
 describe("focus.renderer", () => {
@@ -416,23 +410,86 @@ describe("focus.geometry corner-shape parsing", () => {
 });
 
 describe("focus.renderer squircle path drawing", () => {
-    it("getSuperellipseKappa interpolates kappa between round and squircle", () => {
-        const kRound = getSuperellipseKappa(1);
-        const kSquircle = getSuperellipseKappa(2);
-
-        expect(kRound).toBeCloseTo(0.55228, 4);
-        expect(kSquircle).toBeCloseTo(0.75253, 4);
-        expect(getSuperellipseKappa(1.5)).toBeCloseTo((kRound + kSquircle) / 2, 4);
-    });
-
-    it("drawSquirclePath draws path using bezierCurveTo", () => {
+    it("drawSquirclePath samples exact superellipse curve via lineTo (no bezierCurveTo)", () => {
         const ctx = makeMockCtx();
         drawSquirclePath(ctx, 10, 10, 100, 100, 10, 2);
 
         expect(ctx.moveTo).toHaveBeenCalled();
         expect(ctx.lineTo).toHaveBeenCalled();
-        expect(ctx.bezierCurveTo).toHaveBeenCalledTimes(4);
         expect(ctx.closePath).toHaveBeenCalled();
+        // No Bézier approximation — pure superellipse sampling
+        expect(ctx.bezierCurveTo).not.toHaveBeenCalled();
+    });
+
+    it("drawSquirclePath produces correct corner start/end points", () => {
+        const ctx = makeMockCtx();
+        const x = 10, y = 20, w = 100, h = 60, r = 8;
+
+        drawSquirclePath(ctx, x, y, w, h, r, 2);
+
+        const lineCalls = (ctx.lineTo as ReturnType<typeof vi.fn>).mock.calls;
+        const moveCall = (ctx.moveTo as ReturnType<typeof vi.fn>).mock.calls[0];
+
+        // moveTo should start at top edge, after top-left corner
+        expect(moveCall[0]).toBe(x + r);
+        expect(moveCall[1]).toBe(y);
+
+        // First lineTo goes to top edge, before top-right corner
+        expect(lineCalls[0][0]).toBe(x + w - r);
+        expect(lineCalls[0][1]).toBe(y);
+
+        // Corner sampling: first point of top-right corner should be on top edge
+        // last point should be on right edge
+        const cornerStartIdx = 1; // after the straight top-edge lineTo
+        const cornerPoints = lineCalls.slice(cornerStartIdx, cornerStartIdx + 17); // 16 steps + 1
+
+        // First corner point should be at (x + w - r, y) — on the top edge
+        expect(cornerPoints[0][0]).toBeCloseTo(x + w - r, 5);
+        expect(cornerPoints[0][1]).toBeCloseTo(y, 5);
+
+        // Last corner point should be at (x + w, y + r) — on the right edge
+        expect(cornerPoints[16][0]).toBeCloseTo(x + w, 5);
+        expect(cornerPoints[16][1]).toBeCloseTo(y + r, 5);
+    });
+
+    it("drawSquirclePath round exponent=1 produces circular corner points", () => {
+        const ctx = makeMockCtx();
+        const x = 0, y = 0, w = 100, h = 100, r = 10;
+
+        drawSquirclePath(ctx, x, y, w, h, r, 1);
+
+        const lineCalls = (ctx.lineTo as ReturnType<typeof vi.fn>).mock.calls;
+        // Top-right corner: center at (x+w-r, y+r) = (90, 10)
+        // At 45° (i=8 of 16): point should be at (90 + 10*sin(45°), 10 - 10*cos(45°))
+        // = (90 + 7.071, 10 - 7.071) = (97.071, 2.929)
+        const cornerStartIdx = 1;
+        const midIdx = cornerStartIdx + 8; // midpoint of 16-step corner
+        const [mx, my] = [lineCalls[midIdx][0], lineCalls[midIdx][1]];
+
+        const expected = 90 + 10 * Math.sin(Math.PI / 4);
+        const expectedY = 10 - 10 * Math.cos(Math.PI / 4);
+        expect(mx).toBeCloseTo(expected, 2);
+        expect(my).toBeCloseTo(expectedY, 2);
+    });
+
+    it("drawSquirclePath exponent=2 (squircle) extends further at 45° than circle", () => {
+        const ctxCircle = makeMockCtx();
+        const ctxSquircle = makeMockCtx();
+        const x = 0, y = 0, w = 100, h = 100, r = 10;
+
+        drawSquirclePath(ctxCircle, x, y, w, h, r, 1);
+        drawSquirclePath(ctxSquircle, x, y, w, h, r, 2);
+
+        const circleCalls = (ctxCircle.lineTo as ReturnType<typeof vi.fn>).mock.calls;
+        const squircleCalls = (ctxSquircle.lineTo as ReturnType<typeof vi.fn>).mock.calls;
+
+        // At 45° (midpoint of top-right corner, i=8 of 16)
+        const midIdx = 1 + 8;
+        const circleDist = Math.hypot(circleCalls[midIdx][0] - 90, circleCalls[midIdx][1] - 10);
+        const squircleDist = Math.hypot(squircleCalls[midIdx][0] - 90, squircleCalls[midIdx][1] - 10);
+
+        // Squircle point should be further from center (more "filled" corner)
+        expect(squircleDist).toBeGreaterThan(circleDist);
     });
 
     it("drawFocusRing invokes drawSquirclePath when cornerShape is squircle", () => {
@@ -449,7 +506,8 @@ describe("focus.renderer squircle path drawing", () => {
         const clip: ClipBox = { x: 0, y: 0, w: 1000, h: 1000 };
 
         drawFocusRing(ctx, canvas, box, clip);
-        expect(ctx.bezierCurveTo).toHaveBeenCalledTimes(4);
+        expect(ctx.lineTo).toHaveBeenCalled();
+        expect(ctx.bezierCurveTo).not.toHaveBeenCalled();
     });
 });
 

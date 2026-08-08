@@ -32,5 +32,11 @@
             class="text-sm text-white font-500 px-4 rounded-full bg-blue-500 flex-center h-40px w-fit squircle-smooth"
             >Click me!</button
         >
+
+        <button
+            {@attach focusAttach({ offset: 2 })}
+            class="text-sm text-white font-500 px-4 rounded-full bg-blue-500 flex-center h-40px w-40px squircle-smooth"
+            >I</button
+        >
     </section>
 </div>

@@ -28,20 +28,68 @@ export function clearCanvas(ctx: CanvasRenderingContext2D, canvas: HTMLCanvasEle
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
 
-/**
- * Computes cubic Bezier handle coefficient k for a superellipse exponent p.
- * For p = 1.0 (round), k = (4/3)*(sqrt(2)-1) ≈ 0.5522847.
- * For p = 2.0 (squircle), k ≈ 0.752538 (Skia / Chromium cubic Bezier approximation for squircle).
- */
-export function getSuperellipseKappa(exponent: number): number {
-    const KAPPA_ROUND = 0.5522847498307935;
-    const KAPPA_SQUIRCLE = 0.752538;
-    const clampedExp = Math.max(1, Math.min(3, exponent));
-    return KAPPA_ROUND + (clampedExp - 1) * (KAPPA_SQUIRCLE - KAPPA_ROUND);
+type Corner = "top-right" | "bottom-right" | "bottom-left" | "top-left";
+
+/** Maps a superellipse sample point (cosPow, sinPow) to canvas coordinates for the given corner. */
+function cornerPoint(
+    cx: number,
+    cy: number,
+    r: number,
+    corner: Corner,
+    cosPow: number,
+    sinPow: number
+): { x: number; y: number } {
+    switch (corner) {
+        case "top-right": {
+            return { x: cx + r * sinPow, y: cy - r * cosPow };
+        }
+        case "bottom-right": {
+            return { x: cx + r * cosPow, y: cy + r * sinPow };
+        }
+        case "bottom-left": {
+            return { x: cx - r * sinPow, y: cy + r * cosPow };
+        }
+        case "top-left": {
+            return { x: cx - r * cosPow, y: cy - r * sinPow };
+        }
+    }
 }
 
 /**
- * Draws a squircle / superellipse path onto the 2D canvas context.
+ * Samples a superellipse corner curve and appends it to the current path.
+ *
+ * Parameterized superellipse (code convention: exponent 1 = circle, 2 = squircle):
+ *   x = r * |cos(θ)|^(1/exponent)
+ *   y = r * |sin(θ)|^(1/exponent)     θ ∈ [0, π/2]
+ *
+ * Each corner is centered at the corner of the bounding box, inset by r
+ * from both adjacent edges. This produces a curve identical to the browser's
+ * native `corner-shape` rendering (no Bézier approximation).
+ */
+function drawSuperellipseCorner(
+    ctx: CanvasRenderingContext2D,
+    cx: number,
+    cy: number,
+    r: number,
+    exponent: number,
+    corner: Corner
+): void {
+    const STEPS = 16;
+    const invExp = 1 / exponent;
+
+    for (let i = 0; i <= STEPS; i++) {
+        const theta = (i / STEPS) * (Math.PI / 2);
+        const cosPow = Math.pow(Math.abs(Math.cos(theta)), invExp);
+        const sinPow = Math.pow(Math.abs(Math.sin(theta)), invExp);
+
+        const pt = cornerPoint(cx, cy, r, corner, cosPow, sinPow);
+        ctx.lineTo(pt.x, pt.y);
+    }
+}
+
+/**
+ * Draws a squircle / superellipse path onto the 2D canvas context
+ * using exact superellipse sampling (no Bézier approximation).
  */
 export function drawSquirclePath(
     ctx: CanvasRenderingContext2D,
@@ -58,54 +106,32 @@ export function drawSquirclePath(
         return;
     }
 
-    const k = getSuperellipseKappa(exponent);
-    const handle = clampedR * k;
+    // Path goes clockwise: top edge → right edge → bottom edge → left edge
 
     ctx.moveTo(x + clampedR, y);
 
-    // Top-right corner
+    // Top edge → top-right corner
     ctx.lineTo(x + w - clampedR, y);
-    ctx.bezierCurveTo(
-        x + w - clampedR + handle,
-        y,
-        x + w,
-        y + clampedR - handle,
-        x + w,
-        y + clampedR
-    );
+    drawSuperellipseCorner(ctx, x + w - clampedR, y + clampedR, clampedR, exponent, "top-right");
 
-    // Bottom-right corner
+    // Right edge → bottom-right corner
     ctx.lineTo(x + w, y + h - clampedR);
-    ctx.bezierCurveTo(
-        x + w,
-        y + h - clampedR + handle,
-        x + w - clampedR + handle,
-        y + h,
+    drawSuperellipseCorner(
+        ctx,
         x + w - clampedR,
-        y + h
+        y + h - clampedR,
+        clampedR,
+        exponent,
+        "bottom-right"
     );
 
-    // Bottom-left corner
+    // Bottom edge → bottom-left corner
     ctx.lineTo(x + clampedR, y + h);
-    ctx.bezierCurveTo(
-        x + clampedR - handle,
-        y + h,
-        x,
-        y + h - clampedR + handle,
-        x,
-        y + h - clampedR
-    );
+    drawSuperellipseCorner(ctx, x + clampedR, y + h - clampedR, clampedR, exponent, "bottom-left");
 
-    // Top-left corner
+    // Left edge → top-left corner
     ctx.lineTo(x, y + clampedR);
-    ctx.bezierCurveTo(
-        x,
-        y + clampedR - handle,
-        x + clampedR - handle,
-        y,
-        x + clampedR,
-        y
-    );
+    drawSuperellipseCorner(ctx, x + clampedR, y + clampedR, clampedR, exponent, "top-left");
 
     ctx.closePath();
 }
@@ -177,4 +203,3 @@ export function drawFocusRing(
 
     ctx.restore();
 }
-

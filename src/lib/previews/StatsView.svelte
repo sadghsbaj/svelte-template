@@ -26,5 +26,10 @@
                 placeholder="test"
             />
         </div>
+
+        <button
+            class="text-white font-500 px-4 rounded-full bg-blue-500 flex-center h-40px w-fit squircle-smooth"
+            >Click me!</button
+        >
     </section>
 </div>

@@ -1,8 +1,6 @@
-/* ==========================================================================
-    FOCUS & ACCESSIBILITY
-    ========================================================================= */
-
-:focus-visible:not([data-no-canvas-focus]) {
+/* Only suppress native outlines when the canvas focus system is active.
+   FocusHost sets data-canvas-focus on <html> on mount. */
+html[data-canvas-focus] :focus-visible:not([data-no-canvas-focus]) {
     outline: none !important;
     outline-offset: 0 !important;
     box-shadow: none !important;

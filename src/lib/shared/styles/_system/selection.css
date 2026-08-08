@@ -24,3 +24,11 @@ video::selection {
     background-color: transparent;
     filter: brightness(0.8) contrast(1.2);
 }
+
+/* Accent-background override:
+   white selection for contrast on colored surfaces */
+[data-selection-on-accent] ::selection,
+[data-selection-on-accent]::selection {
+    color: var(--color-accent-500);
+    background-color: white;
+}

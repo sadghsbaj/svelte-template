@@ -15,9 +15,9 @@
 /* Disable all transitions and animations during initial page load (.preload) or theme switch (.theme-switching) */
 :where(
     :is(.preload, .theme-switching),
-    :is(.preload, .theme-switching) *:not(.force-animate, .force-animate *),
-    :is(.preload, .theme-switching) *:not(.force-animate, .force-animate *)::before,
-    :is(.preload, .theme-switching) *:not(.force-animate, .force-animate *)::after
+    :is(.preload, .theme-switching) *:not([data-force-animate], [data-force-animate] *),
+    :is(.preload, .theme-switching) *:not([data-force-animate], [data-force-animate] *)::before,
+    :is(.preload, .theme-switching) *:not([data-force-animate], [data-force-animate] *)::after
 ) {
     transition: none !important;
     animation: none !important;
@@ -72,9 +72,9 @@
     }
 
     :where(
-        *:not(.force-animate, .force-animate *),
-        *:not(.force-animate, .force-animate *)::before,
-        *:not(.force-animate, .force-animate *)::after
+        *:not([data-force-animate], [data-force-animate] *),
+        *:not([data-force-animate], [data-force-animate] *)::before,
+        *:not([data-force-animate], [data-force-animate] *)::after
     ) {
         transition: none !important;
         animation: none !important;
@@ -94,11 +94,11 @@
 
 .ui-reduce-motion
     :where(
-        *:not(.force-animate, .force-animate *),
-        *:not(.force-animate, .force-animate *)::before,
-        *:not(.force-animate, .force-animate *)::after
+        *:not([data-force-animate], [data-force-animate] *),
+        *:not([data-force-animate], [data-force-animate] *)::before,
+        *:not([data-force-animate], [data-force-animate] *)::after
     ),
-.ui-reduce-motion:not(.force-animate, .force-animate *) {
+.ui-reduce-motion:not([data-force-animate], [data-force-animate] *) {
     transition: none !important;
     animation: none !important;
 }

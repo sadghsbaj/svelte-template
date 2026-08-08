@@ -2,8 +2,11 @@ import { motionPreference } from "$core/_system/motion/motion.svelte.js";
 import type { ClipBox, FocusBox, FocusPaintState } from "./focus.types.js";
 import { boxDistance, lerp } from "./focus.geometry.js";
 
-/** Distance threshold (in px). Short distance (< 120px) morph glides. Long distance (>= 120px) teleports with dissolve & pulse. */
-const TELEPORT_THRESHOLD = 120;
+/** Distance threshold (in px). Short distance (< 240px) morph glides. Long distance (>= 240px) teleports with dissolve & pulse. */
+const TELEPORT_THRESHOLD = 240;
+
+/** Rapid-tab window (ms). If focus changes faster than this, always morph — never teleport. Keeps the ring visible during fast tabbing. */
+const RAPID_TAB_MS = 150;
 
 /** Duration of the initial focus appearance pulse-in (ms). */
 const PULSE_IN_MS = 160;
@@ -32,11 +35,13 @@ const cubicOut = (t: number): number => 1 - (1 - t) ** 3;
  * 1. Initial Focus Appearance (`startPulseIn`): 160ms cubic-out pulse (opacity 0->1, scale 1.05->1).
  * 2. Focus Disappearance (`startPulseOut`): 90ms cubic-in dissolve (opacity ->0, scale ->0.96).
  * 3. Same Element Resize (`isSameElement = true`): pure smooth lerp without teleport or pulse.
- * 4. Short Distance (< 120px): buttery smooth morph glide (frame lerp, factor 0.22) between adjacent items.
- * 5. Long Distance (>= 120px): single-timeline Dissolve & Pulse with zero gap:
+ * 4. Short Distance (< 240px) or rapid tabbing (< 150ms between focus changes):
+ *    buttery smooth morph glide (frame lerp, factor 0.22) between adjacent items.
+ * 5. Long Distance (>= 240px) with deliberate focus change: single-timeline Dissolve & Pulse with zero gap:
  *    - 0..70ms   Dissolve-Out at origin (cubic-in: starts gentle, accelerates away).
  *    - 70..220ms Pulse-In at target (cubic-out: appears fast, settles gently), tracking the
  *      live target box each frame so scrollIntoView during the animation cannot end-snap.
+ *    Skipped entirely during rapid tabbing — morph is used instead to keep the ring visible.
  *
  * Every animation takes over from the last painted state (`lastPaint`), so rapid focus
  * changes mid-flight never jump back to full opacity (no flicker while fast-tabbing).
@@ -47,6 +52,8 @@ export class FocusAnimationController {
     private currentTargetClip: ClipBox | null = null;
     /** The most recently painted state. Steady state is `{ opacity: 1, scale: 1 }`. */
     private lastPaint: FocusPaintState = { opacity: 1, scale: 1 };
+    /** Timestamp of the last start() call — used to detect rapid tabbing. */
+    private lastStartTime: number = 0;
 
     public isAnimating(): boolean {
         return this.animFrame !== 0;
@@ -219,10 +226,16 @@ export class FocusAnimationController {
             return;
         }
 
-        // Same element resize OR short distance (< 120px): smooth lerp without teleport.
+        // Rapid-tab detection: if focus changes faster than RAPID_TAB_MS,
+        // always morph — never teleport. Keeps the ring visible during fast tabbing.
+        const now = performance.now();
+        const isRapidTab = now - this.lastStartTime < RAPID_TAB_MS;
+        this.lastStartTime = now;
+
+        // Same element resize, short distance, or rapid tab: smooth lerp without teleport.
         // opacity/scale/lineWidth only recover toward steady state when a previous animation
         // was interrupted mid-flight; in steady state they stay at 1 / 1 / target (no-op).
-        if (isSameElement || dist < TELEPORT_THRESHOLD) {
+        if (isSameElement || dist < TELEPORT_THRESHOLD || isRapidTab) {
             const cur = { ...initialBox };
             const curClip = { ...initialClip };
 
@@ -283,7 +296,8 @@ export class FocusAnimationController {
             return;
         }
 
-        // Long distance (>= 120px): single timeline — Dissolve-Out at origin, Pulse-In at target
+        // Long distance (>= 240px) with deliberate (non-rapid) focus change:
+        // single timeline — Dissolve-Out at origin, Pulse-In at target
         const cur = { ...initialBox };
         const curClip = { ...initialClip };
         const startTime = performance.now();

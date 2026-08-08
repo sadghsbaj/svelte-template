@@ -269,7 +269,7 @@ describe("FocusAnimationController (Houdini Pulse & Same-Element Handling)", () 
         expect(onDone).not.toHaveBeenCalled();
     });
 
-    it("short distance (< 120px): snappy morph onFrame receives opacity=1", async () => {
+    it("short distance (< 240px): snappy morph onFrame receives opacity=1", async () => {
         vi.spyOn(motionPreference, "resolved", "get").mockReturnValue("no-preference");
         const paintStates: FocusPaintState[] = [];
         const onDone = vi.fn();
@@ -287,7 +287,73 @@ describe("FocusAnimationController (Houdini Pulse & Same-Element Handling)", () 
         expect(paintStates.every((p) => p.opacity === 1)).toBe(true);
     });
 
-    it("long distance (>= 120px): Houdini pulse runs Phase 1 dissolve-out then Phase 2 pulse-in", async () => {
+    it("medium distance (120-240px): now uses morph instead of teleport", async () => {
+        vi.spyOn(motionPreference, "resolved", "get").mockReturnValue("no-preference");
+        const paintStates: FocusPaintState[] = [];
+        const onDone = vi.fn();
+
+        // ~200px distance — was teleport with 120px threshold, now morph with 240px
+        const initialBox: FocusBox = { x: 0, y: 0, w: 50, h: 30, r: 4 };
+        const targetBox200: FocusBox = { x: 180, y: 100, w: 50, h: 30, r: 4 };
+        const initialClip: ClipBox = { x: 0, y: 0, w: 1000, h: 1000 };
+
+        controller.start(targetBox200, initialClip, initialBox, initialClip, (_b, _c, paint) => {
+            paintStates.push(paint);
+        }, onDone);
+
+        await new Promise((r) => setTimeout(r, 600));
+
+        expect(onDone).toHaveBeenCalled();
+        expect(paintStates.every((p) => p.opacity === 1)).toBe(true);
+    });
+
+    it("rapid tab (< 150ms between focus changes): always morphs, even at long distance", async () => {
+        vi.spyOn(motionPreference, "resolved", "get").mockReturnValue("no-preference");
+
+        const ctrl = new FocusAnimationController();
+        const clip: ClipBox = { x: 0, y: 0, w: 1000, h: 1000 };
+        const boxA: FocusBox = { x: 0, y: 0, w: 50, h: 30, r: 4 };
+        const boxB: FocusBox = { x: 500, y: 400, w: 50, h: 30, r: 4 };
+        const boxC: FocusBox = { x: 0, y: 0, w: 50, h: 30, r: 4 };
+
+        // First start — teleport (long distance, no rapid tab)
+        const firstPaints: FocusPaintState[] = [];
+        await new Promise<void>((resolve) => {
+            ctrl.start(boxB, clip, boxA, clip, (_b, _c, paint) => {
+                firstPaints.push({ ...paint });
+                if (firstPaints.length >= 3) {
+                    ctrl.stop();
+                    resolve();
+                }
+            }, resolve);
+        });
+
+        // Immediately start again (simulates rapid tab) — should morph, not teleport
+        const secondPaints: FocusPaintState[] = [];
+        await new Promise<void>((resolve) => {
+            ctrl.start(boxC, clip, boxB, clip, (_b, _c, paint) => {
+                secondPaints.push({ ...paint });
+                if (secondPaints.length >= 6) {
+                    ctrl.stop();
+                    resolve();
+                }
+            }, resolve);
+        });
+
+        // Second call was within 150ms of first → morph path (opacity recovers toward 1)
+        // Teleport would dissolve opacity toward 0 first. Morph lerps it back up.
+        expect(secondPaints.length).toBeGreaterThan(0);
+        const lastPaint = secondPaints.at(-1);
+        const firstPaint = secondPaints[0];
+        expect(lastPaint).toBeDefined();
+        expect(firstPaint).toBeDefined();
+        if (lastPaint && firstPaint) {
+            // Opacity should be recovering (increasing or staying at 1), not dissolving to 0
+            expect(lastPaint.opacity).toBeGreaterThanOrEqual(firstPaint.opacity);
+        }
+    });
+
+    it("long distance (>= 240px): Houdini pulse runs Phase 1 dissolve-out then Phase 2 pulse-in", async () => {
         const paintStates: FocusPaintState[] = [];
 
         const farBox: FocusBox = { x: 0, y: 0, w: 50, h: 30, r: 4 };

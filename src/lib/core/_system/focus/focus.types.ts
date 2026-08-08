@@ -1,6 +1,4 @@
-export type CornerShape =
-    | { type: "round" }
-    | { type: "squircle"; exponent: number };
+export type CornerShape = { type: "round" } | { type: "squircle"; exponent: number };
 
 export interface FocusBox {
     x: number;
@@ -22,6 +20,7 @@ export interface FocusOverrides {
     color?: string;
     offset?: number;
     lineWidth?: number;
+    enabled?: boolean;
 }
 
 /**
@@ -36,4 +35,3 @@ export interface FocusPaintState {
     scale?: number;
     lineWidthOverride?: number;
 }
-

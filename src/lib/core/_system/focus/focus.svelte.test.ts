@@ -5,7 +5,7 @@ import { motionPreference } from "$core/_system/motion/motion.svelte.js";
 
 import { FocusAnimationController } from "./focus.animation.js";
 import { focusAttach, focusOverridesMap } from "./focus.attach.js";
-import { computeTargetBox } from "./focus.geometry.js";
+import { computeTargetBox, resolveFocusTarget } from "./focus.geometry.js";
 import { clearCanvas, drawFocusRing, drawSquirclePath, resolveAccentColor } from "./focus.renderer.js";
 import type { ClipBox, FocusBox, FocusPaintState } from "./focus.types.js";
 
@@ -175,6 +175,57 @@ describe("focus.geometry DOM functions", () => {
         expect(result).not.toBeNull();
         expect(result?.box.r).toBe(50);
     });
+
+    it("resolveFocusTarget returns the element itself when no focusTarget is set", () => {
+        const el = document.createElement("input");
+        expect(resolveFocusTarget(el)).toBe(el);
+    });
+
+    it("resolveFocusTarget resolves via overrideTarget parameter", () => {
+        const input = document.createElement("input");
+        const proxy = document.createElement("span");
+        proxy.id = "visual-proxy";
+        document.body.append(proxy);
+
+        const result = resolveFocusTarget(input, "#visual-proxy");
+        expect(result).toBe(proxy);
+
+        proxy.remove();
+    });
+
+    it("resolveFocusTarget resolves via data-focus-target attribute", () => {
+        const input = document.createElement("input");
+        input.dataset.focusTarget = "#visual-proxy";
+        const proxy = document.createElement("span");
+        proxy.id = "visual-proxy";
+        document.body.append(proxy);
+
+        const result = resolveFocusTarget(input);
+        expect(result).toBe(proxy);
+
+        proxy.remove();
+    });
+
+    it("resolveFocusTarget falls back to the element when selector does not match", () => {
+        const input = document.createElement("input");
+        input.dataset.focusTarget = "#nonexistent";
+
+        const result = resolveFocusTarget(input);
+        expect(result).toBe(input);
+    });
+
+    it("resolveFocusTarget prefers overrideTarget over data attribute", () => {
+        const input = document.createElement("input");
+        input.dataset.focusTarget = "#data-attr-target";
+        const proxy = document.createElement("span");
+        proxy.id = "override-target";
+        document.body.append(proxy);
+
+        const result = resolveFocusTarget(input, "#override-target");
+        expect(result).toBe(proxy);
+
+        proxy.remove();
+    });
 });
 
 describe("focus.attach", () => {
@@ -199,6 +250,27 @@ describe("focus.attach", () => {
         const attachFn = focusAttach(overrides);
         attachFn(el);
         expect(focusOverridesMap.get(el)?.lineWidth).toBe(3);
+    });
+
+    it("sets data-focus-target attribute when focusTarget is provided", () => {
+        const el = document.createElement("input");
+        const attachFn = focusAttach({ focusTarget: "#visual-proxy" });
+        const destroy = attachFn(el);
+
+        expect(el.dataset.focusTarget).toBe("#visual-proxy");
+
+        if (typeof destroy === "function") {
+            destroy();
+        }
+        expect(el.dataset.focusTarget).toBeUndefined();
+    });
+
+    it("does not set data-focus-target when focusTarget is not provided", () => {
+        const el = document.createElement("input");
+        const attachFn = focusAttach({ color: "red" });
+        attachFn(el);
+
+        expect(el.dataset.focusTarget).toBeUndefined();
     });
 });
 

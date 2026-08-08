@@ -21,6 +21,8 @@ export interface FocusOverrides {
     offset?: number;
     lineWidth?: number;
     enabled?: boolean;
+    /** CSS selector for a visual proxy element. The focus ring is drawn on this element instead of the focused one. */
+    focusTarget?: string;
 }
 
 /**

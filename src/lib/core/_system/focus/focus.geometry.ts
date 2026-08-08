@@ -71,6 +71,19 @@ function parseBorderRadius(
     return Number.parseFloat(token) || 0;
 }
 
+/**
+ * Resolves a focus redirect: if the element has a focusTarget selector
+ * (via focusAttach override or raw data-focus-target attribute), returns
+ * the resolved element. Falls back to the element itself if not found.
+ */
+export function resolveFocusTarget(el: HTMLElement, overrideTarget?: string): HTMLElement {
+    const selector = overrideTarget ?? el.dataset.focusTarget;
+    if (!selector) return el;
+
+    const resolved = document.querySelector<HTMLElement>(selector);
+    return resolved ?? el;
+}
+
 // ── Geometry Caching ─────────────────────────────────────────────────────────
 
 interface StaticParams {

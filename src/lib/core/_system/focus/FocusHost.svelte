@@ -5,7 +5,12 @@
 
     import { FocusAnimationController } from "./focus.animation.js";
     import { focusOverridesMap } from "./focus.attach.js";
-    import { computeTargetBox, getParentElement, invalidateGeometryCache } from "./focus.geometry.js";
+    import {
+        computeTargetBox,
+        getParentElement,
+        invalidateGeometryCache,
+        resolveFocusTarget,
+    } from "./focus.geometry.js";
     import {
         clearCanvas,
         drawFocusRing,
@@ -31,6 +36,7 @@
     let currentClip: ClipBox = { x: 0, y: 0, w: 0, h: 0 };
 
     let activeElement: HTMLElement | null = null;
+    let focusedElement: HTMLElement | null = null;
     let elementObserver: ResizeObserver | null = null;
     let overrides: FocusOverrides | undefined;
 
@@ -144,6 +150,7 @@
                     () => {
                         isVisible = false;
                         activeElement = null;
+                        focusedElement = null;
                         elementObserver?.disconnect();
                         if (ctx && canvas) clearCanvas(ctx, canvas);
                     },
@@ -152,6 +159,7 @@
             } else {
                 isVisible = false;
                 activeElement = null;
+                focusedElement = null;
                 if (ctx && canvas) clearCanvas(ctx, canvas);
             }
             return;
@@ -159,17 +167,22 @@
 
         invalidateAccentColorCache();
 
-        const isInitialFocus = activeElement === null || activeElement === target;
+        const isInitialFocus = focusedElement === null || focusedElement === target;
         isVisible = true;
 
         overrides = getOverridesFor(target);
 
-        if (!doUpdateTargetBox(target)) return;
+        // Resolve focus redirect: if the focused element has a focusTarget override
+        // (or a raw data-focus-target attribute), draw the ring on the resolved element instead.
+        const ringElement = resolveFocusTarget(target, overrides?.focusTarget);
+
+        if (!doUpdateTargetBox(ringElement)) return;
 
         const prevActiveElement = activeElement;
-        activeElement = target;
+        activeElement = ringElement;
+        focusedElement = target;
 
-        if (prevActiveElement && prevActiveElement !== target) {
+        if (prevActiveElement && prevActiveElement !== ringElement) {
             invalidateGeometryCache(prevActiveElement);
         }
 
@@ -211,7 +224,7 @@
             });
         }
         elementObserver.disconnect();
-        elementObserver.observe(target);
+        elementObserver.observe(activeElement);
 
         if (isInitialFocus || !prevActiveElement) {
             currentBox = { ...targetBox };
@@ -247,7 +260,7 @@
 
     function handleFocusOut(e: FocusEvent) {
         const target = e.target as HTMLElement | null;
-        if (!target || target !== activeElement) return;
+        if (!target || target !== focusedElement) return;
 
         if (pendingFocusOutTimer !== null) {
             cancelAnimationFrame(pendingFocusOutTimer);
@@ -255,9 +268,10 @@
 
         pendingFocusOutTimer = requestAnimationFrame(() => {
             pendingFocusOutTimer = null;
-            if (activeElement !== target) return;
+            if (focusedElement !== target) return;
 
             activeElement = null;
+            focusedElement = null;
 
             animController.startPulseOut(
                 currentBox,

@@ -33,9 +33,11 @@
             >Click me!</button
         >
 
-        <button
-            class="text-sm text-white font-500 px-4 rounded-full bg-blue-500 flex-center h-40px w-40px squircle-smooth"
-            >I</button
-        >
+        <input
+            type="checkbox"
+            class="sr-only"
+            {@attach focusAttach({ focusTarget: "#toggle-visual" })}
+        />
+        <span id="toggle-visual" class="rounded-full bg-red w-200px">...</span>
     </section>
 </div>

@@ -14,9 +14,17 @@ export function focusAttach(overrides: FocusOverrides): Attachment {
             element.dataset.noCanvasFocus = "";
         }
 
+        if (overrides.focusTarget !== undefined && isHTMLElement) {
+            element.dataset.focusTarget = overrides.focusTarget;
+        }
+
         return () => {
             if (overrides.enabled === false && isHTMLElement) {
                 delete element.dataset.noCanvasFocus;
+            }
+
+            if (overrides.focusTarget !== undefined && isHTMLElement) {
+                delete element.dataset.focusTarget;
             }
 
             focusOverridesMap.delete(element);

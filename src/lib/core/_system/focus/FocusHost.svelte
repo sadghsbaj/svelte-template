@@ -40,7 +40,7 @@
     let pendingFocusOutTimer: number | null = null;
 
     const animController = new FocusAnimationController();
-    const OFFSET = 4;
+    const OFFSET = 2;
 
     $effect(() => {
         if (!canvas) return;

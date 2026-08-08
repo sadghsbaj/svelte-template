@@ -22,19 +22,18 @@
     <section class="p-6 rounded-3xl bg-elevation-1 flex flex-col gap-6 squircle md:p-8">
         <div class="flex flex-col gap-4 justify-between sm:flex-row sm:items-center">
             <input
+                {@attach focusAttach({ offset: 0 })}
                 class="text-zinc-700 px-2 py-1 rounded-full bg-zinc-100 squircle-smooth dark:text-zinc-200 dark:bg-zinc-700 placeholder-zinc-700 dark:placeholder-zinc-200"
                 placeholder="test"
             />
         </div>
 
         <button
-            {@attach focusAttach({ offset: 2 })}
             class="text-sm text-white font-500 px-4 rounded-full bg-blue-500 flex-center h-40px w-fit squircle-smooth"
             >Click me!</button
         >
 
         <button
-            {@attach focusAttach({ offset: 2 })}
             class="text-sm text-white font-500 px-4 rounded-full bg-blue-500 flex-center h-40px w-40px squircle-smooth"
             >I</button
         >

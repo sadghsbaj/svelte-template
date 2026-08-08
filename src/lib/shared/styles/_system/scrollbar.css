@@ -22,6 +22,7 @@
 /* Chrome/Safari/Edge */
 ::-webkit-scrollbar {
     width: 8px;
+    height: 8px;
 }
 
 ::-webkit-scrollbar-button {
@@ -33,6 +34,7 @@
 }
 
 ::-webkit-scrollbar-thumb {
+    min-width: 50px;
     min-height: 50px;
     background-color: var(--scrollbar-thumb);
     background-clip: padding-box;

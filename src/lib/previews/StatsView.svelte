@@ -39,5 +39,9 @@
             {@attach focusAttach({ focusTarget: "#toggle-visual" })}
         />
         <span id="toggle-visual" class="rounded-full bg-red w-200px">...</span>
+
+        <div class="max-w-400px overflow-x-auto">
+            <div class="h-300px w-3000px">Test</div>
+        </div>
     </section>
 </div>

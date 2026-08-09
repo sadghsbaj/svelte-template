@@ -107,7 +107,7 @@
         </label>
 
         <!-- Component List without no-scrollbar class -->
-        <nav class="flex flex-col gap-1 flex-1 min-h-0 w-full overflow-y-auto">
+        <nav class="flex flex-col gap-1 flex-1 min-h-0 w-full overflow-y-auto no-scrollbar">
             {#each filteredPreviews as item (item.id)}
                 <button
                     type="button"

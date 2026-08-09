@@ -34,19 +34,19 @@
 </script>
 
 <div class="p-6 md:p-8 pb-28 flex h-full w-full overflow-hidden relative">
-    <!-- Floating Open Button (Appears top-left inside parent padding bounds) -->
+    <!-- Floating Open Button (Slightly floating offset top-1/2 left-1/2) -->
     {#if isCollapsed}
         <button
             type="button"
             onclick={() => (isCollapsed = false)}
-            class="p-2.5 rounded-2xl bg-elevation-1 text-weak shadow-md hover:text-strong hover:bg-elevation-2 select-none active:scale-95 t:(bg-180-quad-out text-180-quad-out scale-180-quad-out opacity-200-quad-out) squircle-smooth absolute top-0 left-0 z-40"
+            class="p-2.5 rounded-2xl bg-elevation-1 text-weak shadow-md hover:text-strong hover:bg-elevation-2 select-none active:scale-95 t:(bg-180-quad-out text-180-quad-out scale-180-quad-out opacity-200-quad-out) squircle-smooth absolute top-1 md:top-2 left-1 md:left-2 z-40"
             title="Open sidebar"
         >
             <PanelLeftOpen size={18} />
         </button>
     {/if}
 
-    <!-- Floating Sidebar (Aligned top-0 bottom-0 left-0 relative to parent padding) -->
+    <!-- Floating Sidebar -->
     <aside
         class="p-4 rounded-3xl bg-elevation-1 flex shrink-0 flex-col gap-4 shadow-xl w-64 md:w-72 squircle-smooth select-none absolute left-0 top-0 bottom-0 z-30 t-all-300-quad-out {isCollapsed
             ? '-translate-x-[calc(100%+4rem)] opacity-0 pointer-events-none'
@@ -116,7 +116,7 @@
         </nav>
     </aside>
 
-    <!-- Main Component Stage (Padding matches sidebar width) -->
+    <!-- Main Component Stage -->
     <main
         class="p-8 flex flex-1 flex-col items-center justify-center relative overflow-hidden h-full w-full t-all-300-quad-out {isCollapsed
             ? 'pl-0'

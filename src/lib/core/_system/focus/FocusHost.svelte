@@ -45,6 +45,7 @@
     let scrollTicking = false;
     let pendingFocusOutTimer: number | null = null;
     let pendingProxyScrollFrame: number | null = null;
+    let positionTrackingFrame: number | null = null;
 
     // The element the ring is animating away from, kept together with the offset/lineWidth it
     // was painted with. Needed so the teleport exit phase can re-measure it on scroll without
@@ -55,6 +56,43 @@
 
     const animController = new FocusAnimationController();
     const OFFSET = 2;
+
+    function stopPositionTracking(): void {
+        if (positionTrackingFrame !== null) {
+            cancelAnimationFrame(positionTrackingFrame);
+            positionTrackingFrame = null;
+        }
+    }
+
+    function trackPosition(): void {
+        if (!isVisible || !activeElement) {
+            positionTrackingFrame = null;
+            return;
+        }
+
+        const prevX = targetBox.x;
+        const prevY = targetBox.y;
+
+        if (doUpdateTargetBox(activeElement)) {
+            if (Math.abs(targetBox.x - prevX) > 0.5 || Math.abs(targetBox.y - prevY) > 0.5) {
+                if (animController.isAnimating()) {
+                    animController.updateTarget(targetBox, targetClip);
+                } else {
+                    currentBox = { ...targetBox };
+                    currentClip = { ...targetClip };
+                    draw();
+                }
+            }
+        }
+
+        positionTrackingFrame = requestAnimationFrame(trackPosition);
+    }
+
+    function startPositionTracking(): void {
+        if (positionTrackingFrame === null) {
+            positionTrackingFrame = requestAnimationFrame(trackPosition);
+        }
+    }
 
     $effect(() => {
         if (!canvas) return;
@@ -80,6 +118,7 @@
             viewportObserver.disconnect();
             window.removeEventListener("scroll", handleScroll, { capture: true });
             elementObserver?.disconnect();
+            stopPositionTracking();
             if (pendingProxyScrollFrame !== null) {
                 cancelAnimationFrame(pendingProxyScrollFrame);
                 pendingProxyScrollFrame = null;
@@ -156,6 +195,7 @@
         const isFocusVisible = isTargetFocusVisible(target);
 
         if (!isFocusVisible) {
+            stopPositionTracking();
             if (isVisible) {
                 animController.startPulseOut(
                     currentBox,
@@ -189,6 +229,7 @@
 
         const isInitialFocus = focusedElement === null || focusedElement === target;
         isVisible = true;
+        startPositionTracking();
 
         // Capture the outgoing element BEFORE `overrides` is reassigned, so its geometry can
         // keep being re-measured during the exit phase with the offset/lineWidth it was
@@ -330,6 +371,7 @@
                 },
                 () => {
                     isVisible = false;
+                    stopPositionTracking();
                     elementObserver?.disconnect();
                     if (ctx && canvas) clearCanvas(ctx, canvas);
                 },

@@ -37,6 +37,13 @@
     let selectedId = $state<string>(previews[0]?.id ?? "");
     let searchQuery = $state<string>("");
     let isCollapsed = $state<boolean>(false);
+    let openButtonEl = $state<HTMLButtonElement | null>(null);
+
+    $effect(() => {
+        if (isCollapsed && openButtonEl) {
+            openButtonEl.focus();
+        }
+    });
 
     const filteredPreviews = $derived(
         searchQuery.trim()
@@ -53,6 +60,7 @@
     <!-- Floating Open Button (Appears seamlessly top-left when sidebar is collapsed) -->
     {#if isCollapsed}
         <button
+            bind:this={openButtonEl}
             type="button"
             onclick={() => (isCollapsed = false)}
             class="p-2.5 rounded-2xl bg-elevation-1 text-weak shadow-md hover:text-strong hover:bg-elevation-2 select-none active:scale-95 t:(bg-180-quad-out text-180-quad-out scale-180-quad-out opacity-200-quad-out) squircle-smooth absolute top-1 md:top-2 left-1 md:left-2 z-40"

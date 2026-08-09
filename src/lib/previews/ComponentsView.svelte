@@ -49,15 +49,17 @@
         </div>
 
         <!-- Search Bar -->
-        <div class="px-3 py-2 rounded-2xl bg-elevation-2 flex items-center gap-2">
-            <Search size={15} class="text-weak" />
+        <label
+            class="px-3.5 py-2.5 rounded-2xl bg-elevation-2 flex items-center gap-2.5 squircle-smooth cursor-text"
+        >
+            <Search size={15} class="text-weak shrink-0 pointer-events-none" />
             <input
                 type="text"
                 bind:value={searchQuery}
                 placeholder="Filter components..."
                 class="text-xs text-strong placeholder:text-weak bg-transparent border-none w-full focus:outline-none"
             />
-        </div>
+        </label>
 
         <!-- Component List -->
         <nav class="flex flex-col gap-1 overflow-y-auto no-scrollbar">
@@ -85,12 +87,12 @@
         </nav>
     </aside>
 
-    <!-- Main Component Stage -->
+    <!-- Main Component Stage (Flat without shadow) -->
     <main
-        class="p-8 rounded-3xl bg-elevation-1/40 shadow-xs flex flex-1 flex-col items-center justify-center squircle-smooth relative overflow-hidden"
+        class="p-8 flex flex-1 flex-col items-center justify-center relative overflow-hidden"
     >
         <div class="flex flex-col items-center gap-3 text-center">
-            <div class="p-4 rounded-2xl bg-elevation-1 shadow-sm text-accent-500 squircle-smooth">
+            <div class="p-4 rounded-2xl bg-elevation-1 text-accent-500 squircle-smooth">
                 <Box size={28} />
             </div>
             <h2 class="text-xl text-strong font-bold capitalize">{selectedId}</h2>

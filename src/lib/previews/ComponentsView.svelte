@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Box, Layers, PanelLeftClose, PanelLeftOpen, Search } from "@lucide/svelte";
+    import { Box, Layers, Search } from "@lucide/svelte";
 
     import { focusAttach } from "$core/_system/focus/focus.attach";
     import ButtonPreview from "./components/ButtonPreview.svelte";
@@ -16,7 +16,6 @@
 
     let selectedId = $state<string>("button");
     let searchQuery = $state<string>("");
-    let isCollapsed = $state<boolean>(false);
 
     const filteredItems = $derived(
         searchQuery.trim()
@@ -27,24 +26,10 @@
     );
 </script>
 
-<div class="p-6 md:p-8 pb-28 flex h-full w-full overflow-hidden relative">
-    <!-- Floating Open Button -->
-    {#if isCollapsed}
-        <button
-            type="button"
-            onclick={() => (isCollapsed = false)}
-            class="p-2.5 rounded-2xl bg-elevation-1 text-weak shadow-md hover:text-strong hover:bg-elevation-2 select-none active:scale-95 t:(bg-180-quad-out text-180-quad-out scale-180-quad-out opacity-200-quad-out) squircle-smooth absolute top-1 md:top-2 left-1 md:left-2 z-40"
-            title="Open sidebar"
-        >
-            <PanelLeftOpen size={18} />
-        </button>
-    {/if}
-
-    <!-- Rectangular Sidebar -->
+<div class="p-6 md:p-8 pb-28 flex gap-6 h-full w-full overflow-hidden">
+    <!-- Clean Flex Child Rectangular Sidebar -->
     <aside
-        class="p-4 bg-elevation-1 flex shrink-0 flex-col gap-4 shadow-xl w-64 md:w-72 h-full select-none absolute left-0 top-0 bottom-0 z-30 t-all-300-quad-out {isCollapsed
-            ? '-translate-x-[calc(100%+4rem)] opacity-0 pointer-events-none'
-            : 'translate-x-0 opacity-100'}"
+        class="p-4 bg-elevation-1 flex shrink-0 flex-col gap-4 shadow-xl w-64 md:w-72 h-full select-none"
     >
         <!-- Sidebar Header -->
         <div class="px-2 pt-1 flex items-center justify-between">
@@ -52,21 +37,11 @@
                 <Layers size={18} class="text-accent-500" />
                 <span>Components</span>
             </div>
-            <div class="flex items-center gap-2">
-                <span
-                    class="text-xs text-accent-500 font-semibold px-2 py-0.5 rounded-full bg-accent-500/10"
-                >
-                    {mockItems.length}
-                </span>
-                <button
-                    type="button"
-                    onclick={() => (isCollapsed = true)}
-                    class="p-1.5 rounded-xl text-weak hover:text-strong hover:bg-elevation-2 select-none active:scale-95 t:(bg-180-quad-out text-180-quad-out)"
-                    title="Close sidebar"
-                >
-                    <PanelLeftClose size={17} />
-                </button>
-            </div>
+            <span
+                class="text-xs text-accent-500 font-semibold px-2 py-0.5 rounded-full bg-accent-500/10"
+            >
+                {mockItems.length}
+            </span>
         </div>
 
         <!-- Search Bar Container -->
@@ -84,7 +59,7 @@
             />
         </label>
 
-        <!-- Static Component List Buttons -->
+        <!-- Component List Buttons -->
         <nav class="flex flex-col gap-1 flex-1 min-h-0 w-full overflow-y-auto no-scrollbar">
             {#each filteredItems as item (item.id)}
                 <button
@@ -111,9 +86,7 @@
 
     <!-- Main Component Stage -->
     <main
-        class="p-8 flex flex-1 flex-col items-center justify-center relative overflow-hidden h-full w-full t-all-300-quad-out {isCollapsed
-            ? 'pl-0'
-            : 'pl-72 md:pl-80'}"
+        class="p-8 flex flex-1 flex-col items-center justify-center relative overflow-hidden h-full w-full"
     >
         {#if selectedId === "button"}
             <ButtonPreview />

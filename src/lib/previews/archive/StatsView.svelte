@@ -1,7 +1,7 @@
 <script lang="ts">
     import { focusAttach } from "$core/_system/focus/focus.attach.js";
 
-    const baseButtonStyles = "text-red-500 bg-blue-500";
+    const baseButtonStyles = "text-danger-500 bg-accent-500";
 </script>
 
 <div class="mx-auto p-6 pb-28 flex flex-col gap-8 max-w-6xl md:p-10 md:pb-28">
@@ -24,14 +24,14 @@
     <section class="p-6 rounded-3xl bg-elevation-1 flex flex-col gap-6 squircle md:p-8">
         <div class="flex flex-col gap-4 justify-between sm:flex-row sm:items-center">
             <input
-                class="text-zinc-700 px-2 py-1 rounded-full bg-zinc-100 squircle-smooth dark:text-zinc-200 dark:bg-zinc-700 placeholder-zinc-700 dark:placeholder-zinc-200"
+                class="text-main px-2 py-1 rounded-full bg-elevation-2 squircle-smooth placeholder-weak"
                 placeholder="test"
             />
         </div>
 
         <button
             data-selection-on-accent
-            class="text-sm text-white font-500 px-4 rounded-full bg-blue-500 flex-center h-40px w-fit squircle-smooth"
+            class="text-sm text-white font-500 px-4 rounded-full bg-accent-500 flex-center h-40px w-fit squircle-smooth"
             >Click me!</button
         >
 
@@ -40,7 +40,7 @@
             class="sr-only"
             {@attach focusAttach({ focusTarget: "#toggle-visual" })}
         />
-        <span id="toggle-visual" class="rounded-full bg-red w-200px">...</span>
+        <span id="toggle-visual" class="rounded-full bg-danger-500 w-200px">...</span>
 
         <div class={baseButtonStyles}>TestStringStyling</div>
 
@@ -48,7 +48,7 @@
             <div class="flex flex-col h-3000px w-300px justify-between">
                 <span>Test</span>
                 <button
-                    class="font-600 px-3 rounded-full bg-zinc-100 flex h-36px items-center justify-center squircle-smooth"
+                    class="font-600 px-3 rounded-full bg-elevation-2 flex h-36px items-center justify-center squircle-smooth"
                     >Test</button
                 >
             </div>

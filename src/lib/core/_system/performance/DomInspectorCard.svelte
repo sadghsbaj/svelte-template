@@ -164,7 +164,7 @@
                 </div>
                 {#if selectedNodeInfo.depth >= 25}
                     <span
-                        class="text-[11px] text-red-600 font-mono font-600 px-2.5 py-0.5 border border-red-500/40 rounded-full bg-red-500/15 dark:text-red-400 dark:border-red-500/40"
+                        class="text-[11px] text-danger-600 font-mono font-600 px-2.5 py-0.5 border border-danger-500/40 rounded-full bg-danger-500/15 dark:text-danger-400 dark:border-danger-500/40"
                     >
                         Level {selectedNodeInfo.depth}
                     </span>
@@ -231,7 +231,7 @@
                         <div class="flex gap-2 truncate items-center">
                             {#if item.depth >= 25}
                                 <span
-                                    class="text-[10px] text-red-600 font-700 shrink-0 w-6 dark:text-red-400"
+                                    class="text-[10px] text-danger-600 font-700 shrink-0 w-6 dark:text-danger-400"
                                     >L{item.depth}</span
                                 >
                             {:else if item.depth >= 15}

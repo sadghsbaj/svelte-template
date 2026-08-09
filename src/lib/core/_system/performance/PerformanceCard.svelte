@@ -410,7 +410,7 @@
 
                 {#if domHealthRating.status === "Critical"}
                     <span
-                        class="text-xs text-red-600 font-mono font-600 px-2.5 py-0.5 border border-red-500/40 rounded-full bg-red-500/15 dark:text-red-400 dark:border-red-500/40"
+                        class="text-xs text-danger-600 font-mono font-600 px-2.5 py-0.5 border border-danger-500/40 rounded-full bg-danger-500/15 dark:text-danger-400 dark:border-danger-500/40"
                     >
                         Critical
                     </span>
@@ -437,7 +437,7 @@
                 Hash,
                 "",
                 performanceState.domCount >= 1500
-                    ? "text-red-600 dark:text-red-400"
+                    ? "text-danger-600 dark:text-danger-400"
                     : performanceState.domCount >= 800
                       ? "text-amber-600 dark:text-amber-400"
                       : ""
@@ -448,7 +448,7 @@
                 Maximize,
                 "lvl",
                 performanceState.domDepth >= 25
-                    ? "text-red-600 dark:text-red-400"
+                    ? "text-danger-600 dark:text-danger-400"
                     : performanceState.domDepth >= 15
                       ? "text-amber-600 dark:text-amber-400"
                       : ""
@@ -466,7 +466,7 @@
             </div>
             {#if webVitalsRating.status === "Poor"}
                 <span
-                    class="text-xs text-red-600 font-mono font-600 px-2.5 py-0.5 border border-red-500/40 rounded-full bg-red-500/15 dark:text-red-400 dark:border-red-500/40"
+                    class="text-xs text-danger-600 font-mono font-600 px-2.5 py-0.5 border border-danger-500/40 rounded-full bg-danger-500/15 dark:text-danger-400 dark:border-danger-500/40"
                 >
                     Poor
                 </span>

@@ -1,3 +1,5 @@
+import transformerDirectives from "@unocss/transformer-directives";
+import transformerVariantGroup from "@unocss/transformer-variant-group";
 import { defineConfig, presetWind4 } from "unocss";
 
 import { postprocessConfig } from "./uno/postprocess.ts";
@@ -11,8 +13,8 @@ export default defineConfig({
     presets: [
         presetWind4({
             dark: {
-                dark: '[data-theme="dark"]'
-            }
+                dark: '[data-theme="dark"]',
+            },
         }),
     ],
 
@@ -27,4 +29,6 @@ export default defineConfig({
     preflights: preflightsConfig,
 
     variants: variantsConfig,
+
+    transformers: [transformerDirectives(), transformerVariantGroup()],
 });

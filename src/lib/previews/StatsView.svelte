@@ -1,5 +1,7 @@
 <script lang="ts">
     import { focusAttach } from "$core/_system/focus/focus.attach.js";
+
+    const baseButtonStyles = "text-red-500 bg-blue-500";
 </script>
 
 <div class="mx-auto p-6 pb-28 flex flex-col gap-8 max-w-6xl md:p-10 md:pb-28">
@@ -39,6 +41,8 @@
             {@attach focusAttach({ focusTarget: "#toggle-visual" })}
         />
         <span id="toggle-visual" class="rounded-full bg-red w-200px">...</span>
+
+        <div class={baseButtonStyles}>TestStringStyling</div>
 
         <div class="max-w-400px overflow-x-auto">
             <div class="flex flex-col h-3000px w-300px justify-between">

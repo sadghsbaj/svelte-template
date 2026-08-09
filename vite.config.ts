@@ -1,9 +1,8 @@
 import path from "node:path";
 import { svelte } from "@sveltejs/vite-plugin-svelte";
-import UnoCSS from "@unocss/svelte-scoped/vite";
-import transformerDirectives from "@unocss/transformer-directives";
 import { playwright } from "@vitest/browser-playwright";
 import { visualizer } from "rollup-plugin-visualizer";
+import UnoCSS from "unocss/vite";
 import { createHtmlPlugin } from "vite-plugin-html";
 import { defineConfig } from "vitest/config";
 
@@ -42,12 +41,7 @@ export default defineConfig({
                 ? { ...plugin, apply: "build" }
                 : plugin
         ),
-        UnoCSS({
-            // injectReset: "@unocss/reset/tailwind.css",
-            combine: true,
-            classPrefix: "c-",
-            cssFileTransformers: [transformerDirectives()],
-        }),
+        UnoCSS(),
         svelte({
             dynamicCompileOptions({ filename, compileOptions }) {
                 if (!filename.includes("node_modules") && !compileOptions.runes) {

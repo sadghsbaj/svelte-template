@@ -114,8 +114,8 @@
             />
         </label>
 
-        <!-- Component List -->
-        <nav class="flex flex-col gap-1 overflow-y-auto no-scrollbar">
+        <!-- Component List (flex-1 min-h-0 allows overflow-y-auto to fill remaining vertical height) -->
+        <nav class="flex flex-col gap-1 flex-1 min-h-0 overflow-y-auto no-scrollbar">
             {#each filteredPreviews as item (item.id)}
                 <button
                     type="button"

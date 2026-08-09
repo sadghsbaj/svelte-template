@@ -55,12 +55,12 @@
             id="component-search-container"
             class="px-3.5 py-2.5 rounded-2xl bg-elevation-2 flex items-center gap-2.5 squircle-smooth cursor-text"
         >
-            <Search size={15} class="text-weak shrink-0 pointer-events-none" />
+            <Search size={16} class="text-weak shrink-0 pointer-events-none" />
             <input
                 type="text"
                 bind:value={searchQuery}
                 placeholder="Filter components..."
-                class="text-xs text-strong placeholder:text-weak bg-transparent border-none w-full focus:outline-none"
+                class="text-sm font-medium text-strong placeholder:text-weak bg-transparent border-none w-full focus:outline-none"
                 {@attach focusAttach({ focusTarget: "#component-search-container" })}
             />
         </label>

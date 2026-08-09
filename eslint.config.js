@@ -6,7 +6,6 @@
  * directory. Add or adjust modular configs there without cluttering this file.
  */
 import js from "@eslint/js";
-import unocss from "@unocss/eslint-config/flat";
 import prettier from "eslint-config-prettier";
 import { defineConfig } from "eslint/config";
 import globals from "globals";
@@ -17,6 +16,7 @@ import { ignoresConfig } from "./eslint/ignores.js";
 import { restrictedImportsConfig } from "./eslint/imports.js";
 import { svelteConfig } from "./eslint/svelte.js";
 import { forbiddenTransitionsConfig } from "./eslint/transitions.js";
+import { unocssConfig } from "./eslint/unocss.js";
 import { unicornConfig } from "./eslint/unicorn.js";
 
 export default defineConfig([
@@ -28,7 +28,7 @@ export default defineConfig([
     baseRulesConfig,
     forbiddenTransitionsConfig,
     ...unicornConfig,
-    unocss,
+    ...unocssConfig,
 
     {
         languageOptions: {

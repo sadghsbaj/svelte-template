@@ -21,8 +21,6 @@ export const baseRulesConfig = {
             },
         ],
 
-        "unocss/order": "warn",
-
         "@typescript-eslint/member-ordering": [
             "error",
             {

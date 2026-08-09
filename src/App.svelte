@@ -13,6 +13,7 @@
     import ComponentsView from "$lib/previews/ComponentsView.svelte";
     import FloatingNavbar from "$lib/previews/FloatingNavbar.svelte";
     import SettingsView from "$lib/previews/SettingsView.svelte";
+
     // @template-remove-end
 
     onMount(() => {

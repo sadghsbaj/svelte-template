@@ -18,8 +18,7 @@ export const rulesConfig: Rule[] = [
         "app-views",
         {
             display: "grid",
-            flex: "1 1 0%",
-            "min-height": "0",
+            height: "100%",
             width: "100%",
             "grid-template-areas": "'app-view'",
             overflow: "hidden",

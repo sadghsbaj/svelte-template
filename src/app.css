@@ -34,8 +34,6 @@
 :where(body) {
     -moz-osx-font-smoothing: grayscale;
     -webkit-tap-highlight-color: transparent;
-    display: flex;
-    flex-direction: column;
     height: 100dvh;
     overflow: hidden;
     color: var(--color-text-strong);

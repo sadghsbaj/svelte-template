@@ -21,18 +21,16 @@
     });
 </script>
 
-<div class="flex h-screen w-screen overflow-hidden">
-    <AppViews {viewState}>
-        <!-- @template-remove-start -->
-        <AppView view="components">
-            <ComponentsView />
-        </AppView>
-        <AppView view="settings">
-            <SettingsView />
-        </AppView>
-        <!-- @template-remove-end -->
-    </AppViews>
-</div>
+<AppViews {viewState}>
+    <!-- @template-remove-start -->
+    <AppView view="components">
+        <ComponentsView />
+    </AppView>
+    <AppView view="settings">
+        <SettingsView />
+    </AppView>
+    <!-- @template-remove-end -->
+</AppViews>
 
 <!-- AppLayers -->
 <AppLayer z="top-layer" layer="focus">

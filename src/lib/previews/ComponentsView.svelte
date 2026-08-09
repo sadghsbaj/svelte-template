@@ -20,38 +20,30 @@
         component: Component;
     };
 
-    const previews = $derived.by(() => {
-        const items: ComponentPreviewItem[] = Object.entries(previewModules).map(
-            ([path, mod]) => {
-                const filename = path.split("/").pop() ?? "";
-                const rawName = filename.replace(/Preview\.svelte$/, "");
-                const formattedName = rawName.replaceAll(/([a-z])([A-Z])/g, "$1 $2");
+    const previews: ComponentPreviewItem[] = Object.entries(previewModules).map(
+        ([path, mod]) => {
+            const filename = path.split("/").pop() ?? "";
+            const rawName = filename.replace(/Preview\.svelte$/, "");
+            const formattedName = rawName.replaceAll(/([a-z])([A-Z])/g, "$1 $2");
 
-                return {
-                    id: rawName.toLowerCase(),
-                    name: formattedName,
-                    component: mod.default,
-                };
-            }
-        );
+            return {
+                id: rawName.toLowerCase(),
+                name: formattedName,
+                component: mod.default,
+            };
+        }
+    );
 
-        return items;
-    });
-
-    let selectedId = $state<string>("");
+    let selectedId = $state<string>(previews[0]?.id ?? "");
     let searchQuery = $state<string>("");
     let isCollapsed = $state<boolean>(false);
 
-    $effect(() => {
-        if (previews.length > 0 && (!selectedId || previews.every((p) => p.id !== selectedId))) {
-            selectedId = previews[0].id;
-        }
-    });
-
     const filteredPreviews = $derived(
-        previews.filter((item) =>
-            item.name.toLowerCase().includes(searchQuery.toLowerCase())
-        )
+        searchQuery.trim()
+            ? previews.filter((item) =>
+                  item.name.toLowerCase().includes(searchQuery.toLowerCase())
+              )
+            : previews
     );
 
     const activePreview = $derived(previews.find((p) => p.id === selectedId));
@@ -114,13 +106,13 @@
             />
         </label>
 
-        <!-- Component List (flex-1 min-h-0 allows overflow-y-auto to fill remaining vertical height) -->
-        <nav class="flex flex-col gap-1 flex-1 min-h-0 overflow-y-auto no-scrollbar">
+        <!-- Component List -->
+        <nav class="flex flex-col gap-1 flex-1 min-h-0 w-full overflow-y-auto no-scrollbar">
             {#each filteredPreviews as item (item.id)}
                 <button
                     type="button"
                     onclick={() => (selectedId = item.id)}
-                    class="p-3 rounded-2xl flex items-center justify-between text-left select-none active:scale-97 t:(bg-180-quad-out text-180-quad-out scale-180-quad-out) {selectedId ===
+                    class="w-full p-3 rounded-2xl flex items-center justify-between text-left select-none active:scale-97 t:(bg-180-quad-out text-180-quad-out scale-180-quad-out) {selectedId ===
                     item.id
                         ? 'text-strong bg-elevation-2 font-semibold'
                         : 'text-weak hover:text-strong hover:bg-elevation-2/50'}"

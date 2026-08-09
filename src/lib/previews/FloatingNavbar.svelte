@@ -1,18 +1,17 @@
 <script lang="ts">
-    import { BarChart3, Home, Settings } from "@lucide/svelte";
+    import { Component, Settings } from "@lucide/svelte";
 
     import { layerAttach } from "$core/_system/layout/app-layer/layer.svelte";
     import { viewState } from "$views/view.svelte";
 
     const navItems = [
-        { id: "home", label: "Home", icon: Home },
-        { id: "stats", label: "Stats", icon: BarChart3 },
+        { id: "components", label: "Components", icon: Component },
         { id: "settings", label: "Settings", icon: Settings },
     ] as const;
 </script>
 
 <nav
-    class="p-1.5 rounded-2xl bg-elevation-1 flex gap-1 pointer-events-auto shadow-xl items-center bottom-6 left-1/2 fixed z-40 -translate-x-1/2"
+    class="p-2 rounded-2xl bg-elevation-1 flex gap-1.5 pointer-events-auto shadow-2xl items-center bottom-7 left-1/2 fixed z-40 -translate-x-1/2"
     {@attach layerAttach}
 >
     {#each navItems as item (item.id)}
@@ -20,14 +19,16 @@
         <button
             type="button"
             onclick={() => viewState.setView(item.id)}
-            class="text-sm font-medium px-4 py-2.5 rounded-xl flex gap-2 items-center {viewState.activeView ===
+            class="text-sm font-medium h-10 px-4 rounded-xl flex gap-2.5 w-36 items-center justify-center select-none active:scale-96 t:(bg-180-quad-out text-180-quad-out scale-180-quad-out) {viewState.activeView ===
             item.id
-                ? 'text-strong bg-elevation-2 shadow-xs'
-                : 'text-weak hover:text-strong'}"
+                ? 'text-strong bg-elevation-2 font-semibold'
+                : 'text-weak hover:text-strong hover:bg-elevation-2/50'}"
         >
             <IconComponent
-                size={16}
-                class={viewState.activeView === item.id ? "text-accent-500" : ""}
+                size={17}
+                class="t:(text-180-quad-out scale-180-quad-out) {viewState.activeView === item.id
+                    ? 'text-accent-500 scale-110'
+                    : 'text-weak/70'}"
             />
             <span>{item.label}</span>
         </button>

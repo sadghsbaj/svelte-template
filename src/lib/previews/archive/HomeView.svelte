@@ -217,7 +217,7 @@
             <div class="pt-2">
                 <button
                     type="button"
-                    onclick={() => viewState.setView("stats")}
+                    onclick={() => viewState.setView("settings")}
                     class="text-sm text-strong font-medium py-3 rounded-2xl bg-elevation-2 flex gap-2 w-full items-center justify-center hover:bg-elevation-2/80"
                 >
                     Detaillierte Stats ansehen

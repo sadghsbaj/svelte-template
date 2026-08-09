@@ -10,12 +10,9 @@
     import { viewState } from "$views/view.svelte";
 
     // @template-remove-start
+    import ComponentsView from "$lib/previews/ComponentsView.svelte";
     import FloatingNavbar from "$lib/previews/FloatingNavbar.svelte";
-    import HomeView from "$lib/previews/HomeView.svelte";
     import SettingsView from "$lib/previews/SettingsView.svelte";
-    import Sidebar from "$lib/previews/Sidebar.svelte";
-    import StatsView from "$lib/previews/StatsView.svelte";
-
     // @template-remove-end
 
     onMount(() => {
@@ -24,17 +21,10 @@
 </script>
 
 <div class="flex h-screen w-screen overflow-hidden">
-    <!-- @template-remove-start -->
-    <Sidebar />
-    <!-- @template-remove-end -->
-
     <AppViews {viewState}>
         <!-- @template-remove-start -->
-        <AppView view="home">
-            <HomeView />
-        </AppView>
-        <AppView view="stats">
-            <StatsView />
+        <AppView view="components">
+            <ComponentsView />
         </AppView>
         <AppView view="settings">
             <SettingsView />

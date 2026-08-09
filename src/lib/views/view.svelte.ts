@@ -5,13 +5,8 @@ export const viewState = createViewState({
     views: [
         // @template-remove-start
         {
-            view: "home",
-            label: "Home",
-            parent: "root",
-        },
-        {
-            view: "stats",
-            label: "Stats",
+            view: "components",
+            label: "Components",
             parent: "root",
         },
         {
@@ -22,3 +17,4 @@ export const viewState = createViewState({
         // @template-remove-end
     ] as const,
 });
+

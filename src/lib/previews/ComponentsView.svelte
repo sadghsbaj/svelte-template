@@ -34,7 +34,7 @@
 </script>
 
 <div class="p-6 md:p-8 pb-28 flex h-full w-full overflow-hidden relative">
-    <!-- Floating Open Button (Slightly floating offset top-1/2 left-1/2) -->
+    <!-- Floating Open Button -->
     {#if isCollapsed}
         <button
             type="button"
@@ -46,9 +46,9 @@
         </button>
     {/if}
 
-    <!-- Floating Sidebar -->
+    <!-- Rectangular Sidebar (rounded-none without border radius) -->
     <aside
-        class="p-4 rounded-3xl bg-elevation-1 flex shrink-0 flex-col gap-4 shadow-xl w-64 md:w-72 squircle-smooth select-none absolute left-0 top-0 bottom-0 z-30 t-all-300-quad-out {isCollapsed
+        class="p-4 bg-elevation-1 flex shrink-0 flex-col gap-4 shadow-xl w-64 md:w-72 select-none absolute left-0 top-0 bottom-0 z-30 t-all-300-quad-out {isCollapsed
             ? '-translate-x-[calc(100%+4rem)] opacity-0 pointer-events-none'
             : 'translate-x-0 opacity-100'}"
     >

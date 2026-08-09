@@ -34,21 +34,21 @@
 </script>
 
 <div class="p-6 md:p-8 pb-28 flex h-full w-full overflow-hidden relative">
-    <!-- Floating Open Button (Only visible when sidebar is collapsed) -->
+    <!-- Floating Open Button (Appears seamlessly top-left when sidebar is collapsed) -->
     {#if isCollapsed}
         <button
             type="button"
             onclick={() => (isCollapsed = false)}
-            class="p-2.5 rounded-2xl bg-elevation-1 text-weak shadow-md hover:text-strong hover:bg-elevation-2 select-none active:scale-95 t:(bg-180-quad-out text-180-quad-out scale-180-quad-out) squircle-smooth absolute top-6 md:top-8 left-6 md:left-8 z-40"
+            class="p-2.5 rounded-2xl bg-elevation-1 text-weak shadow-md hover:text-strong hover:bg-elevation-2 select-none active:scale-95 t:(bg-180-quad-out text-180-quad-out scale-180-quad-out opacity-200-quad-out) squircle-smooth absolute top-6 md:top-8 left-6 md:left-8 z-40"
             title="Open sidebar"
         >
             <PanelLeftOpen size={18} />
         </button>
     {/if}
 
-    <!-- Floating Sidebar (Always absolute position to ensure unbroken CSS transform transitions) -->
+    <!-- Floating Sidebar (Aligned top-6/8 and bottom-24, smooth translate & opacity animation) -->
     <aside
-        class="p-4 rounded-3xl bg-elevation-1 flex shrink-0 flex-col gap-4 shadow-xl w-64 md:w-72 squircle-smooth select-none absolute left-6 md:left-8 top-6 md:top-8 bottom-28 z-30 t:(transform-300-quad-out opacity-250-quad-out) {isCollapsed
+        class="p-4 rounded-3xl bg-elevation-1 flex shrink-0 flex-col gap-4 shadow-xl w-64 md:w-72 squircle-smooth select-none absolute left-6 md:left-8 top-6 md:top-8 bottom-24 z-30 t-all-300-quad-out {isCollapsed
             ? '-translate-x-[calc(100%+4rem)] opacity-0 pointer-events-none'
             : 'translate-x-0 opacity-100'}"
     >
@@ -116,9 +116,9 @@
         </nav>
     </aside>
 
-    <!-- Main Component Stage (Smooth left padding transition when sidebar opens/closes) -->
+    <!-- Main Component Stage (Smooth left padding transition matching sidebar width) -->
     <main
-        class="p-8 flex flex-1 flex-col items-center justify-center relative overflow-hidden h-full w-full t:(padding-300-quad-out) {isCollapsed
+        class="p-8 flex flex-1 flex-col items-center justify-center relative overflow-hidden h-full w-full t-all-300-quad-out {isCollapsed
             ? 'pl-0'
             : 'pl-72 md:pl-80'}"
     >

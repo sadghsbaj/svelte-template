@@ -1,6 +1,8 @@
 <script lang="ts">
     import { Box, Layers, Search } from "@lucide/svelte";
 
+    import { focusAttach } from "$core/_system/focus/focus.attach";
+
     type MockComponentItem = {
         id: string;
         name: string;
@@ -48,8 +50,9 @@
             </span>
         </div>
 
-        <!-- Search Bar -->
+        <!-- Search Bar Container with Focus Target Redirect -->
         <label
+            id="component-search-container"
             class="px-3.5 py-2.5 rounded-2xl bg-elevation-2 flex items-center gap-2.5 squircle-smooth cursor-text"
         >
             <Search size={15} class="text-weak shrink-0 pointer-events-none" />
@@ -58,6 +61,7 @@
                 bind:value={searchQuery}
                 placeholder="Filter components..."
                 class="text-xs text-strong placeholder:text-weak bg-transparent border-none w-full focus:outline-none"
+                {@attach focusAttach({ focusTarget: "#component-search-container" })}
             />
         </label>
 

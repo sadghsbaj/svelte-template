@@ -1,7 +1,6 @@
 <script lang="ts">
-    import { Box, Layers, Search } from "@lucide/svelte";
+    import { Box, Layers } from "@lucide/svelte";
 
-    import { focusAttach } from "$core/_system/focus/focus.attach";
     import ButtonPreview from "./components/ButtonPreview.svelte";
 
     const mockItems = [
@@ -15,15 +14,6 @@
     ];
 
     let selectedId = $state<string>("button");
-    let searchQuery = $state<string>("");
-
-    const filteredItems = $derived(
-        searchQuery.trim()
-            ? mockItems.filter((item) =>
-                  item.name.toLowerCase().includes(searchQuery.toLowerCase())
-              )
-            : mockItems
-    );
 </script>
 
 <div class="p-6 md:p-8 pb-28 flex gap-6 h-full w-full overflow-hidden">
@@ -44,24 +34,9 @@
             </span>
         </div>
 
-        <!-- Search Bar Container -->
-        <label
-            id="component-search-container"
-            class="px-3.5 py-2.5 rounded-2xl bg-elevation-2 flex items-center gap-2.5 squircle-smooth cursor-text"
-        >
-            <Search size={16} class="text-weak shrink-0 pointer-events-none" />
-            <input
-                type="text"
-                bind:value={searchQuery}
-                placeholder="Filter components..."
-                class="text-sm font-medium text-strong placeholder:text-weak bg-transparent border-none w-full focus:outline-none"
-                {@attach focusAttach({ focusTarget: "#component-search-container", offset: 0 })}
-            />
-        </label>
-
-        <!-- Component List Buttons -->
+        <!-- Component List Buttons without any filtering logic -->
         <nav class="flex flex-col gap-1 flex-1 min-h-0 w-full overflow-y-auto no-scrollbar">
-            {#each filteredItems as item (item.id)}
+            {#each mockItems as item (item.id)}
                 <button
                     type="button"
                     onclick={() => (selectedId = item.id)}

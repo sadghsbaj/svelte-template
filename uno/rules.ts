@@ -35,13 +35,6 @@ export const rulesConfig: Rule[] = [
         },
     ],
     [
-        "no-scrollbar",
-        {
-            "-ms-overflow-style": "none",
-            "scrollbar-width": "none",
-        },
-    ],
-    [
         /^squircle(?:-(smooth|soft))?$/,
         ([_, type], { symbols }) => {
             const SHAPE_MAP: Record<string, string> = {

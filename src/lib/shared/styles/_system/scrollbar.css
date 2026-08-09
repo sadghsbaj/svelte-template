@@ -45,3 +45,19 @@
 ::-webkit-scrollbar-thumb:hover {
     background-color: var(--scrollbar-thumb-hover);
 }
+
+/* ==================================================== */
+/* No-Scrollbar Utility */
+.no-scrollbar {
+    -ms-overflow-style: none;
+}
+
+@supports (-moz-appearance: none) {
+    .no-scrollbar {
+        scrollbar-width: none;
+    }
+}
+
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}

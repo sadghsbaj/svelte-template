@@ -8,9 +8,9 @@
         default: Component;
     };
 
-    // Automatically discover and eager-import all *Preview.svelte components
+    // Automatically discover all *Preview.svelte components relative to this file
     const previewModules = import.meta.glob<PreviewModule>(
-        "/src/lib/previews/components/*Preview.svelte",
+        "./components/*Preview.svelte",
         { eager: true }
     );
 

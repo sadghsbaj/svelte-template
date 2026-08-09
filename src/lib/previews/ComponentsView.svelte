@@ -34,37 +34,45 @@
 </script>
 
 <div class="p-6 md:p-8 pb-28 flex h-full w-full overflow-hidden relative">
-    <!-- Floating Sidebar Toggle Button (Always visible on top-left) -->
-    <button
-        type="button"
-        onclick={() => (isCollapsed = !isCollapsed)}
-        class="p-2.5 rounded-2xl bg-elevation-1 text-weak shadow-md hover:text-strong hover:bg-elevation-2 select-none active:scale-95 t:(bg-180-quad-out text-180-quad-out scale-180-quad-out) squircle-smooth absolute top-6 md:top-8 left-6 md:left-8 z-40"
-        title={isCollapsed ? "Show sidebar" : "Hide sidebar"}
-    >
-        {#if isCollapsed}
+    <!-- Floating Open Button (Only visible when sidebar is collapsed) -->
+    {#if isCollapsed}
+        <button
+            type="button"
+            onclick={() => (isCollapsed = false)}
+            class="p-2.5 rounded-2xl bg-elevation-1 text-weak shadow-md hover:text-strong hover:bg-elevation-2 select-none active:scale-95 t:(bg-180-quad-out text-180-quad-out scale-180-quad-out) squircle-smooth absolute top-6 md:top-8 left-6 md:left-8 z-40"
+            title="Open sidebar"
+        >
             <PanelLeftOpen size={18} />
-        {:else}
-            <PanelLeftClose size={18} />
-        {/if}
-    </button>
+        </button>
+    {/if}
 
-    <!-- Floating Sidebar (Pure transform slide offscreen left) -->
+    <!-- Floating Sidebar (Always absolute position to ensure unbroken CSS transform transitions) -->
     <aside
-        class="p-4 rounded-3xl bg-elevation-1 flex shrink-0 flex-col gap-4 shadow-xl w-64 md:w-72 squircle-smooth select-none absolute left-6 md:left-8 top-16 md:top-20 bottom-28 z-30 t:(transform-250-expo-out opacity-200-quad-out) {isCollapsed
+        class="p-4 rounded-3xl bg-elevation-1 flex shrink-0 flex-col gap-4 shadow-xl w-64 md:w-72 squircle-smooth select-none absolute left-6 md:left-8 top-6 md:top-8 bottom-28 z-30 t:(transform-300-quad-out opacity-250-quad-out) {isCollapsed
             ? '-translate-x-[calc(100%+4rem)] opacity-0 pointer-events-none'
             : 'translate-x-0 opacity-100'}"
     >
-        <!-- Sidebar Header -->
+        <!-- Sidebar Header with integrated Close Button -->
         <div class="px-2 pt-1 flex items-center justify-between">
             <div class="flex items-center gap-2 text-strong font-bold">
                 <Layers size={18} class="text-accent-500" />
                 <span>Components</span>
             </div>
-            <span
-                class="text-xs text-accent-500 font-semibold px-2 py-0.5 rounded-full bg-accent-500/10"
-            >
-                {mockComponents.length}
-            </span>
+            <div class="flex items-center gap-2">
+                <span
+                    class="text-xs text-accent-500 font-semibold px-2 py-0.5 rounded-full bg-accent-500/10"
+                >
+                    {mockComponents.length}
+                </span>
+                <button
+                    type="button"
+                    onclick={() => (isCollapsed = true)}
+                    class="p-1.5 rounded-xl text-weak hover:text-strong hover:bg-elevation-2 select-none active:scale-95 t:(bg-180-quad-out text-180-quad-out)"
+                    title="Close sidebar"
+                >
+                    <PanelLeftClose size={17} />
+                </button>
+            </div>
         </div>
 
         <!-- Search Bar Container -->
@@ -108,9 +116,11 @@
         </nav>
     </aside>
 
-    <!-- Main Component Stage (Flat without shadow) -->
+    <!-- Main Component Stage (Smooth left padding transition when sidebar opens/closes) -->
     <main
-        class="p-8 flex flex-1 flex-col items-center justify-center relative overflow-hidden h-full w-full"
+        class="p-8 flex flex-1 flex-col items-center justify-center relative overflow-hidden h-full w-full t:(padding-300-quad-out) {isCollapsed
+            ? 'pl-0'
+            : 'pl-72 md:pl-80'}"
     >
         <div class="flex flex-col items-center gap-3 text-center">
             <div class="p-4 rounded-2xl bg-elevation-1 text-accent-500 squircle-smooth">

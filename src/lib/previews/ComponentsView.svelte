@@ -78,13 +78,13 @@
     >
         <!-- Sidebar Header with integrated Close Button -->
         <div class="px-2 pt-1 flex items-center justify-between">
-            <div class="flex items-center gap-2 text-strong font-bold">
+            <div class="flex items-center gap-2 text-strong font-700">
                 <Layers size={18} class="text-accent-500" />
                 <span>Components</span>
             </div>
             <div class="flex items-center gap-2">
                 <span
-                    class="text-xs text-accent-500 font-semibold px-2 py-0.5 rounded-full bg-accent-500/10"
+                    class="text-xs text-accent-500 font-600 px-2 py-0.5 rounded-full bg-accent-500/10"
                 >
                     {previews.length}
                 </span>
@@ -109,7 +109,7 @@
                 type="text"
                 bind:value={searchQuery}
                 placeholder="Filter components..."
-                class="text-sm font-medium text-strong placeholder:text-weak bg-transparent border-none w-full focus:outline-none"
+                class="text-sm font-500 text-strong placeholder:text-weak bg-transparent border-none w-full focus:outline-none"
                 {@attach focusAttach({ focusTarget: "#component-search-container", offset: 0 })}
             />
         </label>
@@ -122,7 +122,7 @@
                     onclick={() => (selectedId = item.id)}
                     class="w-full p-3 rounded-2xl flex items-center justify-between text-left select-none active:scale-97 t:(bg-180-quad-out text-180-quad-out scale-180-quad-out) {selectedId ===
                     item.id
-                        ? 'text-strong bg-elevation-2 font-semibold'
+                        ? 'text-strong bg-elevation-2 font-600'
                         : 'text-weak hover:text-strong hover:bg-elevation-2/50'}"
                 >
                     <div class="flex items-center gap-2.5">
@@ -132,7 +132,7 @@
                                 ? 'text-accent-500'
                                 : 'text-weak/60'}"
                         />
-                        <span class="text-sm font-medium">{item.name}</span>
+                        <span class="text-sm font-500">{item.name}</span>
                     </div>
                 </button>
             {/each}
@@ -153,7 +153,7 @@
                 <div class="p-4 rounded-2xl bg-elevation-1 text-accent-500 squircle-smooth">
                     <Box size={28} />
                 </div>
-                <h2 class="text-xl text-strong font-bold">No Components Found</h2>
+                <h2 class="text-xl text-strong font-700">No Components Found</h2>
                 <p class="text-xs text-weak max-w-sm">
                     Add preview components matching <code class="text-accent-500 font-mono">[Name]Preview.svelte</code> inside <code class="text-accent-500 font-mono">src/lib/previews/components/</code>.
                 </p>

@@ -2,6 +2,7 @@ import transformerDirectives from "@unocss/transformer-directives";
 import transformerVariantGroup from "@unocss/transformer-variant-group";
 import { defineConfig, presetWind4 } from "unocss";
 
+import { blocklistConfig } from "./uno/blocklist.ts";
 import { postprocessConfig } from "./uno/postprocess.ts";
 import { preflightsConfig } from "./uno/preflights.ts";
 import { rulesConfig } from "./uno/rules.ts";
@@ -17,6 +18,8 @@ export default defineConfig({
             },
         }),
     ],
+
+    blocklist: blocklistConfig,
 
     shortcuts: shortcutsConfig,
 

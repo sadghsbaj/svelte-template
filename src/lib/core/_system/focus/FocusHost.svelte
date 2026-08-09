@@ -58,10 +58,10 @@
     const OFFSET = 2;
 
     function stopPositionTracking(): void {
-        if (positionTrackingFrame !== null) {
-            cancelAnimationFrame(positionTrackingFrame);
-            positionTrackingFrame = null;
-        }
+        if (positionTrackingFrame === null) return;
+
+        cancelAnimationFrame(positionTrackingFrame);
+        positionTrackingFrame = null;
     }
 
     function trackPosition(): void {
@@ -73,15 +73,16 @@
         const prevX = targetBox.x;
         const prevY = targetBox.y;
 
-        if (doUpdateTargetBox(activeElement)) {
-            if (Math.abs(targetBox.x - prevX) > 0.5 || Math.abs(targetBox.y - prevY) > 0.5) {
-                if (animController.isAnimating()) {
-                    animController.updateTarget(targetBox, targetClip);
-                } else {
-                    currentBox = { ...targetBox };
-                    currentClip = { ...targetClip };
-                    draw();
-                }
+        if (
+            doUpdateTargetBox(activeElement) &&
+            (Math.abs(targetBox.x - prevX) > 0.5 || Math.abs(targetBox.y - prevY) > 0.5)
+        ) {
+            if (animController.isAnimating()) {
+                animController.updateTarget(targetBox, targetClip);
+            } else {
+                currentBox = { ...targetBox };
+                currentClip = { ...targetClip };
+                draw();
             }
         }
 

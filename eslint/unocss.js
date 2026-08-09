@@ -6,6 +6,7 @@ export const unocssConfig = [
         rules: {
             "unocss/order": "off",
             "unocss/order-attributify": "off",
+            "unocss/blocklist": "error",
         },
     },
 ];

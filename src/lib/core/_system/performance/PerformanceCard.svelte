@@ -292,8 +292,8 @@
     <div
         class="p-2.5 text-center rounded-xl bg-elevation-2 flex flex-col items-center justify-center squircle-smooth"
     >
-        <span class="text-xs text-weak tracking-wider font-medium uppercase">{label}</span>
-        <span class="text-base text-emerald-600 font-bold font-mono dark:text-emerald-400">
+        <span class="text-xs text-weak tracking-wider font-500 uppercase">{label}</span>
+        <span class="text-base text-emerald-600 font-700 font-mono dark:text-emerald-400">
             {value}{suffix ? ` ${suffix}` : ""}
         </span>
     </div>
@@ -313,8 +313,8 @@
             <Icon class="text-weak h-4 w-4" />
         {/if}
         <div class="flex flex-col">
-            <span class="text-[10px] text-weaker font-medium uppercase">{label}</span>
-            <span class="text-sm font-mono font-semibold {statusColorClass || 'text-strong'}">
+            <span class="text-[10px] text-weaker font-500 uppercase">{label}</span>
+            <span class="text-sm font-mono font-600 {statusColorClass || 'text-strong'}">
                 {value}{suffix ? ` ${suffix}` : ""}
             </span>
         </div>
@@ -323,8 +323,8 @@
 
 {#snippet vitalTile(label: string, value: string | number, suffix = "", statusColorClass = "")}
     <div class="p-2 rounded-xl bg-elevation-1 squircle-smooth dark:bg-elevation-1/60">
-        <span class="text-[10px] text-weaker font-medium block">{label}</span>
-        <span class="text-xs font-mono font-semibold {statusColorClass || 'text-strong'}"
+        <span class="text-[10px] text-weaker font-500 block">{label}</span>
+        <span class="text-xs font-mono font-600 {statusColorClass || 'text-strong'}"
             >{value}{suffix}</span
         >
     </div>
@@ -350,7 +350,7 @@
                 ></span>
                 <span class="rounded-full bg-emerald-500 inline-flex h-2.5 w-2.5 relative"></span>
             </div>
-            <span class="text-sm text-strong tracking-wide font-semibold">
+            <span class="text-sm text-strong tracking-wide font-600">
                 Performance Engine
             </span>
         </div>
@@ -376,7 +376,7 @@
 {#snippet domHealthCard()}
     <div class="p-3 rounded-xl bg-elevation-2 flex flex-col gap-2.5 squircle-smooth">
         <div class="text-sm flex items-center justify-between">
-            <div class="text-main font-medium flex gap-2 items-center">
+            <div class="text-main font-500 flex gap-2 items-center">
                 <Layers class="text-accent-500 h-4 w-4" />
                 <span>DOM Health</span>
             </div>
@@ -410,19 +410,19 @@
 
                 {#if domHealthRating.status === "Critical"}
                     <span
-                        class="text-xs text-red-600 font-mono font-semibold px-2.5 py-0.5 border border-red-500/40 rounded-full bg-red-500/15 dark:text-red-400 dark:border-red-500/40"
+                        class="text-xs text-red-600 font-mono font-600 px-2.5 py-0.5 border border-red-500/40 rounded-full bg-red-500/15 dark:text-red-400 dark:border-red-500/40"
                     >
                         Critical
                     </span>
                 {:else if domHealthRating.status === "Warning"}
                     <span
-                        class="text-xs text-amber-600 font-mono font-semibold px-2.5 py-0.5 border border-amber-500/40 rounded-full bg-amber-500/15 dark:text-amber-400 dark:border-amber-500/40"
+                        class="text-xs text-amber-600 font-mono font-600 px-2.5 py-0.5 border border-amber-500/40 rounded-full bg-amber-500/15 dark:text-amber-400 dark:border-amber-500/40"
                     >
                         Warning
                     </span>
                 {:else}
                     <span
-                        class="text-xs text-emerald-600 font-mono font-semibold px-2.5 py-0.5 border border-emerald-500/40 rounded-full bg-emerald-500/15 dark:text-emerald-400 dark:border-emerald-500/40"
+                        class="text-xs text-emerald-600 font-mono font-600 px-2.5 py-0.5 border border-emerald-500/40 rounded-full bg-emerald-500/15 dark:text-emerald-400 dark:border-emerald-500/40"
                     >
                         Optimal
                     </span>
@@ -460,25 +460,25 @@
 {#snippet webVitalsCard()}
     <div class="p-3 rounded-xl bg-elevation-2 flex flex-col gap-2.5 squircle-smooth">
         <div class="text-sm flex items-center justify-between">
-            <div class="text-main font-medium flex gap-2 items-center">
+            <div class="text-main font-500 flex gap-2 items-center">
                 <Activity class="text-amber-500 h-4 w-4" />
                 <span>Web Vitals</span>
             </div>
             {#if webVitalsRating.status === "Poor"}
                 <span
-                    class="text-xs text-red-600 font-mono font-semibold px-2.5 py-0.5 border border-red-500/40 rounded-full bg-red-500/15 dark:text-red-400 dark:border-red-500/40"
+                    class="text-xs text-red-600 font-mono font-600 px-2.5 py-0.5 border border-red-500/40 rounded-full bg-red-500/15 dark:text-red-400 dark:border-red-500/40"
                 >
                     Poor
                 </span>
             {:else if webVitalsRating.status === "Needs Improvement"}
                 <span
-                    class="text-xs text-amber-600 font-mono font-semibold px-2.5 py-0.5 border border-amber-500/40 rounded-full bg-amber-500/15 dark:text-amber-400 dark:border-amber-500/40"
+                    class="text-xs text-amber-600 font-mono font-600 px-2.5 py-0.5 border border-amber-500/40 rounded-full bg-amber-500/15 dark:text-amber-400 dark:border-amber-500/40"
                 >
                     Needs Improvement
                 </span>
             {:else}
                 <span
-                    class="text-xs text-emerald-600 font-mono font-semibold px-2.5 py-0.5 border border-emerald-500/40 rounded-full bg-emerald-500/15 dark:text-emerald-400 dark:border-emerald-500/40"
+                    class="text-xs text-emerald-600 font-mono font-600 px-2.5 py-0.5 border border-emerald-500/40 rounded-full bg-emerald-500/15 dark:text-emerald-400 dark:border-emerald-500/40"
                 >
                     Good
                 </span>
@@ -501,7 +501,7 @@
 {#snippet memoryCard()}
     <div class="p-3 rounded-xl bg-elevation-2 flex flex-col gap-2.5 squircle-smooth">
         <div class="text-sm flex items-center justify-between">
-            <div class="text-main font-medium flex gap-2 items-center">
+            <div class="text-main font-500 flex gap-2 items-center">
                 <HardDrive class="text-sky-500 h-4 w-4" />
                 <span>Memory</span>
             </div>
@@ -514,8 +514,8 @@
             class="p-2.5 rounded-xl bg-elevation-1 flex flex-col gap-1.5 squircle-smooth dark:bg-elevation-1/60"
         >
             <div class="text-xs flex justify-between">
-                <span class="text-weak font-medium">Heap Usage</span>
-                <span class="font-mono font-semibold {memoryTier.color}">
+                <span class="text-weak font-500">Heap Usage</span>
+                <span class="font-mono font-600 {memoryTier.color}">
                     {memoryTier.label} ({memoryPercent}%)
                 </span>
             </div>

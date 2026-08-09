@@ -143,7 +143,7 @@
             <div class="text-cyan-600 p-1 rounded-lg bg-cyan-500/15 dark:text-cyan-400">
                 <MousePointerClick class="h-4 w-4" />
             </div>
-            <span class="text-sm text-strong tracking-wide font-semibold"> DOM Inspector </span>
+            <span class="text-sm text-strong tracking-wide font-600"> DOM Inspector </span>
         </div>
 
         <button
@@ -159,39 +159,39 @@
     {#if selectedNodeInfo}
         <div class="mt-2.5 p-2.5 rounded-xl bg-elevation-2 flex flex-col gap-1.5 squircle-smooth">
             <div class="flex items-center justify-between">
-                <div class="text-[10px] text-weaker tracking-wider font-medium uppercase">
+                <div class="text-[10px] text-weaker tracking-wider font-500 uppercase">
                     Selected Element
                 </div>
                 {#if selectedNodeInfo.depth >= 25}
                     <span
-                        class="text-[11px] text-red-600 font-mono font-semibold px-2.5 py-0.5 border border-red-500/40 rounded-full bg-red-500/15 dark:text-red-400 dark:border-red-500/40"
+                        class="text-[11px] text-red-600 font-mono font-600 px-2.5 py-0.5 border border-red-500/40 rounded-full bg-red-500/15 dark:text-red-400 dark:border-red-500/40"
                     >
                         Level {selectedNodeInfo.depth}
                     </span>
                 {:else if selectedNodeInfo.depth >= 15}
                     <span
-                        class="text-[11px] text-amber-600 font-mono font-semibold px-2.5 py-0.5 border border-amber-500/40 rounded-full bg-amber-500/15 dark:text-amber-400 dark:border-amber-500/40"
+                        class="text-[11px] text-amber-600 font-mono font-600 px-2.5 py-0.5 border border-amber-500/40 rounded-full bg-amber-500/15 dark:text-amber-400 dark:border-amber-500/40"
                     >
                         Level {selectedNodeInfo.depth}
                     </span>
                 {:else}
                     <span
-                        class="text-[11px] text-emerald-600 font-mono font-semibold px-2.5 py-0.5 border border-emerald-500/40 rounded-full bg-emerald-500/15 dark:text-emerald-400 dark:border-emerald-500/40"
+                        class="text-[11px] text-emerald-600 font-mono font-600 px-2.5 py-0.5 border border-emerald-500/40 rounded-full bg-emerald-500/15 dark:text-emerald-400 dark:border-emerald-500/40"
                     >
                         Level {selectedNodeInfo.depth}
                     </span>
                 {/if}
             </div>
 
-            <div class="text-xs text-strong font-bold font-mono truncate">
-                &lt;{selectedNodeInfo.tagName}&gt;<span class="text-amber-500 font-normal"
+            <div class="text-xs text-strong font-700 font-mono truncate">
+                &lt;{selectedNodeInfo.tagName}&gt;<span class="text-amber-500 font-400"
                     >{selectedNodeInfo.id}</span
-                ><span class="text-weak font-normal">{selectedNodeInfo.classes}</span>
+                ><span class="text-weak font-400">{selectedNodeInfo.classes}</span>
             </div>
         </div>
     {:else}
         <div class="mt-2.5 p-2.5 text-center rounded-xl bg-elevation-2 squircle-smooth">
-            <span class="text-xs text-weak font-medium">
+            <span class="text-xs text-weak font-500">
                 Click any element on the webpage to inspect its hierarchy tree
             </span>
         </div>
@@ -203,7 +203,7 @@
             class="mt-2.5 pt-2.5 border-t flex flex-col gap-1 border-base-200/60 dark:border-base-800/60"
         >
             <div
-                class="text-[10px] text-weaker tracking-wider font-medium mb-0.5 flex gap-1.5 uppercase items-center"
+                class="text-[10px] text-weaker tracking-wider font-500 mb-0.5 flex gap-1.5 uppercase items-center"
             >
                 <Layers class="h-3 w-3" />
                 <span>Ancestry Tree (Root &rarr; Target)</span>
@@ -231,22 +231,22 @@
                         <div class="flex gap-2 truncate items-center">
                             {#if item.depth >= 25}
                                 <span
-                                    class="text-[10px] text-red-600 font-bold shrink-0 w-6 dark:text-red-400"
+                                    class="text-[10px] text-red-600 font-700 shrink-0 w-6 dark:text-red-400"
                                     >L{item.depth}</span
                                 >
                             {:else if item.depth >= 15}
                                 <span
-                                    class="text-[10px] text-amber-600 font-bold shrink-0 w-6 dark:text-amber-400"
+                                    class="text-[10px] text-amber-600 font-700 shrink-0 w-6 dark:text-amber-400"
                                     >L{item.depth}</span
                                 >
                             {:else}
                                 <span
-                                    class="text-[10px] text-emerald-600 font-bold shrink-0 w-6 dark:text-emerald-400"
+                                    class="text-[10px] text-emerald-600 font-700 shrink-0 w-6 dark:text-emerald-400"
                                     >L{item.depth}</span
                                 >
                             {/if}
 
-                            <span class="text-emerald-600 font-bold dark:text-emerald-400"
+                            <span class="text-emerald-600 font-700 dark:text-emerald-400"
                                 >&lt;{item.tagName}&gt;</span
                             >
                             <span class="text-amber-500 truncate">{item.id}</span>

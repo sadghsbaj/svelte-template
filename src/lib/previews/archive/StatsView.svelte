@@ -10,13 +10,13 @@
         <div>
             <div class="mb-1 flex gap-2 items-center">
                 <span
-                    class="text-xs text-success-600 font-semibold px-2.5 py-0.5 rounded-full bg-success-500/15 dark:text-success-400"
+                    class="text-xs text-success-600 font-600 px-2.5 py-0.5 rounded-full bg-success-500/15 dark:text-success-400"
                 >
                     Realtime Analytics
                 </span>
                 <span class="text-xs text-weak">• Performance Hub</span>
             </div>
-            <h1 class="text-3xl text-strong tracking-tight font-bold">Statistiken & Analysen</h1>
+            <h1 class="text-3xl text-strong tracking-tight font-700">Statistiken & Analysen</h1>
         </div>
     </header>
 

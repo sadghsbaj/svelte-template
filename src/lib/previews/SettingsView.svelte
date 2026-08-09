@@ -53,7 +53,7 @@
 <div class="mx-auto p-6 pb-28 flex flex-col gap-8 max-w-3xl md:p-10 md:pb-28">
     <!-- Header -->
     <header class="flex flex-col gap-1">
-        <h1 class="text-3xl text-strong tracking-tight font-bold">{viewState.activeLabel}</h1>
+        <h1 class="text-3xl text-strong tracking-tight font-700">{viewState.activeLabel}</h1>
         <p class="text-sm text-weak">Manage your visual interface and animation preferences.</p>
     </header>
 
@@ -65,7 +65,7 @@
                     <Palette size={19} />
                 </div>
                 <div>
-                    <h2 class="text-base text-strong font-bold">Appearance</h2>
+                    <h2 class="text-base text-strong font-700">Appearance</h2>
                     <p class="text-xs text-weak">Select your preferred color mode</p>
                 </div>
             </div>
@@ -78,7 +78,7 @@
                         onclick={() => theme.set(item.id)}
                         class="p-5 rounded-2xl flex flex-col items-center justify-center gap-3 text-center select-none squircle-smooth active:scale-97 t:(bg-180-quad-out text-180-quad-out scale-180-quad-out) {theme.mode ===
                         item.id
-                            ? 'text-strong bg-elevation-2 ring-1.5 ring-accent-500/40 shadow-xs font-semibold'
+                            ? 'text-strong bg-elevation-2 ring-1.5 ring-accent-500/40 shadow-xs font-600'
                             : 'text-weak bg-elevation-2/40 hover:text-strong hover:bg-elevation-2/70'}"
                     >
                         <div
@@ -89,7 +89,7 @@
                         >
                             <IconComponent size={20} />
                         </div>
-                        <span class="text-sm font-medium">{item.label}</span>
+                        <span class="text-sm font-500">{item.label}</span>
                     </button>
                 {/each}
             </div>
@@ -102,7 +102,7 @@
                     <Zap size={19} />
                 </div>
                 <div>
-                    <h2 class="text-base text-strong font-bold">Animations</h2>
+                    <h2 class="text-base text-strong font-700">Animations</h2>
                     <p class="text-xs text-weak">Configure interface motion and transitions</p>
                 </div>
             </div>
@@ -115,7 +115,7 @@
                         onclick={() => motionPreference.set(item.id)}
                         class="p-5 rounded-2xl flex flex-col items-center justify-center gap-3 text-center select-none squircle-smooth active:scale-97 t:(bg-180-quad-out text-180-quad-out scale-180-quad-out) {motionPreference.preference ===
                         item.id
-                            ? 'text-strong bg-elevation-2 ring-1.5 ring-accent-500/40 shadow-xs font-semibold'
+                            ? 'text-strong bg-elevation-2 ring-1.5 ring-accent-500/40 shadow-xs font-600'
                             : 'text-weak bg-elevation-2/40 hover:text-strong hover:bg-elevation-2/70'}"
                     >
                         <div
@@ -126,7 +126,7 @@
                         >
                             <IconComponent size={20} />
                         </div>
-                        <span class="text-sm font-medium">{item.label}</span>
+                        <span class="text-sm font-500">{item.label}</span>
                     </button>
                 {/each}
             </div>

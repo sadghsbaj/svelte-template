@@ -82,13 +82,13 @@
         <div>
             <div class="mb-1 flex gap-2 items-center">
                 <span
-                    class="text-xs text-accent-600 font-semibold px-2.5 py-0.5 rounded-full bg-accent-500/15 dark:text-accent-400"
+                    class="text-xs text-accent-600 font-600 px-2.5 py-0.5 rounded-full bg-accent-500/15 dark:text-accent-400"
                 >
                     Pro Workspace
                 </span>
                 <span class="text-xs text-weak">• Live Overview</span>
             </div>
-            <h1 class="text-3xl text-strong tracking-tight font-bold">Willkommen zurück, Alex</h1>
+            <h1 class="text-3xl text-strong tracking-tight font-700">Willkommen zurück, Alex</h1>
         </div>
     </header>
 
@@ -97,11 +97,11 @@
         class="p-6 rounded-3xl bg-elevation-1 flex flex-col gap-6 items-start justify-between relative overflow-hidden squircle md:p-8 md:flex-row md:items-center"
     >
         <div class="flex flex-col gap-2 max-w-xl z-10">
-            <div class="text-sm text-accent-500 font-semibold flex gap-2 items-center">
+            <div class="text-sm text-accent-500 font-600 flex gap-2 items-center">
                 <Sparkles size={18} />
                 <span>Neues Feature verfügbar</span>
             </div>
-            <h2 class="text-xl text-strong font-bold md:text-2xl">
+            <h2 class="text-xl text-strong font-700 md:text-2xl">
                 Echtzeit-Kollaboration & Analytics v2.4
             </h2>
             <p class="text-sm text-main leading-relaxed">
@@ -111,7 +111,7 @@
         </div>
         <button
             type="button"
-            class="text-white font-medium px-5 py-3 rounded-2xl bg-accent-500 flex gap-2 shadow-accent-500/20 shadow-md items-center z-10 hover:(text-red-500 bg-accent-600) active:scale-98 t:(bg-2000-expo-out text-2000-expo-out)"
+            class="text-white font-500 px-5 py-3 rounded-2xl bg-accent-500 flex gap-2 shadow-accent-500/20 shadow-md items-center z-10 hover:(text-red-500 bg-accent-600) active:scale-98 t:(bg-2000-expo-out text-2000-expo-out)"
         >
             <Plus size={18} />
             <span>Neues Projekt</span>
@@ -126,16 +126,16 @@
                 class="p-5 rounded-2xl bg-elevation-1 flex flex-col gap-3 squircle hover:-translate-y-0.5"
             >
                 <div class="flex items-center justify-between">
-                    <span class="text-xs text-weak font-medium">{metric.title}</span>
+                    <span class="text-xs text-weak font-500">{metric.title}</span>
                     <div class="text-strong p-2.5 rounded-xl bg-elevation-2">
                         <IconComponent size={18} />
                     </div>
                 </div>
                 <div class="mt-1 flex items-baseline justify-between">
-                    <span class="text-2xl text-strong tracking-tight font-bold">{metric.value}</span
+                    <span class="text-2xl text-strong tracking-tight font-700">{metric.value}</span
                     >
                     <span
-                        class="text-xs font-semibold flex gap-0.5 items-center {metric.isPositive
+                        class="text-xs font-600 flex gap-0.5 items-center {metric.isPositive
                             ? 'text-success-600 dark:text-success-400'
                             : 'text-danger-600 dark:text-danger-400'}"
                     >
@@ -152,8 +152,8 @@
         <!-- Recent Activities -->
         <section class="p-6 rounded-3xl bg-elevation-1 flex flex-col gap-4 squircle lg:col-span-2">
             <div class="mb-2 flex items-center justify-between">
-                <h3 class="text-lg text-strong font-bold">Letzte Aktivitäten</h3>
-                <span class="text-xs text-weak font-medium">Letzte 24 Stunden</span>
+                <h3 class="text-lg text-strong font-700">Letzte Aktivitäten</h3>
+                <span class="text-xs text-weak font-500">Letzte 24 Stunden</span>
             </div>
 
             <div class="flex flex-col gap-3">
@@ -167,12 +167,12 @@
                                 <ActivityIcon size={18} />
                             </div>
                             <div>
-                                <h4 class="text-sm text-strong font-semibold">{activity.title}</h4>
+                                <h4 class="text-sm text-strong font-600">{activity.title}</h4>
                                 <p class="text-xs text-weak mt-0.5">{activity.subtitle}</p>
                             </div>
                         </div>
                         <span
-                            class="text-xs font-medium px-3 py-1 rounded-xl {activity.badgeClass}"
+                            class="text-xs font-500 px-3 py-1 rounded-xl {activity.badgeClass}"
                         >
                             {activity.status}
                         </span>
@@ -186,15 +186,15 @@
             class="p-6 rounded-3xl bg-elevation-1 flex flex-col gap-6 justify-between squircle"
         >
             <div>
-                <h3 class="text-lg text-strong font-bold mb-1">Systemstatus</h3>
+                <h3 class="text-lg text-strong font-700 mb-1">Systemstatus</h3>
                 <p class="text-xs text-weak">Alle Dienste laufen einwandfrei</p>
             </div>
 
             <div class="flex flex-col gap-4">
                 <div class="p-4 rounded-2xl bg-elevation-2 flex flex-col gap-2">
-                    <div class="text-xs font-medium flex items-center justify-between">
+                    <div class="text-xs font-500 flex items-center justify-between">
                         <span class="text-main">API Latenz</span>
-                        <span class="text-success-600 font-bold dark:text-success-400">24 ms</span>
+                        <span class="text-success-600 font-700 dark:text-success-400">24 ms</span>
                     </div>
                     <div class="rounded-full bg-elevation-1 h-2 w-full overflow-hidden">
                         <div class="rounded-full bg-success-500 h-full w-[20%]"></div>
@@ -202,9 +202,9 @@
                 </div>
 
                 <div class="p-4 rounded-2xl bg-elevation-2 flex flex-col gap-2">
-                    <div class="text-xs font-medium flex items-center justify-between">
+                    <div class="text-xs font-500 flex items-center justify-between">
                         <span class="text-main">Speicherbelegung</span>
-                        <span class="text-accent-600 font-bold dark:text-accent-400"
+                        <span class="text-accent-600 font-700 dark:text-accent-400"
                             >64 GB / 100 GB</span
                         >
                     </div>
@@ -218,7 +218,7 @@
                 <button
                     type="button"
                     onclick={() => viewState.setView("settings")}
-                    class="text-sm text-strong font-medium py-3 rounded-2xl bg-elevation-2 flex gap-2 w-full items-center justify-center hover:bg-elevation-2/80"
+                    class="text-sm text-strong font-500 py-3 rounded-2xl bg-elevation-2 flex gap-2 w-full items-center justify-center hover:bg-elevation-2/80"
                 >
                     Detaillierte Stats ansehen
                 </button>

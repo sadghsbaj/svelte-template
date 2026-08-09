@@ -147,7 +147,7 @@ export function createFpsObserver(onUpdate: (metrics: FpsMetrics) => void): () =
     let lastSecond = performance.now();
     const fpsHistory: number[] = [];
 
-    function loop(now: number) {
+    function loop(now: number): void {
         const delta = now - lastTime;
         lastTime = now;
         frameCount++;

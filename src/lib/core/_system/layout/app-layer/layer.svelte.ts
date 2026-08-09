@@ -74,7 +74,7 @@ export const appInertState = {
  *
  * @param isActive - A getter function returning the active state of the component.
  */
-export function syncLayerState(isActive: () => boolean) {
+export function syncLayerState(isActive: () => boolean): void {
     const layer = getLayerContext();
     if (!layer) return;
 

@@ -41,7 +41,13 @@
         <span id="toggle-visual" class="rounded-full bg-red w-200px">...</span>
 
         <div class="max-w-400px overflow-x-auto">
-            <div class="h-300px w-3000px">Test</div>
+            <div class="flex flex-col h-3000px w-300px justify-between">
+                <span>Test</span>
+                <button
+                    class="font-600 px-3 rounded-full bg-zinc-100 flex h-36px items-center justify-center squircle-smooth"
+                    >Test</button
+                >
+            </div>
         </div>
     </section>
 </div>

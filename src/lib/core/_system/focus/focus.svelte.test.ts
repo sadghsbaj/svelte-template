@@ -454,7 +454,7 @@ describe("FocusAnimationController (Houdini Pulse & Same-Element Handling)", () 
         expect(paintStates.some((p) => (p.opacity ?? 1) !== 1)).toBe(true);
     });
 
-    it("startPulseIn animates initial focus appearance smoothly with scale and opacity", async () => {
+    it("startPulseIn animates initial focus appearance smoothly with offset and opacity", async () => {
         const paintStates: FocusPaintState[] = [];
 
         await new Promise<void>((resolve) => {

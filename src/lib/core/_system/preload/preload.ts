@@ -68,7 +68,7 @@ export function dismissLoadingScreen(
     let fallbackTimer: ReturnType<typeof setTimeout> | null = null;
     let fadeOutTimer: ReturnType<typeof setTimeout> | null = null;
 
-    const removeElements = () => {
+    const removeElements = (): void => {
         if (isRemoved) return;
         isRemoved = true;
         loadingEl.removeEventListener("transitionend", handleTransitionEnd);
@@ -84,13 +84,13 @@ export function dismissLoadingScreen(
         scriptEl?.remove();
     };
 
-    const handleTransitionEnd = (event: TransitionEvent) => {
+    const handleTransitionEnd = (event: TransitionEvent): void => {
         if (event.target === loadingEl) {
             removeElements();
         }
     };
 
-    const triggerFadeOut = () => {
+    const triggerFadeOut = (): void => {
         loadingEl.dataset.fadeOut = "";
         loadingEl.addEventListener("transitionend", handleTransitionEnd);
         // Fallback timer to guarantee DOM removal if transitionend does not fire
@@ -128,7 +128,7 @@ export function initPreload(): () => void {
     let fallbackTimerId: ReturnType<typeof setTimeout> | null = null;
     let isCleanedUp = false;
 
-    const cleanup = () => {
+    const cleanup = (): void => {
         isCleanedUp = true;
         if (rafId1 !== null) {
             safeCaf(rafId1);
@@ -145,14 +145,14 @@ export function initPreload(): () => void {
         document.removeEventListener("DOMContentLoaded", handleDOMContentLoaded);
     };
 
-    const removeClass = () => {
+    const removeClass = (): void => {
         if (isCleanedUp) return;
         document.body?.removeAttribute("data-preload");
         dismissLoadingScreen();
         cleanup();
     };
 
-    const scheduleRemoval = () => {
+    const scheduleRemoval = (): void => {
         if (isCleanedUp) return;
 
         // Fallback timer in case tab is backgrounded and rAF stalls
@@ -168,7 +168,7 @@ export function initPreload(): () => void {
         });
     };
 
-    const handleDOMContentLoaded = () => {
+    const handleDOMContentLoaded = (): void => {
         scheduleRemoval();
     };
 

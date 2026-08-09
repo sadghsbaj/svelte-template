@@ -207,7 +207,7 @@ export function listenOnlineStatus(callback: (online: boolean) => void): () => v
         return () => {};
     }
 
-    const handler = async () => {
+    const handler = async (): Promise<void> => {
         if (!navigator.onLine) {
             callback(false);
             return;

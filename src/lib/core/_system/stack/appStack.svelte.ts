@@ -239,13 +239,13 @@ export function stackAttach(
     action: () => void,
     options?: StackRegisterOptions,
     targetStack: AppStackManager = appStack
-) {
+): (node: Element) => (() => void) & { update: (newAction: () => void) => void } {
     let currentAction = action;
 
-    const attachment = (_node: Element) => {
+    const attachment = (_node: Element): (() => void) & { update: (newAction: () => void) => void } => {
         const unregister = targetStack.register(() => currentAction(), options);
 
-        const cleanup = () => {
+        const cleanup = (): void => {
             unregister();
         };
 

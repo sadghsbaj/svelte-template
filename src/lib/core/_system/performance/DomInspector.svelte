@@ -16,7 +16,7 @@
         );
     }
 
-    function handlePointerMove(e: PointerEvent) {
+    function handlePointerMove(e: PointerEvent): void {
         if (!performanceState.isInspectorActive) return;
 
         const target = document.elementFromPoint(e.clientX, e.clientY);
@@ -28,7 +28,7 @@
         hoverBoxRect = target.getBoundingClientRect();
     }
 
-    function handleClick(e: MouseEvent) {
+    function handleClick(e: MouseEvent): void {
         if (!performanceState.isInspectorActive) return;
 
         const target = document.elementFromPoint(e.clientX, e.clientY);

@@ -44,6 +44,14 @@
     let lastObservedH = 0;
     let scrollTicking = false;
     let pendingFocusOutTimer: number | null = null;
+    let pendingProxyScrollFrame: number | null = null;
+
+    // The element the ring is animating away from, kept together with the offset/lineWidth it
+    // was painted with. Needed so the teleport exit phase can re-measure it on scroll without
+    // inheriting the *new* element's overrides, which would make the exiting ring jump.
+    let exitingElement: HTMLElement | null = null;
+    let exitingOffset = 2;
+    let exitingLineWidth = 2;
 
     const animController = new FocusAnimationController();
     const OFFSET = 2;
@@ -72,6 +80,11 @@
             viewportObserver.disconnect();
             window.removeEventListener("scroll", handleScroll, { capture: true });
             elementObserver?.disconnect();
+            if (pendingProxyScrollFrame !== null) {
+                cancelAnimationFrame(pendingProxyScrollFrame);
+                pendingProxyScrollFrame = null;
+            }
+            exitingElement = null;
             animController.stop();
         };
     });
@@ -87,8 +100,8 @@
         return undefined;
     }
 
-    function doUpdateTargetBox(el: HTMLElement) {
-        const result = computeTargetBox(el, overrides?.offset ?? OFFSET);
+    function doUpdateTargetBox(el: HTMLElement): boolean {
+        const result = computeTargetBox(el, overrides?.offset ?? OFFSET, overrides?.lineWidth ?? 2);
         if (!result) {
             isVisible = false;
             if (ctx && canvas) clearCanvas(ctx, canvas);
@@ -99,7 +112,7 @@
         return true;
     }
 
-    function handleResize() {
+    function handleResize(): void {
         if (!canvas || !ctx) return;
         const dpr = window.devicePixelRatio || 1;
         canvas.width = Math.round(window.innerWidth * dpr);
@@ -126,10 +139,15 @@
         return (el.matches(":focus-visible") || isTextInput) && !isNoCanvas;
     }
 
-    function handleFocusIn(e: FocusEvent) {
+    function handleFocusIn(e: FocusEvent): void {
         if (pendingFocusOutTimer !== null) {
             cancelAnimationFrame(pendingFocusOutTimer);
             pendingFocusOutTimer = null;
+        }
+
+        if (pendingProxyScrollFrame !== null) {
+            cancelAnimationFrame(pendingProxyScrollFrame);
+            pendingProxyScrollFrame = null;
         }
 
         const target = (document.activeElement as HTMLElement) ?? (e.target as HTMLElement);
@@ -151,6 +169,7 @@
                         isVisible = false;
                         activeElement = null;
                         focusedElement = null;
+                        exitingElement = null;
                         elementObserver?.disconnect();
                         if (ctx && canvas) clearCanvas(ctx, canvas);
                     },
@@ -160,6 +179,7 @@
                 isVisible = false;
                 activeElement = null;
                 focusedElement = null;
+                exitingElement = null;
                 if (ctx && canvas) clearCanvas(ctx, canvas);
             }
             return;
@@ -169,6 +189,13 @@
 
         const isInitialFocus = focusedElement === null || focusedElement === target;
         isVisible = true;
+
+        // Capture the outgoing element BEFORE `overrides` is reassigned, so its geometry can
+        // keep being re-measured during the exit phase with the offset/lineWidth it was
+        // actually painted with.
+        exitingElement = activeElement;
+        exitingOffset = overrides?.offset ?? OFFSET;
+        exitingLineWidth = overrides?.lineWidth ?? 2;
 
         overrides = getOverridesFor(target);
 
@@ -256,9 +283,28 @@
                 overrides?.lineWidth ?? 2
             );
         }
+
+        // Scroll redirect. The browser can only ever scroll the *real* focused element into
+        // view, but with a focusTarget redirect that element is typically an invisible proxy
+        // (e.g. an sr-only input) whose position is unrelated to what the user sees — so the
+        // visual target can stay off-screen. Only done when a redirect actually happened;
+        // otherwise we would hijack the browser's native focus scrolling, which is better than
+        // anything we would do here.
+        if (ringElement !== target) {
+            // Deferred one frame so we do not fight the browser's own focus scroll, which is
+            // still settling around focusin. `nearest` mirrors native behaviour: scroll only
+            // when needed, and by the minimum amount. `behavior` is intentionally omitted so
+            // the CSS `scroll-behavior` applies (and reduced motion makes it instant).
+            pendingProxyScrollFrame = requestAnimationFrame(() => {
+                pendingProxyScrollFrame = null;
+                // Focus may have moved on during the deferred frame.
+                if (activeElement !== ringElement) return;
+                ringElement.scrollIntoView({ block: "nearest", inline: "nearest" });
+            });
+        }
     }
 
-    function handleFocusOut(e: FocusEvent) {
+    function handleFocusOut(e: FocusEvent): void {
         const target = e.target as HTMLElement | null;
         if (!target || target !== focusedElement) return;
 
@@ -272,6 +318,7 @@
 
             activeElement = null;
             focusedElement = null;
+            exitingElement = null;
 
             animController.startPulseOut(
                 currentBox,
@@ -291,7 +338,7 @@
         });
     }
 
-    function handleScroll() {
+    function handleScroll(): void {
         if (scrollTicking) return;
         scrollTicking = true;
         requestAnimationFrame(() => {
@@ -301,6 +348,18 @@
             if (doUpdateTargetBox(activeElement)) {
                 if (animController.isAnimating()) {
                     animController.updateTarget(targetBox, targetClip);
+
+                    // Also re-measure the element being animated away from, so a teleport's
+                    // exit phase does not stay pinned to a stale viewport position while the
+                    // scroll container moves under it. A no-op for morphs and reveals.
+                    if (exitingElement && exitingElement !== activeElement) {
+                        const origin = computeTargetBox(
+                            exitingElement,
+                            exitingOffset,
+                            exitingLineWidth
+                        );
+                        if (origin) animController.updateOrigin(origin.box, origin.clip);
+                    }
                 } else {
                     currentBox = { ...targetBox };
                     currentClip = { ...targetClip };
@@ -310,7 +369,7 @@
         });
     }
 
-    function draw(paint?: FocusPaintState) {
+    function draw(paint?: FocusPaintState): void {
         if (!ctx || !canvas || !isVisible) return;
 
         const resolvedColor = resolveAccentColor();

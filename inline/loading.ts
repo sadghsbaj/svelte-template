@@ -20,7 +20,7 @@ export function initCanvas(): void {
 
     let animId: number | null = null;
 
-    const resize = () => {
+    const resize = (): void => {
         const dpr = window.devicePixelRatio || 1;
         const clientWidth = canvas.clientWidth || window.innerWidth;
         const clientHeight = canvas.clientHeight || window.innerHeight;
@@ -94,7 +94,7 @@ export function initCanvas(): void {
         return [pad + r + Math.cos(a4) * r, pad + r + Math.sin(a4) * r];
     };
 
-    const render = (now: number) => {
+    const render = (now: number): void => {
         if (!canvas.isConnected) {
             if (animId !== null) cancelAnimationFrame(animId);
             window.removeEventListener("resize", resize);

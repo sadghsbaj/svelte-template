@@ -244,7 +244,7 @@ export function layerGuardPlugin(options: LayerGuardOptions = {}): Plugin {
             // eslint-disable-next-line unicorn/no-this-outside-of-class
             const ctx = this as PluginContextLike & { error?: (msg: string) => never };
 
-            const onError = (msg: string) => {
+            const onError = (msg: string): void => {
                 if (typeof ctx.error === "function") {
                     ctx.error(msg);
                 } else {

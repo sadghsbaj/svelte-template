@@ -79,7 +79,10 @@
     ========================================================================== */
 
 @media (prefers-reduced-motion: reduce) {
-    html {
+    /* Must be universal, not `html`: `scroll-behavior` is not inherited and the real scroll
+       container is `.app-view`, not the document. `!important` is required here because the
+       base rule in app.css has equal specificity but comes later in source order. */
+    :where(*) {
         scroll-behavior: auto !important;
     }
 
@@ -100,7 +103,8 @@
 }
 
 /* Programmatic reduced motion override */
-[data-reduce-motion] {
+[data-reduce-motion],
+[data-reduce-motion] :where(*) {
     scroll-behavior: auto !important;
 }
 

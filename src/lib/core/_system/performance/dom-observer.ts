@@ -21,7 +21,7 @@ export function analyzeDomStructure(root?: Element | Document): DomMetrics {
     let totalCount = 0;
     let maxDepth = 0;
 
-    function walk(node: Element, currentDepth: number) {
+    function walk(node: Element, currentDepth: number): void {
         // Skip dev performance overlay and all its children
         if (overlay && (node === overlay || overlay.contains(node))) {
             return;

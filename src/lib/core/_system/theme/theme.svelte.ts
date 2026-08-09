@@ -204,7 +204,7 @@ export class ThemeManager {
             return;
         }
 
-        const performSwap = () => {
+        const performSwap = (): void => {
             flushSync(() => {
                 this.#resolved = shouldBeDark ? "dark" : "light";
 

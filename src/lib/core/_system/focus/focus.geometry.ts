@@ -149,7 +149,39 @@ function getScrollableParents(el: HTMLElement): HTMLElement[] {
     return parents;
 }
 
-export function getClipBox(el: HTMLElement): ClipBox {
+/**
+ * How far the drawn ring reaches beyond the element's own rect, in px.
+ *
+ * The FocusBox is already outset by `offset` from the element rect (see `computeTargetBox`),
+ * and the canvas stroke is centred on that path, so it reaches a further `lineWidth / 2`
+ * outward. The extra `+1` absorbs devicePixelRatio rounding.
+ *
+ * Derived rather than hardcoded so a per-element `focusAttach({ offset, lineWidth })`
+ * override cannot silently reintroduce a shaved ring.
+ */
+function ringOverhang(offset: number, lineWidth: number): number {
+    return offset + lineWidth / 2 + 1;
+}
+
+/**
+ * Computes the clip region for the focus ring: the intersection of the viewport and every
+ * overflow ancestor's box.
+ *
+ * `padding` grows each *ancestor* rect outward. Without it, an element sitting flush against
+ * its overflow container's edge loses the part of the ring drawn outside that edge — and this
+ * happens even when the container is not visually clipping anything, because
+ * `getScrollableParents` only inspects the computed overflow value, not whether content
+ * actually overflows.
+ *
+ * The padding is deliberately small (a few px). It cannot defeat the purpose of the clip: an
+ * element scrolled out of its scrollport is clipped by tens or hundreds of px, so a few px of
+ * tolerance is irrelevant there, while the flush-edge case is exactly a few px. The tradeoff
+ * is that an element straddling the scrollport boundary may show up to `padding` px of ring
+ * outside the container.
+ *
+ * The viewport bounds are NOT padded — the ring must never bleed off-screen.
+ */
+export function getClipBox(el: HTMLElement, padding = 0): ClipBox {
     let top = 0;
     let left = 0;
     let bottom = window.innerHeight;
@@ -159,10 +191,10 @@ export function getClipBox(el: HTMLElement): ClipBox {
 
     for (const parent of parents) {
         const rect = parent.getBoundingClientRect();
-        top = Math.max(top, rect.top);
-        left = Math.max(left, rect.left);
-        bottom = Math.min(bottom, rect.bottom);
-        right = Math.min(right, rect.right);
+        top = Math.max(top, rect.top - padding);
+        left = Math.max(left, rect.left - padding);
+        bottom = Math.min(bottom, rect.bottom + padding);
+        right = Math.min(right, rect.right + padding);
     }
 
     return {
@@ -175,7 +207,8 @@ export function getClipBox(el: HTMLElement): ClipBox {
 
 export function computeTargetBox(
     el: HTMLElement,
-    offset: number
+    offset: number,
+    lineWidth = 2
 ): { box: FocusBox; clip: ClipBox } | null {
     const rect = el.getBoundingClientRect();
 
@@ -194,7 +227,7 @@ export function computeTargetBox(
         cornerShape,
     };
 
-    const clip = getClipBox(el);
+    const clip = getClipBox(el, ringOverhang(offset, lineWidth));
 
     return { box, clip };
 }

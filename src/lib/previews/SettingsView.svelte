@@ -234,7 +234,7 @@
                                 <div class="text-strong p-2 rounded-xl bg-elevation-1">
                                     <MotionIcon size={16} />
                                 </div>
-                                <div class="flex flex-col text-left">
+                                <div class="text-left flex flex-col">
                                     <span class="text-sm font-semibold">{item.label}</span>
                                     {#if item.id === "system"}
                                         <span class="text-xs text-weak">

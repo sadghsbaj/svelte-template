@@ -1,4 +1,4 @@
-const colorScale = (name: string) =>
+const colorScale = (name: string): { [key: string]: string } =>
     Object.fromEntries(
         [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950].map((n) => [
             n,

@@ -29,11 +29,16 @@ export interface FocusOverrides {
  * Paint state passed each rAF tick to the renderer.
  *
  * - `opacity`           – main ring opacity (0.0 to 1.0)
- * - `scale`             – scale factor centered on box (1.08 -> 1.0)
- * - `lineWidthOverride` – stroke width override in px (0.5px to targetLineWidth)
+ * - `offsetDelta`       – uniform px offset applied to every side of the box, mirroring CSS
+ *                         `outline-offset`. Negative values inset the ring (reveal start),
+ *                         `0` is the resting position. Deliberately px-based rather than a
+ *                         multiplicative scale: every edge travels the same distance, so a
+ *                         40px button and a 900px card animate identically. The corner radius
+ *                         travels with the offset, matching `computeTargetBox`.
+ * - `lineWidthOverride` – stroke width override in px (0 to targetLineWidth)
  */
 export interface FocusPaintState {
     opacity: number;
-    scale?: number;
+    offsetDelta?: number;
     lineWidthOverride?: number;
 }

@@ -195,13 +195,13 @@
         };
     }
 
-    function handleResize() {
+    function handleResize(): void {
         if (position) {
             position = clampPosition(position.x, position.y);
         }
     }
 
-    function handlePointerDown(e: PointerEvent) {
+    function handlePointerDown(e: PointerEvent): void {
         if ((e.target as HTMLElement).closest("button")) return;
         if (!overlayEl) return;
 
@@ -215,7 +215,7 @@
         (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
     }
 
-    function handlePointerMove(e: PointerEvent) {
+    function handlePointerMove(e: PointerEvent): void {
         if (!isDragging) return;
 
         const rawX = e.clientX - dragOffset.x;
@@ -224,7 +224,7 @@
         position = clampPosition(rawX, rawY);
     }
 
-    function handlePointerUp(_e: PointerEvent) {
+    function handlePointerUp(_e: PointerEvent): void {
         if (!isDragging) return;
         isDragging = false;
 

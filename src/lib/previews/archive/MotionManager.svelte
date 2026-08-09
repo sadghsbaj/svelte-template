@@ -3,7 +3,7 @@
 
     import { motionPreference, type MotionPreference } from "$core/_system/motion";
 
-    function selectPreference(pref: MotionPreference) {
+    function selectPreference(pref: MotionPreference): void {
         motionPreference.set(pref);
     }
 </script>

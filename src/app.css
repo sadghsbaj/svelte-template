@@ -10,6 +10,19 @@
     interpolate-size: allow-keywords;
     -webkit-text-size-adjust: 100%;
     overflow: hidden;
+}
+
+/* `scroll-behavior` is NOT an inherited property, so setting it on <html> only ever affects
+   the document scroller — which never scrolls here, since html/body are `overflow: hidden`
+   and the real scroll container is `.app-view`. The universal selector is therefore required
+   rather than optional. It is a no-op on elements that are not scroll containers.
+
+   Note this only affects navigation and CSSOM scrolls (`scrollIntoView`, `scrollTo`, anchors
+   and sequential focus navigation) — wheel and touch scrolling are always instant per spec.
+
+   `:where()` keeps specificity at 0 so any rule can override it; the reduced-motion
+   overrides in _system/motion.css do exactly that. */
+:where(*) {
     scroll-behavior: smooth;
 }
 

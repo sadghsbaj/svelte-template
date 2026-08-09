@@ -70,7 +70,7 @@
     });
 
     // Pointer Drag handlers
-    function handlePointerDown(e: PointerEvent) {
+    function handlePointerDown(e: PointerEvent): void {
         if ((e.target as HTMLElement).closest("button")) return;
 
         isDragging = true;
@@ -86,7 +86,7 @@
         (e.target as HTMLElement).setPointerCapture(e.pointerId);
     }
 
-    function handlePointerMove(e: PointerEvent) {
+    function handlePointerMove(e: PointerEvent): void {
         if (!isDragging) return;
 
         position = {
@@ -107,7 +107,7 @@
         };
     }
 
-    function handlePointerUp(e: PointerEvent) {
+    function handlePointerUp(e: PointerEvent): void {
         if (!isDragging) return;
         isDragging = false;
         try {

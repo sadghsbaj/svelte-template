@@ -119,6 +119,6 @@ describe("MotionManager (Browser Client)", () => {
     });
 });
 
-function dummyTransition() {
+function dummyTransition(): { duration: number; delay: number } {
     return { duration: 300, delay: 0 };
 }

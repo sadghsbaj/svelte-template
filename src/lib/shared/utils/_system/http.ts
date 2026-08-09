@@ -144,7 +144,7 @@ export class HttpClient {
         const originalSignal = options.signal || this.#defaults.signal;
         let signal = originalSignal;
 
-        const onAbort = () => {
+        const onAbort = (): void => {
             controller?.abort();
         };
 

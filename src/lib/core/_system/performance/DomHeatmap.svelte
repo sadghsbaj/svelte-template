@@ -18,7 +18,7 @@
         depth: number;
     }
 
-    function collectElements(node: Element, currentDepth: number, results: ElementBound[]) {
+    function collectElements(node: Element, currentDepth: number, results: ElementBound[]): void {
         if (
             node.id === "dev-perf-overlay" ||
             node.id === "dev-dom-heatmap" ||
@@ -55,7 +55,7 @@
         return "#10b981"; // Rich Emerald Green (Optimal)
     }
 
-    function renderHeatmap() {
+    function renderHeatmap(): void {
         if (!canvasEl || !active || typeof window === "undefined") return;
 
         // Ensure newly rendered DOM nodes (e.g. Tab switches) are converted to blueprint
@@ -121,7 +121,7 @@
         ctx.drawImage(offCanvas, 0, 0);
     }
 
-    function scheduleRender() {
+    function scheduleRender(): void {
         if (animFrameId !== null) return;
         animFrameId = requestAnimationFrame(() => {
             animFrameId = null;
@@ -129,7 +129,7 @@
         });
     }
 
-    function cleanup() {
+    function cleanup(): void {
         applySelectiveBlueprint(false);
         if (animFrameId !== null) {
             cancelAnimationFrame(animFrameId);
@@ -154,7 +154,7 @@
         return cleanup;
     });
 
-    function handleScrollOrResize() {
+    function handleScrollOrResize(): void {
         if (active) scheduleRender();
     }
 

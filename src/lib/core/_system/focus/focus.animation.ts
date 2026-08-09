@@ -1,46 +1,112 @@
 import { motionPreference } from "$core/_system/motion/motion.svelte.js";
-import type { ClipBox, FocusBox, FocusPaintState } from "./focus.types.js";
-import { boxDistance, lerp } from "./focus.geometry.js";
 
-/** Distance threshold (in px). Short distance (< 240px) morph glides. Long distance (>= 240px) teleports with dissolve & pulse. */
+import { boxDistance, lerp } from "./focus.geometry.js";
+import type { ClipBox, FocusBox, FocusPaintState } from "./focus.types.js";
+
+/** Distance threshold (in px). Short distance (< 240px) morph glides. Long distance (>= 240px) teleports with reveal. */
 const TELEPORT_THRESHOLD = 240;
 
 /** Rapid-tab window (ms). If focus changes faster than this, always morph — never teleport. Keeps the ring visible during fast tabbing. */
 const RAPID_TAB_MS = 150;
 
-/** Duration of the initial focus appearance pulse-in (ms). */
+/** Duration of the initial focus appearance reveal (ms). */
 const PULSE_IN_MS = 160;
-/** Duration of the focus-lost dissolve-out (ms). */
+/** Duration of the focus-lost exit (ms). */
 const PULSE_OUT_MS = 90;
-/** Teleport: dissolve-out duration at the origin (ms). */
+/** Teleport: exit duration at the origin (ms). */
 const TELEPORT_OUT_MS = 70;
-/** Teleport: pulse-in duration at the target (ms). Starts immediately after the out phase (zero gap). */
+/** Teleport: reveal duration at the target (ms). Starts immediately after the out phase (zero gap). */
 const TELEPORT_IN_MS = 150;
 
-/** Minimum line width during pulses, as a fraction of the target line width (avoids the harsh "double thinning" of opacity + hairline). */
-const LINE_WIDTH_MIN = 0.6;
-/** Scale the ring shrinks to while dissolving out. */
-const SCALE_OUT = 0.96;
-/** Scale the ring settles from while pulsing in. */
-const SCALE_IN = 1.05;
-
-/** Ease-in cubic: gentle start, accelerates — correct energy profile for exits. */
-const cubicIn = (t: number): number => t * t * t;
-/** Ease-out cubic: fast start, gentle settle — correct energy profile for entrances. */
-const cubicOut = (t: number): number => 1 - (1 - t) ** 3;
+/**
+ * Uniform px the ring is inset at the start of a reveal (and retracts to on an exit).
+ *
+ * Mirrors the CSS model `outline-offset: -3.85px -> 0px` + `outline-width: 0 -> 3.5px`:
+ * the ring *grows outward out of the element edge* and never shrinks. Because this is a
+ * flat px value rather than a scale factor, the reveal feels identical on a 40px icon
+ * button and a 900px card.
+ */
+const REVEAL_INSET = 4;
 
 /**
- * FocusAnimationController — time-based (refresh-rate independent) focus ring animations.
+ * Quad-in: gentle start, accelerating into the final state.
  *
- * 1. Initial Focus Appearance (`startPulseIn`): 160ms cubic-out pulse (opacity 0->1, scale 1.05->1).
- * 2. Focus Disappearance (`startPulseOut`): 90ms cubic-in dissolve (opacity ->0, scale ->0.96).
- * 3. Same Element Resize (`isSameElement = true`): pure smooth lerp without teleport or pulse.
+ * Counter-intuitive for an entrance, but correct here: nothing *travels*, something
+ * *materialises*. Crucially it has no trailing settle — an ease-out curve is 87% done at
+ * the halfway point and then creeps for the rest, which on an animated box edge reads as
+ * a bounce/wobble. Quad-in emerges subtly, commits, and stops.
+ */
+const quadIn = (t: number): number => t * t;
+
+/**
+ * Quad-out: leaves immediately, then eases.
+ *
+ * Used for exits so the ring never holds near full opacity and then cuts off in the last
+ * frame or two — at sub-100ms durations that reads as a blink rather than a dissolve.
+ */
+const quadOut = (t: number): number => t * (2 - t);
+
+const clamp01 = (t: number): number => Math.min(1, Math.max(0, t));
+
+/** Resting paint state. Fresh object per call so callers can never alias `lastPaint`. */
+const steadyPaint = (): FocusPaintState => ({ opacity: 1, offsetDelta: 0 });
+
+/**
+ * Paint state for a reveal at progress `t`.
+ *
+ * Offset grows `-REVEAL_INSET -> 0`, stroke `0 -> targetLineWidth`, alpha `0 -> 1` — all on
+ * the *same* curve, so "thin" always coincides with "transparent". That is why no explicit
+ * minimum line width is needed: a sub-pixel stroke is only ever drawn while it is invisible,
+ * so the mushy antialiased hairline can never be seen.
+ */
+function revealPaint(t: number, targetLineWidth: number): FocusPaintState {
+    const e = quadIn(clamp01(t));
+    return {
+        opacity: e,
+        offsetDelta: -REVEAL_INSET * (1 - e),
+        lineWidthOverride: targetLineWidth * e,
+    };
+}
+
+/**
+ * Paint state for an exit at progress `t` — the mirror of {@link revealPaint}: the ring
+ * retracts inward to `-REVEAL_INSET` while stroke and alpha fall to 0.
+ *
+ * Takes over from `from` (the last painted state) so an interrupted reveal never jumps back
+ * to full opacity mid-flight.
+ */
+function exitPaint(t: number, from: FocusPaintState, targetLineWidth: number): FocusPaintState {
+    const e = quadOut(clamp01(t));
+    const fromOffset = from.offsetDelta ?? 0;
+    const fromLineWidth = from.lineWidthOverride ?? targetLineWidth;
+    return {
+        opacity: from.opacity * (1 - e),
+        offsetDelta: fromOffset + (-REVEAL_INSET - fromOffset) * e,
+        lineWidthOverride: fromLineWidth * (1 - e),
+    };
+}
+
+/**
+ * FocusAnimationController — focus ring animations.
+ *
+ * Reveals and exits are time-based (refresh-rate independent). The morph glide is a
+ * per-frame lerp and therefore *is* refresh-rate dependent — intentionally left as-is,
+ * its feel is tuned.
+ *
+ * The reveal/exit visual language is a canvas port of the CSS `outline-offset` +
+ * `outline-width` model: the ring grows outward out of the element edge and retracts back
+ * into it. Uniform px, monotonic, no scale, no direction reversal.
+ *
+ * 1. Initial Focus Appearance (`startPulseIn`): 160ms quad-in reveal.
+ * 2. Focus Disappearance (`startPulseOut`): 90ms quad-out exit.
+ * 3. Same Element Resize (`isSameElement = true`): pure smooth lerp without teleport or reveal.
  * 4. Short Distance (< 240px) or rapid tabbing (< 150ms between focus changes):
  *    buttery smooth morph glide (frame lerp, factor 0.22) between adjacent items.
- * 5. Long Distance (>= 240px) with deliberate focus change: single-timeline Dissolve & Pulse with zero gap:
- *    - 0..70ms   Dissolve-Out at origin (cubic-in: starts gentle, accelerates away).
- *    - 70..220ms Pulse-In at target (cubic-out: appears fast, settles gently), tracking the
- *      live target box each frame so scrollIntoView during the animation cannot end-snap.
+ * 5. Long Distance (>= 240px) with deliberate focus change: single-timeline exit + reveal
+ *    with zero gap:
+ *    - 0..70ms   Exit at origin (retracts into the element).
+ *    - 70..220ms Reveal at target (grows out of the element), tracking the live target box
+ *      each frame so scrollIntoView during the animation cannot end-snap.
  *    Skipped entirely during rapid tabbing — morph is used instead to keep the ring visible.
  *
  * Every animation takes over from the last painted state (`lastPaint`), so rapid focus
@@ -50,8 +116,11 @@ export class FocusAnimationController {
     private animFrame: number = 0;
     private currentTargetBox: FocusBox | null = null;
     private currentTargetClip: ClipBox | null = null;
-    /** The most recently painted state. Steady state is `{ opacity: 1, scale: 1 }`. */
-    private lastPaint: FocusPaintState = { opacity: 1, scale: 1 };
+    /** Live geometry of the element the ring is leaving. Only populated during a teleport. */
+    private currentOriginBox: FocusBox | null = null;
+    private currentOriginClip: ClipBox | null = null;
+    /** The most recently painted state. Steady state is `{ opacity: 1, offsetDelta: 0 }`. */
+    private lastPaint: FocusPaintState = steadyPaint();
     /** Timestamp of the last start() call — used to detect rapid tabbing. */
     private lastStartTime: number = 0;
 
@@ -69,8 +138,27 @@ export class FocusAnimationController {
     }
 
     /**
-     * Animates an initial focus appearance pulse-in at targetBox (when no focus ring was previously active).
-     * Time-based: 160ms cubic-out (opacity 0->1, scale 1.05->1, lineWidth 60%->100%).
+     * Updates the live geometry of the element the ring is animating *away from*.
+     *
+     * Only the teleport exit phase consumes this. All boxes are viewport coordinates, so
+     * without it the exiting ring stays pinned to a stale snapshot and visibly detaches from
+     * its element whenever the scroll container moves mid-animation (which happens on every
+     * tab to an off-screen element once `scroll-behavior: smooth` is in play).
+     *
+     * A no-op during morphs and reveals, which have no frozen origin to correct.
+     */
+    public updateOrigin(newOriginBox: FocusBox, newOriginClip: ClipBox): void {
+        if (this.currentOriginBox) {
+            Object.assign(this.currentOriginBox, newOriginBox);
+        }
+        if (this.currentOriginClip) {
+            Object.assign(this.currentOriginClip, newOriginClip);
+        }
+    }
+
+    /**
+     * Animates an initial focus appearance reveal at targetBox (when no focus ring was previously active).
+     * Time-based: 160ms quad-in (offset -4px->0, lineWidth 0->target, opacity 0->1).
      */
     startPulseIn(
         targetBox: FocusBox,
@@ -87,8 +175,8 @@ export class FocusAnimationController {
         const prefersReduced = motionPreference.resolved === "reduce";
         if (prefersReduced) {
             this.animFrame = 0;
-            this.lastPaint = { opacity: 1, scale: 1 };
-            onFrame(targetBox, targetClip, { opacity: 1, scale: 1 });
+            this.lastPaint = steadyPaint();
+            onFrame(targetBox, targetClip, steadyPaint());
             onDone?.();
             return;
         }
@@ -96,35 +184,29 @@ export class FocusAnimationController {
         const cur = { ...targetBox };
         const curClip = { ...targetClip };
 
-        // Synchronous frame 0 render: clears any stale ring before the fade begins
-        this.lastPaint = { opacity: 0, scale: SCALE_IN, lineWidthOverride: targetLineWidth * LINE_WIDTH_MIN };
+        // Synchronous frame 0 render: clears any stale ring before the reveal begins
+        this.lastPaint = revealPaint(0, targetLineWidth);
         onFrame(cur, curClip, this.lastPaint);
 
         const startTime = performance.now();
 
-        const loop = () => {
-            // Live target tracking: follow scroll / layout shifts during the pulse
+        const loop = (): void => {
+            // Live target tracking: follow scroll / layout shifts during the reveal
             Object.assign(cur, this.currentTargetBox || targetBox);
             Object.assign(curClip, this.currentTargetClip || targetClip);
 
-            const t = Math.min(1, (performance.now() - startTime) / PULSE_IN_MS);
-            const e = cubicOut(t);
+            const t = (performance.now() - startTime) / PULSE_IN_MS;
 
             if (t >= 1) {
                 this.animFrame = 0;
-                this.lastPaint = { opacity: 1, scale: 1 };
+                this.lastPaint = steadyPaint();
                 onFrame(cur, curClip, this.lastPaint);
                 onDone?.();
                 return;
             }
 
-            const paint: FocusPaintState = {
-                opacity: e,
-                scale: SCALE_IN - (SCALE_IN - 1) * e,
-                lineWidthOverride: targetLineWidth * (LINE_WIDTH_MIN + (1 - LINE_WIDTH_MIN) * e),
-            };
-            this.lastPaint = paint;
-            onFrame(cur, curClip, paint);
+            this.lastPaint = revealPaint(t, targetLineWidth);
+            onFrame(cur, curClip, this.lastPaint);
 
             this.animFrame = requestAnimationFrame(loop);
         };
@@ -133,9 +215,9 @@ export class FocusAnimationController {
     }
 
     /**
-     * Animates a smooth dissolve-out when focus is lost (clicking outside on blank space).
-     * Time-based: 90ms cubic-in (starts gentle, accelerates away), taking over from the
-     * last painted opacity so an interrupted pulse-in never jumps back to full opacity.
+     * Animates a smooth exit when focus is lost (clicking outside on blank space).
+     * Time-based: 90ms quad-out (leaves immediately, then eases), taking over from the
+     * last painted state so an interrupted reveal never jumps back to full opacity.
      */
     startPulseOut(
         currentBox: FocusBox,
@@ -144,16 +226,18 @@ export class FocusAnimationController {
         onDone?: () => void,
         targetLineWidth = 2
     ): void {
-        const fromOpacity = Math.min(1, this.lastPaint.opacity);
-        const fromScale = this.lastPaint.scale ?? 1;
-        const fromLineWidth = this.lastPaint.lineWidthOverride ?? targetLineWidth;
+        const from: FocusPaintState = {
+            opacity: Math.min(1, this.lastPaint.opacity),
+            offsetDelta: this.lastPaint.offsetDelta ?? 0,
+            lineWidthOverride: this.lastPaint.lineWidthOverride ?? targetLineWidth,
+        };
 
         this.stop();
 
         const prefersReduced = motionPreference.resolved === "reduce";
         if (prefersReduced) {
             this.animFrame = 0;
-            this.lastPaint = { opacity: 0, scale: 1 };
+            this.lastPaint = { opacity: 0, offsetDelta: 0 };
             onFrame(currentBox, currentClip, { opacity: 0 });
             onDone?.();
             return;
@@ -163,25 +247,19 @@ export class FocusAnimationController {
         const curClip = { ...currentClip };
         const startTime = performance.now();
 
-        const loop = () => {
-            const t = Math.min(1, (performance.now() - startTime) / PULSE_OUT_MS);
-            const e = cubicIn(t);
+        const loop = (): void => {
+            const t = (performance.now() - startTime) / PULSE_OUT_MS;
 
             if (t >= 1) {
                 this.animFrame = 0;
-                this.lastPaint = { opacity: 0, scale: 1 };
+                this.lastPaint = { opacity: 0, offsetDelta: 0 };
                 onFrame(cur, curClip, this.lastPaint);
                 onDone?.();
                 return;
             }
 
-            const paint: FocusPaintState = {
-                opacity: fromOpacity * (1 - e),
-                scale: fromScale + (SCALE_OUT - fromScale) * e,
-                lineWidthOverride: fromLineWidth - (fromLineWidth - targetLineWidth * LINE_WIDTH_MIN) * e,
-            };
-            this.lastPaint = paint;
-            onFrame(cur, curClip, paint);
+            this.lastPaint = exitPaint(t, from, targetLineWidth);
+            onFrame(cur, curClip, this.lastPaint);
 
             this.animFrame = requestAnimationFrame(loop);
         };
@@ -193,7 +271,7 @@ export class FocusAnimationController {
      * Starts animation toward targetBox from initialBox.
      *
      * - Same element / short distance: morph glide (frame lerp — feel intentionally unchanged).
-     * - Long distance: single-timeline teleport (dissolve-out at origin, pulse-in at target).
+     * - Long distance: single-timeline teleport (exit at origin, reveal at target).
      */
     start(
         targetBox: FocusBox,
@@ -205,9 +283,11 @@ export class FocusAnimationController {
         isSameElement = false,
         targetLineWidth = 2
     ): void {
-        const fromOpacity = Math.min(1, this.lastPaint.opacity);
-        const fromScale = this.lastPaint.scale ?? 1;
-        const fromLineWidth = this.lastPaint.lineWidthOverride ?? targetLineWidth;
+        const from: FocusPaintState = {
+            opacity: Math.min(1, this.lastPaint.opacity),
+            offsetDelta: this.lastPaint.offsetDelta ?? 0,
+            lineWidthOverride: this.lastPaint.lineWidthOverride ?? targetLineWidth,
+        };
 
         this.stop();
 
@@ -220,8 +300,8 @@ export class FocusAnimationController {
         // Reduced motion: instant snap
         if (prefersReduced) {
             this.animFrame = 0;
-            this.lastPaint = { opacity: 1, scale: 1 };
-            onFrame(targetBox, targetClip, { opacity: 1, scale: 1 });
+            this.lastPaint = steadyPaint();
+            onFrame(targetBox, targetClip, steadyPaint());
             onDone?.();
             return;
         }
@@ -233,17 +313,18 @@ export class FocusAnimationController {
         this.lastStartTime = now;
 
         // Same element resize, short distance, or rapid tab: smooth lerp without teleport.
-        // opacity/scale/lineWidth only recover toward steady state when a previous animation
-        // was interrupted mid-flight; in steady state they stay at 1 / 1 / target (no-op).
+        // opacity/offsetDelta/lineWidth only recover toward steady state when a previous
+        // animation was interrupted mid-flight; in steady state they stay at 1 / 0 / target
+        // (no-op), so the glide itself is driven purely by the box lerp below.
         if (isSameElement || dist < TELEPORT_THRESHOLD || isRapidTab) {
             const cur = { ...initialBox };
             const curClip = { ...initialClip };
 
-            let opacity = fromOpacity;
-            let scale = fromScale;
-            let lineWidth = fromLineWidth;
+            let opacity = from.opacity;
+            let offsetDelta = from.offsetDelta ?? 0;
+            let lineWidth = from.lineWidthOverride ?? targetLineWidth;
 
-            const loop = () => {
+            const loop = (): void => {
                 const tBox = this.currentTargetBox || targetBox;
                 const tClip = this.currentTargetClip || targetClip;
 
@@ -254,7 +335,8 @@ export class FocusAnimationController {
                 cur.r = lerp(cur.r, tBox.r, 0.22);
 
                 const curExp = cur.cornerShape?.type === "squircle" ? cur.cornerShape.exponent : 1;
-                const targetExp = tBox.cornerShape?.type === "squircle" ? tBox.cornerShape.exponent : 1;
+                const targetExp =
+                    tBox.cornerShape?.type === "squircle" ? tBox.cornerShape.exponent : 1;
                 if (Math.abs(curExp - targetExp) > 0.01) {
                     const nextExp = lerp(curExp, targetExp, 0.22);
                     cur.cornerShape = { type: "squircle", exponent: nextExp };
@@ -268,10 +350,14 @@ export class FocusAnimationController {
                 curClip.h = lerp(curClip.h, tClip.h, 0.22);
 
                 opacity = Math.min(1, lerp(opacity, 1, 0.22));
-                scale = lerp(scale, 1, 0.22);
+                offsetDelta = lerp(offsetDelta, 0, 0.22);
                 lineWidth = lerp(lineWidth, targetLineWidth, 0.22);
 
-                const paint: FocusPaintState = { opacity, scale, lineWidthOverride: lineWidth };
+                const paint: FocusPaintState = {
+                    opacity,
+                    offsetDelta,
+                    lineWidthOverride: lineWidth,
+                };
                 this.lastPaint = paint;
                 onFrame(cur, curClip, paint);
 
@@ -287,7 +373,7 @@ export class FocusAnimationController {
                     this.animFrame = 0;
                     Object.assign(cur, tBox);
                     Object.assign(curClip, tClip);
-                    this.lastPaint = { opacity: 1, scale: 1 };
+                    this.lastPaint = steadyPaint();
                     onFrame(cur, curClip, this.lastPaint);
                     onDone?.();
                 }
@@ -297,52 +383,47 @@ export class FocusAnimationController {
         }
 
         // Long distance (>= 240px) with deliberate (non-rapid) focus change:
-        // single timeline — Dissolve-Out at origin, Pulse-In at target
+        // single timeline — the ring retracts into the origin element, then grows out of the target
         const cur = { ...initialBox };
         const curClip = { ...initialClip };
         const startTime = performance.now();
 
-        const loop = () => {
+        // Opt into live origin tracking for the exit phase (see updateOrigin). Only set here,
+        // so updateOrigin() stays a no-op for every other animation kind.
+        this.currentOriginBox = { ...initialBox };
+        this.currentOriginClip = { ...initialClip };
+
+        const loop = (): void => {
             const elapsed = performance.now() - startTime;
 
-            // Phase 1 (0..TELEPORT_OUT_MS): dissolve out at the origin (cubic-in exit)
+            // Phase 1 (0..TELEPORT_OUT_MS): exit at the live origin (retracts inward)
             if (elapsed < TELEPORT_OUT_MS) {
-                const e = cubicIn(elapsed / TELEPORT_OUT_MS);
+                Object.assign(cur, this.currentOriginBox || initialBox);
+                Object.assign(curClip, this.currentOriginClip || initialClip);
 
-                const paint: FocusPaintState = {
-                    opacity: fromOpacity * (1 - e),
-                    scale: fromScale + (SCALE_OUT - fromScale) * e,
-                    lineWidthOverride: fromLineWidth - (fromLineWidth - targetLineWidth * LINE_WIDTH_MIN) * e,
-                };
-                this.lastPaint = paint;
-                onFrame(cur, curClip, paint);
+                this.lastPaint = exitPaint(elapsed / TELEPORT_OUT_MS, from, targetLineWidth);
+                onFrame(cur, curClip, this.lastPaint);
 
                 this.animFrame = requestAnimationFrame(loop);
                 return;
             }
 
-            // Phase 2 (..TELEPORT_IN_MS): pulse in at the live target (cubic-out entrance)
+            // Phase 2 (..TELEPORT_IN_MS): reveal at the live target (grows outward)
             Object.assign(cur, this.currentTargetBox || targetBox);
             Object.assign(curClip, this.currentTargetClip || targetClip);
 
-            const t = Math.min(1, (elapsed - TELEPORT_OUT_MS) / TELEPORT_IN_MS);
-            const e = cubicOut(t);
+            const t = (elapsed - TELEPORT_OUT_MS) / TELEPORT_IN_MS;
 
             if (t >= 1) {
                 this.animFrame = 0;
-                this.lastPaint = { opacity: 1, scale: 1 };
+                this.lastPaint = steadyPaint();
                 onFrame(cur, curClip, this.lastPaint);
                 onDone?.();
                 return;
             }
 
-            const paint: FocusPaintState = {
-                opacity: e,
-                scale: SCALE_IN - (SCALE_IN - 1) * e,
-                lineWidthOverride: targetLineWidth * (LINE_WIDTH_MIN + (1 - LINE_WIDTH_MIN) * e),
-            };
-            this.lastPaint = paint;
-            onFrame(cur, curClip, paint);
+            this.lastPaint = revealPaint(t, targetLineWidth);
+            onFrame(cur, curClip, this.lastPaint);
 
             this.animFrame = requestAnimationFrame(loop);
         };
@@ -357,5 +438,7 @@ export class FocusAnimationController {
         this.animFrame = 0;
         this.currentTargetBox = null;
         this.currentTargetClip = null;
+        this.currentOriginBox = null;
+        this.currentOriginClip = null;
     }
 }

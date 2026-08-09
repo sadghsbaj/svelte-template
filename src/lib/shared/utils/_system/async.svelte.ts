@@ -24,7 +24,7 @@ export function delay(ms: number, options?: { signal?: AbortSignal }): Promise<v
             resolve();
         }, ms);
 
-        const onAbort = () => {
+        const onAbort = (): void => {
             clearTimeout(timeoutId);
             reject(new DOMException("The operation was aborted.", "AbortError"));
         };
@@ -170,7 +170,7 @@ export async function mapLimit<T, R>(
     let failed = false;
     let failureError: unknown = null;
 
-    const worker = async () => {
+    const worker = async (): Promise<void> => {
         while (nextIndex < items.length && !failed) {
             if (signal?.aborted) {
                 failed = true;

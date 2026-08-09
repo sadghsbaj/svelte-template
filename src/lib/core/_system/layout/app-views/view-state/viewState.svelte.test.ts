@@ -6,13 +6,13 @@ import { appStack } from "$core/_system/stack/appStack.svelte";
 
 import { ViewState } from "./viewState.svelte";
 
-function mockCustomFn() {
+function mockCustomFn(): { duration: number } {
     return { duration: 420 };
 }
-function mockCustomIn() {
+function mockCustomIn(): { duration: number } {
     return { duration: 500 };
 }
-function mockCustomOut() {
+function mockCustomOut(): { duration: number } {
     return { duration: 250 };
 }
 

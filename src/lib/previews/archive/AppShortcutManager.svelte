@@ -26,7 +26,7 @@
     let logs = $state<LogItem[]>([]);
     let logCounter = 0;
 
-    function log(message: string, type: "success" | "info" | "warning" | "danger" = "info") {
+    function log(message: string, type: "success" | "info" | "warning" | "danger" = "info"): void {
         const time = new Date().toLocaleTimeString("de-DE", {
             hour: "2-digit",
             minute: "2-digit",
@@ -36,7 +36,7 @@
         logs = [{ id: ++logCounter, time, message, type }, ...logs.slice(0, 49)];
     }
 
-    function clearLogs() {
+    function clearLogs(): void {
         logs = [];
     }
 
@@ -46,7 +46,7 @@
     let modalCleanup: (() => void) | null = null;
     let formCleanup: (() => void) | null = null;
 
-    function toggleModal() {
+    function toggleModal(): void {
         if (!isModalOpen) {
             isModalOpen = true;
             modalCleanup = appShortcut.pushScope("modal");
@@ -59,7 +59,7 @@
         }
     }
 
-    function toggleForm() {
+    function toggleForm(): void {
         if (!isFormOpen) {
             isFormOpen = true;
             formCleanup = appShortcut.pushScope("form");
@@ -183,15 +183,15 @@
     });
 
     // --- Attachment Actions ---
-    function handleMountAction() {
+    function handleMountAction(): void {
         log("Mount Attachment Action: Hotkey 'Cmd+M' triggered while mounted!", "success");
     }
 
-    function handleFocusAction() {
+    function handleFocusAction(): void {
         log("Focus Attachment Action: Hotkey 'Cmd+F' triggered while focused!", "success");
     }
 
-    function handleHoverAction() {
+    function handleHoverAction(): void {
         log("Hover Attachment Action: Hotkey 'Cmd+H' triggered while hovered!", "success");
     }
 </script>

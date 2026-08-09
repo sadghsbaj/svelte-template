@@ -279,6 +279,6 @@ export class ViewState<T extends string> {
     }
 }
 
-export function createViewState<T extends string>(config: ViewsConfig<T>) {
+export function createViewState<T extends string>(config: ViewsConfig<T>): ViewState<T> {
     return new ViewState<T>(config);
 }

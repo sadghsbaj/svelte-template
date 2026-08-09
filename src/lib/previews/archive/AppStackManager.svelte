@@ -25,7 +25,7 @@
     let logs = $state<LogItem[]>([]);
     let logCounter = 0;
 
-    function log(message: string, type: "success" | "info" | "warning" | "danger" = "info") {
+    function log(message: string, type: "success" | "info" | "warning" | "danger" = "info"): void {
         const time = new Date().toLocaleTimeString("de-DE", {
             hour: "2-digit",
             minute: "2-digit",
@@ -35,7 +35,7 @@
         logs = [{ id: ++logCounter, time, message, type }, ...logs.slice(0, 49)];
     }
 
-    function clearLogs() {
+    function clearLogs(): void {
         logs = [];
     }
 
@@ -49,7 +49,7 @@
     let overlay2Unreg: (() => void) | null = null;
     let drawerUnreg: (() => void) | null = null;
 
-    function openOverlay1() {
+    function openOverlay1(): void {
         if (isOverlay1Open) return;
         isOverlay1Open = true;
         overlay1Unreg = appStack.register(
@@ -62,7 +62,7 @@
         log("Registered Overlay 1 (Priority: overlay / 100)", "success");
     }
 
-    function closeOverlay1() {
+    function closeOverlay1(): void {
         if (overlay1Unreg) {
             overlay1Unreg();
             overlay1Unreg = null;
@@ -70,7 +70,7 @@
         isOverlay1Open = false;
     }
 
-    function openOverlay2() {
+    function openOverlay2(): void {
         if (isOverlay2Open) return;
         isOverlay2Open = true;
         overlay2Unreg = appStack.register(
@@ -83,7 +83,7 @@
         log("Registered Overlay 2 (Nested Modal / Priority: 120)", "success");
     }
 
-    function closeOverlay2() {
+    function closeOverlay2(): void {
         if (overlay2Unreg) {
             overlay2Unreg();
             overlay2Unreg = null;
@@ -91,7 +91,7 @@
         isOverlay2Open = false;
     }
 
-    function openDrawer() {
+    function openDrawer(): void {
         if (isDrawerOpen) return;
         isDrawerOpen = true;
         drawerUnreg = appStack.register(
@@ -104,7 +104,7 @@
         log("Registered Side Drawer (Priority: subview / 50)", "success");
     }
 
-    function closeDrawer() {
+    function closeDrawer(): void {
         if (drawerUnreg) {
             drawerUnreg();
             drawerUnreg = null;
@@ -112,7 +112,7 @@
         isDrawerOpen = false;
     }
 
-    function triggerPop() {
+    function triggerPop(): void {
         const popped = appStack.pop();
         if (!popped) {
             log("appStack.pop() returned false (Stack empty for active scope)", "info");
@@ -120,7 +120,7 @@
     }
 
     // --- Attach Action Handler ---
-    function handleAttachStackPop() {
+    function handleAttachStackPop(): void {
         isAttachBoxMounted = false;
         log("{@attach stackAttach} Action Executed ➔ Attached element popped!", "warning");
     }

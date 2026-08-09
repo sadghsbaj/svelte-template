@@ -51,11 +51,11 @@ export class AppShortcutManager {
         }
     }
 
-    private onKeyDown = (e: KeyboardEvent) => this.handleKeyDown(e);
-    private onKeyUp = (e: KeyboardEvent) => this.handleKeyUp(e);
-    private onBlur = () => this.resetModifiers();
-    private onFocus = () => this.resetModifiers();
-    private onVisibilityChange = () => {
+    private onKeyDown = (e: KeyboardEvent): boolean => this.handleKeyDown(e);
+    private onKeyUp = (e: KeyboardEvent): boolean => this.handleKeyUp(e);
+    private onBlur = (): void => this.resetModifiers();
+    private onFocus = (): void => this.resetModifiers();
+    private onVisibilityChange = (): void => {
         if (typeof document !== "undefined" && document.hidden) {
             this.resetModifiers();
         }
@@ -639,7 +639,7 @@ function attachElementInternal(
     descriptorsOrParams: unknown,
     sharedOpts?: ShortcutRegisterOptions,
     mgr: AppShortcutManager = appShortcut
-) {
+): { destroy: () => void } {
     let descriptors: ShortcutDescriptor[] = [];
     let options = sharedOpts;
     const manager = mgr;
@@ -661,7 +661,7 @@ function attachElementInternal(
 
     let unregisters: (() => void)[] = [];
 
-    const registerAll = () => {
+    const registerAll = (): void => {
         if (unregisters.length > 0) return;
         for (const desc of descriptors) {
             const combinedOptions = { ...options, ...desc.options };
@@ -670,7 +670,7 @@ function attachElementInternal(
         }
     };
 
-    const unregisterAll = () => {
+    const unregisterAll = (): void => {
         for (const unreg of unregisters) {
             unreg();
         }
@@ -687,8 +687,8 @@ function attachElementInternal(
     }
 
     if (attachOn === "focus") {
-        const onFocus = () => registerAll();
-        const onBlur = () => unregisterAll();
+        const onFocus = (): void => registerAll();
+        const onBlur = (): void => unregisterAll();
 
         node.addEventListener("focus", onFocus, { capture: true });
         node.addEventListener("blur", onBlur, { capture: true });
@@ -710,8 +710,8 @@ function attachElementInternal(
     }
 
     if (attachOn === "hover") {
-        const onEnter = () => registerAll();
-        const onLeave = () => unregisterAll();
+        const onEnter = (): void => registerAll();
+        const onLeave = (): void => unregisterAll();
 
         node.addEventListener("pointerenter", onEnter);
         node.addEventListener("pointerleave", onLeave);

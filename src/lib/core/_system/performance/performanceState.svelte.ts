@@ -23,34 +23,34 @@ export class PerformanceState {
     #cleanups: (() => void)[] = [];
     #intervalId: ReturnType<typeof setInterval> | null = null;
 
-    toggleHeatmap() {
+    toggleHeatmap(): void {
         this.isHeatmapActive = !this.isHeatmapActive;
     }
 
-    stopHeatmap() {
+    stopHeatmap(): void {
         this.isHeatmapActive = false;
     }
 
-    toggleInspector() {
+    toggleInspector(): void {
         this.isInspectorActive = !this.isInspectorActive;
         if (!this.isInspectorActive) {
             this.selectedElement = null;
         }
     }
 
-    stopInspector() {
+    stopInspector(): void {
         this.isInspectorActive = false;
         this.selectedElement = null;
     }
 
-    selectElement(el: HTMLElement | null) {
+    selectElement(el: HTMLElement | null): void {
         this.selectedElement = el;
     }
 
     /**
      * Starts performance sampling and observers.
      */
-    start() {
+    start(): void {
         if (this.#isRunning || typeof window === "undefined") return;
         this.#isRunning = true;
 
@@ -72,7 +72,7 @@ export class PerformanceState {
         this.#cleanups.push(stopVitals);
 
         // 3. Periodic DOM and Memory Sampling (every 1.5s)
-        const updatePeriodicMetrics = () => {
+        const updatePeriodicMetrics = (): void => {
             // DOM Metrics
             const dom = analyzeDomStructure();
             this.domCount = dom.count;
@@ -91,7 +91,7 @@ export class PerformanceState {
     /**
      * Stops all performance observers and sampling intervals.
      */
-    stop() {
+    stop(): void {
         if (!this.#isRunning) return;
         this.#isRunning = false;
         this.isHeatmapActive = false;

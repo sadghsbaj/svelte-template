@@ -258,7 +258,7 @@ describe("Object Utilities", () => {
         test("should clone custom class instances using fallback", () => {
             class CustomClass {
                 constructor(public val: number) {}
-                getDoubled() {
+                getDoubled(): number {
                     return this.val * 2;
                 }
             }

@@ -3,11 +3,11 @@
 
     import { theme, type ThemeMode } from "$core/_system/theme";
 
-    function selectMode(newMode: ThemeMode) {
+    function selectMode(newMode: ThemeMode): void {
         theme.set(newMode);
     }
 
-    function toggleTheme() {
+    function toggleTheme(): void {
         theme.toggle();
     }
 </script>

@@ -38,7 +38,7 @@ function isPerformanceElement(el: Element): boolean {
     );
 }
 
-function storeOriginalStyle(node: Element) {
+function storeOriginalStyle(node: Element): void {
     if (modifiedElements.has(node)) return;
     if (!(node instanceof HTMLElement || node instanceof SVGElement)) return;
 
@@ -58,7 +58,7 @@ function storeOriginalStyle(node: Element) {
     });
 }
 
-function blackenSvgChildren(svgNode: Element) {
+function blackenSvgChildren(svgNode: Element): void {
     const children = svgNode.querySelectorAll(
         "path, circle, rect, line, polyline, polygon, g, use"
     );
@@ -73,7 +73,7 @@ function blackenSvgChildren(svgNode: Element) {
     }
 }
 
-export function applySelectiveBlueprint(active: boolean) {
+export function applySelectiveBlueprint(active: boolean): void {
     if (typeof document === "undefined") return;
 
     let overrideStyle = document.getElementById("dev-blueprint-overrides");

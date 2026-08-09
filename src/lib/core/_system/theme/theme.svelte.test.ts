@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 
 import { isValidMode, ThemeManager } from "./theme.svelte";
 
-async function waitForSwap() {
+async function waitForSwap(): Promise<void> {
     await tick();
     await new Promise((resolve) => setTimeout(resolve, 50));
 }

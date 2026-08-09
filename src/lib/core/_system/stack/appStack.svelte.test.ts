@@ -289,4 +289,4 @@ describe("AppStackManager (Browser Client)", () => {
     });
 });
 
-function dummyAction() {}
+function dummyAction(): void {}

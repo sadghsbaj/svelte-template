@@ -149,7 +149,7 @@ describe("HTTP Utilities", () => {
             const mockFetch = vi.fn().mockImplementation(async (req: Request) => {
                 const signal = req.signal;
                 return new Promise<Response>((resolve, reject) => {
-                    const onAbort = () => reject(new DOMException("Aborted", "AbortError"));
+                    const onAbort = (): void => reject(new DOMException("Aborted", "AbortError"));
                     if (signal.aborted) return onAbort();
                     signal.addEventListener("abort", onAbort);
                 });

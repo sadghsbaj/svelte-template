@@ -42,7 +42,7 @@
         let lastPos = 0;
         let lastHeight = 0;
 
-        const handleScroll = () => {
+        const handleScroll = (): void => {
             lastPos = el.scrollTop;
             lastHeight = el.scrollHeight;
         };

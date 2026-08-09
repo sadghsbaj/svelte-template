@@ -138,7 +138,7 @@ describe("Async Utilities", () => {
             let activeTasks = 0;
             let maxActiveTasks = 0;
 
-            const fn = async (x: number) => {
+            const fn = async (x: number): Promise<number> => {
                 activeTasks++;
                 maxActiveTasks = Math.max(maxActiveTasks, activeTasks);
                 await delay(10);

@@ -3,6 +3,9 @@
     import { Box, Layers, PanelLeftClose, PanelLeftOpen, Search } from "@lucide/svelte";
 
     import { focusAttach } from "$core/_system/focus/focus.attach";
+    import { fade } from "$core/_system/motion/svelte";
+
+    const STORAGE_KEY = "template_dev_preview_active_component_id";
 
     type PreviewIcon = Component<{ size?: number; class?: string }>;
 
@@ -36,10 +39,25 @@
         };
     });
 
-    let selectedId = $state<string>(previews[0]?.id ?? "");
+    function getInitialSelectedId(): string {
+        if (typeof window === "undefined") return previews[0]?.id ?? "";
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved && previews.some((p) => p.id === saved)) {
+            return saved;
+        }
+        return previews[0]?.id ?? "";
+    }
+
+    let selectedId = $state<string>(getInitialSelectedId());
     let searchQuery = $state<string>("");
     let isCollapsed = $state<boolean>(false);
     let openButtonEl = $state<HTMLButtonElement | null>(null);
+
+    $effect(() => {
+        if (typeof window !== "undefined" && selectedId) {
+            localStorage.setItem(STORAGE_KEY, selectedId);
+        }
+    });
 
     $effect(() => {
         if (isCollapsed && openButtonEl) {
@@ -156,8 +174,12 @@
             : 'pl-72 md:pl-80'}"
     >
         {#if activePreview}
-            {const ActiveComponent = activePreview.component}
-            <ActiveComponent />
+            {#key activePreview.id}
+                <div in:fade={{ duration: 150 }} class="h-full w-full">
+                    {const ActiveComponent = activePreview.component}
+                    <ActiveComponent />
+                </div>
+            {/key}
         {:else}
             <div class="flex flex-col items-center justify-center h-full w-full p-8 text-center">
                 <div class="p-4 rounded-2xl bg-elevation-1 text-accent-500 squircle-smooth">

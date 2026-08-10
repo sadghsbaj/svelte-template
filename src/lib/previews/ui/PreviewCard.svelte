@@ -3,16 +3,30 @@
 
     interface Props {
         label?: string;
+        bg?: "elevation-0" | "elevation-1" | "elevation-2" | "transparent";
         checkerboard?: boolean;
         children?: Snippet;
         class?: string;
     }
 
-    let { label, checkerboard = false, children, class: className = "" }: Props = $props();
+    let {
+        label,
+        bg = "elevation-1",
+        checkerboard = false,
+        children,
+        class: className = "",
+    }: Props = $props();
+
+    const bgClasses: Record<string, string> = {
+        "elevation-0": "bg-elevation-0",
+        "elevation-1": "bg-elevation-1",
+        "elevation-2": "bg-elevation-2",
+        transparent: "bg-transparent",
+    };
 </script>
 
 <div
-    class="p-6 bg-elevation-1 shadow-sm rounded-3xl squircle-smooth flex flex-col items-center justify-center relative min-h-[120px] overflow-hidden {label
+    class="p-6 {bgClasses[bg] ?? 'bg-elevation-1'} shadow-sm rounded-3xl squircle-smooth flex flex-col items-center justify-center relative min-h-[120px] overflow-hidden {label
         ? 'pt-9'
         : ''} {checkerboard ? 'bg-checkerboard' : ''} {className}"
 >

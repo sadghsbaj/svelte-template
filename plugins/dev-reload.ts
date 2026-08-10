@@ -52,7 +52,7 @@ export function devReloadPlugin(options: DevReloadOptions = {}): Plugin {
         restartPaths = ["uno.config.ts", "uno/"],
         reloadPaths = ["src/lib/previews/components/"],
         targetViewPath = "src/lib/previews/ComponentsView.svelte",
-        debounceMs = 150,
+        debounceMs = 200,
     } = options;
 
     let restartTimer: ReturnType<typeof setTimeout> | null = null;
@@ -67,18 +67,20 @@ export function devReloadPlugin(options: DevReloadOptions = {}): Plugin {
                 if (!matchesAnyPath(file, restartPaths)) return;
 
                 if (restartTimer) clearTimeout(restartTimer);
-                restartTimer = setTimeout(async () => {
-                    server.config.logger.info(
-                        `\u{1B}[36m⚡ [DEV-RELOAD]\u{1B}[0m Config change detected in ${path.basename(file)} - Restarting Vite Dev Server...`,
-                        { timestamp: true }
-                    );
-                    try {
-                        await server.restart();
-                    } catch (error) {
-                        server.config.logger.error(
-                            `\u{1B}[31m🚨 [DEV-RELOAD] Failed to restart server:\u{1B}[0m ${String(error)}`
+                restartTimer = setTimeout(() => {
+                    queueMicrotask(async () => {
+                        server.config.logger.info(
+                            `\u{1B}[36m⚡ [DEV-RELOAD]\u{1B}[0m Config change detected in ${path.basename(file)} - Restarting Vite Dev Server...`,
+                            { timestamp: true }
                         );
-                    }
+                        try {
+                            await server.restart();
+                        } catch (error) {
+                            server.config.logger.error(
+                                `\u{1B}[31m🚨 [DEV-RELOAD] Failed to restart server:\u{1B}[0m ${String(error)}`
+                            );
+                        }
+                    });
                 }, debounceMs);
             };
 

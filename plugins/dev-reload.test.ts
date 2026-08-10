@@ -54,7 +54,7 @@ describe("devReloadPlugin", () => {
         (plugin as any).configureServer(mockServer);
 
         listeners.change("uno.config.ts");
-        vi.advanceTimersByTime(60);
+        await vi.runAllTimersAsync();
 
         expect(mockRestart).toHaveBeenCalledTimes(1);
         vi.useRealTimers();
@@ -86,7 +86,7 @@ describe("devReloadPlugin", () => {
         (plugin as any).configureServer(mockServer);
 
         listeners.add("src/lib/previews/components/NewPreview.svelte");
-        vi.advanceTimersByTime(60);
+        await vi.runAllTimersAsync();
 
         expect(mockReloadModule).toHaveBeenCalledWith(mockTargetModule);
         vi.useRealTimers();

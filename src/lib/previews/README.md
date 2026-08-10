@@ -19,7 +19,10 @@ This directory contains the developer component preview ecosystem. It provides a
 </script>
 
 <script lang="ts">
-    // Component logic and imports
+    // Target UI component being previewed (located in src/lib/shared/components/)
+    import Button from "$components/Button.svelte";
+
+    // Preview UI primitives
     import PreviewCard from "$lib/previews/ui/PreviewCard.svelte";
     import PreviewGrid from "$lib/previews/ui/PreviewGrid.svelte";
     import PreviewHeader from "$lib/previews/ui/PreviewHeader.svelte";
@@ -48,7 +51,7 @@ Always compose previews using the lightweight layout primitives from `$lib/previ
 
 1. **English Only:** All titles, descriptions, section headers, badges, and card labels MUST be written in English.
 2. **Minimal Text, Maximum Visuals:** Keep text descriptions concise (1 sentence max per section). Let the UI components and states speak for themselves.
-3. **No Hardcoded Parent Imports:** Always use path aliases (e.g. `$lib/previews/ui/...`, `$components/...`) rather than relative parent paths (`../ui/...`).
+3. **Component Location & Path Aliases:** Real UI components live in `$components/` (`src/lib/shared/components/`). Always use path aliases (e.g. `$components/Button.svelte`, `$lib/previews/ui/...`) rather than relative parent paths (`../ui/...`).
 4. **Flexible Card Composition:**
     - **Isolated States:** Use `<PreviewGrid>` + `<PreviewCard label="...">` when each item needs a distinct label (e.g., _Disabled_, _Loading_, _Active_).
     - **Grouped Comparison:** Put multiple interactive elements in a single `<PreviewCard>` with flex layout (`class="flex flex-wrap gap-4 items-center"`) when comparing size or variant hierarchies side-by-side.
@@ -66,6 +69,10 @@ Always compose previews using the lightweight layout primitives from `$lib/previ
 </script>
 
 <script lang="ts">
+    // Import target UI component from $components/ (src/lib/shared/components/)
+    import ComponentName from "$components/ComponentName.svelte";
+
+    // Import preview UI primitives
     import PreviewCard from "$lib/previews/ui/PreviewCard.svelte";
     import PreviewGrid from "$lib/previews/ui/PreviewGrid.svelte";
     import PreviewHeader from "$lib/previews/ui/PreviewHeader.svelte";
@@ -84,10 +91,10 @@ Always compose previews using the lightweight layout primitives from `$lib/previ
     <PreviewSection title="Variants" description="Visual hierarchies and styles.">
         <PreviewGrid cols={3}>
             <PreviewCard label="Primary">
-                <!-- Component instance -->
+                <ComponentName variant="primary" />
             </PreviewCard>
             <PreviewCard label="Secondary">
-                <!-- Component instance -->
+                <ComponentName variant="secondary" />
             </PreviewCard>
         </PreviewGrid>
     </PreviewSection>
@@ -96,7 +103,7 @@ Always compose previews using the lightweight layout primitives from `$lib/previ
     <PreviewSection title="States" description="Interactive and disabled states.">
         <PreviewGrid cols={2}>
             <PreviewCard label="Disabled">
-                <!-- Component instance -->
+                <ComponentName disabled />
             </PreviewCard>
         </PreviewGrid>
     </PreviewSection>

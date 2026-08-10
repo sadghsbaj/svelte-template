@@ -9,7 +9,7 @@
     },
     "scripts": {
         "preinstall": "npx -y only-allow bun",
-        "dev": "bun x --bun vite",
+        "dev": "bun vite",
         "build": "bun run check && vite build",
         "preview": "bun x --bun vite preview",
         "check": "svelte-check --tsconfig ./tsconfig.app.json && tsc -p tsconfig.node.json",

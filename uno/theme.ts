@@ -11,6 +11,7 @@ export const themeConfig = {
         app: "var(--color-app)",
         elevation: {
             DEFAULT: "var(--color-elevation-0)",
+            0: "var(--color-elevation-0)",
             1: "var(--color-elevation-1)",
             2: "var(--color-elevation-2)",
         },

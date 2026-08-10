@@ -26,7 +26,8 @@
 </script>
 
 <div
-    class="p-6 {bgClasses[bg] ?? 'bg-elevation-1'} shadow-sm rounded-3xl squircle-smooth flex flex-col items-center justify-center relative min-h-[120px] overflow-hidden {label
+    class="p-6 {bgClasses[bg] ??
+        'bg-elevation-1'} shadow-sm rounded-3xl squircle-smooth flex flex-col items-center justify-center relative min-h-[120px] overflow-hidden {label
         ? 'pt-9'
         : ''} {checkerboard ? 'bg-checkerboard' : ''} {className}"
 >

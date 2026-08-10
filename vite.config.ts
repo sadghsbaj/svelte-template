@@ -7,6 +7,7 @@ import { createHtmlPlugin } from "vite-plugin-html";
 import { defineConfig } from "vitest/config";
 
 import { debugGuardPlugin } from "./plugins/debug-guard.ts";
+import { devReloadPlugin } from "./plugins/dev-reload.ts";
 import { inlineHtmlPlugin } from "./plugins/inline-html.ts";
 import { layerGuardPlugin } from "./plugins/layer-guard.ts";
 import { motionGuardPlugin } from "./plugins/motion-guard.ts";
@@ -18,6 +19,11 @@ export default defineConfig({
     },
 
     plugins: [
+        devReloadPlugin({
+            restartPaths: ["uno.config.ts", "uno/"],
+            reloadPaths: ["src/lib/previews/components/"],
+            debounceMs: 150,
+        }),
         inlineHtmlPlugin(),
         debugGuardPlugin(),
         layerGuardPlugin(),

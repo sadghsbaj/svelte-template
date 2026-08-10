@@ -242,7 +242,9 @@ export function stackAttach(
 ): (node: Element) => (() => void) & { update: (newAction: () => void) => void } {
     let currentAction = action;
 
-    const attachment = (_node: Element): (() => void) & { update: (newAction: () => void) => void } => {
+    const attachment = (
+        _node: Element
+    ): (() => void) & { update: (newAction: () => void) => void } => {
         const unregister = targetStack.register(() => currentAction(), options);
 
         const cleanup = (): void => {

@@ -350,9 +350,7 @@
                 ></span>
                 <span class="rounded-full bg-emerald-500 inline-flex h-2.5 w-2.5 relative"></span>
             </div>
-            <span class="text-sm text-strong tracking-wide font-600">
-                Performance Engine
-            </span>
+            <span class="text-sm text-strong tracking-wide font-600"> Performance Engine </span>
         </div>
 
         <button

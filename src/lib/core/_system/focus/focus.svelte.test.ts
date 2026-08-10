@@ -6,7 +6,12 @@ import { motionPreference } from "$core/_system/motion/motion.svelte.js";
 import { FocusAnimationController } from "./focus.animation.js";
 import { focusAttach, focusOverridesMap } from "./focus.attach.js";
 import { computeTargetBox, resolveFocusTarget } from "./focus.geometry.js";
-import { clearCanvas, drawFocusRing, drawSquirclePath, resolveAccentColor } from "./focus.renderer.js";
+import {
+    clearCanvas,
+    drawFocusRing,
+    drawSquirclePath,
+    resolveAccentColor,
+} from "./focus.renderer.js";
 import type { ClipBox, FocusBox, FocusPaintState } from "./focus.types.js";
 
 describe("focus.renderer", () => {
@@ -292,9 +297,16 @@ describe("FocusAnimationController (Houdini Pulse & Same-Element Handling)", () 
         const initialBox: FocusBox = { x: 0, y: 0, w: 10, h: 10, r: 0 };
         const initialClip: ClipBox = { x: 0, y: 0, w: 1000, h: 1000 };
 
-        controller.start(targetBox, targetClip, initialBox, initialClip, (_b, _c, paint) => {
-            frames.push(paint);
-        }, onDone);
+        controller.start(
+            targetBox,
+            targetClip,
+            initialBox,
+            initialClip,
+            (_b, _c, paint) => {
+                frames.push(paint);
+            },
+            onDone
+        );
 
         expect(frames).toHaveLength(1);
         expect(frames[0].opacity).toBe(1);
@@ -349,9 +361,16 @@ describe("FocusAnimationController (Houdini Pulse & Same-Element Handling)", () 
         const initialBox: FocusBox = { x: 90, y: 90, w: 40, h: 40, r: 4 };
         const initialClip: ClipBox = { x: 0, y: 0, w: 1000, h: 1000 };
 
-        controller.start(targetBox, targetClip, initialBox, initialClip, (_b, _c, paint) => {
-            paintStates.push(paint);
-        }, onDone);
+        controller.start(
+            targetBox,
+            targetClip,
+            initialBox,
+            initialClip,
+            (_b, _c, paint) => {
+                paintStates.push(paint);
+            },
+            onDone
+        );
 
         await new Promise((r) => setTimeout(r, 300));
 
@@ -369,9 +388,16 @@ describe("FocusAnimationController (Houdini Pulse & Same-Element Handling)", () 
         const targetBox200: FocusBox = { x: 180, y: 100, w: 50, h: 30, r: 4 };
         const initialClip: ClipBox = { x: 0, y: 0, w: 1000, h: 1000 };
 
-        controller.start(targetBox200, initialClip, initialBox, initialClip, (_b, _c, paint) => {
-            paintStates.push(paint);
-        }, onDone);
+        controller.start(
+            targetBox200,
+            initialClip,
+            initialBox,
+            initialClip,
+            (_b, _c, paint) => {
+                paintStates.push(paint);
+            },
+            onDone
+        );
 
         await new Promise((r) => setTimeout(r, 600));
 
@@ -391,25 +417,39 @@ describe("FocusAnimationController (Houdini Pulse & Same-Element Handling)", () 
         // First start — teleport (long distance, no rapid tab)
         const firstPaints: FocusPaintState[] = [];
         await new Promise<void>((resolve) => {
-            ctrl.start(boxB, clip, boxA, clip, (_b, _c, paint) => {
-                firstPaints.push({ ...paint });
-                if (firstPaints.length >= 3) {
-                    ctrl.stop();
-                    resolve();
-                }
-            }, resolve);
+            ctrl.start(
+                boxB,
+                clip,
+                boxA,
+                clip,
+                (_b, _c, paint) => {
+                    firstPaints.push({ ...paint });
+                    if (firstPaints.length >= 3) {
+                        ctrl.stop();
+                        resolve();
+                    }
+                },
+                resolve
+            );
         });
 
         // Immediately start again (simulates rapid tab) — should morph, not teleport
         const secondPaints: FocusPaintState[] = [];
         await new Promise<void>((resolve) => {
-            ctrl.start(boxC, clip, boxB, clip, (_b, _c, paint) => {
-                secondPaints.push({ ...paint });
-                if (secondPaints.length >= 6) {
-                    ctrl.stop();
-                    resolve();
-                }
-            }, resolve);
+            ctrl.start(
+                boxC,
+                clip,
+                boxB,
+                clip,
+                (_b, _c, paint) => {
+                    secondPaints.push({ ...paint });
+                    if (secondPaints.length >= 6) {
+                        ctrl.stop();
+                        resolve();
+                    }
+                },
+                resolve
+            );
         });
 
         // Second call was within 150ms of first → morph path (opacity recovers toward 1)
@@ -476,7 +516,6 @@ describe("FocusAnimationController (Houdini Pulse & Same-Element Handling)", () 
         expect(paintStates.length).toBeGreaterThan(0);
         expect(paintStates.some((p) => p.opacity < 1)).toBe(true);
     });
-
 });
 
 describe("focus.geometry corner-shape parsing", () => {
@@ -539,7 +578,8 @@ describe("focus.geometry corner-shape parsing", () => {
         } as DOMRect);
         vi.spyOn(window, "getComputedStyle").mockReturnValue({
             borderRadius: "8px",
-            getPropertyValue: (prop: string) => (prop === "corner-shape" ? "superellipse(1.6)" : ""),
+            getPropertyValue: (prop: string) =>
+                prop === "corner-shape" ? "superellipse(1.6)" : "",
         } as unknown as CSSStyleDeclaration);
 
         const result = computeTargetBox(el, 4);
@@ -561,7 +601,11 @@ describe("focus.renderer squircle path drawing", () => {
 
     it("drawSquirclePath produces correct corner start/end points", () => {
         const ctx = makeMockCtx();
-        const x = 10, y = 20, w = 100, h = 60, r = 8;
+        const x = 10,
+            y = 20,
+            w = 100,
+            h = 60,
+            r = 8;
 
         drawSquirclePath(ctx, x, y, w, h, r, 2);
 
@@ -592,7 +636,11 @@ describe("focus.renderer squircle path drawing", () => {
 
     it("drawSquirclePath round exponent=1 produces circular corner points", () => {
         const ctx = makeMockCtx();
-        const x = 0, y = 0, w = 100, h = 100, r = 10;
+        const x = 0,
+            y = 0,
+            w = 100,
+            h = 100,
+            r = 10;
 
         drawSquirclePath(ctx, x, y, w, h, r, 1);
 
@@ -613,7 +661,11 @@ describe("focus.renderer squircle path drawing", () => {
     it("drawSquirclePath exponent=2 (squircle) extends further at 45° than circle", () => {
         const ctxCircle = makeMockCtx();
         const ctxSquircle = makeMockCtx();
-        const x = 0, y = 0, w = 100, h = 100, r = 10;
+        const x = 0,
+            y = 0,
+            w = 100,
+            h = 100,
+            r = 10;
 
         drawSquirclePath(ctxCircle, x, y, w, h, r, 1);
         drawSquirclePath(ctxSquircle, x, y, w, h, r, 2);
@@ -624,7 +676,10 @@ describe("focus.renderer squircle path drawing", () => {
         // At 45° (midpoint of top-right corner, i=8 of 16)
         const midIdx = 1 + 8;
         const circleDist = Math.hypot(circleCalls[midIdx][0] - 90, circleCalls[midIdx][1] - 10);
-        const squircleDist = Math.hypot(squircleCalls[midIdx][0] - 90, squircleCalls[midIdx][1] - 10);
+        const squircleDist = Math.hypot(
+            squircleCalls[midIdx][0] - 90,
+            squircleCalls[midIdx][1] - 10
+        );
 
         // Squircle point should be further from center (more "filled" corner)
         expect(squircleDist).toBeGreaterThan(circleDist);

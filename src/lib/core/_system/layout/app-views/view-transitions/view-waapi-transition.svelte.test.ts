@@ -4,7 +4,11 @@ import { ease, motionPreference } from "$core/_system/motion";
 
 import { viewWaapiIn, viewWaapiOut, viewWaapiTransition } from "./view-waapi-transition";
 
-function createMockNode(): { node: Element; animateMock: ReturnType<typeof vi.fn>; getAnimationsMock: ReturnType<typeof vi.fn> } {
+function createMockNode(): {
+    node: Element;
+    animateMock: ReturnType<typeof vi.fn>;
+    getAnimationsMock: ReturnType<typeof vi.fn>;
+} {
     const animateMock = vi.fn().mockReturnValue({
         finished: Promise.resolve(),
         commitStyles: vi.fn(),

@@ -59,7 +59,9 @@
 
     <div class="flex flex-col gap-6">
         <!-- Appearance Section -->
-        <section class="p-6 rounded-3xl bg-elevation-1 flex flex-col gap-5 shadow-sm squircle-smooth md:p-8">
+        <section
+            class="p-6 rounded-3xl bg-elevation-1 flex flex-col gap-5 shadow-sm squircle-smooth md:p-8"
+        >
             <div class="flex items-center gap-3">
                 <div class="p-2.5 rounded-2xl bg-elevation-2 text-accent-500">
                     <Palette size={19} />
@@ -96,7 +98,9 @@
         </section>
 
         <!-- Animations Section -->
-        <section class="p-6 rounded-3xl bg-elevation-1 flex flex-col gap-5 shadow-sm squircle-smooth md:p-8">
+        <section
+            class="p-6 rounded-3xl bg-elevation-1 flex flex-col gap-5 shadow-sm squircle-smooth md:p-8"
+        >
             <div class="flex items-center gap-3">
                 <div class="p-2.5 rounded-2xl bg-elevation-2 text-accent-500">
                     <Zap size={19} />

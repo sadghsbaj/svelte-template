@@ -18,9 +18,11 @@ All global application and element-level states (such as active themes, motion p
 ## Code Examples
 
 ### 1. Global Theme Configuration (Value-Based Attribute)
+
 Manage active themes using the `data-theme` attribute on the `<html>` element.
 
 **JavaScript/TypeScript (Setting State):**
+
 ```typescript
 // ✅ Good: Use dataset property
 document.documentElement.dataset.theme = isDark ? "dark" : "light";
@@ -31,6 +33,7 @@ document.documentElement.setAttribute("data-theme", "dark");
 ```
 
 **CSS (Styling):**
+
 ```css
 /* ✅ Good: Select attribute value */
 [data-theme="dark"] {
@@ -41,9 +44,11 @@ document.documentElement.setAttribute("data-theme", "dark");
 ---
 
 ### 2. Motion Reduction & Accessibility Flags (Binary Attribute)
+
 Track motion preference using the binary `data-reduce-motion` attribute.
 
 **JavaScript/TypeScript (Setting & Checking State):**
+
 ```typescript
 // ✅ Good: Set binary flag using empty string
 document.documentElement.dataset.reduceMotion = "";
@@ -56,6 +61,7 @@ const hasReduceMotion = Object.hasOwn(document.documentElement.dataset, "reduceM
 ```
 
 **CSS (Styling):**
+
 ```css
 /* ✅ Good: Selector matches if attribute is present */
 [data-reduce-motion] {
@@ -66,9 +72,11 @@ const hasReduceMotion = Object.hasOwn(document.documentElement.dataset, "reduceM
 ---
 
 ### 3. Transition Suspension & Switching (Switching States)
+
 Use a temporary transition lock attribute `data-theme-switching` while swapping states to prevent flashing.
 
 **JavaScript/TypeScript:**
+
 ```typescript
 // Start transition
 document.documentElement.dataset.themeSwitching = "";
@@ -78,6 +86,7 @@ delete document.documentElement.dataset.themeSwitching;
 ```
 
 **CSS:**
+
 ```css
 /* Lock transitions when preload or theme-switching is active */
 :is([data-preload], [data-theme-switching]) * {
@@ -89,9 +98,11 @@ delete document.documentElement.dataset.themeSwitching;
 ---
 
 ### 4. Custom Element Modifiers (e.g., Selection Accent Override)
+
 Override default selection behavior on specific containers using local data attributes.
 
 **HTML / Svelte:**
+
 ```svelte
 <div data-selection-on-accent>
     <p>Selected text here will receive the custom accent styling.</p>
@@ -99,6 +110,7 @@ Override default selection behavior on specific containers using local data attr
 ```
 
 **CSS:**
+
 ```css
 [data-selection-on-accent] ::selection {
     color: var(--color-accent-500);

@@ -54,4 +54,3 @@ try {
 } catch (error) {
     console.warn("UI preference initialization failed:", error);
 }
-

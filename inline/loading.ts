@@ -107,9 +107,8 @@ export function initCanvas(): void {
         const h = canvas.height;
 
         const bg =
-            getComputedStyle(document.documentElement)
-                .getPropertyValue("--color-app")
-                .trim() || (isDark ? "oklch(14.1% 0.005 285.823)" : "oklch(98.5% 0 0)");
+            getComputedStyle(document.documentElement).getPropertyValue("--color-app").trim() ||
+            (isDark ? "oklch(14.1% 0.005 285.823)" : "oklch(98.5% 0 0)");
         const accentRgb = isDark ? [96, 165, 250] : [37, 99, 235];
 
         ctx.fillStyle = bg;

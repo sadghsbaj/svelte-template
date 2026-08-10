@@ -2,7 +2,7 @@ import { mount, unmount } from "svelte";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 
 import AppLayer from "./AppLayer.svelte";
-import { appInertState, layerAttach, LAYER_CONTEXT_KEY } from "./layer.svelte";
+import { appInertState, LAYER_CONTEXT_KEY, layerAttach } from "./layer.svelte";
 
 describe("Layer State Utilities & Components", () => {
     let mountedApps: ReturnType<typeof mount>[] = [];

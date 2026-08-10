@@ -46,7 +46,9 @@ function loadTsconfigPaths(): Record<string, string> {
         }
 
         const sortedAliasMap: Record<string, string> = {};
-        const sortedEntries = Object.entries(aliasMap).toSorted((a, b) => b[0].length - a[0].length);
+        const sortedEntries = Object.entries(aliasMap).toSorted(
+            (a, b) => b[0].length - a[0].length
+        );
         for (const [key, val] of sortedEntries) {
             sortedAliasMap[key] = val;
         }

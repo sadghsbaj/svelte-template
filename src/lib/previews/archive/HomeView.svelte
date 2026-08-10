@@ -132,8 +132,7 @@
                     </div>
                 </div>
                 <div class="mt-1 flex items-baseline justify-between">
-                    <span class="text-2xl text-strong tracking-tight font-700">{metric.value}</span
-                    >
+                    <span class="text-2xl text-strong tracking-tight font-700">{metric.value}</span>
                     <span
                         class="text-xs font-600 flex gap-0.5 items-center {metric.isPositive
                             ? 'text-success-600 dark:text-success-400'
@@ -171,9 +170,7 @@
                                 <p class="text-xs text-weak mt-0.5">{activity.subtitle}</p>
                             </div>
                         </div>
-                        <span
-                            class="text-xs font-500 px-3 py-1 rounded-xl {activity.badgeClass}"
-                        >
+                        <span class="text-xs font-500 px-3 py-1 rounded-xl {activity.badgeClass}">
                             {activity.status}
                         </span>
                     </div>

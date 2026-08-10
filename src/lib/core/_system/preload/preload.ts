@@ -39,7 +39,8 @@ export function dismissLoadingScreen(
         return;
     }
 
-    const win = typeof window !== "undefined" ? (window as unknown as WindowWithLoadingState) : undefined;
+    const win =
+        typeof window !== "undefined" ? (window as unknown as WindowWithLoadingState) : undefined;
     if (win?.__appLoadingShowTimer !== undefined) {
         clearTimeout(win.__appLoadingShowTimer);
         delete win.__appLoadingShowTimer;

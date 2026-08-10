@@ -16,8 +16,8 @@ import { ignoresConfig } from "./eslint/ignores.js";
 import { restrictedImportsConfig } from "./eslint/imports.js";
 import { svelteConfig } from "./eslint/svelte.js";
 import { forbiddenTransitionsConfig } from "./eslint/transitions.js";
-import { unocssConfig } from "./eslint/unocss.js";
 import { unicornConfig } from "./eslint/unicorn.js";
+import { unocssConfig } from "./eslint/unocss.js";
 
 export default defineConfig([
     ignoresConfig,

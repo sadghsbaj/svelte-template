@@ -19,7 +19,7 @@
         <button
             type="button"
             onclick={() => viewState.setView(item.id)}
-            class="text-sm font-500 h-10 px-4 rounded-xl flex gap-2.5 w-36 items-center justify-center select-none active:scale-96 t:(bg-180-quad-out text-180-quad-out scale-180-quad-out) {viewState.activeView ===
+            class="cursor-pointer text-sm font-500 h-10 px-4 rounded-xl flex gap-2.5 w-36 items-center justify-center select-none active:scale-96 t:(bg-180-quad-out text-180-quad-out scale-180-quad-out) {viewState.activeView ===
             item.id
                 ? 'text-strong bg-elevation-2 font-600'
                 : 'text-weak hover:text-strong hover:bg-elevation-2/50'}"

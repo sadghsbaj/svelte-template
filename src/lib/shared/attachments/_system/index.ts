@@ -1,4 +1,5 @@
 export * from "./auto-focus.attach";
+export * from "./click-outside.attach";
 export * from "./copy-on-click.attach";
 export * from "./disable-interaction.attach";
 export * from "./focus-trap.attach";

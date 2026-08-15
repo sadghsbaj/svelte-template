@@ -28,6 +28,19 @@ export const variantsConfig: Variant[] = [
         },
     },
 
+    // Active: High priority over presetWind4, excluding disabled states
+    {
+        name: "custom-active",
+        order: -1,
+        match(matcher) {
+            if (!matcher.startsWith("active:")) return;
+            return {
+                matcher: matcher.slice(7),
+                selector: (s) => `${s}:active:not([aria-disabled="true"], :disabled, .disabled)`,
+            };
+        },
+    },
+
     // Transitions
     (matcher) => {
         if (!matcher.startsWith("t:")) return;

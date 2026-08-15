@@ -38,4 +38,10 @@ export const baseRulesConfig: Linter.Config[] = [
             "@typescript-eslint/explicit-function-return-type": "off",
         },
     },
+    {
+        files: ["scripts/**/*.ts", "scripts/**/*.js"],
+        rules: {
+            "no-console": "off",
+        },
+    },
 ];

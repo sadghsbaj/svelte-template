@@ -10,7 +10,7 @@
     "scripts": {
         "preinstall": "npx -y only-allow bun",
         "dev": "bun vite",
-        "build": "bun run check && vite build && bun run stats",
+        "build": "bun run check && vite build && bun run stats:codebase",
         "preview": "bun x --bun vite preview",
         "check": "svelte-check --tsconfig ./tsconfig.app.json && tsc -p tsconfig.node.json",
         "format": "prettier --write .",
@@ -18,8 +18,10 @@
         "test:unit": "vitest",
         "test": "bun run test:unit -- --run",
         "export": "./scripts/export.sh",
-        "stats": "./scripts/stats.sh",
-        "stats:bundle": "bun run build && xdg-open ./dist/analysis/bundle_stats.html"
+        "stats": "bun run stats:codebase",
+        "stats:codebase": "./scripts/stats.sh",
+        "stats:bundle": "bun run build && xdg-open ./dist/analysis/bundle_stats.html",
+        "stats:lighthouse": "bun ./scripts/lighthouse.ts"
     },
     "devDependencies": {
         "@eslint/js": "^10.0.1",
@@ -33,11 +35,13 @@
         "@unocss/transformer-variant-group": "^66.7.5",
         "@vitest/browser": "^4.1.10",
         "@vitest/browser-playwright": "^4.1.10",
+        "chrome-launcher": "^1.2.1",
         "eslint": "^10.6.0",
         "eslint-config-prettier": "^10.1.8",
         "eslint-plugin-svelte": "^3.20.0",
         "eslint-plugin-unicorn": "^72.0.0",
         "globals": "^17.7.0",
+        "lighthouse": "^13.4.1",
         "playwright": "^1.61.1",
         "prettier": "^3.9.5",
         "prettier-plugin-css-order": "^2.2.0",

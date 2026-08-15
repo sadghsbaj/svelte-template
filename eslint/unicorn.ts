@@ -25,6 +25,12 @@ export const unicornConfig: Linter.Config[] = [
         },
     },
     {
+        files: ["scripts/**/*.ts", "scripts/**/*.js"],
+        rules: {
+            "unicorn/no-process-exit": "off",
+        },
+    },
+    {
         files: ["**/*.svelte"],
         rules: {
             "unicorn/filename-case": ["warn", { case: "pascalCase", ignore: ["^[a-z0-9-]+$"] }],

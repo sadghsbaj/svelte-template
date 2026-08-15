@@ -29,10 +29,15 @@
         >
             <!-- Drop random test components and code here -->
 
-            {const isDisabled = true}
+            {let isDisabled = $state(false)}
 
             <button
-                class="bg-accent-500 text-white rounded-full squircle-smooth h-36px px-4 flex-center font-600 w-fit cursor-pointer hover:bg-accent-400 active:scale-95 t:(bg-200-quad-out)"
+                class="select-none bg-base-100 h-36px px-4 flex-center font-600 rounded-full squircle-smooth cursor-pointer hover:bg-base-200 active:scale-95 t:(bg-200-quad-out scale-200-cubic-out) w-fit"
+                onclick={() => (isDisabled = !isDisabled)}>Toggle disabled</button
+            >
+
+            <button
+                class="select-none bg-accent-500 text-white rounded-full squircle-smooth h-36px px-4 flex-center font-600 w-fit cursor-pointer hover:bg-accent-400 active:scale-95 t:(bg-200-quad-out scale-200-cubic-out)"
                 {@attach isDisabled && disableInteraction()}>Click me!</button
             >
         </section>

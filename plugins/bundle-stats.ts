@@ -83,6 +83,33 @@ function extractAppGroup(id: string, projectRoot: string): string {
     return parts[0] || "root";
 }
 
+function processChunkModules(
+    modules: Record<string, RenderedModuleInfo>,
+    projectRoot: string,
+    vendorMap: Map<string, number>,
+    appMap: Map<string, number>
+): { vendorBytes: number; appBytes: number } {
+    let vendorBytes = 0;
+    let appBytes = 0;
+
+    for (const [modId, modInfo] of Object.entries(modules)) {
+        const rendered = modInfo.renderedLength || 0;
+        if (rendered <= 0) continue;
+
+        const vendorPkg = extractVendorPackage(modId);
+        if (vendorPkg) {
+            vendorMap.set(vendorPkg, (vendorMap.get(vendorPkg) || 0) + rendered);
+            vendorBytes += rendered;
+        } else {
+            const appGroup = extractAppGroup(modId, projectRoot);
+            appMap.set(appGroup, (appMap.get(appGroup) || 0) + rendered);
+            appBytes += rendered;
+        }
+    }
+
+    return { vendorBytes, appBytes };
+}
+
 export function bundleStatsPlugin(): Plugin {
     let projectRoot = process.cwd();
 
@@ -124,25 +151,15 @@ export function bundleStatsPlugin(): Plugin {
                     rawBytes = codeBuffer.length;
                     gzipBytes = zlib.gzipSync(codeBuffer).length;
 
-                    // Analyze modules in chunk
                     if (chunk.modules) {
-                        for (const [modId, modInfo] of Object.entries(chunk.modules)) {
-                            const rendered = modInfo.renderedLength || 0;
-                            if (rendered <= 0) continue;
-
-                            const vendorPkg = extractVendorPackage(modId);
-                            if (vendorPkg) {
-                                vendorMap.set(
-                                    vendorPkg,
-                                    (vendorMap.get(vendorPkg) || 0) + rendered
-                                );
-                                totalVendorRendered += rendered;
-                            } else {
-                                const appGroup = extractAppGroup(modId, projectRoot);
-                                appMap.set(appGroup, (appMap.get(appGroup) || 0) + rendered);
-                                totalAppRendered += rendered;
-                            }
-                        }
+                        const { vendorBytes, appBytes } = processChunkModules(
+                            chunk.modules,
+                            projectRoot,
+                            vendorMap,
+                            appMap
+                        );
+                        totalVendorRendered += vendorBytes;
+                        totalAppRendered += appBytes;
                     }
                 } else if (item.type === "asset") {
                     const asset = item as unknown as AssetInfo;
@@ -172,10 +189,9 @@ export function bundleStatsPlugin(): Plugin {
                 });
             }
 
-            assetsList.sort((a, b) => b.rawBytes - a.rawBytes);
-
-            const sortedVendors = [...vendorMap.entries()].sort((a, b) => b[1] - a[1]);
-            const sortedApp = [...appMap.entries()].sort((a, b) => b[1] - a[1]);
+            const sortedAssets = assetsList.toSorted((a, b) => b.rawBytes - a.rawBytes);
+            const sortedVendors = [...vendorMap].toSorted((a, b) => b[1] - a[1]);
+            const sortedApp = [...appMap].toSorted((a, b) => b[1] - a[1]);
 
             const now = new Date().toISOString().replaceAll("T", " ").slice(0, 19);
             const gitInfo = getGitInfo();
@@ -194,7 +210,7 @@ export function bundleStatsPlugin(): Plugin {
                 "| :--- | :--- | :--- | :--- |",
             ];
 
-            for (const asset of assetsList) {
+            for (const asset of sortedAssets) {
                 mdLines.push(
                     `| \`${asset.fileName}\` | ${asset.type} | ${formatBytes(asset.rawBytes)} | ${formatBytes(asset.gzipBytes)} |`
                 );

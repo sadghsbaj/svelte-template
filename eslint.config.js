@@ -14,6 +14,7 @@ import ts from "typescript-eslint";
 import { baseRulesConfig } from "./eslint/base-rules.js";
 import { ignoresConfig } from "./eslint/ignores.js";
 import { restrictedImportsConfig } from "./eslint/imports.js";
+import { shortcutsConfig } from "./eslint/shortcuts.js";
 import { svelteConfig } from "./eslint/svelte.js";
 import { forbiddenTransitionsConfig } from "./eslint/transitions.js";
 import { unicornConfig } from "./eslint/unicorn.js";
@@ -27,6 +28,7 @@ export default defineConfig([
 
     baseRulesConfig,
     forbiddenTransitionsConfig,
+    shortcutsConfig,
     ...unicornConfig,
     ...unocssConfig,
 

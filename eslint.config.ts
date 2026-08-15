@@ -26,7 +26,7 @@ export default defineConfig([
     js.configs.recommended,
     ...ts.configs.recommended,
 
-    baseRulesConfig,
+    ...baseRulesConfig,
     forbiddenTransitionsConfig,
     shortcutsConfig,
     ...unicornConfig,

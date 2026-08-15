@@ -1,5 +1,3 @@
-// @unocss-include
-
 /**
  * @file button.styles.ts
  * @description Playground button style recipe powered by cva.
@@ -32,7 +30,7 @@ export const buttonStyles = cva({
     },
     modifiers: {
         fullWidth: "w-full",
-        pill: "rounded-full",
+        pill: "!rounded-full",
         loading: "opacity-80 pointer-events-none cursor-wait",
         square: "aspect-square p-0",
     },

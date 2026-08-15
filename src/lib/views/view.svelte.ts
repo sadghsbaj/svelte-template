@@ -10,6 +10,11 @@ export const viewState = createViewState({
             parent: "root",
         },
         {
+            view: "playground",
+            label: "Playground",
+            parent: "root",
+        },
+        {
             view: "settings",
             label: "Settings",
             parent: "root",

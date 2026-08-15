@@ -1,11 +1,12 @@
 <script lang="ts">
-    import { Component, Settings } from "@lucide/svelte";
+    import { Component, FlaskConical, Settings } from "@lucide/svelte";
 
     import { layerAttach } from "$core/_system/layout/app-layer/layer.svelte";
     import { viewState } from "$views/view.svelte";
 
     const navItems = [
         { id: "components", label: "Components", icon: Component },
+        { id: "playground", label: "Playground", icon: FlaskConical },
         { id: "settings", label: "Settings", icon: Settings },
     ] as const;
 </script>

@@ -12,6 +12,7 @@
     // @template-remove-start
     import ComponentsView from "$lib/previews/ComponentsView.svelte";
     import FloatingNavbar from "$lib/previews/FloatingNavbar.svelte";
+    import PlaygroundView from "$lib/previews/PlaygroundView.svelte";
     import SettingsView from "$lib/previews/SettingsView.svelte";
 
     // @template-remove-end
@@ -25,6 +26,9 @@
     <!-- @template-remove-start -->
     <AppView view="components">
         <ComponentsView />
+    </AppView>
+    <AppView view="playground">
+        <PlaygroundView />
     </AppView>
     <AppView view="settings">
         <SettingsView />

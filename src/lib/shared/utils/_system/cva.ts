@@ -26,8 +26,10 @@ export interface PredefinedBaseSlots {
 
 export type BaseValue = ClassValue | (PredefinedBaseSlots & Record<string, ClassValue>);
 
-export type OptionsConfig = Record<string, Record<string, ClassValue>>;
-export type ModifiersConfig = Record<string, ClassValue>;
+export type OptionValue = string | number | readonly (string | number)[];
+
+export type OptionsConfig = Record<string, Record<string, OptionValue>>;
+export type ModifiersConfig = Record<string, OptionValue>;
 export type EmptySchema = Record<never, never>;
 
 export type CompoundRecord<
@@ -185,7 +187,7 @@ export function cva<
                     (typeof selected === "string" || typeof selected === "number") &&
                     Object.hasOwn(config.options[key], selected as string)
                 ) {
-                    classes.push(config.options[key][selected]);
+                    classes.push(config.options[key][selected] as ClassValue);
                 }
             }
         }
@@ -195,7 +197,7 @@ export function cva<
             for (const key in config.modifiers) {
                 if (!Object.hasOwn(config.modifiers, key)) continue;
                 if (mergedProps[key] === true) {
-                    classes.push(config.modifiers[key]);
+                    classes.push(config.modifiers[key] as ClassValue);
                 }
             }
         }

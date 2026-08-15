@@ -11,6 +11,7 @@
         "preinstall": "npx -y only-allow bun",
         "dev": "bun vite",
         "build": "bun run check && vite build && bun run stats:codebase",
+        "ci": "bun run test && bun run build",
         "preview": "bun x --bun vite preview",
         "check": "svelte-check --tsconfig ./tsconfig.app.json && tsc -p tsconfig.node.json",
         "format": "prettier --write .",

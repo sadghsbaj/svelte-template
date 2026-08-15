@@ -32,6 +32,12 @@ Run type checks, generate production assets, and create comprehensive reports in
 bun run build
 ```
 
+Run full CI/Release verification (Type check + Unit/Browser Tests + Production Build):
+
+```sh
+bun run ci
+```
+
 ## Analysis & Statistics
 
 Analyze codebase statistics (SLOC, prod vs. test lines) into `dist/analysis/codebase_stats.md`:

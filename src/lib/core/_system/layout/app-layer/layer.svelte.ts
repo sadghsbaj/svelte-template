@@ -110,6 +110,12 @@ export const layerAttach: Attachment = (element) => {
     const node = element as HTMLElement;
     node.style.zIndex = String(layer.zIndex);
 
+    let assignedPosition = false;
+    if (typeof window !== "undefined" && window.getComputedStyle(node).position === "static") {
+        node.style.position = "relative";
+        assignedPosition = true;
+    }
+
     const appMount = document.getElementById("app");
     if (appMount) {
         appMount.after(node);
@@ -121,6 +127,9 @@ export const layerAttach: Attachment = (element) => {
 
     return () => {
         layer.setContextActive(false);
+        if (assignedPosition) {
+            node.style.position = "";
+        }
         node.remove();
     };
 };

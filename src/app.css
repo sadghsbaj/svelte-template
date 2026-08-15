@@ -11,31 +11,12 @@
     overflow: hidden;
 }
 
-/* `scroll-behavior` is NOT an inherited property, so setting it on <html> only ever affects
-   the document scroller — which never scrolls here, since html/body are `overflow: hidden`
-   and the real scroll container is `.app-view`. The universal selector is therefore required
-   rather than optional. It is a no-op on elements that are not scroll containers.
-
-   Note this only affects navigation and CSSOM scrolls (`scrollIntoView`, `scrollTo`, anchors
-   and sequential focus navigation) — wheel and touch scrolling are always instant per spec.
-
-   `:where()` keeps specificity at 0 so any rule can override it; the reduced-motion
-   overrides in _system/motion.css do exactly that. */
-:where(*) {
-    scroll-behavior: smooth;
-}
-
-:where(:disabled, [aria-disabled="true"], .disabled) {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
 :where(body) {
     -moz-osx-font-smoothing: grayscale;
     -webkit-tap-highlight-color: transparent;
     height: 100dvh;
     overflow: hidden;
-    color: var(--color-text-strong);
+    color: var(--color-text-main);
     font-family: var(--font-sans);
     font-size: 100%;
     -webkit-font-smoothing: antialiased;
@@ -51,22 +32,4 @@
 
 #app {
     height: 100%;
-}
-
-/**
-     * Polyfill Sync: LightningCSS compiles the native light-dark() function into custom variables
-     * (--lightningcss-light/dark) using space toggles. By default, they only respond to system
-     * media queries. This block manually overrides them to synchronize with the JS-driven
-     * .dark class status. Do not add values after the colons where empty.
-     */
-html[data-theme="dark"] {
-    /* prettier-ignore */
-    --lightningcss-light: !important;
-    --lightningcss-dark: initial !important;
-}
-
-html:not([data-theme="dark"]) {
-    --lightningcss-light: initial !important;
-    /* prettier-ignore */
-    --lightningcss-dark: !important;
 }

@@ -1,0 +1,17 @@
+/**
+     * Polyfill Sync: LightningCSS compiles the native light-dark() function into custom variables
+     * (--lightningcss-light/dark) using space toggles. By default, they only respond to system
+     * media queries. This block manually overrides them to synchronize with the JS-driven
+     * .dark class status. Do not add values after the colons where empty.
+     */
+html[data-theme="dark"] {
+    /* prettier-ignore */
+    --lightningcss-light: !important;
+    --lightningcss-dark: initial !important;
+}
+
+html:not([data-theme="dark"]) {
+    --lightningcss-light: initial !important;
+    /* prettier-ignore */
+    --lightningcss-dark: !important;
+}

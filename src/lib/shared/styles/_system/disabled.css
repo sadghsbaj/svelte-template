@@ -1,0 +1,11 @@
+:where(:disabled, [aria-disabled="true"], .disabled) {
+    opacity: 0.5;
+    user-select: none;
+}
+
+:where(:disabled, [aria-disabled="true"], .disabled),
+:where(:disabled *, [aria-disabled="true"] *, .disabled *) {
+    animation: none;
+    cursor: not-allowed;
+    user-select: none;
+}

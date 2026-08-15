@@ -32,7 +32,7 @@
             {const isDisabled = true}
 
             <button
-                class="bg-accent-500 text-white rounded-full squircle-smooth h-36px px-4 flex-center font-600 w-fit cursor-pointer hover:bg-accent-400 t:(bg-200-quad-out)"
+                class="bg-accent-500 text-white rounded-full squircle-smooth h-36px px-4 flex-center font-600 w-fit cursor-pointer hover:bg-accent-400 active:scale-95 t:(bg-200-quad-out)"
                 {@attach isDisabled && disableInteraction()}>Click me!</button
             >
         </section>

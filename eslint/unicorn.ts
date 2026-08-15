@@ -1,6 +1,7 @@
+import type { Linter } from "eslint";
 import unicorn from "eslint-plugin-unicorn";
 
-export const unicornConfig = [
+export const unicornConfig: Linter.Config[] = [
     unicorn.configs.recommended,
     {
         rules: {

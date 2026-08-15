@@ -11,14 +11,14 @@ import { defineConfig } from "eslint/config";
 import globals from "globals";
 import ts from "typescript-eslint";
 
-import { baseRulesConfig } from "./eslint/base-rules.js";
-import { ignoresConfig } from "./eslint/ignores.js";
-import { restrictedImportsConfig } from "./eslint/imports.js";
-import { shortcutsConfig } from "./eslint/shortcuts.js";
-import { svelteConfig } from "./eslint/svelte.js";
-import { forbiddenTransitionsConfig } from "./eslint/transitions.js";
-import { unicornConfig } from "./eslint/unicorn.js";
-import { unocssConfig } from "./eslint/unocss.js";
+import { baseRulesConfig } from "./eslint/base-rules.ts";
+import { ignoresConfig } from "./eslint/ignores.ts";
+import { restrictedImportsConfig } from "./eslint/imports.ts";
+import { shortcutsConfig } from "./eslint/shortcuts.ts";
+import { svelteConfig } from "./eslint/svelte.ts";
+import { forbiddenTransitionsConfig } from "./eslint/transitions.ts";
+import { unicornConfig } from "./eslint/unicorn.ts";
+import { unocssConfig } from "./eslint/unocss.ts";
 
 export default defineConfig([
     ignoresConfig,

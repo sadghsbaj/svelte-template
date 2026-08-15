@@ -1,9 +1,16 @@
 /**
- * @file shortcuts.js
+ * @file shortcuts.ts
  * Custom ESLint rule enforcing UnoCSS shortcuts over redundant atomic utility combinations.
  */
 
-const SHORTCUT_RULES = [
+import type { Linter, Rule } from "eslint";
+
+interface ShortcutRule {
+    name: string;
+    classes: string[];
+}
+
+const SHORTCUT_RULES: ShortcutRule[] = [
     {
         name: "flex-center",
         classes: ["flex", "justify-center", "items-center"],
@@ -14,7 +21,11 @@ const SHORTCUT_RULES = [
     },
 ];
 
-function applyFix(node, newContent, context) {
+function applyFix(
+    node: Rule.Node,
+    newContent: string,
+    context: Rule.RuleContext
+): (fixer: Rule.RuleFixer) => Rule.Fix {
     const rawText = context.sourceCode.getText(node);
 
     if (
@@ -23,13 +34,18 @@ function applyFix(node, newContent, context) {
         (rawText.startsWith("`") && rawText.endsWith("`"))
     ) {
         const quote = rawText[0];
-        return (fixer) => fixer.replaceText(node, `${quote}${newContent}${quote}`);
+        return (fixer: Rule.RuleFixer): Rule.Fix =>
+            fixer.replaceText(node, `${quote}${newContent}${quote}`);
     }
 
-    return (fixer) => fixer.replaceText(node, newContent);
+    return (fixer: Rule.RuleFixer): Rule.Fix => fixer.replaceText(node, newContent);
 }
 
-function checkAndReport(str, node, context) {
+function checkAndReport(
+    str: string | null | undefined,
+    node: Rule.Node,
+    context: Rule.RuleContext
+): void {
     if (typeof str !== "string" || !str.trim()) return;
 
     const tokens = str.split(/\s+/).filter(Boolean);
@@ -44,7 +60,7 @@ function checkAndReport(str, node, context) {
             message: `Redundant atomic utilities detected. Use shortcut "${name}" instead of ${classes.map((c) => `"${c}"`).join(", ")}.`,
             fix(fixer) {
                 let replacedFirst = false;
-                const newTokens = [];
+                const newTokens: string[] = [];
 
                 for (const token of tokens) {
                     if (classes.includes(token)) {
@@ -64,7 +80,7 @@ function checkAndReport(str, node, context) {
     }
 }
 
-export const enforceShortcutsRule = {
+export const enforceShortcutsRule: Rule.RuleModule = {
     meta: {
         type: "suggestion",
         docs: {
@@ -73,17 +89,22 @@ export const enforceShortcutsRule = {
         fixable: "code",
         schema: [],
     },
-    create(context) {
+    create(context: Rule.RuleContext): Rule.RuleListener {
+        const filename = context.filename ?? "";
+        if (filename.endsWith("uno/shortcuts.ts") || filename.endsWith(String.raw`uno\shortcuts.ts`)) {
+            return {};
+        }
+
         return {
-            SvelteLiteral(node) {
+            SvelteLiteral(node: Rule.Node & { value?: string }): void {
                 checkAndReport(node.value, node, context);
             },
-            Literal(node) {
+            Literal(node: Rule.Node & { value?: unknown }): void {
                 if (typeof node.value === "string") {
                     checkAndReport(node.value, node, context);
                 }
             },
-            TemplateElement(node) {
+            TemplateElement(node: Rule.Node & { value?: { raw?: string } }): void {
                 if (node.value?.raw) {
                     checkAndReport(node.value.raw, node, context);
                 }
@@ -92,7 +113,7 @@ export const enforceShortcutsRule = {
     },
 };
 
-export const shortcutsConfig = {
+export const shortcutsConfig: Linter.Config = {
     plugins: {
         shortcuts: {
             rules: {

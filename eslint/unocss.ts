@@ -1,6 +1,7 @@
 import unocss from "@unocss/eslint-config/flat";
+import type { Linter } from "eslint";
 
-export const unocssConfig = [
+export const unocssConfig: Linter.Config[] = [
     unocss,
     {
         rules: {

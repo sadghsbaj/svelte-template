@@ -1,9 +1,10 @@
+import type { Linter } from "eslint";
 import svelte from "eslint-plugin-svelte";
 import ts from "typescript-eslint";
 
-import { forbiddenTransitionSelector } from "./transitions.js";
+import { forbiddenTransitionSelector } from "./transitions.ts";
 
-export const svelteConfig = [
+export const svelteConfig: Linter.Config[] = [
     ...svelte.configs.recommended,
 
     {

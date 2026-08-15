@@ -1,3 +1,5 @@
+import type { Linter } from "eslint";
+
 export const forbiddenTransitionSelector = {
     selector:
         String.raw`Literal[value=/\btransition-(all|colors|opacity|shadow|transform)\b/], ` +
@@ -7,7 +9,7 @@ export const forbiddenTransitionSelector = {
         "Forbidden legacy transition utility detected. Please use explicit t-... or t:(...) syntax instead (see ./uno/transitions.ts).",
 };
 
-export const forbiddenTransitionsConfig = {
+export const forbiddenTransitionsConfig: Linter.Config = {
     rules: {
         "no-restricted-syntax": ["error", forbiddenTransitionSelector],
     },

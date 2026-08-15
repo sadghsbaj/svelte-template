@@ -1,4 +1,6 @@
-export const restrictedImportsConfig = [
+import type { Linter } from "eslint";
+
+export const restrictedImportsConfig: Linter.Config[] = [
     {
         files: ["**/core/**/*.{ts,js,svelte}"],
         rules: {
@@ -25,13 +27,13 @@ export const restrictedImportsConfig = [
                         {
                             name: "svelte/action",
                             message:
-                                "Imports from 'svelte/action' are forbidden. Use Svelte 5 attachments or element functionsinstead.",
+                                "Imports from 'svelte/action' are forbidden. Use Svelte 5 attachments or element functions instead.",
                         },
                         {
                             name: "svelte",
                             importNames: ["setContext", "getContext"],
                             message:
-                                "Raw 'setContext' and 'getContext' are forbidden. Use 'createContext' from 'svelte'instead.",
+                                "Raw 'setContext' and 'getContext' are forbidden. Use 'createContext' from 'svelte' instead.",
                         },
                     ],
                     patterns: [

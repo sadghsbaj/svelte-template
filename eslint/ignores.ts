@@ -1,4 +1,6 @@
-export const ignoresConfig = {
+import type { Linter } from "eslint";
+
+export const ignoresConfig: Linter.Config = {
     ignores: [
         "dist",
         "dist/**",

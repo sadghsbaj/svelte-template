@@ -1,4 +1,6 @@
-export const baseRulesConfig = {
+import type { Linter } from "eslint";
+
+export const baseRulesConfig: Linter.Config = {
     rules: {
         "@typescript-eslint/no-non-null-assertion": "error",
         "no-console": ["warn", { allow: ["warn", "error"] }],

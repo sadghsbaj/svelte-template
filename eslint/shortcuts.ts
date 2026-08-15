@@ -91,7 +91,10 @@ export const enforceShortcutsRule: Rule.RuleModule = {
     },
     create(context: Rule.RuleContext): Rule.RuleListener {
         const filename = context.filename ?? "";
-        if (filename.endsWith("uno/shortcuts.ts") || filename.endsWith(String.raw`uno\shortcuts.ts`)) {
+        if (
+            filename.endsWith("uno/shortcuts.ts") ||
+            filename.endsWith(String.raw`uno\shortcuts.ts`)
+        ) {
             return {};
         }
 

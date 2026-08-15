@@ -24,6 +24,6 @@
 
     <!-- Playground Controls -->
     <section
-        class="p-5 rounded-2xl bg-elevation-1 flex flex-wrap gap-4 shadow-xs squircle-smooth items-center"
+        class="p-6 rounded-2xl bg-elevation-1 flex flex-col gap-4 shadow-xs squircle-smooth"
     ></section>
 </div>

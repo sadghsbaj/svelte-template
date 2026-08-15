@@ -7,15 +7,15 @@
    and common utilities (such as `.cursor-pointer` at (0, 1, 0)) would override these defaults, causing
    disabled controls to retain full opacity or display an interactive pointer cursor.
 
-   Using `:is()` ensures consistent base disabled aesthetics across native `:disabled` attributes,
-   `[aria-disabled="true"]`, and `.disabled` classes, while still remaining fully overridable by explicit
+   Using `:is()` ensures consistent base disabled aesthetics across native `:disabled` attributes
+   and `[aria-disabled="true"]`, while still remaining fully overridable by explicit
    UnoCSS utility classes (e.g., `disabled:opacity-30`) through standard source-order precedence. */
-:is(:disabled, [aria-disabled="true"], .disabled) {
+:is(:disabled, [aria-disabled="true"]) {
     opacity: 0.5;
 }
 
-:is(:disabled, [aria-disabled="true"], .disabled),
-:is(:disabled *, [aria-disabled="true"] *, .disabled *) {
+:is(:disabled, [aria-disabled="true"]),
+:is(:disabled *, [aria-disabled="true"] *) {
     animation: none;
     cursor: not-allowed;
     user-select: none;

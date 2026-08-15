@@ -10,12 +10,12 @@ export const variantsConfig: Variant[] = [
             return {
                 matcher: matcher.slice(6),
                 parent: "@media (hover: hover) and (pointer: fine)",
-                selector: (s) => `${s}:hover:not([aria-disabled="true"], :disabled, .disabled)`,
+                selector: (s) => `${s}:hover:not([aria-disabled="true"], :disabled)`,
             };
         },
     },
 
-    // Disabled: High priority over presetWind4, matching native disabled, aria-disabled, and .disabled
+    // Disabled: High priority over presetWind4, matching native disabled and aria-disabled
     {
         name: "custom-disabled",
         order: -1,
@@ -23,7 +23,7 @@ export const variantsConfig: Variant[] = [
             if (!matcher.startsWith("disabled:")) return;
             return {
                 matcher: matcher.slice(9),
-                selector: (s) => `${s}:is(:disabled, [aria-disabled="true"], .disabled)`,
+                selector: (s) => `${s}:is(:disabled, [aria-disabled="true"])`,
             };
         },
     },
@@ -36,7 +36,7 @@ export const variantsConfig: Variant[] = [
             if (!matcher.startsWith("active:")) return;
             return {
                 matcher: matcher.slice(7),
-                selector: (s) => `${s}:active:not([aria-disabled="true"], :disabled, .disabled)`,
+                selector: (s) => `${s}:active:not([aria-disabled="true"], :disabled)`,
             };
         },
     },

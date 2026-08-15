@@ -8,6 +8,6 @@ export const blocklistConfig: (string | RegExp)[] = [
     // Disallow utility z-indices >= 10,000 to preserve top-layer priority reserved for the AppLayer system
     /^z-(\[?(?:[1-9]\d{4,})\]?)$/,
 
-    // Disallow aria-disabled - use disabled (resolves to disabled & aria disabled & .disabled)
+    // Disallow aria-disabled - use disabled (resolves to disabled & aria disabled)
     /^aria-disabled:/,
 ];

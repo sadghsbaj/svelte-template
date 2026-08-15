@@ -78,7 +78,9 @@ type InferCompoundsProps<
     ? string extends keyof Item
         ? EmptySchema
         : {
-              [K in Exclude<InferCompoundKeys<Item>, KnownKeys<O> | KnownKeys<M>>]?: InferCompoundValue<Item, K>;
+              [
+                  K in Exclude<InferCompoundKeys<Item>, KnownKeys<O> | KnownKeys<M>>
+              ]?: InferCompoundValue<Item, K>;
           }
     : EmptySchema;
 

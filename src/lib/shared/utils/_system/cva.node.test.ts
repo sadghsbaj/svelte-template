@@ -1,7 +1,7 @@
 /**
  * @file cva.node.test.ts
  * @description Unit tests for the cva style recipe engine.
- * Covers base slots, options, modifiers, compound rules, defaults, and overrides.
+ * Covers base slots, options, modifiers, compound rules, defaults, overrides, array matching, and undefined-safety.
  */
 
 import { describe, expect, test } from "vitest";
@@ -47,6 +47,22 @@ describe("cva (class variance authority)", () => {
         expect(recipe({ size: "sm" })).toBe("bg-accent-500 text-white h-8 text-xs");
     });
 
+    test("should preserve default values when undefined is explicitly passed", () => {
+        const recipe = cva({
+            options: {
+                variant: {
+                    solid: "bg-accent-500",
+                    outline: "border",
+                },
+            },
+            defaults: {
+                variant: "solid",
+            },
+        });
+
+        expect(recipe({ variant: undefined })).toBe("bg-accent-500");
+    });
+
     test("should resolve boolean modifiers correctly", () => {
         const recipe = cva({
             base: "btn",
@@ -62,20 +78,29 @@ describe("cva (class variance authority)", () => {
         expect(recipe({ fullWidth: true, pill: true })).toBe("btn w-full rounded-full");
     });
 
-    test("should resolve compound matrix rules", () => {
+    test("should resolve compound matrix rules including multi-value array matching", () => {
         const recipe = cva({
             options: {
                 variant: {
                     solid: "shadow-sm",
+                    subtle: "bg-elevation-1",
                     outline: "border",
                 },
             },
             compounds: [
+                // Shared rule matching both solid and subtle
+                {
+                    variant: ["solid", "subtle"],
+                    color: "accent",
+                    class: "ring-accent-500",
+                },
+                // Specific rule for solid
                 {
                     variant: "solid",
                     color: "accent",
                     class: "bg-accent-500 text-white",
                 },
+                // Specific rule for outline
                 {
                     variant: "outline",
                     color: "accent",
@@ -88,7 +113,15 @@ describe("cva (class variance authority)", () => {
             },
         });
 
-        expect(recipe()).toBe("shadow-sm bg-accent-500 text-white");
+        // solid + accent matches shared rule + solid rule
+        expect(recipe()).toBe("shadow-sm ring-accent-500 bg-accent-500 text-white");
+
+        // subtle + accent matches shared rule only
+        expect(recipe({ variant: "subtle", color: "accent" })).toBe(
+            "bg-elevation-1 ring-accent-500"
+        );
+
+        // outline + accent matches outline rule only
         expect(recipe({ variant: "outline", color: "accent" })).toBe(
             "border border-accent-500 text-accent-500"
         );

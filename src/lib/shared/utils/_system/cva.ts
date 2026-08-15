@@ -1,7 +1,7 @@
 /**
  * @file cva.ts
  * @description Type-safe style recipe and variant composition engine.
- * Supports structured base slots, multi-value options, boolean modifiers, and compound matrix rules.
+ * Supports structured base slots, multi-value options, boolean modifiers, array-matched compounds, and undefined-safe defaults.
  */
 
 import { cn, type ClassValue } from "./cn";
@@ -33,8 +33,12 @@ export type EmptySchema = Record<never, never>;
 export type CompoundRecord<
     O extends OptionsConfig = OptionsConfig,
     M extends ModifiersConfig = ModifiersConfig,
-> = (string extends keyof O ? Record<string, unknown> : { [K in keyof O]?: keyof O[K] }) &
-    (string extends keyof M ? Record<string, unknown> : { [K in keyof M]?: boolean }) &
+> = (string extends keyof O
+    ? Record<string, unknown>
+    : { [K in keyof O]?: keyof O[K] | readonly (keyof O[K])[] }) &
+    (string extends keyof M
+        ? Record<string, unknown>
+        : { [K in keyof M]?: boolean | readonly boolean[] }) &
     Record<string, unknown> & {
         class?: ClassValue;
         className?: ClassValue;
@@ -73,7 +77,8 @@ type InferCompoundKeys<Item> = Item extends unknown
     ? Exclude<keyof Item, "class" | "className">
     : never;
 
-type InferCompoundValue<Item, K extends PropertyKey> = Item extends Record<K, infer V> ? V : never;
+type InferCompoundValue<Item, K extends PropertyKey> =
+    Item extends Record<K, infer V> ? (V extends readonly (infer U)[] ? U : V) : never;
 
 type InferCompoundsProps<C> = C extends readonly (infer Item)[]
     ? string extends keyof Item
@@ -106,7 +111,16 @@ export function cva<
     const C extends readonly CompoundRecord<O, M>[] = readonly CompoundRecord<O, M>[],
 >(config: CvaConfig<O, M, C>) {
     return function recipe(props?: VariantProps<CvaConfig<O, M, C>>): string {
-        const mergedProps = { ...config.defaults, ...props } as Record<string, unknown>;
+        const mergedProps: Record<string, unknown> = { ...config.defaults };
+        if (props) {
+            const passedProps = props as Record<string, unknown>;
+            for (const key in passedProps) {
+                if (passedProps[key] !== undefined) {
+                    mergedProps[key] = passedProps[key];
+                }
+            }
+        }
+
         const classes: ClassValue[] = [];
 
         // 1. Resolve base styles
@@ -137,12 +151,15 @@ export function cva<
             }
         }
 
-        // 4. Resolve compound matrix rules
+        // 4. Resolve compound matrix rules (supports single and array expected values)
         if (config.compounds) {
             for (const compound of config.compounds) {
                 const isMatch = Object.entries(compound).every(([key, expectedValue]) => {
                     if (key === "class" || key === "className") return true;
-                    return mergedProps[key] === expectedValue;
+                    const actualValue = mergedProps[key];
+                    return Array.isArray(expectedValue)
+                        ? (expectedValue as unknown[]).includes(actualValue)
+                        : actualValue === expectedValue;
                 });
 
                 if (isMatch) {

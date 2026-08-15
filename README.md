@@ -26,16 +26,22 @@ bun run preview
 
 ## Build
 
-Run type checks and generate production assets:
+Run type checks, generate production assets, create bundle visualizer report, and generate codebase stats in `dist/analysis/`:
 
 ```sh
 bun run build
 ```
 
-Generate bundle visualization stats (`dist/stats.html`):
+Analyze codebase statistics (SLOC, prod vs. test lines) manually:
 
 ```sh
 bun run stats
+```
+
+Build and open the interactive bundle visualization report (`dist/analysis/bundle_stats.html`) in browser:
+
+```sh
+bun run stats:bundle
 ```
 
 ## Type Check

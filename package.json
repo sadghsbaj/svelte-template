@@ -10,7 +10,7 @@
     "scripts": {
         "preinstall": "npx -y only-allow bun",
         "dev": "bun vite",
-        "build": "bun run check && vite build",
+        "build": "bun run check && vite build && bun run stats",
         "preview": "bun x --bun vite preview",
         "check": "svelte-check --tsconfig ./tsconfig.app.json && tsc -p tsconfig.node.json",
         "format": "prettier --write .",
@@ -18,7 +18,8 @@
         "test:unit": "vitest",
         "test": "bun run test:unit -- --run",
         "export": "./scripts/export.sh",
-        "stats": "./scripts/stats.sh"
+        "stats": "./scripts/stats.sh",
+        "stats:bundle": "bun run build && xdg-open ./dist/analysis/bundle_stats.html"
     },
     "devDependencies": {
         "@eslint/js": "^10.0.1",

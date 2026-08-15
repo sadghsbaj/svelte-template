@@ -4,7 +4,7 @@
 # Svelte 5 Opinionated Template - Codebase Statistics Generator
 # ==============================================================================
 # This script analyzes the project codebase and generates detailed statistics in
-# dist/codebase_stats.txt.
+# dist/analysis/codebase_stats.txt.
 #
 # Excludes: node_modules, dist, .git, .vitest-attachments, previews/
 # Includes: src/ (excl. previews), root configs, plugins/, scripts/, eslint/, etc.
@@ -16,7 +16,7 @@ set -euo pipefail
 # --- Configuration & Paths ---
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-DIST_DIR="$PROJECT_ROOT/dist"
+DIST_DIR="$PROJECT_ROOT/dist/analysis"
 
 # UI Colors for terminal output
 RED='\033[1;31m'

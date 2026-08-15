@@ -56,7 +56,7 @@ export default defineConfig({
             },
         }),
         visualizer({
-            filename: "./dist/stats.html",
+            filename: "./dist/analysis/bundle_stats.html",
             open: false,
             gzipSize: true,
             brotliSize: true,

@@ -6,6 +6,7 @@ import UnoCSS from "unocss/vite";
 import { createHtmlPlugin } from "vite-plugin-html";
 import { defineConfig } from "vitest/config";
 
+import { bundleStatsPlugin } from "./plugins/bundle-stats.ts";
 import { debugGuardPlugin } from "./plugins/debug-guard.ts";
 import { devReloadPlugin } from "./plugins/dev-reload.ts";
 import { inlineHtmlPlugin } from "./plugins/inline-html.ts";
@@ -19,6 +20,7 @@ export default defineConfig({
     },
 
     plugins: [
+        bundleStatsPlugin(),
         devReloadPlugin({
             restartPaths: ["uno.config.ts", "uno/"],
             reloadPaths: ["src/lib/previews/components/"],

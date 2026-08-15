@@ -26,7 +26,7 @@ bun run preview
 
 ## Build
 
-Run type checks, generate production assets, create bundle visualizer report, and generate codebase stats in `dist/analysis/`:
+Run type checks, generate production assets, and create comprehensive reports in `dist/analysis/` (`bundle_stats.md`, `bundle_stats.html`, `codebase_stats.md`):
 
 ```sh
 bun run build
@@ -34,7 +34,7 @@ bun run build
 
 ## Analysis & Statistics
 
-Analyze codebase statistics (SLOC, prod vs. test lines) into `dist/analysis/codebase_stats.txt`:
+Analyze codebase statistics (SLOC, prod vs. test lines) into `dist/analysis/codebase_stats.md`:
 
 ```sh
 bun run stats:codebase # or bun run stats
@@ -46,7 +46,7 @@ Build and open the interactive bundle visualization report (`dist/analysis/bundl
 bun run stats:bundle
 ```
 
-Run an automated Lighthouse audit (Performance, A11y, Best Practices, SEO) in headless Chrome and generate `dist/analysis/lighthouse_stats.txt` & `dist/analysis/lighthouse_stats.html`:
+Run an automated Lighthouse audit (Performance, A11y, Best Practices, SEO) in headless Chrome and generate `dist/analysis/lighthouse_stats.md` & `dist/analysis/lighthouse_stats.html`:
 
 ```sh
 bun run stats:lighthouse          # Mobile mode (default)

@@ -2,9 +2,10 @@
  * @file lighthouse.ts
  * Automated Lighthouse audit runner that starts a background preview server,
  * executes Lighthouse in headless Chrome (Mobile or Desktop), and generates
- * structured TXT and HTML reports in dist/analysis/.
+ * structured Markdown and HTML reports in dist/analysis/.
  */
 
+import { execSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import * as chromeLauncher from "chrome-launcher";
@@ -36,18 +37,59 @@ function logError(msg: string): void {
     console.error(`${RED}[ERROR]${RESET} ${msg}`);
 }
 
-function formatScore(score: number | null | undefined): { text: string; ansi: string } {
-    if (score === null || score === undefined) return { text: "N/A", ansi: "N/A" };
+function getGitInfo(): string {
+    try {
+        const hash = execSync("git rev-parse --short HEAD", {
+            stdio: ["ignore", "pipe", "ignore"],
+        })
+            .toString()
+            .trim();
+        const branch = execSync("git rev-parse --abbrev-ref HEAD", {
+            stdio: ["ignore", "pipe", "ignore"],
+        })
+            .toString()
+            .trim();
+        const isDirty =
+            execSync("git status --porcelain", {
+                stdio: ["ignore", "pipe", "ignore"],
+            })
+                .toString()
+                .trim().length > 0;
+        return `\`${hash}\` (branch: \`${branch}\`${isDirty ? ", dirty" : ", clean"})`;
+    } catch {
+        return "N/A";
+    }
+}
+
+function formatScore(score: number | null | undefined): {
+    text: string;
+    ansi: string;
+    badge: string;
+} {
+    if (score === null || score === undefined)
+        return { text: "N/A", ansi: "N/A", badge: "⚪ N/A" };
     const num = Math.round(score * 100);
     const padded = String(num).padStart(3, " ");
 
     if (num >= 90) {
-        return { text: `${padded}/100 [PASS]`, ansi: `${GREEN}${padded}/100 [PASS]${RESET}` };
+        return {
+            text: `${padded}/100 [PASS]`,
+            ansi: `${GREEN}${padded}/100 [PASS]${RESET}`,
+            badge: `✅ \`${num}/100\` PASS`,
+        };
     }
     if (num >= 50) {
-        return { text: `${padded}/100 [WARN]`, ansi: `${YELLOW}${padded}/100 [WARN]${RESET}` };
+        return {
+            text: `${padded}/100 [WARN]`,
+            ansi: `${YELLOW}${padded}/100 [WARN]${RESET}`,
+            badge: `⚠️ \`${num}/100\` WARN`,
+        };
     }
-    return { text: `${padded}/100 [FAIL]`, ansi: `${RED}${padded}/100 [FAIL]${RESET}` };
+    return {
+        text: `${padded}/100 [FAIL]`,
+        ansi: `${RED}${padded}/100 [FAIL]${RESET}`,
+        badge: `❌ \`${num}/100\` FAIL`,
+    };
 }
 
 async function ensureBuild(): Promise<void> {
@@ -145,74 +187,90 @@ async function runAudit(): Promise<void> {
 
             const display = audit.displayValue ? ` (${audit.displayValue})` : "";
             const firstSentence = audit.description ? audit.description.split(".", 1)[0] : "";
-            opportunities.push(`  - [${audit.title}]${display}: ${firstSentence}`);
+            opportunities.push(`- **[${audit.title}]**${display}: ${firstSentence}`);
         }
 
-        // Generate Plain Text Report
+        // Generate Markdown Report
         const now = new Date().toISOString().replaceAll("T", " ").slice(0, 19);
-        const txtLines: string[] = [
-            "==========================================================================",
-            "                       LIGHTHOUSE AUDIT REPORT                            ",
-            "==========================================================================",
-            `Target URL          : ${localUrl}`,
-            `Mode / Device       : ${modeLabel}`,
-            `Generated At        : ${now}`,
-            `Lighthouse Version  : ${lhr.lighthouseVersion}`,
-            `User Agent          : ${lhr.userAgent}`,
-            "--------------------------------------------------------------------------",
-            "CATEGORY SCORES (0-100):",
-            `  Performance       : ${perf.text}`,
-            `  Accessibility     : ${a11y.text}`,
-            `  Best Practices    : ${bp.text}`,
-            `  SEO               : ${seo.text}`,
-            "--------------------------------------------------------------------------",
-            "CORE WEB VITALS & KEY METRICS:",
-            `  First Contentful Paint (FCP)  : ${fcp}`,
-            `  Largest Contentful Paint (LCP) : ${lcp}`,
-            `  Total Blocking Time (TBT)     : ${tbt}`,
-            `  Cumulative Layout Shift (CLS) : ${cls}`,
-            `  Speed Index (SI)              : ${si}`,
-            `  Time to Interactive (TTI)     : ${tti}`,
-            "--------------------------------------------------------------------------",
+        const gitInfo = getGitInfo();
+
+        const mdLines: string[] = [
+            `# 🚦 Lighthouse Audit Report (${modeLabel})`,
+            "",
+            `- **Git Commit**: ${gitInfo}`,
+            `- **Generated At**: \`${now} UTC\``,
+            `- **Target URL**: \`${localUrl}\``,
+            `- **Lighthouse Version**: \`${lhr.lighthouseVersion}\``,
+            `- **Interactive Report**: [\`lighthouse_stats.html\`](./lighthouse_stats.html)`,
+            "",
+            "## 🏆 Category Scores",
+            "",
+            "| Category | Score | Status |",
+            "| :--- | :--- | :--- |",
+            `| **Performance** | \`${perf.text.trim()}\` | ${perf.badge} |`,
+            `| **Accessibility** | \`${a11y.text.trim()}\` | ${a11y.badge} |`,
+            `| **Best Practices** | \`${bp.text.trim()}\` | ${bp.badge} |`,
+            `| **SEO** | \`${seo.text.trim()}\` | ${seo.badge} |`,
+            "",
+            "## ⚡ Core Web Vitals & Key Metrics",
+            "",
+            "| Metric | Value |",
+            "| :--- | :--- |",
+            `| First Contentful Paint (FCP) | \`${fcp}\` |`,
+            `| Largest Contentful Paint (LCP) | \`${lcp}\` |`,
+            `| Total Blocking Time (TBT) | \`${tbt}\` |`,
+            `| Cumulative Layout Shift (CLS) | \`${cls}\` |`,
+            `| Speed Index (SI) | \`${si}\` |`,
+            `| Time to Interactive (TTI) | \`${tti}\` |`,
+            "",
         ];
 
         if (opportunities.length > 0) {
-            txtLines.push(
-                "IMPROVEMENT OPPORTUNITIES & DIAGNOSTICS:",
+            mdLines.push(
+                "## 💡 Improvement Opportunities & Diagnostics",
+                "",
                 ...opportunities.slice(0, 15),
-                "--------------------------------------------------------------------------"
+                ""
             );
         } else {
-            txtLines.push(
-                "AUDIT STATUS: All core audit checks passed cleanly with 100% score!",
-                "--------------------------------------------------------------------------"
+            mdLines.push(
+                "## 💡 Improvement Opportunities & Diagnostics",
+                "",
+                "> [!TIP]",
+                "> All core audit checks passed cleanly with 100% score!",
+                ""
             );
         }
 
-        txtLines.push(
-            `HTML Visual Report : dist/analysis/lighthouse_stats.html`,
-            `Text Summary File  : dist/analysis/lighthouse_stats.txt`,
-            "=========================================================================="
-        );
-
-        const txtContent = txtLines.join("\n");
-        const txtReportPath = path.resolve(ANALYSIS_DIR, "lighthouse_stats.txt");
-        fs.writeFileSync(txtReportPath, txtContent, "utf8");
+        const mdContent = mdLines.join("\n");
+        const mdReportPath = path.resolve(ANALYSIS_DIR, "lighthouse_stats.md");
+        fs.writeFileSync(mdReportPath, mdContent, "utf8");
 
         // Clean Terminal Output
-        console.log(`\n${BOLD}${CYAN}==========================================================================${RESET}`);
-        console.log(`${BOLD}                       LIGHTHOUSE AUDIT RESULTS (${modeLabel})             ${RESET}`);
-        console.log(`${BOLD}${CYAN}==========================================================================${RESET}`);
+        console.log(
+            `\n${BOLD}${CYAN}==========================================================================${RESET}`
+        );
+        console.log(
+            `${BOLD}                       LIGHTHOUSE AUDIT RESULTS (${modeLabel})             ${RESET}`
+        );
+        console.log(
+            `${BOLD}${CYAN}==========================================================================${RESET}`
+        );
+        console.log(`  Git Commit    : ${gitInfo.replaceAll("`", "")}`);
         console.log(`  ${BOLD}Performance   :${RESET} ${perf.ansi}`);
         console.log(`  ${BOLD}Accessibility :${RESET} ${a11y.ansi}`);
         console.log(`  ${BOLD}Best Practices:${RESET} ${bp.ansi}`);
         console.log(`  ${BOLD}SEO           :${RESET} ${seo.ansi}`);
-        console.log(`${CYAN}--------------------------------------------------------------------------${RESET}`);
+        console.log(
+            `${CYAN}--------------------------------------------------------------------------${RESET}`
+        );
         console.log(`  FCP: ${fcp} │ LCP: ${lcp} │ TBT: ${tbt} │ CLS: ${cls}`);
-        console.log(`${CYAN}==========================================================================${RESET}`);
+        console.log(
+            `${CYAN}==========================================================================${RESET}`
+        );
 
         logSuccess("Lighthouse reports generated:");
-        logInfo(` - ${txtReportPath}`);
+        logInfo(` - ${mdReportPath}`);
         logInfo(` - ${htmlReportPath}\n`);
     } finally {
         if (chrome) {

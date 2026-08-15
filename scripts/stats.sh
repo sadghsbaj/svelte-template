@@ -4,7 +4,7 @@
 # Svelte 5 Opinionated Template - Codebase Statistics Generator
 # ==============================================================================
 # This script analyzes the project codebase and generates detailed statistics in
-# dist/analysis/codebase_stats.txt.
+# dist/analysis/codebase_stats.md.
 #
 # Excludes: node_modules, dist, .git, .vitest-attachments, previews/
 # Includes: src/ (excl. previews), root configs, plugins/, scripts/, eslint/, etc.
@@ -42,6 +42,8 @@ log_info "Analyzing project codebase at: $PROJECT_ROOT"
 python3 - "$PROJECT_ROOT" "$DIST_DIR" << 'EOF'
 import os
 import sys
+import subprocess
+from datetime import datetime, timezone
 
 project_root = sys.argv[1]
 dist_dir = sys.argv[2]
@@ -60,6 +62,16 @@ total_prod_code_all = 0
 total_test_code_all = 0
 total_comment_all = 0
 total_blank_all = 0
+
+# Extract Git Metadata
+try:
+    hash_val = subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD'], cwd=project_root, stderr=subprocess.DEVNULL).decode().strip()
+    branch_val = subprocess.check_output(['git', 'rev-parse', '--abbrev-ref', 'HEAD'], cwd=project_root, stderr=subprocess.DEVNULL).decode().strip()
+    status_val = subprocess.check_output(['git', 'status', '--porcelain'], cwd=project_root, stderr=subprocess.DEVNULL).decode().strip()
+    dirty_val = "dirty" if status_val else "clean"
+    git_info = f"`{hash_val}` (branch: `{branch_val}`, {dirty_val})"
+except Exception:
+    git_info = "N/A"
 
 def get_directory_group(rel_path):
     parts = rel_path.split(os.sep)
@@ -208,11 +220,60 @@ for root, dirs, files in os.walk(project_root):
 
 total_code_all = total_prod_code_all + total_test_code_all
 
-# --- Generate Plain Text Output ---
+# --- Generate Markdown Output ---
+now_str = datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')
+md_lines = [
+    "# 📊 Project Codebase Statistics",
+    "",
+    f"- **Git Commit**: {git_info}",
+    f"- **Generated At**: `{now_str}`",
+    f"- **Total Files Analyzed**: `{total_files:,}`",
+    f"- **Total Lines Overall**: `{total_lines_all:,}`",
+    f"- **Production Code Lines**: `{total_prod_code_all:,}`",
+    f"- **Test Code Lines**: `{total_test_code_all:,}`",
+    f"- **Total Pure Code**: `{total_code_all:,}` (Prod + Test, excl. comments & blanks)",
+    f"- **Comment Lines**: `{total_comment_all:,}`",
+    f"- **Blank / Empty Lines**: `{total_blank_all:,}`",
+    "",
+    "> [!NOTE]",
+    "> Test files (`*.test.ts` / `*.test.js`) are explicitly tracked separately both in the file type and directory breakdowns.",
+    "",
+    "## 📁 File Type Breakdown",
+    "",
+    "| Extension | Files | Total Lines | Code Lines | Comments | Blanks |",
+    "| :--- | :--- | :--- | :--- | :--- | :--- |"
+]
+
+sorted_exts = sorted(stats_by_ext.items(), key=lambda x: x[1]['lines'], reverse=True)
+for ext, s in sorted_exts:
+    md_lines.append(f"| `{ext}` | {s['files']:,} | {s['lines']:,} | {s['code']:,} | {s['comment']:,} | {s['blank']:,} |")
+
+md_lines.extend([
+    "",
+    "## 🗂️ Directory Breakdown",
+    "",
+    "| Directory Group | Files | Total Lines | Prod Code | Test Code |",
+    "| :--- | :--- | :--- | :--- | :--- |"
+])
+
+sorted_dirs = sorted(stats_by_dir.items(), key=lambda x: x[1]['lines'], reverse=True)
+for dgroup, s in sorted_dirs:
+    md_lines.append(f"| `{dgroup}` | {s['files']:,} | {s['lines']:,} | {s['prod_code']:,} | {s['test_code']:,} |")
+
+md_lines.append("")
+md_output = "\n".join(md_lines)
+
+# Write codebase_stats.md
+md_filepath = os.path.join(dist_dir, "codebase_stats.md")
+with open(md_filepath, "w", encoding="utf-8") as f:
+    f.write(md_output + "\n")
+
+# Terminal Output
 txt_lines = []
 txt_lines.append("==========================================================================")
 txt_lines.append("                     PROJECT CODEBASE STATISTICS                          ")
 txt_lines.append("==========================================================================")
+txt_lines.append(f"Git Commit           : {git_info.replace('`', '')}")
 txt_lines.append(f"Total Files Analyzed : {total_files}")
 txt_lines.append(f"Total Lines Overall  : {total_lines_all}")
 txt_lines.append(f"Prod Code Lines      : {total_prod_code_all}")
@@ -221,15 +282,9 @@ txt_lines.append(f"Total Pure Code      : {total_code_all}  (Prod + Test, excl. 
 txt_lines.append(f"Comment Lines        : {total_comment_all}")
 txt_lines.append(f"Blank / Empty Lines  : {total_blank_all}")
 txt_lines.append("--------------------------------------------------------------------------")
-txt_lines.append("NOTE: Test files (*.test.ts / *.test.js) are explicitly tracked separately")
-txt_lines.append("      both in the file type breakdown and in the directory breakdown.")
-txt_lines.append("--------------------------------------------------------------------------")
-txt_lines.append("")
 txt_lines.append("FILE TYPE BREAKDOWN:")
 txt_lines.append(f"{'Extension':<16} | {'Files':<6} | {'Total Lines':<11} | {'Code Lines':<10} | {'Comments':<9} | {'Blanks':<7}")
 txt_lines.append("-" * 72)
-
-sorted_exts = sorted(stats_by_ext.items(), key=lambda x: x[1]['lines'], reverse=True)
 for ext, s in sorted_exts:
     txt_lines.append(f"{ext:<16} | {s['files']:<6} | {s['lines']:<11} | {s['code']:<10} | {s['comment']:<9} | {s['blank']:<7}")
 
@@ -237,20 +292,12 @@ txt_lines.append("")
 txt_lines.append("DIRECTORY BREAKDOWN:")
 txt_lines.append(f"{'Directory Group':<30} | {'Files':<6} | {'Total Lines':<11} | {'Prod Code':<10} | {'Test Code':<9}")
 txt_lines.append("-" * 74)
-sorted_dirs = sorted(stats_by_dir.items(), key=lambda x: x[1]['lines'], reverse=True)
 for dgroup, s in sorted_dirs:
     txt_lines.append(f"{dgroup:<30} | {s['files']:<6} | {s['lines']:<11} | {s['prod_code']:<10} | {s['test_code']:<9}")
-
 txt_lines.append("==========================================================================")
-txt_output = "\n".join(txt_lines)
 
-# Write codebase_stats.txt
-txt_filepath = os.path.join(dist_dir, "codebase_stats.txt")
-with open(txt_filepath, "w", encoding="utf-8") as f:
-    f.write(txt_output + "\n")
-
-print(txt_output)
+print("\n".join(txt_lines))
 EOF
 
 log_success "Project codebase statistics successfully generated in:"
-log_info " - $DIST_DIR/codebase_stats.txt"
+log_info " - $DIST_DIR/codebase_stats.md"

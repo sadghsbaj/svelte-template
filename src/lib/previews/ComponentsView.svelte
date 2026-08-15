@@ -181,7 +181,7 @@
                 </div>
             {/key}
         {:else}
-            <div class="flex flex-col items-center justify-center h-full w-full p-8 text-center">
+            <div class="flex-center flex-col h-full w-full p-8 text-center">
                 <div class="p-4 rounded-2xl bg-elevation-1 text-accent-500 squircle-smooth">
                     <Box size={28} />
                 </div>

@@ -16,7 +16,7 @@
     <div class="flex items-center gap-3">
         {#if Icon}
             <div
-                class="p-2.5 rounded-2xl bg-elevation-1 text-accent-500 shadow-xs squircle-smooth flex items-center justify-center shrink-0"
+                class="p-2.5 rounded-2xl bg-elevation-1 text-accent-500 shadow-xs squircle-smooth flex-center shrink-0"
             >
                 <Icon size={22} />
             </div>

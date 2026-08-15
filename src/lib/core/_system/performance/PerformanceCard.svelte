@@ -290,7 +290,7 @@
 
 {#snippet summaryTile(label: string, value: string | number, suffix = "")}
     <div
-        class="p-2.5 text-center rounded-xl bg-elevation-2 flex flex-col items-center justify-center squircle-smooth"
+        class="p-2.5 text-center rounded-xl bg-elevation-2 flex-center flex-col squircle-smooth"
     >
         <span class="text-xs text-weak tracking-wider font-500 uppercase">{label}</span>
         <span class="text-base text-emerald-600 font-700 font-mono dark:text-emerald-400">
@@ -344,7 +344,7 @@
         class="pb-3 border-b flex cursor-grab select-none items-center justify-between border-base-200/60 active:cursor-grabbing dark:border-base-800/60"
     >
         <div class="flex gap-2.5 items-center">
-            <div class="flex h-2.5 w-2.5 items-center justify-center relative">
+            <div class="flex-center h-2.5 w-2.5 relative">
                 <span
                     class="rounded-full bg-emerald-400 opacity-75 inline-flex h-full w-full absolute animate-ping"
                 ></span>
@@ -383,7 +383,7 @@
                 <!-- Heatmap Toggle Button -->
                 <button
                     onclick={onToggleHeatmap}
-                    class="p-1 rounded-lg flex items-center justify-center t-bg-150-sine-out t-text-150-sine-out squircle-smooth {isHeatmapActive
+                    class="p-1 rounded-lg flex-center t-bg-150-sine-out t-text-150-sine-out squircle-smooth{isHeatmapActive
                         ? 'text-orange-500 border border-orange-500/30 bg-orange-500/15 dark:text-orange-400'
                         : 'text-weak hover:text-strong hover:bg-elevation-1'}"
                     title={isHeatmapActive
@@ -396,7 +396,7 @@
                 <!-- Inspector Toggle Button -->
                 <button
                     onclick={onToggleInspector}
-                    class="p-1 rounded-lg flex items-center justify-center t-bg-150-sine-out t-text-150-sine-out squircle-smooth {isInspectorActive
+                    class="p-1 rounded-lg flex-center t-bg-150-sine-out t-text-150-sine-out squircle-smooth{isInspectorActive
                         ? 'text-cyan-500 border border-cyan-500/30 bg-cyan-500/15 dark:text-cyan-400'
                         : 'text-weak hover:text-strong hover:bg-elevation-1'}"
                     title={isInspectorActive

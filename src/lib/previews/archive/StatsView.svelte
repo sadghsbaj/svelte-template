@@ -48,7 +48,7 @@
             <div class="flex flex-col h-3000px w-300px justify-between">
                 <span>Test</span>
                 <button
-                    class="font-600 px-3 rounded-full bg-elevation-2 flex h-36px items-center justify-center squircle-smooth"
+                    class="font-600 px-3 rounded-full bg-elevation-2 flex-center h-36px squircle-smooth"
                     >Test</button
                 >
             </div>

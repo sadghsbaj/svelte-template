@@ -78,7 +78,7 @@
                     <button
                         type="button"
                         onclick={() => theme.set(item.id)}
-                        class="p-5 rounded-2xl flex flex-col items-center justify-center gap-3 text-center select-none squircle-smooth active:scale-97 t:(bg-180-quad-out text-180-quad-out scale-180-quad-out) {theme.mode ===
+                        class="p-5 rounded-2xl flex-center flex-col gap-3 text-center select-none squircle-smooth active:scale-97 t:(bg-180-quad-out text-180-quad-out scale-180-quad-out){theme.mode ===
                         item.id
                             ? 'text-strong bg-elevation-2 ring-1.5 ring-accent-500/40 shadow-xs font-600'
                             : 'text-weak bg-elevation-2/40 hover:text-strong hover:bg-elevation-2/70'}"
@@ -117,7 +117,7 @@
                     <button
                         type="button"
                         onclick={() => motionPreference.set(item.id)}
-                        class="p-5 rounded-2xl flex flex-col items-center justify-center gap-3 text-center select-none squircle-smooth active:scale-97 t:(bg-180-quad-out text-180-quad-out scale-180-quad-out) {motionPreference.preference ===
+                        class="p-5 rounded-2xl flex-center flex-col gap-3 text-center select-none squircle-smooth active:scale-97 t:(bg-180-quad-out text-180-quad-out scale-180-quad-out){motionPreference.preference ===
                         item.id
                             ? 'text-strong bg-elevation-2 ring-1.5 ring-accent-500/40 shadow-xs font-600'
                             : 'text-weak bg-elevation-2/40 hover:text-strong hover:bg-elevation-2/70'}"

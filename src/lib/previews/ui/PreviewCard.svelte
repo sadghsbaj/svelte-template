@@ -27,7 +27,7 @@
 
 <div
     class="p-6 {bgClasses[bg] ??
-        'bg-elevation-1'} shadow-sm rounded-3xl squircle-smooth flex flex-col items-center justify-center relative min-h-[120px] overflow-hidden {label
+        'bg-elevation-1'}shadow-sm rounded-3xl squircle-smooth flex-center flex-col relative min-h-[120px] overflow-hidden{label
         ? 'pt-9'
         : ''} {checkerboard ? 'bg-checkerboard' : ''} {className}"
 >
@@ -40,7 +40,7 @@
     {/if}
 
     {#if children}
-        <div class="flex items-center justify-center w-full h-full">
+        <div class="flex-center w-full h-full">
             {@render children()}
         </div>
     {/if}

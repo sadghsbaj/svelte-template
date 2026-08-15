@@ -66,8 +66,7 @@ function formatScore(score: number | null | undefined): {
     ansi: string;
     badge: string;
 } {
-    if (score === null || score === undefined)
-        return { text: "N/A", ansi: "N/A", badge: "⚪ N/A" };
+    if (score === null || score === undefined) return { text: "N/A", ansi: "N/A", badge: "⚪ N/A" };
     const num = Math.round(score * 100);
     const padded = String(num).padStart(3, " ");
 
@@ -275,7 +274,7 @@ async function runAudit(): Promise<void> {
     } finally {
         if (chrome) {
             try {
-                await chrome.kill();
+                chrome.kill();
             } catch {
                 // Ignore kill errors
             }

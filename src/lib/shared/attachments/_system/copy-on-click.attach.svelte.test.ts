@@ -401,6 +401,40 @@ describe("copyOnClick Svelte 5 Element Attachment", () => {
             cleanup?.();
         });
 
+        test("should NOT double-fire on keydown when attached directly to an inner element inside a native button", async () => {
+            const btn = document.createElement("button");
+            const innerSpan = document.createElement("span");
+            btn.append(innerSpan);
+            container.append(btn);
+
+            const onSuccess = vi.fn();
+            const attach = copyOnClick({
+                text: "inner-span-token",
+                onSuccess,
+            });
+            const cleanup = attach(innerSpan);
+
+            const enterEvent = new KeyboardEvent("keydown", {
+                key: "Enter",
+                bubbles: true,
+                cancelable: true,
+            });
+            innerSpan.dispatchEvent(enterEvent);
+            await vi.advanceTimersByTimeAsync(10);
+
+            expect(onSuccess).not.toHaveBeenCalled();
+
+            innerSpan.dispatchEvent(
+                new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 })
+            );
+            await vi.advanceTimersByTimeAsync(10);
+
+            expect(onSuccess).toHaveBeenCalledTimes(1);
+            expect(navigator.clipboard.writeText).toHaveBeenCalledWith("inner-span-token");
+
+            cleanup?.();
+        });
+
         test("should NOT double-fire on native link with href keydown", async () => {
             const link = document.createElement("a");
             link.href = "https://example.com";

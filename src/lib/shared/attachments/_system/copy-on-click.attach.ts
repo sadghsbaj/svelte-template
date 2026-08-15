@@ -62,8 +62,6 @@ export interface CopyOnClickOptions {
     enabled?: boolean;
 }
 
-const NATIVE_CLICKABLE_TAGS = new Set(["button", "summary"]);
-const NATIVE_CLICKABLE_INPUT_TYPES = new Set(["button", "submit", "reset"]);
 const NATIVE_CLICKABLE_SELECTOR =
     'button, summary, a[href], input[type="button"], input[type="submit"], input[type="reset"]';
 
@@ -75,22 +73,11 @@ function isElementDisabled(element: Element): boolean {
 }
 
 /**
- * Checks whether an element natively synthesizes click events on keyboard Enter/Space.
+ * Checks whether an element or an ancestor natively synthesizes click events on keyboard Enter/Space.
  * Native buttons and links trigger click events natively, so manual keydown handlers would cause double execution.
  */
 function isNativelyKeyboardClickable(element: Element): boolean {
-    const tagName = element.tagName.toLowerCase();
-    if (NATIVE_CLICKABLE_TAGS.has(tagName)) {
-        return true;
-    }
-    if (tagName === "a" && element.hasAttribute("href")) {
-        return true;
-    }
-    if (tagName === "input") {
-        const type = (element as HTMLInputElement).type;
-        return NATIVE_CLICKABLE_INPUT_TYPES.has(type);
-    }
-    return false;
+    return Boolean(element.closest(NATIVE_CLICKABLE_SELECTOR));
 }
 
 /**
@@ -212,17 +199,23 @@ export function copyOnClick<T extends HTMLElement | SVGElement = HTMLElement>(
         let feedbackTimerId: ReturnType<typeof setTimeout> | null = null;
         let isUnmounted = false;
 
-        const clearFeedbackTimer = (): void => {
-            if (feedbackTimerId !== null) {
-                clearTimeout(feedbackTimerId);
-                feedbackTimerId = null;
+        const cancelPendingTimer = (): void => {
+            if (feedbackTimerId === null) {
+                return;
             }
+            clearTimeout(feedbackTimerId);
+            feedbackTimerId = null;
+        };
+
+        const clearFeedbackTimer = (): void => {
+            cancelPendingTimer();
             clearFeedbackState(node);
         };
 
         const scheduleFeedbackReset = (): void => {
+            cancelPendingTimer();
             if (feedbackDuration <= 0) {
-                clearFeedbackTimer();
+                clearFeedbackState(node);
                 return;
             }
 
@@ -239,6 +232,8 @@ export function copyOnClick<T extends HTMLElement | SVGElement = HTMLElement>(
             if (ignoreDisabled && (isElementDisabled(node) || isElementDisabled(target))) {
                 return;
             }
+
+            cancelPendingTimer();
 
             if (preventDefault) {
                 event.preventDefault();
@@ -306,12 +301,12 @@ export function copyOnClick<T extends HTMLElement | SVGElement = HTMLElement>(
             if (!keyboard) return;
 
             const targetElement = event.target instanceof Element ? event.target : null;
-            const hasNativeTarget =
-                targetElement !== null &&
-                Boolean(targetElement.closest(NATIVE_CLICKABLE_SELECTOR));
+            const isNative =
+                isNativelyKeyboardClickable(node) ||
+                (targetElement !== null && isNativelyKeyboardClickable(targetElement));
 
             // Native interactive elements already synthesize a click event on Enter/Space
-            if (isNativelyKeyboardClickable(node) || hasNativeTarget) {
+            if (isNative) {
                 return;
             }
 

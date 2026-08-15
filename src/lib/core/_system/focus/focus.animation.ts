@@ -27,22 +27,11 @@ const TELEPORT_IN_MS = 150;
  * button and a 900px card.
  */
 const REVEAL_INSET = 4;
-
-/**
- * Quad-in: gentle start, accelerating into the final state.
- *
- * Counter-intuitive for an entrance, but correct here: nothing *travels*, something
- * *materialises*. Crucially it has no trailing settle — an ease-out curve is 87% done at
- * the halfway point and then creeps for the rest, which on an animated box edge reads as
- * a bounce/wobble. Quad-in emerges subtly, commits, and stops.
- */
-const quadIn = (t: number): number => t * t;
-
 /**
  * Quad-out: leaves immediately, then eases.
  *
- * Used for exits so the ring never holds near full opacity and then cuts off in the last
- * frame or two — at sub-100ms durations that reads as a blink rather than a dissolve.
+ * Used for reveals and exits so the ring immediately responds on initial frame
+ * and smoothly dissolves or arrives.
  */
 const quadOut = (t: number): number => t * (2 - t);
 
@@ -60,7 +49,7 @@ const steadyPaint = (): FocusPaintState => ({ opacity: 1, offsetDelta: 0 });
  * so the mushy antialiased hairline can never be seen.
  */
 function revealPaint(t: number, targetLineWidth: number): FocusPaintState {
-    const e = quadIn(clamp01(t));
+    const e = quadOut(clamp01(t));
     return {
         opacity: e,
         offsetDelta: -REVEAL_INSET * (1 - e),
@@ -97,7 +86,7 @@ function exitPaint(t: number, from: FocusPaintState, targetLineWidth: number): F
  * `outline-width` model: the ring grows outward out of the element edge and retracts back
  * into it. Uniform px, monotonic, no scale, no direction reversal.
  *
- * 1. Initial Focus Appearance (`startPulseIn`): 160ms quad-in reveal.
+ * 1. Initial Focus Appearance (`startPulseIn`): 160ms quad-out reveal.
  * 2. Focus Disappearance (`startPulseOut`): 90ms quad-out exit.
  * 3. Same Element Resize (`isSameElement = true`): pure smooth lerp without teleport or reveal.
  * 4. Short Distance (< 240px) or rapid tabbing (< 150ms between focus changes):
@@ -158,7 +147,7 @@ export class FocusAnimationController {
 
     /**
      * Animates an initial focus appearance reveal at targetBox (when no focus ring was previously active).
-     * Time-based: 160ms quad-in (offset -4px->0, lineWidth 0->target, opacity 0->1).
+     * Time-based: 160ms quad-out (offset -4px->0, lineWidth 0->target, opacity 0->1).
      */
     startPulseIn(
         targetBox: FocusBox,

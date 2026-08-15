@@ -1,1 +1,1 @@
-export * from "./disable-interaction";
+export * from "./disable-interaction.attach";

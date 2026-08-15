@@ -2,6 +2,8 @@
     import { FlaskConical } from "@lucide/svelte";
 
     import { viewState } from "$views/view.svelte";
+
+    import { disableInteraction } from "$attachments/_system";
 </script>
 
 <div class="mx-auto p-6 pb-28 flex flex-col gap-8 max-w-4xl md:p-10 md:pb-28">
@@ -26,6 +28,13 @@
             class="p-6 rounded-3xl bg-elevation-1 flex flex-col gap-5 shadow-sm squircle-smooth md:p-8"
         >
             <!-- Drop random test components and code here -->
+
+            {const isDisabled = true}
+
+            <button
+                class="bg-accent-500 text-white rounded-full squircle-smooth h-36px px-4 flex-center font-600 w-fit cursor-pointer hover:bg-accent-400 t:(bg-200-quad-out)"
+                {@attach isDisabled && disableInteraction()}>Click me!</button
+            >
         </section>
     </div>
 </div>

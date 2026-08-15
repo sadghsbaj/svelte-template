@@ -5,4 +5,3 @@ export * from "./string";
 export * from "./misc.svelte";
 export * from "./http";
 export * from "./cn";
-export * from "./create-intercept-click";

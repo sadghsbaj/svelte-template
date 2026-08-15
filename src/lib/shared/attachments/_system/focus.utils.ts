@@ -1,3 +1,12 @@
+/**
+ * @file Focus & Tab-Order DOM Utilities
+ *
+ * Co-located within `attachments/_system/` as a dedicated domain sub-module.
+ * Provides shared DOM traversal, candidate resolution, visibility checks,
+ * inert/disabled filtering, and positive tabindex sorting tailored specifically
+ * for focus-management attachments (`autoFocus`, `focusTrap`).
+ */
+
 export const FOCUSABLE_SELECTOR =
     'button, [href], input:not([type="hidden"]), select, textarea, [tabindex], [contenteditable]:not([contenteditable="false"]), summary, iframe, audio[controls], video[controls]';
 

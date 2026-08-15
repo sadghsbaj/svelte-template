@@ -100,94 +100,14 @@ export interface AutoFocusOptions {
 
 export type AutoFocusSource = boolean | AutoFocusTarget | AutoFocusOptions;
 
-const FOCUSABLE_SELECTOR =
-    'button, [href], input:not([type="hidden"]), select, textarea, [tabindex], [contenteditable]:not([contenteditable="false"]), summary, iframe, audio[controls], video[controls]';
-
-/**
- * Returns the currently active element, traversing through Shadow DOM boundaries if necessary.
- */
-function getActiveElement(root: Document | ShadowRoot = document): HTMLElement | null {
-    if (typeof document === "undefined") {
-        return null;
-    }
-
-    let active = root.activeElement as HTMLElement | null;
-    while (active?.shadowRoot?.activeElement) {
-        active = active.shadowRoot.activeElement as HTMLElement | null;
-    }
-    return active;
-}
-
-/**
- * Checks if an element is disabled or located inside an inert/disabled subtree.
- */
-function isElementDisabledOrInert(element: Element): boolean {
-    return Boolean(element.closest(':disabled, [aria-disabled="true"], [inert]'));
-}
-
-/**
- * Verifies if an element is visible and capable of receiving focus in the DOM layout.
- */
-function isElementVisible(element: HTMLElement): boolean {
-    if (element.hidden || element.getAttribute("aria-hidden") === "true") {
-        return false;
-    }
-
-    if (typeof element.checkVisibility === "function") {
-        return element.checkVisibility({
-            checkOpacity: false,
-            checkVisibilityCSS: true,
-        });
-    }
-
-    if (element.style.display === "none" || element.style.visibility === "hidden") {
-        return false;
-    }
-
-    return Boolean(
-        element.offsetWidth ||
-            element.offsetHeight ||
-            element.getClientRects().length > 0 ||
-            element.parentElement
-    );
-}
-
-/**
- * Checks whether an element is inherently focusable or has a non-negative tabindex.
- */
-function isNativelyFocusable(element: HTMLElement): boolean {
-    if (element.hasAttribute("tabindex")) {
-        const tabIndexAttr = element.getAttribute("tabindex");
-        if (tabIndexAttr === null) {
-            return false;
-        }
-        const tabIndex = Number(tabIndexAttr);
-        return !Number.isNaN(tabIndex) && tabIndex >= 0;
-    }
-
-    return element.matches(
-        'button, [href], input:not([type="hidden"]), select, textarea, [contenteditable]:not([contenteditable="false"]), summary, iframe, audio[controls], video[controls]'
-    );
-}
-
-/**
- * Determines whether a candidate element can receive keyboard/programmatic focus.
- */
-function isCandidateFocusable(element: Element): element is HTMLElement {
-    if (!(element instanceof HTMLElement)) {
-        return false;
-    }
-
-    if (isElementDisabledOrInert(element)) {
-        return false;
-    }
-
-    if (!isNativelyFocusable(element)) {
-        return false;
-    }
-
-    return isElementVisible(element);
-}
+import {
+    getActiveElement,
+    getFocusableElements,
+    isCandidateFocusable,
+    isElementDisabledOrInert,
+    isElementVisible,
+    isNativelyFocusable,
+} from "./focus.utils";
 
 /**
  * Finds the target focusable element within a container based on the target strategy.
@@ -224,9 +144,7 @@ function resolveTargetElement(
     }
 
     // "first-focusable", "last-focusable", or default resolution
-    const candidates = [...container.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)].filter(
-        (el) => isCandidateFocusable(el)
-    );
+    const candidates = getFocusableElements(container);
 
     if (targetStrategy === "last-focusable") {
         const lastCandidate = candidates.at(-1);
@@ -244,6 +162,7 @@ function resolveTargetElement(
 
     return isCandidateFocusable(container) ? container : null;
 }
+
 
 /**
  * Safely applies text selection or cursor placement to inputs, textareas, and contenteditable elements.

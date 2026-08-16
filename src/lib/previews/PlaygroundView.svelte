@@ -29,7 +29,7 @@
         <div
             class="h-250px w-400px rounded-3xl squircle-smooth bg-elevation-2 p-4 flex flex-col justify-between"
         >
-            <BackgroundPattern variant="grid" {@attach fadeMask({ type: "radial" })} />
+            <BackgroundPattern variant="grid" {@attach fadeMask()} />
 
             <h2 class="text-strong font-700 text-lg">Test Title!</h2>
 

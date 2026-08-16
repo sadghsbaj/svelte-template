@@ -126,7 +126,7 @@
     */
     .background-pattern {
         --bp-theme-color: black;
-        --bp-fallback-opacity: 6%;
+        --bp-fallback-opacity: 7%;
         --bp-final-color: color-mix(
             in srgb,
             var(--bp-color, var(--bp-theme-color)) var(--bp-opacity, var(--bp-fallback-opacity)),
@@ -154,7 +154,7 @@
     */
     :global([data-theme="dark"]) .background-pattern {
         --bp-theme-color: white;
-        --bp-fallback-opacity: 6%;
+        --bp-fallback-opacity: 4%;
         --bp-final-color: color-mix(
             in srgb,
             var(--bp-dark-color, var(--bp-color, var(--bp-theme-color)))

@@ -1,12 +1,12 @@
 <script lang="ts">
     import { cn, randomString } from "$utils";
 
-    import * as variants from "./PatternVariants.svelte";
+    import * as variants from "./pattern-variants.snippets.svelte";
     import {
         OFFSET_VARIANTS,
         type PatternVariant,
         type VariantContext,
-    } from "./PatternVariants.svelte";
+    } from "./pattern-variants.snippets.svelte";
 
     interface Props {
         variant?: PatternVariant;

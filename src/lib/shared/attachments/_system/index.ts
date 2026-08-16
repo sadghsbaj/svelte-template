@@ -9,3 +9,4 @@ export * from "./long-press.attach";
 export * from "./middle-click.attach";
 export * from "./pan.attach";
 export * from "./paste-on-click.attach";
+export * from "./fade-mask.attach";

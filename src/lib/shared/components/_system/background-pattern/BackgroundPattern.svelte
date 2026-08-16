@@ -1,4 +1,5 @@
 <script lang="ts">
+    import type { SVGAttributes } from "svelte/elements";
     import { cn, randomString } from "$utils";
 
     import * as variants from "./pattern-variants.snippets.svelte";
@@ -8,7 +9,7 @@
         type VariantContext,
     } from "./pattern-variants.snippets.svelte";
 
-    interface Props {
+    interface Props extends SVGAttributes<SVGSVGElement> {
         variant?: PatternVariant;
         spacing?: number;
         size?: number;
@@ -28,6 +29,7 @@
         darkColor,
         darkOpacity,
         class: className,
+        ...restProps
     }: Props = $props();
 
     // Generates a unique ID per instance so multiple patterns don't collide in the DOM
@@ -83,6 +85,7 @@
     style:--bp-dark-color={darkColor !== undefined ? darkColor : undefined}
     style:--bp-dark-opacity={darkOpacity !== undefined ? `${darkOpacity}%` : undefined}
     aria-hidden="true"
+    {...restProps}
 >
     <defs>
         <pattern

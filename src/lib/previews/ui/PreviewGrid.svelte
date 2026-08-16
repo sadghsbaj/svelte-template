@@ -1,5 +1,6 @@
 <script lang="ts">
     import type { Snippet } from "svelte";
+    import { cn } from "$utils";
 
     interface Props {
         cols?: 1 | 2 | 3 | 4 | "auto";
@@ -7,7 +8,7 @@
         class?: string;
     }
 
-    let { cols = 3, children, class: className = "" }: Props = $props();
+    let { cols = 3, children, class: className }: Props = $props();
 
     const colClasses: Record<number | string, string> = {
         1: "grid-cols-1",
@@ -18,7 +19,7 @@
     };
 </script>
 
-<div class="grid {colClasses[cols] ?? colClasses[3]} gap-4 md:gap-5 w-full {className}">
+<div class={cn("grid gap-4 md:gap-5 w-full", colClasses[cols] ?? colClasses[3], className)}>
     {#if children}
         {@render children()}
     {/if}

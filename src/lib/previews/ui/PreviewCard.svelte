@@ -1,10 +1,12 @@
 <script lang="ts">
     import type { Snippet } from "svelte";
+    import { cn } from "$utils";
 
     interface Props {
         label?: string;
         bg?: "elevation-0" | "elevation-1" | "elevation-2" | "transparent";
         checkerboard?: boolean;
+        padless?: boolean;
         children?: Snippet;
         class?: string;
     }
@@ -13,8 +15,9 @@
         label,
         bg = "elevation-1",
         checkerboard = false,
+        padless = false,
         children,
-        class: className = "",
+        class: className,
     }: Props = $props();
 
     const bgClasses: Record<string, string> = {
@@ -26,14 +29,18 @@
 </script>
 
 <div
-    class="p-6 {bgClasses[bg] ??
-        'bg-elevation-1'}shadow-sm rounded-3xl squircle-smooth flex-center flex-col relative min-h-[120px] overflow-hidden{label
-        ? 'pt-9'
-        : ''} {checkerboard ? 'bg-checkerboard' : ''} {className}"
+    class={cn(
+        "shadow-sm rounded-3xl squircle-smooth flex-center flex-col relative min-h-[120px] overflow-hidden",
+        !padless && "p-6",
+        !padless && label && "pt-9",
+        bgClasses[bg] ?? "bg-elevation-1",
+        checkerboard && "bg-checkerboard",
+        className
+    )}
 >
     {#if label}
         <span
-            class="px-2.5 py-1 rounded-xl bg-elevation-2/80 text-weak text-[11px] font-600 tracking-wide uppercase absolute top-3 left-3 select-none pointer-events-none"
+            class="px-2.5 py-1 rounded-xl bg-elevation-2/80 text-weak text-[11px] font-600 tracking-wide uppercase absolute top-3 left-3 select-none pointer-events-none z-10"
         >
             {label}
         </span>

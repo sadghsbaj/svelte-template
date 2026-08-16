@@ -20,10 +20,15 @@
         class?: string;
     }
 
+    // Perceptually balanced default sizes per variant (fallback is 1)
+    const DEFAULT_VARIANT_SIZES: Partial<Record<PatternVariant, number>> = {
+        dots: 2,
+    };
+
     let {
         variant = "dots",
         spacing = 24,
-        size = 1,
+        size,
         color,
         opacity,
         darkColor,
@@ -31,6 +36,9 @@
         class: className,
         ...restProps
     }: Props = $props();
+
+    // Resolves optical stroke or radius size with fallback map
+    let resolvedSize = $derived(size ?? DEFAULT_VARIANT_SIZES[variant] ?? 1);
 
     // Generates a unique ID per instance so multiple patterns don't collide in the DOM
     const patternId = `background-pattern-${randomString(7)}`;
@@ -58,7 +66,9 @@
 
     // Guarantees the cross length is always at least 2.5x the line thickness (size),
     // preventing crosshairs from collapsing into solid squares.
-    let crossLength = $derived(Math.max(size * 2.5, Math.min(spacing * 0.25, spacing - size)));
+    let crossLength = $derived(
+        Math.max(resolvedSize * 2.5, Math.min(spacing * 0.25, spacing - resolvedSize))
+    );
 
     // Offsets
     let isOffset = $derived(OFFSET_VARIANTS.has(variant));
@@ -69,7 +79,7 @@
     let variantContext = $derived<VariantContext>({
         spaceX: perfectSpaceX,
         spaceY: perfectSpaceY,
-        size,
+        size: resolvedSize,
         crossLength,
     });
 </script>
@@ -79,7 +89,7 @@
     bind:clientHeight={containerHeight}
     class={cn("background-pattern", className)}
     style:--bp-space={spacing !== undefined ? `${spacing}px` : undefined}
-    style:--bp-size={size !== undefined ? `${size}px` : undefined}
+    style:--bp-size={`${resolvedSize}px`}
     style:--bp-color={color !== undefined ? color : undefined}
     style:--bp-opacity={opacity !== undefined ? `${opacity}%` : undefined}
     style:--bp-dark-color={darkColor !== undefined ? darkColor : undefined}

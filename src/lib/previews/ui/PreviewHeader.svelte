@@ -1,5 +1,6 @@
 <script lang="ts">
     import type { Component, Snippet } from "svelte";
+    import { cn } from "$utils";
 
     interface Props {
         title: string;
@@ -9,10 +10,10 @@
         class?: string;
     }
 
-    let { title, description, icon: Icon, children, class: className = "" }: Props = $props();
+    let { title, description, icon: Icon, children, class: className }: Props = $props();
 </script>
 
-<header class="flex flex-col gap-2.5 select-none {className}">
+<header class={cn("flex flex-col gap-2.5 select-none", className)}>
     <div class="flex items-center gap-3">
         {#if Icon}
             <div

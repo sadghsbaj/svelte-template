@@ -1,5 +1,6 @@
 <script lang="ts">
     import type { Snippet } from "svelte";
+    import { cn } from "$utils";
 
     interface Props {
         title?: string;
@@ -8,10 +9,10 @@
         class?: string;
     }
 
-    let { title, description, children, class: className = "" }: Props = $props();
+    let { title, description, children, class: className }: Props = $props();
 </script>
 
-<section class="flex flex-col gap-3.5 {className}">
+<section class={cn("flex flex-col gap-3.5", className)}>
     {#if title || description}
         <div class="flex flex-col gap-0.5 select-none">
             {#if title}

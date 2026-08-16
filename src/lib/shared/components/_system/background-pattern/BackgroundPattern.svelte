@@ -123,22 +123,12 @@
     */
     .background-pattern {
         --bp-theme-color: black;
-
         --bp-fallback-opacity: 6%;
-        --bp-custom-opacity: var(--bp-opacity, 100%);
-        --bp-actual-opacity: var(--bp-opacity, var(--bp-fallback-opacity));
-
-        --bp-custom-color-mixed: color-mix(
+        --bp-final-color: color-mix(
             in srgb,
-            var(--bp-color) var(--bp-custom-opacity),
+            var(--bp-color, var(--bp-theme-color)) var(--bp-opacity, var(--bp-fallback-opacity)),
             transparent
         );
-        --bp-fallback-color: color-mix(
-            in srgb,
-            var(--bp-theme-color) var(--bp-actual-opacity),
-            transparent
-        );
-        --bp-final-color: var(--bp-custom-color-mixed, var(--bp-fallback-color));
 
         position: absolute;
         inset: var(--bp-layout-inset, 0px);
@@ -161,21 +151,12 @@
     */
     :global([data-theme="dark"]) .background-pattern {
         --bp-theme-color: white;
-
         --bp-fallback-opacity: 6%;
-        --bp-actual-opacity: var(--bp-dark-opacity, var(--bp-opacity, var(--bp-fallback-opacity)));
-        --bp-custom-opacity: var(--bp-dark-opacity, var(--bp-opacity, 100%));
-
-        --bp-custom-color-mixed: color-mix(
+        --bp-final-color: color-mix(
             in srgb,
-            var(--bp-dark-color, var(--bp-color)) var(--bp-custom-opacity),
+            var(--bp-dark-color, var(--bp-color, var(--bp-theme-color)))
+                var(--bp-dark-opacity, var(--bp-opacity, var(--bp-fallback-opacity))),
             transparent
         );
-        --bp-fallback-color: color-mix(
-            in srgb,
-            var(--bp-theme-color) var(--bp-actual-opacity),
-            transparent
-        );
-        --bp-final-color: var(--bp-custom-color-mixed, var(--bp-fallback-color));
     }
 </style>

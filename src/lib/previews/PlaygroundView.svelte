@@ -1,6 +1,6 @@
 <script lang="ts">
     import { FlaskConical } from "@lucide/svelte";
-    import { BackgroundPattern } from "$components";
+    import { BackgroundPattern, FadeMask } from "$components";
 
     import { viewState } from "$views/view.svelte";
 </script>
@@ -28,7 +28,9 @@
         <div
             class="h-250px w-400px rounded-3xl squircle-smooth bg-elevation-2 p-4 flex flex-col justify-between"
         >
-            <BackgroundPattern variant="grid" />
+            <FadeMask type="radial" strength="md">
+                <BackgroundPattern variant="grid" />
+            </FadeMask>
 
             <h2 class="text-strong font-700 text-lg">Test Title!</h2>
 

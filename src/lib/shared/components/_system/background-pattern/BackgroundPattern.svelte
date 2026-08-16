@@ -145,6 +145,7 @@
         z-index: -1;
 
         /* Ensures the SVG canvas behaves as a block and spans properly */
+        display: block;
         width: 100%;
         height: 100%;
         border-radius: inherit;

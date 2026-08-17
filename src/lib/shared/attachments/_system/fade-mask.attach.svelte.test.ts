@@ -29,6 +29,19 @@ describe("fadeMask Svelte 5 Element Attachment", () => {
 
             cleanup?.();
         });
+
+        test("should do nothing when enabled is false", () => {
+            const div = document.createElement("div");
+            container.append(div);
+
+            const attach = fadeMask({ enabled: false });
+            const cleanup = attach(div);
+
+            expect(div.style.maskImage).toBe("");
+            expect(div.style.maskRepeat).toBe("");
+
+            cleanup?.();
+        });
     });
 
     describe("Gradient Type & Direction Resolving", () => {

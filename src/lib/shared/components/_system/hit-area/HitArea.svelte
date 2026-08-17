@@ -44,5 +44,6 @@
         contain: strict;
         pointer-events: auto;
         user-select: none;
+        cursor: inherit;
     }
 </style>

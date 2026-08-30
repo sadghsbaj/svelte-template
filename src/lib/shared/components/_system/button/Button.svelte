@@ -25,9 +25,9 @@
         };
 
     let {
-        variant,
-        color,
-        size,
+        variant = "solid",
+        color = "accent",
+        size = "md",
         fullWidth,
         iconOnly,
         iconLeft,
@@ -52,7 +52,7 @@
     );
 
     const focusColor = $derived(
-        variant === "solid" && color === "accent" ? "var(--color-accent-400)" : undefined
+        variant === "solid" && color === "accent" ? "var(--color-accent-300)" : undefined
     );
 </script>
 

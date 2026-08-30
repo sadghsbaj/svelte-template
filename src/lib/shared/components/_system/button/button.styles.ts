@@ -3,10 +3,10 @@ import { cva, type VariantProps } from "$utils";
 export const buttonStyles = cva({
     base: {
         layout: "inline-flex justify-center items-center shrink-0 w-fit select-none",
-        typography: "font-600 leading-none",
+        typography: "font-600 leading-normal",
         frame: "rounded-full squircle-smooth",
         interaction: "cursor-pointer active:scale-97",
-        motion: "will-change-transform t:(scale-200-expo-out bg-200-quad-out text-200-quad-out border-200-quad-out shadow-200-quad-out)",
+        motion: "will-change-transform transform-gpu backface-hidden t:(scale-200-expo-out bg-200-quad-out text-200-quad-out border-200-quad-out shadow-200-quad-out)",
         misc: "isolate",
     },
 
@@ -15,7 +15,7 @@ export const buttonStyles = cva({
             solid: "",
             soft: "",
             outline: "bg-transparent border-2",
-            elevate: "bg-white dark:bg-base-900 shadow-sm hover:shadow-md",
+            elevate: "bg-white dark:bg-base-900 shadow-sm hover:shadow-md active:shadow-sm!",
             ghost: "bg-transparent",
             plain: "bg-transparent h-fit! p-0!",
         },
@@ -27,9 +27,9 @@ export const buttonStyles = cva({
         },
 
         size: {
-            sm: "h-9 px-3 text-xs gap-1",
-            md: "h-10 px-4 text-sm gap-1.5",
-            lg: "h-11 px-5 text-base gap-2",
+            sm: "h-9 px-3 text-xs gap- [&_svg]:(size-3.5 stroke-2.5)",
+            md: "h-10 px-4 text-sm gap-1.5 [&_svg]:(size-4 stroke-2.5)",
+            lg: "h-11 px-5 text-base gap-2 [&_svg]:(size-4.5 stroke-2.5)",
         },
     },
 
@@ -77,12 +77,12 @@ export const buttonStyles = cva({
         {
             variant: "outline",
             color: "accent",
-            class: "text-accent-solid-1 border-accent-soft-2 hover:(bg-accent-soft-1 text-accent-solid-2)",
+            class: "text-accent-solid-1 border-accent-soft-2 hover:(bg-accent-soft-1)",
         },
         {
             variant: "outline",
             color: "danger",
-            class: "text-danger-solid-1 border-danger-soft-2 hover:(bg-danger-soft-1 text-danger-solid-2)",
+            class: "text-danger-solid-1 border-danger-soft-2 hover:(bg-danger-soft-1)",
         },
         {
             variant: "outline",
@@ -95,12 +95,12 @@ export const buttonStyles = cva({
         {
             variant: "elevate",
             color: "accent",
-            class: "text-accent-solid-1 hover:(text-accent-solid-2)",
+            class: "text-accent-solid-1",
         },
         {
             variant: "elevate",
             color: "danger",
-            class: "text-danger-solid-1 hover:(text-danger-solid-2)",
+            class: "text-danger-solid-1",
         },
         {
             variant: "elevate",
@@ -112,12 +112,12 @@ export const buttonStyles = cva({
         {
             variant: "ghost",
             color: "accent",
-            class: "text-accent-solid-1 hover:(bg-accent-soft-1 text-accent-solid-2)",
+            class: "text-accent-solid-1 hover:(bg-accent-soft-1)",
         },
         {
             variant: "ghost",
             color: "danger",
-            class: "text-danger-solid-1 hover:(bg-danger-soft-1 text-danger-solid-2)",
+            class: "text-danger-solid-1 hover:(bg-danger-soft-1)",
         },
         {
             variant: "ghost",

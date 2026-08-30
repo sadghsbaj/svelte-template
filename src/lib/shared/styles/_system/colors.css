@@ -30,7 +30,7 @@
         color-mix(in srgb, var(--color-accent-500) 24%, transparent)
     );
     --color-accent-solid-1: var(--color-accent-500);
-    --color-accent-solid-2: light-dark(var(--color-accent-600), var(--color-accent-400));
+    --color-accent-solid-2: var(--color-accent-400);
 
     /* Success Soft & Solid */
     --color-success-soft-1: light-dark(
@@ -42,7 +42,7 @@
         color-mix(in srgb, var(--color-success-500) 24%, transparent)
     );
     --color-success-solid-1: var(--color-success-500);
-    --color-success-solid-2: light-dark(var(--color-success-600), var(--color-success-400));
+    --color-success-solid-2: var(--color-success-400);
 
     /* Warning Soft & Solid */
     --color-warning-soft-1: light-dark(
@@ -54,7 +54,7 @@
         color-mix(in srgb, var(--color-warning-500) 24%, transparent)
     );
     --color-warning-solid-1: var(--color-warning-500);
-    --color-warning-solid-2: light-dark(var(--color-warning-600), var(--color-warning-400));
+    --color-warning-solid-2: var(--color-warning-400);
 
     /* Danger Soft & Solid */
     --color-danger-soft-1: light-dark(
@@ -66,7 +66,7 @@
         color-mix(in srgb, var(--color-danger-500) 24%, transparent)
     );
     --color-danger-solid-1: var(--color-danger-500);
-    --color-danger-solid-2: light-dark(var(--color-danger-600), var(--color-danger-400));
+    --color-danger-solid-2: var(--color-danger-400);
 
     /* Info Soft & Solid */
     --color-info-soft-1: light-dark(
@@ -78,7 +78,7 @@
         color-mix(in srgb, var(--color-info-500) 24%, transparent)
     );
     --color-info-solid-1: var(--color-info-500);
-    --color-info-solid-2: light-dark(var(--color-info-600), var(--color-info-400));
+    --color-info-solid-2: var(--color-info-400);
 
     --color-accent-50: var(--color-blue-50);
     --color-accent-100: var(--color-blue-100);

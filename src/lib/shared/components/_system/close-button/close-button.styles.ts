@@ -12,8 +12,8 @@ export const closeButtonStyles = cva({
 
     options: {
         variant: {
-            solid: "bg-fill-1 hover:(bg-fill-2)",
-            ghost: "bg-transparent hover:(bg-fill-1)",
+            solid: "bg-base-soft-1 hover:(bg-base-soft-2)",
+            ghost: "bg-transparent hover:(bg-base-soft-1)",
         },
 
         size: {

@@ -1,10 +1,19 @@
-const colorScale = (name: string): { [key: string]: string } =>
-    Object.fromEntries(
+const colorScale = (name: string): Record<string, unknown> => ({
+    ...Object.fromEntries(
         [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950].map((n) => [
             n,
             `var(--color-${name}-${n})`,
         ])
-    );
+    ),
+    soft: {
+        1: `var(--color-${name}-soft-1)`,
+        2: `var(--color-${name}-soft-2)`,
+    },
+    solid: {
+        1: `var(--color-${name}-solid-1)`,
+        2: `var(--color-${name}-solid-2)`,
+    },
+});
 
 export const themeConfig = {
     colors: {
@@ -20,12 +29,6 @@ export const themeConfig = {
         main: "var(--color-text-main)",
         weak: "var(--color-text-weak)",
         weaker: "var(--color-text-weaker)",
-
-        fill: {
-            DEFAULT: "var(--color-fill-1)",
-            1: "var(--color-fill-1)",
-            2: "var(--color-fill-2)",
-        },
 
         accent: colorScale("accent"),
         success: colorScale("success"),

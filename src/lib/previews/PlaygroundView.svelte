@@ -26,7 +26,12 @@
     </header>
 
     <!-- Global Pending State Controls -->
-    <section class="p-6 rounded-3xl bg-elevation-1 flex flex-col gap-6 shadow-xs squircle-smooth">
-        <button>Click me!</button>
+    <section class="p-6 rounded-3xl bg-elevation-0 flex flex-col gap-6 squircle-smooth">
+        <Button variant="solid" color="accent">Click me!</Button>
+        <Button variant="soft" color="accent">Click me!</Button>
+        <Button variant="outline" color="accent">Click me!</Button>
+        <Button variant="elevate" color="accent">Click me!</Button>
+        <Button variant="ghost" color="accent">Click me!</Button>
+        <Button variant="plain" color="accent">Click me!</Button>
     </section>
 </div>

@@ -62,7 +62,9 @@
         {@render iconLeft()}
     {/if}
 
-    {@render children?.()}
+    <span class="truncate">
+        {@render children?.()}
+    </span>
 
     {#if iconRight}
         {@render iconRight()}

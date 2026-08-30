@@ -109,7 +109,7 @@
                 <button
                     type="button"
                     onclick={() => (isCollapsed = true)}
-                    class="p-1.5 rounded-xl text-weak hover:text-strong hover:bg-elevation-2 select-none active:scale-95 t:(bg-180-quad-out text-180-quad-out)"
+                    class="p-1.5 rounded-xl text-weak hover:text-strong hover:bg-elevation-2 select-none active:scale-95 squircle-smooth t:(bg-180-quad-out text-180-quad-out)"
                     title="Close sidebar"
                 >
                     <PanelLeftClose size={17} />
@@ -138,7 +138,7 @@
                 <button
                     type="button"
                     onclick={() => (selectedId = item.id)}
-                    class="w-full p-3 rounded-2xl flex items-center justify-between text-left select-none active:scale-97 t:(bg-180-quad-out text-180-quad-out scale-180-quad-out) {selectedId ===
+                    class="w-full p-3 rounded-2xl flex items-center justify-between text-left select-none active:scale-97 squircle-smooth t:(bg-180-quad-out text-180-quad-out scale-180-quad-out) {selectedId ===
                     item.id
                         ? 'text-strong bg-elevation-2 font-600'
                         : 'text-weak hover:text-strong hover:bg-elevation-2/50'}"

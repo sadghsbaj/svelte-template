@@ -21,6 +21,12 @@ export const themeConfig = {
         weak: "var(--color-text-weak)",
         weaker: "var(--color-text-weaker)",
 
+        fill: {
+            DEFAULT: "var(--color-fill-1)",
+            1: "var(--color-fill-1)",
+            2: "var(--color-fill-2)",
+        },
+
         accent: colorScale("accent"),
         success: colorScale("success"),
         warning: colorScale("warning"),

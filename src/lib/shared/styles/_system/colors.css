@@ -8,6 +8,15 @@
     --color-text-weak: light-dark(var(--color-base-500), var(--color-base-400));
     --color-text-weaker: light-dark(var(--color-base-400), var(--color-base-600));
 
+    --color-fill-1: light-dark(
+        color-mix(in srgb, var(--color-base-900) 8%, transparent),
+        color-mix(in srgb, var(--color-base-100) 12%, transparent)
+    );
+    --color-fill-2: light-dark(
+        color-mix(in srgb, var(--color-base-900) 14%, transparent),
+        color-mix(in srgb, var(--color-base-100) 20%, transparent)
+    );
+
     --color-accent-50: var(--color-blue-50);
     --color-accent-100: var(--color-blue-100);
     --color-accent-200: var(--color-blue-200);

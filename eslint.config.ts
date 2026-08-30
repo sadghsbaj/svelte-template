@@ -19,6 +19,8 @@ import { svelteConfig } from "./eslint/svelte.ts";
 import { forbiddenTransitionsConfig } from "./eslint/transitions.ts";
 import { unicornConfig } from "./eslint/unicorn.ts";
 import { unocssConfig } from "./eslint/unocss.ts";
+import { blocklistConfig } from "./uno/blocklist.ts";
+import { createCvaBlocklistConfig } from "./eslint/cva-blocklist.ts";
 
 export default defineConfig([
     ignoresConfig,
@@ -29,6 +31,7 @@ export default defineConfig([
     ...baseRulesConfig,
     forbiddenTransitionsConfig,
     shortcutsConfig,
+    createCvaBlocklistConfig(blocklistConfig),
     ...unicornConfig,
     ...unocssConfig,
 

@@ -1,0 +1,32 @@
+import { cva, type VariantProps } from "$utils";
+
+export const closeButtonStyles = cva({
+    base: {
+        layout: "inline-flex justify-center items-center shrink-0",
+        typography: "text-weak leading-none",
+        frame: "rounded-full squircle-soft",
+        interaction: "cursor-pointer active:scale-93 hover:text-main",
+        motion: "will-change-transform t:(scale-200-expo-out bg-200-quad-out text-200-quad-out)",
+        misc: "isolate",
+    },
+
+    options: {
+        variant: {
+            solid: "bg-fill-1 hover:(bg-fill-2)",
+            ghost: "bg-transparent hover:(bg-fill-1)",
+        },
+
+        size: {
+            sm: "size-4",
+            md: "size-6",
+            lg: "size-8",
+        },
+    },
+
+    defaults: {
+        variant: "solid",
+        size: "md",
+    },
+});
+
+export type CloseButtonStyleProps = VariantProps<typeof closeButtonStyles>;

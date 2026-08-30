@@ -1,9 +1,51 @@
 import type { ClipBox, FocusBox, FocusOverrides, FocusPaintState } from "./focus.types.js";
 
 let cachedAccentColor: string | null = null;
+const resolvedColorCache = new Map<string, string>();
 
 export function invalidateAccentColorCache(): void {
     cachedAccentColor = null;
+    resolvedColorCache.clear();
+}
+
+/**
+ * Resolves a color string for the 2D Canvas context.
+ * If the string contains a CSS variable (e.g. `var(--color-accent-300)` or `--color-accent-300`),
+ * it extracts and reads the computed value from `:root`, caching the result in memory.
+ */
+export function resolveFocusColor(rawColor?: string): string {
+    if (!rawColor) {
+        return resolveAccentColor();
+    }
+
+    // Direct color string (hex, oklch, rgb, hsl, named) -> 0 DOM overhead
+    if (!rawColor.includes("--")) {
+        return rawColor;
+    }
+
+    const cached = resolvedColorCache.get(rawColor);
+    if (cached !== undefined) return cached;
+
+    if (typeof window === "undefined") {
+        return rawColor;
+    }
+
+    // Extract property name: e.g. "var(--color-accent-300)" -> "--color-accent-300"
+    const match = /(--[\w-]+)/.exec(rawColor);
+    if (!match) {
+        resolvedColorCache.set(rawColor, rawColor);
+        return rawColor;
+    }
+
+    const varName = match[1];
+    const resolved = window
+        .getComputedStyle(document.documentElement)
+        .getPropertyValue(varName)
+        .trim();
+
+    const finalColor = resolved || rawColor;
+    resolvedColorCache.set(rawColor, finalColor);
+    return finalColor;
 }
 
 /**
@@ -185,7 +227,7 @@ export function drawFocusRing(
     const opacity = paint?.opacity ?? 1;
     if (opacity <= 0.01) return;
 
-    const accentColor = overrides?.color ?? resolvedColor ?? resolveAccentColor();
+    const accentColor = resolveFocusColor(overrides?.color ?? resolvedColor);
     const baseLineWidth = overrides?.lineWidth ?? 2;
     const lineWidth = paint?.lineWidthOverride ?? baseLineWidth;
 

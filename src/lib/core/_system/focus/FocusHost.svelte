@@ -55,7 +55,7 @@
     let exitingLineWidth = 2;
 
     const animController = new FocusAnimationController();
-    const OFFSET = 2;
+    const OFFSET = 0;
 
     function stopPositionTracking(): void {
         if (positionTrackingFrame === null) return;

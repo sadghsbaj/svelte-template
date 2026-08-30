@@ -43,17 +43,17 @@ export const buttonStyles = cva({
         {
             variant: "solid",
             color: "accent",
-            class: "bg-accent-solid-1 hover:bg-accent-solid-2 text-white",
+            class: "bg-accent-solid-1 text-white hover:bg-accent-solid-2",
         },
         {
             variant: "solid",
             color: "danger",
-            class: "bg-danger-solid-1 hover:bg-danger-solid-2 text-white",
+            class: "bg-danger-solid-1 text-white hover:bg-danger-solid-2",
         },
         {
             variant: "solid",
             color: "base",
-            class: "bg-base-solid-1 hover:bg-base-solid-2 text-base-50 dark:text-base-950",
+            class: "bg-base-solid-1 text-base-50 dark:text-base-950 hover:bg-base-solid-2",
         },
 
         // --- SOFT ---

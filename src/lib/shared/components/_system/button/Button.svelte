@@ -7,6 +7,8 @@
     } from "svelte/elements";
     import { disableInteraction, pending } from "$attachments";
 
+    import { focusAttach } from "$core/_system/focus/focus.attach";
+
     import { buttonStyles, type ButtonStyleProps } from "./button.styles";
 
     type Props = ButtonStyleProps &
@@ -48,6 +50,10 @@
             class: className,
         })
     );
+
+    const focusColor = $derived(
+        variant === "solid" && color === "accent" ? "var(--color-accent-400)" : undefined
+    );
 </script>
 
 <svelte:element
@@ -57,6 +63,7 @@
     class={computedClass}
     {@attach disableInteraction({ enabled: disabled })}
     {@attach pending({ active: loading })}
+    {@attach focusAttach({ color: focusColor })}
 >
     {#if iconLeft}
         {@render iconLeft()}

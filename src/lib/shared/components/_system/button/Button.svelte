@@ -6,7 +6,6 @@
         HTMLLabelAttributes,
     } from "svelte/elements";
     import { disableInteraction, pending } from "$attachments";
-    import { cn } from "$utils";
 
     import { buttonStyles, type ButtonStyleProps } from "./button.styles";
 

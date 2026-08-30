@@ -4,7 +4,6 @@
     import { X } from "@lucide/svelte";
     import { disableInteraction } from "$attachments";
     import { HitArea, type HitAreaSize } from "$components";
-    import { cn } from "$utils";
 
     import { closeButtonStyles, type CloseButtonStyleProps } from "./close-button.styles";
 
@@ -36,13 +35,11 @@
     const resolvedHitAreaSize = $derived(typeof hitArea === "boolean" ? (size ?? "md") : hitArea);
 
     const computedClass = $derived(
-        cn(
-            closeButtonStyles({
-                variant,
-                size,
-                class: className,
-            })
-        )
+        closeButtonStyles({
+            variant,
+            size,
+            class: className,
+        })
     );
 </script>
 

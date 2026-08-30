@@ -1,7 +1,7 @@
 import type { Variant } from "unocss";
 
 export const variantsConfig: Variant[] = [
-    // Hover: High priority over presetWind4, fine pointer media query, excluding disabled states
+    // Hover: High priority over presetWind4, fine pointer media query, excluding disabled and busy states
     {
         name: "custom-hover",
         order: -1,
@@ -10,7 +10,7 @@ export const variantsConfig: Variant[] = [
             return {
                 matcher: matcher.slice(6),
                 parent: "@media (hover: hover) and (pointer: fine)",
-                selector: (s) => `${s}:hover:not([aria-disabled="true"], :disabled)`,
+                selector: (s) => `${s}:hover:not([aria-disabled="true"], [aria-busy="true"], :disabled)`,
             };
         },
     },
@@ -28,7 +28,7 @@ export const variantsConfig: Variant[] = [
         },
     },
 
-    // Active: High priority over presetWind4, excluding disabled states
+    // Active: High priority over presetWind4, excluding disabled and busy states
     {
         name: "custom-active",
         order: -1,
@@ -36,7 +36,7 @@ export const variantsConfig: Variant[] = [
             if (!matcher.startsWith("active:")) return;
             return {
                 matcher: matcher.slice(7),
-                selector: (s) => `${s}:active:not([aria-disabled="true"], :disabled)`,
+                selector: (s) => `${s}:active:not([aria-disabled="true"], [aria-busy="true"], :disabled)`,
             };
         },
     },

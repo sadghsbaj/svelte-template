@@ -40,7 +40,7 @@ export interface PendingOptions {
 
     /**
      * Custom cursor to apply while pending. Pass `false` to keep current cursor.
-     * @default false
+     * @default "wait"
      */
     cursor?: string | false;
 
@@ -109,7 +109,7 @@ export function pending<T extends HTMLElement = HTMLElement>(
     const {
         color = "accent",
         blockInteraction = true,
-        cursor = false,
+        cursor = "wait",
         ariaBusy = true,
         duration = 1500,
     } = options;
@@ -133,18 +133,29 @@ export function pending<T extends HTMLElement = HTMLElement>(
         // Snapshot original DOM state for accurate teardown
         const originalAriaBusy = node.getAttribute("aria-busy");
         const originalCursor = node.style.cursor;
+        const originalOutline = node.style.outline;
+        const hadNoCanvasFocus = "noCanvasFocus" in node.dataset;
 
-        // 1. Accessibility
+        // 1. Suppress both canvas focus ring and native browser focus outline during pulse
+        node.dataset.noCanvasFocus = "";
+        node.style.outline = "none";
+
+        // Notify FocusHost immediately if element is currently focused so it fades out canvas ring
+        if (document.activeElement === node) {
+            node.dispatchEvent(new FocusEvent("focusin", { bubbles: true }));
+        }
+
+        // 2. Accessibility
         if (ariaBusy) {
             node.setAttribute("aria-busy", "true");
         }
 
-        // 2. Cursor
+        // 3. Cursor
         if (cursor) {
             node.style.cursor = cursor;
         }
 
-        // 3. Event Suppression (Double-click protection)
+        // 4. Event Suppression (Double-click protection)
         if (blockInteraction) {
             for (const eventName of BLOCKED_EVENTS) {
                 node.addEventListener(eventName, interceptEvent, { capture: true });
@@ -152,7 +163,7 @@ export function pending<T extends HTMLElement = HTMLElement>(
             node.addEventListener("keydown", handleKeydown, { capture: true });
         }
 
-        // 4. Two-layer Breathing Ring Animation with harmonic easing curve
+        // 5. Two-layer Breathing Ring Animation with harmonic easing curve
         const keyframes = [
             {
                 boxShadow: `0 0 0 1px color-mix(in srgb, ${resolvedColor} ${minRingAlpha}, transparent), 0 0 3px color-mix(in srgb, ${resolvedColor} ${minGlowAlpha}, transparent)`,
@@ -173,6 +184,17 @@ export function pending<T extends HTMLElement = HTMLElement>(
 
         // Cleanup & Teardown
         return () => {
+            // Restore Canvas Focus suppression & native outline
+            if (!hadNoCanvasFocus) {
+                delete node.dataset.noCanvasFocus;
+            }
+            node.style.outline = originalOutline;
+
+            // Re-evaluate focus on FocusHost if element still holds DOM focus
+            if (document.activeElement === node) {
+                node.dispatchEvent(new FocusEvent("focusin", { bubbles: true }));
+            }
+
             // Restore Accessibility
             if (originalAriaBusy !== null) {
                 node.setAttribute("aria-busy", originalAriaBusy);

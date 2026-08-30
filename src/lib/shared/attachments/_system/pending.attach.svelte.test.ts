@@ -24,7 +24,7 @@ describe("pending Svelte 5 Element Attachment (Direct Host Animation)", () => {
         vi.restoreAllMocks();
     });
 
-    test("should apply aria-busy and animate host node directly without child overlay", () => {
+    test("should apply aria-busy, default wait cursor, outline none, and data-no-canvas-focus", () => {
         const btn = document.createElement("button");
         container.append(btn);
 
@@ -34,11 +34,17 @@ describe("pending Svelte 5 Element Attachment (Direct Host Animation)", () => {
         const cleanup = attach(btn);
 
         expect(btn.getAttribute("aria-busy")).toBe("true");
+        expect(btn.style.cursor).toBe("wait");
+        expect(btn.style.outline).toBe("none");
+        expect("noCanvasFocus" in btn.dataset).toBe(true);
         expect(animateSpy).toHaveBeenCalled();
         expect(btn.children.length).toBe(0);
 
         cleanup?.();
         expect(btn.getAttribute("aria-busy")).toBeNull();
+        expect("noCanvasFocus" in btn.dataset).toBe(false);
+        expect(btn.style.cursor).toBe("");
+        expect(btn.style.outline).toBe("");
     });
 
     test("should return early no-op cleanup when active/enabled is false", () => {
@@ -51,6 +57,7 @@ describe("pending Svelte 5 Element Attachment (Direct Host Animation)", () => {
         const cleanup = attach(btn);
 
         expect(btn.getAttribute("aria-busy")).toBeNull();
+        expect("noCanvasFocus" in btn.dataset).toBe(false);
         expect(animateSpy).not.toHaveBeenCalled();
 
         const clickSpy = vi.fn();
@@ -149,6 +156,8 @@ describe("pending Svelte 5 Element Attachment (Direct Host Animation)", () => {
         const btn = document.createElement("button");
         btn.setAttribute("aria-busy", "false");
         btn.style.cursor = "pointer";
+        btn.style.outline = "none";
+        const initialOutline = btn.style.outline;
         container.append(btn);
 
         const cancelSpy = vi.fn();
@@ -159,16 +168,18 @@ describe("pending Svelte 5 Element Attachment (Direct Host Animation)", () => {
             pause: vi.fn(),
         } as unknown as Animation);
 
-        const attach = pending({ active: true, cursor: "wait" });
+        const attach = pending({ active: true, cursor: "progress" });
         const cleanup = attach(btn);
 
         expect(btn.getAttribute("aria-busy")).toBe("true");
-        expect(btn.style.cursor).toBe("wait");
+        expect(btn.style.cursor).toBe("progress");
+        expect(btn.style.outline).toBe("none");
 
         cleanup?.();
 
         expect(btn.getAttribute("aria-busy")).toBe("false");
         expect(btn.style.cursor).toBe("pointer");
+        expect(btn.style.outline).toBe(initialOutline);
         expect(cancelSpy).toHaveBeenCalled();
     });
 });

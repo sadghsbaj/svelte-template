@@ -56,7 +56,7 @@
         <PreviewGrid cols={4}>
             <PreviewCard label="Accent" bg="elevation-1" class="h-32">
                 <div
-                    class="w-24 h-12 rounded-2xl bg-elevation-2 flex-center shadow-xs squircle-smooth select-none"
+                    class="w-24 h-12 rounded-2xl bg-elevation-2 flex-center shadow-xs squircle-smooth select-none cursor-wait"
                     {@attach pending({ active: true, color: "accent" })}
                 >
                     <span class="text-xs font-600 text-strong">Accent</span>
@@ -65,7 +65,7 @@
 
             <PreviewCard label="Base" bg="elevation-1" class="h-32">
                 <div
-                    class="w-24 h-12 rounded-2xl bg-elevation-2 flex-center shadow-xs squircle-smooth select-none"
+                    class="w-24 h-12 rounded-2xl bg-elevation-2 flex-center shadow-xs squircle-smooth select-none cursor-wait"
                     {@attach pending({ active: true, color: "base" })}
                 >
                     <span class="text-xs font-600 text-strong">Base</span>
@@ -74,7 +74,7 @@
 
             <PreviewCard label="Success" bg="elevation-1" class="h-32">
                 <div
-                    class="w-24 h-12 rounded-2xl bg-elevation-2 flex-center shadow-xs squircle-smooth select-none"
+                    class="w-24 h-12 rounded-2xl bg-elevation-2 flex-center shadow-xs squircle-smooth select-none cursor-wait"
                     {@attach pending({ active: true, color: "success" })}
                 >
                     <span class="text-xs font-600 text-strong">Success</span>
@@ -83,7 +83,7 @@
 
             <PreviewCard label="Danger" bg="elevation-1" class="h-32">
                 <div
-                    class="w-24 h-12 rounded-2xl bg-elevation-2 flex-center shadow-xs squircle-smooth select-none"
+                    class="w-24 h-12 rounded-2xl bg-elevation-2 flex-center shadow-xs squircle-smooth select-none cursor-wait"
                     {@attach pending({ active: true, color: "danger" })}
                 >
                     <span class="text-xs font-600 text-strong">Danger</span>
@@ -100,7 +100,7 @@
         <PreviewGrid cols={3}>
             <PreviewCard label="Squircle Card" bg="elevation-1" class="h-32">
                 <div
-                    class="w-28 h-12 rounded-2xl bg-elevation-2 flex-center shadow-xs squircle-smooth select-none"
+                    class="w-28 h-12 rounded-2xl bg-elevation-2 flex-center shadow-xs squircle-smooth select-none cursor-wait"
                     {@attach pending({ active: true, color: "accent" })}
                 >
                     <span class="text-xs font-600 text-strong">Squircle</span>
@@ -109,7 +109,7 @@
 
             <PreviewCard label="Pill Badge" bg="elevation-1" class="h-32">
                 <div
-                    class="px-5 py-2 rounded-full bg-elevation-2 flex-center shadow-xs select-none"
+                    class="px-5 py-2 rounded-full bg-elevation-2 flex-center shadow-xs select-none cursor-wait"
                     {@attach pending({ active: true, color: "accent" })}
                 >
                     <span class="text-xs font-600 text-strong">Capsule</span>
@@ -118,7 +118,7 @@
 
             <PreviewCard label="Circle" bg="elevation-1" class="h-32">
                 <div
-                    class="size-12 rounded-full bg-elevation-2 flex-center shadow-xs select-none"
+                    class="size-12 rounded-full bg-elevation-2 flex-center shadow-xs select-none cursor-wait"
                     {@attach pending({ active: true, color: "accent" })}
                 >
                     <span class="text-xs font-600 text-strong">Circle</span>
@@ -144,5 +144,31 @@
                 {flowLabel}
             </div>
         </PreviewCard>
+    </PreviewSection>
+
+    <!-- Headless Operation -->
+    <PreviewSection
+        title="Headless Operation"
+        description="Preserves full accessibility and click suppression without the visual pulse ring."
+    >
+        <PreviewGrid cols={2}>
+            <PreviewCard label="Visual Pulse (ring=true)" bg="elevation-1" class="h-32">
+                <div
+                    class="w-32 h-12 rounded-2xl bg-elevation-2 flex-center shadow-xs squircle-smooth select-none cursor-wait"
+                    {@attach pending({ active: true, ring: true })}
+                >
+                    <span class="text-xs font-600 text-strong">Visual Ring</span>
+                </div>
+            </PreviewCard>
+
+            <PreviewCard label="Headless (ring=false)" bg="elevation-1" class="h-32">
+                <div
+                    class="w-32 h-12 rounded-2xl bg-elevation-2 flex-center shadow-xs squircle-smooth select-none cursor-wait"
+                    {@attach pending({ active: true, ring: false })}
+                >
+                    <span class="text-xs font-600 text-strong">Headless</span>
+                </div>
+            </PreviewCard>
+        </PreviewGrid>
     </PreviewSection>
 </PreviewPage>

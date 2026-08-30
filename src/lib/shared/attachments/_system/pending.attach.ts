@@ -1,7 +1,7 @@
 /**
  * @file pending.attach.ts
  * @description Svelte 5 Element Attachment providing a form-fitting, GPU-accelerated pulsing glow ring
- * directly on any element with click suppression, smooth color transitions, and WAI-ARIA busy state.
+ * directly on any element with click suppression, smooth color transitions, headless mode, and WAI-ARIA busy state.
  */
 
 import type { Attachment } from "svelte/attachments";
@@ -31,6 +31,13 @@ export interface PendingOptions {
      * @default "accent"
      */
     color?: PendingColor;
+
+    /**
+     * Whether to render the visual pulsing glow ring on the element.
+     * Set to `false` for headless operation (preserves event blocking, aria-busy, and focus logic without visual ring).
+     * @default true
+     */
+    ring?: boolean;
 
     /**
      * Intercept and block user clicks and keyboard submits while pending to prevent duplicate submissions.
@@ -88,7 +95,7 @@ function handleKeydown(e: KeyboardEvent): void {
 
 /**
  * Svelte 5 Element Attachment that renders a form-fitting, pulsing glow ring around an element while pending.
- * Animates box-shadow directly on the host node to guarantee 100% fidelity with squircle and rounded geometry.
+ * Supports headless operation via `ring: false`.
  *
  * @example
  * ```svelte
@@ -108,6 +115,7 @@ export function pending<T extends HTMLElement = HTMLElement>(
 
     const {
         color = "accent",
+        ring = true,
         blockInteraction = true,
         cursor = "wait",
         ariaBusy = true,
@@ -163,24 +171,28 @@ export function pending<T extends HTMLElement = HTMLElement>(
             node.addEventListener("keydown", handleKeydown, { capture: true });
         }
 
-        // 5. Two-layer Breathing Ring Animation with harmonic easing curve
-        const keyframes = [
-            {
-                boxShadow: `0 0 0 1px color-mix(in srgb, ${resolvedColor} ${minRingAlpha}, transparent), 0 0 3px color-mix(in srgb, ${resolvedColor} ${minGlowAlpha}, transparent)`,
-            },
-            {
-                boxShadow: `0 0 0 ${maxRingWidth} color-mix(in srgb, ${resolvedColor} ${maxRingAlpha}, transparent), 0 0 ${maxGlowSpread} color-mix(in srgb, ${resolvedColor} ${maxGlowAlpha}, transparent)`,
-            },
-            {
-                boxShadow: `0 0 0 1px color-mix(in srgb, ${resolvedColor} ${minRingAlpha}, transparent), 0 0 3px color-mix(in srgb, ${resolvedColor} ${minGlowAlpha}, transparent)`,
-            },
-        ];
+        // 5. Two-layer Breathing Ring Animation (skipped in headless mode)
+        let animation: Animation | null = null;
 
-        const animation = node.animate(keyframes, {
-            duration,
-            iterations: Infinity,
-            easing: ease.sineInOut,
-        });
+        if (ring) {
+            const keyframes = [
+                {
+                    boxShadow: `0 0 0 1px color-mix(in srgb, ${resolvedColor} ${minRingAlpha}, transparent), 0 0 3px color-mix(in srgb, ${resolvedColor} ${minGlowAlpha}, transparent)`,
+                },
+                {
+                    boxShadow: `0 0 0 ${maxRingWidth} color-mix(in srgb, ${resolvedColor} ${maxRingAlpha}, transparent), 0 0 ${maxGlowSpread} color-mix(in srgb, ${resolvedColor} ${maxGlowAlpha}, transparent)`,
+                },
+                {
+                    boxShadow: `0 0 0 1px color-mix(in srgb, ${resolvedColor} ${minRingAlpha}, transparent), 0 0 3px color-mix(in srgb, ${resolvedColor} ${minGlowAlpha}, transparent)`,
+                },
+            ];
+
+            animation = node.animate(keyframes, {
+                duration,
+                iterations: Infinity,
+                easing: ease.sineInOut,
+            });
+        }
 
         // Cleanup & Teardown
         return () => {
@@ -213,8 +225,8 @@ export function pending<T extends HTMLElement = HTMLElement>(
                 node.removeEventListener("keydown", handleKeydown, { capture: true });
             }
 
-            // Cancel Animation
-            animation.cancel();
+            // Cancel Animation if active
+            animation?.cancel();
         };
     };
 }

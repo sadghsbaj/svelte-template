@@ -47,6 +47,25 @@ describe("pending Svelte 5 Element Attachment (Direct Host Animation)", () => {
         expect(btn.style.outline).toBe("");
     });
 
+    test("should support headless operation with ring: false", () => {
+        const btn = document.createElement("button");
+        container.append(btn);
+
+        const animateSpy = vi.spyOn(btn, "animate");
+
+        const attach = pending({ active: true, ring: false });
+        const cleanup = attach(btn);
+
+        expect(btn.getAttribute("aria-busy")).toBe("true");
+        expect(btn.style.cursor).toBe("wait");
+        expect("noCanvasFocus" in btn.dataset).toBe(true);
+        // In headless mode, animate is not called
+        expect(animateSpy).not.toHaveBeenCalled();
+
+        cleanup?.();
+        expect(btn.getAttribute("aria-busy")).toBeNull();
+    });
+
     test("should return early no-op cleanup when active/enabled is false", () => {
         const btn = document.createElement("button");
         container.append(btn);

@@ -2,6 +2,7 @@
     import { onMount } from "svelte";
 
     import { layerAttach } from "$core/_system/layout/app-layer/layer.svelte";
+    import { appShortcut } from "$modules/shortcut";
 
     import DomHeatmap from "./DomHeatmap.svelte";
     import DomInspector from "./DomInspector.svelte";
@@ -16,33 +17,39 @@
 
         performanceState.start();
 
-        const cleanups: (() => void)[] = [];
+        const unregisterP = appShortcut.register(
+            "Alt+P",
+            () => {
+                isVisible = !isVisible;
+            },
+            { allowInInput: true }
+        );
 
-        (async () => {
-            const { appShortcut } = await import("$modules/shortcut");
+        const unregisterH = appShortcut.register(
+            "Alt+H",
+            () => {
+                if (isVisible) {
+                    performanceState.toggleHeatmap();
+                }
+            },
+            { allowInInput: true }
+        );
 
-            cleanups.push(
-                appShortcut.register("Alt+P", () => {
-                    isVisible = !isVisible;
-                }),
-                appShortcut.register("Alt+H", () => {
-                    if (isVisible) {
-                        performanceState.toggleHeatmap();
-                    }
-                }),
-                appShortcut.register("Alt+I", () => {
-                    if (isVisible) {
-                        performanceState.toggleInspector();
-                    }
-                })
-            );
-        })();
+        const unregisterI = appShortcut.register(
+            "Alt+I",
+            () => {
+                if (isVisible) {
+                    performanceState.toggleInspector();
+                }
+            },
+            { allowInInput: true }
+        );
 
         return () => {
             performanceState.stop();
-            for (const cleanup of cleanups) {
-                cleanup();
-            }
+            unregisterP();
+            unregisterH();
+            unregisterI();
         };
     });
 </script>

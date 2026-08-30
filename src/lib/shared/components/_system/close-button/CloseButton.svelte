@@ -46,8 +46,15 @@
     );
 </script>
 
-<button {...restProps} class={computedClass} {@attach disableInteraction({ enabled: disabled })}>
-    <X size={iconSize} strokeWidth={2.5} />
+<!-- aria-label acts as overridable default; type="button" is strictly enforced -->
+<button
+    aria-label="Close"
+    {...restProps}
+    type="button"
+    class={computedClass}
+    {@attach disableInteraction({ enabled: disabled })}
+>
+    <X size={iconSize} strokeWidth={2.5} aria-hidden="true" />
 
     {#if hitArea !== false}
         <HitArea size={resolvedHitAreaSize} />

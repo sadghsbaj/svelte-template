@@ -7,5 +7,8 @@ export type {
 export { default as HitArea } from "./hit-area/HitArea.svelte";
 export type { HitAreaSize } from "./hit-area/HitArea.svelte";
 
+export { default as Button } from "./button/Button.svelte";
+export type { ButtonStyleProps } from "./button/button.styles";
+
 export { default as CloseButton } from "./close-button/CloseButton.svelte";
 export type { CloseButtonStyleProps } from "./close-button/close-button.styles";

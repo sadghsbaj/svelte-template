@@ -13,6 +13,7 @@ export const buttonStyles = cva({
     options: {
         variant: {
             solid: "",
+            "soft-outline": "border-2",
             soft: "",
             outline: "bg-transparent border-2",
             elevate:
@@ -28,7 +29,7 @@ export const buttonStyles = cva({
         },
 
         size: {
-            sm: "h-9 px-3 text-xs gap- [&_svg]:(size-3.5 stroke-2.5)",
+            sm: "h-9 px-3 text-xs gap-1 [&_svg]:(size-3.5 stroke-2.5)",
             md: "h-10 px-4 text-sm gap-1.5 [&_svg]:(size-4 stroke-2.5)",
             lg: "h-11 px-5 text-base gap-2 [&_svg]:(size-4.5 stroke-2.5)",
         },
@@ -57,21 +58,38 @@ export const buttonStyles = cva({
             class: "bg-base-solid-1 text-base-50 dark:text-base-950 hover:bg-base-solid-2",
         },
 
+        // --- SOFT-OUTLINE ---
+        {
+            variant: "soft-outline",
+            color: "accent",
+            class: "bg-accent-soft-1 border-accent-soft-2 text-accent-solid-1 hover:bg-accent-soft-2",
+        },
+        {
+            variant: "soft-outline",
+            color: "danger",
+            class: "bg-danger-soft-1 border-danger-soft-2  text-danger-solid-1 hover:bg-danger-soft-2",
+        },
+        {
+            variant: "soft-outline",
+            color: "base",
+            class: "bg-base-soft-1 border-base-soft-2 text-main hover:(bg-base-soft-2 text-strong)",
+        },
+
         // --- SOFT ---
         {
             variant: "soft",
             color: "accent",
-            class: "bg-accent-soft-1 hover:bg-accent-soft-2 text-accent-solid-1",
+            class: "bg-accent-soft-1 text-accent-solid-1 hover:bg-accent-soft-2",
         },
         {
             variant: "soft",
             color: "danger",
-            class: "bg-danger-soft-1 hover:bg-danger-soft-2 text-danger-solid-1",
+            class: "bg-danger-soft-1 text-danger-solid-1 hover:bg-danger-soft-2",
         },
         {
             variant: "soft",
             color: "base",
-            class: "bg-base-soft-1 hover:(bg-base-soft-2 text-strong) text-main",
+            class: "bg-base-soft-1 text-main hover:(bg-base-soft-2 text-strong) ",
         },
 
         // --- Outline ---

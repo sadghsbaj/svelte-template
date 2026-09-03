@@ -7,6 +7,7 @@
 <script lang="ts">
     import { ArrowRight, Plus, Sparkles, Trash2 } from "@lucide/svelte";
     import { Button } from "$components";
+
     import PreviewCard from "$lib/previews/ui/PreviewCard.svelte";
     import PreviewGrid from "$lib/previews/ui/PreviewGrid.svelte";
     import PreviewHeader from "$lib/previews/ui/PreviewHeader.svelte";
@@ -19,7 +20,7 @@
 {/snippet}
 
 {#snippet arrowIcon()}
-    <ArrowRight />
+    <ArrowRight class="group-hover:translate-x-0.5 t:(translate-200-quad-out)" />
 {/snippet}
 
 {#snippet sparklesIcon()}
@@ -48,6 +49,15 @@
                 </div>
             </PreviewCard>
 
+            <!-- Soft-Outline -->
+            <PreviewCard label="Soft-Outline" bg="elevation-1" class="h-36">
+                <div class="flex flex-wrap items-center gap-3">
+                    <Button variant="soft-outline" color="accent">Accent</Button>
+                    <Button variant="soft-outline" color="base">Base</Button>
+                    <Button variant="soft-outline" color="danger">Danger</Button>
+                </div>
+            </PreviewCard>
+
             <!-- Soft -->
             <PreviewCard label="Soft" bg="elevation-1" class="h-36">
                 <div class="flex flex-wrap items-center gap-3">
@@ -66,15 +76,6 @@
                 </div>
             </PreviewCard>
 
-            <!-- Elevate -->
-            <PreviewCard label="Elevate" bg="elevation-0" class="h-36">
-                <div class="flex flex-wrap items-center gap-3">
-                    <Button variant="elevate" color="accent">Accent</Button>
-                    <Button variant="elevate" color="base">Base</Button>
-                    <Button variant="elevate" color="danger">Danger</Button>
-                </div>
-            </PreviewCard>
-
             <!-- Ghost -->
             <PreviewCard label="Ghost" bg="elevation-1" class="h-36">
                 <div class="flex flex-wrap items-center gap-3">
@@ -90,6 +91,15 @@
                     <Button variant="plain" color="accent">Accent</Button>
                     <Button variant="plain" color="base">Base</Button>
                     <Button variant="plain" color="danger">Danger</Button>
+                </div>
+            </PreviewCard>
+
+            <!-- Elevate -->
+            <PreviewCard label="Elevate" bg="elevation-0" class="h-36">
+                <div class="flex flex-wrap items-center gap-3">
+                    <Button variant="elevate" color="accent">Accent</Button>
+                    <Button variant="elevate" color="base">Base</Button>
+                    <Button variant="elevate" color="danger">Danger</Button>
                 </div>
             </PreviewCard>
         </PreviewGrid>
@@ -126,7 +136,7 @@
             </PreviewCard>
 
             <PreviewCard label="Icon Right" bg="elevation-1" class="h-32">
-                <Button variant="soft" iconRight={arrowIcon}>Continue</Button>
+                <Button variant="soft" iconRight={arrowIcon} class="group">Continue</Button>
             </PreviewCard>
 
             <PreviewCard label="Icon Only" bg="elevation-1" class="h-32">

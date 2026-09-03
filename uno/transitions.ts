@@ -8,25 +8,28 @@ const PROP_MAP: Record<string, { prop: string; varName: string }> = {
     shadow: { prop: "box-shadow", varName: "--t-shadow" },
 };
 
-const MASTER_TRANSITION_VARS = [
-    "var(--t-bg, opacity 0s)",
-    "var(--t-text, opacity 0s)",
-    "var(--t-border, opacity 0s)",
-    "var(--t-opacity, opacity 0s)",
-    "var(--t-transform, opacity 0s)",
-    "var(--t-scale, opacity 0s)",
-    "var(--t-shadow, opacity 0s)",
-    "var(--t-width, opacity 0s)",
-    "var(--t-height, opacity 0s)",
-    "var(--t-left, opacity 0s)",
-    "var(--t-top, opacity 0s)",
-    "var(--t-filter, opacity 0s)",
-    "var(--t-backdrop-filter, opacity 0s)",
-    "var(--t-outline, opacity 0s)",
-    "var(--t-fill, opacity 0s)",
-    "var(--t-stroke, opacity 0s)",
-    "var(--t-all, opacity 0s)",
+export const TRANSITION_VAR_NAMES = [
+    "--t-bg",
+    "--t-text",
+    "--t-border",
+    "--t-opacity",
+    "--t-transform",
+    "--t-translate",
+    "--t-scale",
+    "--t-shadow",
+    "--t-width",
+    "--t-height",
+    "--t-left",
+    "--t-top",
+    "--t-filter",
+    "--t-backdrop-filter",
+    "--t-outline",
+    "--t-fill",
+    "--t-stroke",
+    "--t-all",
 ];
+
+const MASTER_TRANSITION_VARS = TRANSITION_VAR_NAMES.map((name) => `var(${name}, opacity 0s)`);
 
 export const transitionRules: Rule[] = [
     [

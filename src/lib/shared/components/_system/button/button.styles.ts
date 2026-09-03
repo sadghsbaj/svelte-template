@@ -15,7 +15,8 @@ export const buttonStyles = cva({
             solid: "",
             soft: "",
             outline: "bg-transparent border-2",
-            elevate: "bg-white dark:bg-base-900 shadow-sm hover:shadow-md active:shadow-sm!",
+            elevate:
+                "bg-white dark:bg-base-900 shadow-sm hover:(shadow-md dark:bg-base-800) active:shadow-sm!",
             ghost: "bg-transparent",
             plain: "bg-transparent h-fit! p-0!",
         },

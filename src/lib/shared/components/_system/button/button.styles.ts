@@ -2,7 +2,7 @@ import { cva, type VariantProps } from "$utils";
 
 export const buttonStyles = cva({
     base: {
-        layout: "inline-flex justify-center items-center shrink-0 w-fit select-none",
+        layout: "text-trim inline-flex justify-center items-center shrink-0 w-fit select-none",
         typography: "font-600 leading-normal",
         frame: "rounded-full squircle-smooth",
         interaction: "cursor-pointer active:scale-97",

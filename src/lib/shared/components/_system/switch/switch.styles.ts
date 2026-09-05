@@ -53,7 +53,7 @@ export const switchTrackStyles = cva({
 export const switchThumbStyles = cva({
     base: {
         frame: "rounded-full shadow-xs squircle-soft",
-        motion: "will-change-transform transform-gpu backface-hidden t:(translate-200-cubic-out bg-200-quad-out)",
+        motion: "transform-gpu backface-hidden t:(translate-200-cubic-out bg-200-quad-out)",
         misc: "pointer-events-none",
     },
 
@@ -64,7 +64,7 @@ export const switchThumbStyles = cva({
         },
 
         size: {
-            sm: "w-24px h-16px",
+            sm: "w-24px h-18px",
             md: "w-28px h-20px",
             lg: "w-32px h-24px",
         },

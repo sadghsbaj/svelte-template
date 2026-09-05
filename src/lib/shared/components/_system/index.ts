@@ -12,3 +12,6 @@ export type { ButtonStyleProps } from "./button/button.styles";
 
 export { default as CloseButton } from "./close-button/CloseButton.svelte";
 export type { CloseButtonStyleProps } from "./close-button/close-button.styles";
+
+export { default as Switch } from "./switch/Switch.svelte";
+export type { SwitchStyleProps } from "./switch/switch.styles";

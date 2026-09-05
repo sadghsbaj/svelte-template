@@ -4,7 +4,7 @@
     import { layerAttach } from "$core/_system/layout/app-layer/layer.svelte";
 
     import { FocusAnimationController } from "./focus.animation.js";
-    import { focusOverridesMap } from "./focus.attach.js";
+    import { focusOverridesMap, onFocusOverridesChange } from "./focus.attach.js";
     import {
         computeTargetBox,
         getParentElement,
@@ -18,6 +18,7 @@
         resolveAccentColor,
     } from "./focus.renderer.js";
     import type { ClipBox, FocusBox, FocusOverrides, FocusPaintState } from "./focus.types.js";
+    import { isTextEntryControl } from "./focus.visibility.js";
 
     // NOTE: Must be a plain variable, NOT $state. It is only read imperatively (never in
     // the template), and the setup $effect below calls handleResize() which reads it.
@@ -112,12 +113,14 @@
         viewportObserver.observe(document.documentElement);
 
         window.addEventListener("scroll", handleScroll, { capture: true, passive: true });
+        const stopOverrideListener = onFocusOverridesChange(handleFocusOverridesChange);
 
         return () => {
             delete document.documentElement.dataset.canvasFocus;
 
             viewportObserver.disconnect();
             window.removeEventListener("scroll", handleScroll, { capture: true });
+            stopOverrideListener();
             elementObserver?.disconnect();
             stopPositionTracking();
             if (pendingProxyScrollFrame !== null) {
@@ -173,10 +176,42 @@
 
     function isTargetFocusVisible(el: HTMLElement | null): boolean {
         if (!el || typeof el.matches !== "function") return false;
-        const isTextInput =
-            el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.isContentEditable;
         const isNoCanvas = !!el.closest?.("[data-no-canvas-focus]");
-        return (el.matches(":focus-visible") || isTextInput) && !isNoCanvas;
+        return (el.matches(":focus-visible") || isTextEntryControl(el)) && !isNoCanvas;
+    }
+
+    function handleFocusOverridesChange(element: Element): void {
+        if (!focusedElement || !activeElement || !isVisible) return;
+
+        let current: HTMLElement | null = focusedElement;
+        while (current && current !== document.documentElement && current !== element) {
+            current = getParentElement(current);
+        }
+        if (current !== element) return;
+
+        overrides = getOverridesFor(focusedElement);
+
+        const ringElement = resolveFocusTarget(focusedElement, overrides?.focusTarget);
+        if (ringElement !== activeElement) {
+            invalidateGeometryCache(activeElement);
+            activeElement = ringElement;
+            elementObserver?.disconnect();
+            elementObserver?.observe(activeElement);
+        }
+
+        if (!doUpdateTargetBox(activeElement)) return;
+
+        lastObservedW = targetBox.w;
+        lastObservedH = targetBox.h;
+
+        if (animController.isAnimating()) {
+            animController.updateTarget(targetBox, targetClip);
+            return;
+        }
+
+        currentBox = { ...targetBox };
+        currentClip = { ...targetClip };
+        draw();
     }
 
     function handleFocusIn(e: FocusEvent): void {

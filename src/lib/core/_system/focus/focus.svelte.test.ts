@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { motionPreference } from "$core/_system/motion/motion.svelte.js";
 
 import { FocusAnimationController } from "./focus.animation.js";
-import { focusAttach, focusOverridesMap } from "./focus.attach.js";
+import { focusAttach, focusOverridesMap, onFocusOverridesChange } from "./focus.attach.js";
 import { computeTargetBox, resolveFocusTarget } from "./focus.geometry.js";
 import {
     clearCanvas,
@@ -13,6 +13,7 @@ import {
     resolveAccentColor,
 } from "./focus.renderer.js";
 import type { ClipBox, FocusBox, FocusPaintState } from "./focus.types.js";
+import { isTextEntryControl } from "./focus.visibility.js";
 
 describe("focus.renderer", () => {
     it("resolveAccentColor returns a non-empty string", () => {
@@ -276,6 +277,59 @@ describe("focus.attach", () => {
         attachFn(el);
 
         expect(el.dataset.focusTarget).toBeUndefined();
+    });
+
+    it("notifies listeners when overrides are registered", () => {
+        const el = document.createElement("input");
+        const listener = vi.fn();
+        const unsubscribe = onFocusOverridesChange(listener);
+
+        focusAttach({ color: "red" })(el);
+
+        expect(listener).toHaveBeenCalledExactlyOnceWith(el);
+        unsubscribe();
+    });
+
+    it("stops notifying an unsubscribed listener", () => {
+        const el = document.createElement("input");
+        const listener = vi.fn();
+        const unsubscribe = onFocusOverridesChange(listener);
+        unsubscribe();
+
+        focusAttach({ color: "red" })(el);
+
+        expect(listener).not.toHaveBeenCalled();
+    });
+});
+
+describe("focus.visibility", () => {
+    it.each(["text", "search", "url", "tel", "email", "password", "number"])(
+        "recognizes input type %s as a text entry control",
+        (type) => {
+            const input = document.createElement("input");
+            input.type = type;
+
+            expect(isTextEntryControl(input)).toBe(true);
+        }
+    );
+
+    it.each(["checkbox", "radio", "range", "color", "file", "button"])(
+        "does not treat input type %s as a text entry control",
+        (type) => {
+            const input = document.createElement("input");
+            input.type = type;
+
+            expect(isTextEntryControl(input)).toBe(false);
+        }
+    );
+
+    it("recognizes textareas and editable content", () => {
+        const textarea = document.createElement("textarea");
+        const editable = document.createElement("div");
+        Object.defineProperty(editable, "isContentEditable", { value: true });
+
+        expect(isTextEntryControl(textarea)).toBe(true);
+        expect(isTextEntryControl(editable)).toBe(true);
     });
 });
 

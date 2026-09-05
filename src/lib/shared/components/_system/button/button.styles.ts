@@ -4,9 +4,9 @@ export const buttonStyles = cva({
     base: {
         layout: "text-trim inline-flex justify-center items-center shrink-0 w-fit select-none",
         typography: "font-600 leading-normal",
-        frame: "rounded-full squircle-smooth",
+        frame: "rounded-full squircle",
         interaction: "cursor-pointer active:scale-97",
-        motion: "will-change-transform transform-gpu backface-hidden t:(scale-200-expo-out bg-200-quad-out text-200-quad-out border-200-quad-out shadow-200-quad-out)",
+        motion: "will-change-transform transform-gpu backface-hidden t:(scale-200-cubic-out bg-200-quad-out text-200-quad-out border-200-quad-out shadow-200-quad-out)",
         misc: "isolate",
     },
 

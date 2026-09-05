@@ -77,12 +77,7 @@
             <PreviewCard label="Disabled" bg="elevation-1" class="h-32">
                 <div class="flex items-center gap-6">
                     <Switch bind:checked={disabledOff} disabled aria-label="Disabled switch off" />
-                    <Switch
-                        bind:checked={disabledOn}
-                        color="base"
-                        disabled
-                        aria-label="Disabled switch on"
-                    />
+                    <Switch bind:checked={disabledOn} disabled aria-label="Disabled switch on" />
                 </div>
             </PreviewCard>
         </PreviewGrid>

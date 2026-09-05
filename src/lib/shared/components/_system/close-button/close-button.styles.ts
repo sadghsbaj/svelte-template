@@ -6,7 +6,7 @@ export const closeButtonStyles = cva({
         typography: "text-weak leading-none",
         frame: "rounded-full squircle-soft",
         interaction: "cursor-pointer active:scale-93 hover:text-main",
-        motion: "will-change-transform t:(scale-200-expo-out bg-200-quad-out text-200-quad-out)",
+        motion: "will-change-transform t:(scale-200-cubic-out bg-200-quad-out text-200-quad-out)",
         misc: "isolate",
     },
 

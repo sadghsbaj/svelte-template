@@ -64,9 +64,9 @@ export const switchThumbStyles = cva({
         },
 
         size: {
-            sm: "w-18px h-16px",
-            md: "w-22px h-20px",
-            lg: "w-26px h-24px",
+            sm: "w-24px h-16px",
+            md: "w-28px h-20px",
+            lg: "w-32px h-24px",
         },
     },
 
@@ -92,17 +92,17 @@ export const switchThumbStyles = cva({
         {
             size: "sm",
             checked: true,
-            class: "translate-x-14px",
+            class: "translate-x-8px",
         },
         {
             size: "md",
             checked: true,
-            class: "translate-x-18px",
+            class: "translate-x-12px",
         },
         {
             size: "lg",
             checked: true,
-            class: "translate-x-22px",
+            class: "translate-x-16px",
         },
     ],
 

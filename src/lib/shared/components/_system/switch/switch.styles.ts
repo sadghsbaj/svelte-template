@@ -2,7 +2,7 @@ import { cva, type VariantProps } from "$utils";
 
 export const switchTrackStyles = cva({
     base: {
-        layout: "inline-flex items-center shrink-0 p-2px",
+        layout: "inline-flex items-center shrink-0",
         frame: "rounded-full squircle-soft",
         interaction: "cursor-pointer",
         motion: "t:(bg-200-quad-out)",
@@ -16,9 +16,9 @@ export const switchTrackStyles = cva({
         },
 
         size: {
-            sm: "w-36px h-20px",
-            md: "w-44px h-24px",
-            lg: "w-52px h-28px",
+            sm: "w-36px h-20px p-1px",
+            md: "w-44px h-24px p-2px",
+            lg: "w-52px h-28px p-2px",
         },
     },
 
@@ -92,7 +92,7 @@ export const switchThumbStyles = cva({
         {
             size: "sm",
             checked: true,
-            class: "translate-x-8px",
+            class: "translate-x-10px",
         },
         {
             size: "md",

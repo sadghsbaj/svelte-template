@@ -87,7 +87,7 @@ export const switchThumbStyles = cva({
         {
             color: "base",
             checked: true,
-            class: "bg-base-50 dark:bg-base-950",
+            class: "bg-white dark:bg-base-800",
         },
         {
             size: "sm",

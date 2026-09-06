@@ -28,6 +28,19 @@
     let disabledOff = $state(false);
     let disabledOn = $state(true);
 
+    type TriState = "unchecked" | "indeterminate" | "checked";
+    let triState = $state<TriState>("indeterminate");
+
+    const cycleTriState = (): void => {
+        if (triState === "unchecked") {
+            triState = "indeterminate";
+        } else if (triState === "indeterminate") {
+            triState = "checked";
+        } else {
+            triState = "unchecked";
+        }
+    };
+
     let elevation0 = $state(false);
     let elevation1 = $state(true);
     let elevation2 = $state(false);
@@ -36,7 +49,7 @@
 <PreviewPage>
     <PreviewHeader
         title="Checkbox"
-        description="Compact binary control with semantic colors and responsive sizing."
+        description="Compact checkbox with semantic colors and responsive sizing."
         icon={CircleCheck}
     />
 
@@ -82,9 +95,26 @@
     </PreviewSection>
 
     <PreviewSection title="States">
-        <PreviewGrid cols={2}>
+        <PreviewGrid cols={3}>
             <PreviewCard label="Interactive" bg="elevation-1" class="h-32">
                 <Checkbox bind:checked={enabled} aria-label="Interactive checkbox" />
+            </PreviewCard>
+
+            <PreviewCard label="Tri-State Cycle" bg="elevation-1" class="h-32">
+                <button
+                    type="button"
+                    class="cursor-pointer select-none bg-transparent border-none p-0 outline-none"
+                    onclick={cycleTriState}
+                    aria-label="Cycle tri-state checkbox"
+                >
+                    <div class="pointer-events-none">
+                        <Checkbox
+                            checked={triState !== "unchecked"}
+                            indeterminate={triState === "indeterminate"}
+                            aria-label="Tri-state checkbox"
+                        />
+                    </div>
+                </button>
             </PreviewCard>
 
             <PreviewCard label="Disabled" bg="elevation-1" class="h-32">
@@ -104,18 +134,36 @@
         </PreviewGrid>
     </PreviewSection>
 
-    <PreviewSection title="Elevation Layers">
+    <PreviewSection
+        title="Surface Variants"
+        description="Soft on matching surfaces and elevated on contrasting elevation layers."
+    >
         <PreviewGrid cols={3}>
-            <PreviewCard label="Elevation 0" bg="elevation-0" class="h-32">
-                <Checkbox bind:checked={elevation0} size="md" aria-label="Medium checkbox" />
+            <PreviewCard label="Elevated on Elevation 0" bg="elevation-0" class="h-32">
+                <Checkbox
+                    bind:checked={elevation0}
+                    variant="elevated"
+                    size="md"
+                    aria-label="Elevated checkbox on elevation 0"
+                />
             </PreviewCard>
 
-            <PreviewCard label="Elevation 1" bg="elevation-1" class="h-32">
-                <Checkbox bind:checked={elevation1} size="md" aria-label="Medium checkbox" />
+            <PreviewCard label="Soft on Elevation 1" bg="elevation-1" class="h-32">
+                <Checkbox
+                    bind:checked={elevation1}
+                    variant="soft"
+                    size="md"
+                    aria-label="Soft checkbox on elevation 1"
+                />
             </PreviewCard>
 
-            <PreviewCard label="Elevation 2" bg="elevation-2" class="h-32">
-                <Checkbox bind:checked={elevation2} size="md" aria-label="Medium checkbox" />
+            <PreviewCard label="Elevated on Elevation 2" bg="elevation-2" class="h-32">
+                <Checkbox
+                    bind:checked={elevation2}
+                    variant="elevated"
+                    size="md"
+                    aria-label="Elevated checkbox on elevation 2"
+                />
             </PreviewCard>
         </PreviewGrid>
     </PreviewSection>

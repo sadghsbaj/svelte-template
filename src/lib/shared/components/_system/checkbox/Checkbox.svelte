@@ -20,6 +20,7 @@
     let {
         checked = $bindable(false),
         indeterminate = $bindable(false),
+        variant = "soft",
         color = "accent",
         size = "md",
         disabled = false,
@@ -29,7 +30,9 @@
 
     const checkboxId = `checkbox-${uuid()}`;
 
-    const checkboxClass = $derived(checkboxStyles({ color, size, checked, class: className }));
+    const checkboxClass = $derived(
+        checkboxStyles({ variant, color, size, checked, class: className })
+    );
     const checkboxIconClass = $derived(
         checkboxIconStyles({ color, size, checked, class: className })
     );

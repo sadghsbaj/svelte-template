@@ -16,7 +16,7 @@ export const buttonStyles = cva({
             "soft-outline": "border-2",
             soft: "",
             outline: "bg-transparent border-2",
-            elevate:
+            elevated:
                 "bg-white dark:bg-base-900 shadow-sm hover:(shadow-md dark:bg-base-800) active:shadow-sm!",
             ghost: "bg-transparent",
             plain: "bg-transparent h-fit! p-0!",
@@ -109,20 +109,20 @@ export const buttonStyles = cva({
             class: "text-main border-base-soft-2 hover:(bg-base-soft-1 text-strong)",
         },
 
-        // --- Elevate ---
+        // --- Elevated ---
         // Should only be used on elevation-0 e.g. in floating app style
         {
-            variant: "elevate",
+            variant: "elevated",
             color: "accent",
             class: "text-accent-solid-1",
         },
         {
-            variant: "elevate",
+            variant: "elevated",
             color: "danger",
             class: "text-danger-solid-1",
         },
         {
-            variant: "elevate",
+            variant: "elevated",
             color: "base",
             class: "text-main hover:(text-strong)",
         },

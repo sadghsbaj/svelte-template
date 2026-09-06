@@ -3,13 +3,18 @@ import { cva, type VariantProps } from "$utils";
 export const checkboxStyles = cva({
     base: {
         layout: "inline-flex justify-center items-center shrink-0",
-        frame: "rounded-40% squircle-soft shadow-xs",
+        frame: "rounded-40% squircle-soft",
         interaction: "cursor-pointer",
-        motion: "t:(bg-200-quad-out)",
+        motion: "t:(bg-200-quad-out shadow-200-quad-out)",
         misc: "isolate",
     },
 
     options: {
+        variant: {
+            soft: "",
+            elevated: "",
+        },
+
         color: {
             accent: "",
             base: "",
@@ -29,8 +34,14 @@ export const checkboxStyles = cva({
 
     compounds: [
         {
+            variant: "soft",
             checked: false,
             class: "bg-base-soft-1 hover:bg-base-soft-2",
+        },
+        {
+            variant: "elevated",
+            checked: false,
+            class: "bg-white dark:bg-base-900 shadow-sm hover:shadow-md",
         },
         {
             color: "accent",
@@ -50,6 +61,7 @@ export const checkboxStyles = cva({
     ],
 
     defaults: {
+        variant: "soft",
         color: "accent",
         size: "md",
         checked: false,

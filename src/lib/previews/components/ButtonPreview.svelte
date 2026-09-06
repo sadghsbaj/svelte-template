@@ -30,14 +30,14 @@
 <PreviewPage>
     <PreviewHeader
         title="Button"
-        description="Interactive action trigger supporting polymorphic elements, six surface variants, semantic color palettes, and embedded loading halos."
+        description="Interactive action trigger supporting polymorphic elements, seven surface variants, semantic color palettes, and embedded loading halos."
         icon={SquareMousePointer}
     />
 
     <!-- Variants & Colors -->
     <PreviewSection
         title="Variants & Colors"
-        description="Six core visual variants across accent, base, and danger palettes."
+        description="Seven core visual variants across accent, base, and danger palettes."
     >
         <PreviewGrid cols={3}>
             <!-- Solid -->
@@ -94,12 +94,12 @@
                 </div>
             </PreviewCard>
 
-            <!-- Elevate -->
-            <PreviewCard label="Elevate" bg="elevation-0" class="h-36">
+            <!-- Elevated -->
+            <PreviewCard label="Elevated" bg="elevation-0" class="h-36">
                 <div class="flex flex-wrap items-center gap-3">
-                    <Button variant="elevate" color="accent">Accent</Button>
-                    <Button variant="elevate" color="base">Base</Button>
-                    <Button variant="elevate" color="danger">Danger</Button>
+                    <Button variant="elevated" color="accent">Accent</Button>
+                    <Button variant="elevated" color="base">Base</Button>
+                    <Button variant="elevated" color="danger">Danger</Button>
                 </div>
             </PreviewCard>
         </PreviewGrid>

@@ -29,9 +29,9 @@ export const buttonStyles = cva({
         },
 
         size: {
-            sm: "h-9 px-3 text-xs gap-1 [&_svg]:(size-3.5 stroke-2.5)",
-            md: "h-10 px-4 text-sm gap-1.5 [&_svg]:(size-4 stroke-2.5)",
-            lg: "h-11 px-5 text-base gap-2 [&_svg]:(size-4.5 stroke-2.5)",
+            sm: "h-36px px-12px text-xs gap-4px [&_svg]:(size-14px stroke-2.5)",
+            md: "h-40px px-16px text-sm gap-6px [&_svg]:(size-16px stroke-2.5)",
+            lg: "h-44px px-20px  text-base gap-8px [&_svg]:(size-18px stroke-2.5)",
         },
     },
 

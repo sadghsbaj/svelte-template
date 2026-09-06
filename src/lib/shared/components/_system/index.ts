@@ -15,3 +15,6 @@ export type { CloseButtonStyleProps } from "./close-button/close-button.styles";
 
 export { default as Switch } from "./switch/Switch.svelte";
 export type { SwitchStyleProps } from "./switch/switch.styles";
+
+export { default as Checkbox } from "./checkbox/Checkbox.svelte";
+export type { CheckboxStyleProps } from "./checkbox/checkbox.styles";

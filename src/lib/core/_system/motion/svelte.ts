@@ -38,6 +38,20 @@ import {
 
 import { MotionManager, motionPreference } from "./motion.svelte";
 
+export type { AnimationConfig, FlipParams } from "svelte/animate";
+export type { SpringOptions, SpringUpdateOptions, TweenOptions, Updater } from "svelte/motion";
+export type {
+    BlurParams,
+    CrossfadeParams,
+    DrawParams,
+    EasingFunction,
+    FadeParams,
+    FlyParams,
+    ScaleParams,
+    SlideParams,
+    TransitionConfig,
+} from "svelte/transition";
+
 /**
  * Utility type extending Svelte transition/animation parameters with an optional forceAnimate override.
  */

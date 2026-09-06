@@ -6,6 +6,7 @@
 
 <script lang="ts">
     import { CloseButton } from "$components";
+
     import PreviewCard from "$lib/previews/ui/PreviewCard.svelte";
     import PreviewGrid from "$lib/previews/ui/PreviewGrid.svelte";
     import PreviewHeader from "$lib/previews/ui/PreviewHeader.svelte";
@@ -92,15 +93,15 @@
         description="Layer-agnostic neutral fill adapting smoothly across all background elevation levels."
     >
         <PreviewGrid cols={3}>
-            <PreviewCard label="Elevation 0 (Base)" bg="elevation-0" class="h-32">
+            <PreviewCard label="Elevation 0" bg="elevation-0" class="h-32">
                 <CloseButton variant="solid" />
             </PreviewCard>
 
-            <PreviewCard label="Elevation 1 (Card)" bg="elevation-1" class="h-32">
+            <PreviewCard label="Elevation 1" bg="elevation-1" class="h-32">
                 <CloseButton variant="solid" />
             </PreviewCard>
 
-            <PreviewCard label="Elevation 2 (Modal)" bg="elevation-2" class="h-32">
+            <PreviewCard label="Elevation 2" bg="elevation-2" class="h-32">
                 <CloseButton variant="solid" />
             </PreviewCard>
         </PreviewGrid>

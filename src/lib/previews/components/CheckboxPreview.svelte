@@ -1,11 +1,11 @@
 <script module lang="ts">
-    import { ToggleRight } from "@lucide/svelte";
+    import { CircleCheck } from "@lucide/svelte";
 
-    export const icon = ToggleRight;
+    export const icon = CircleCheck;
 </script>
 
 <script lang="ts">
-    import { Switch } from "$components";
+    import { Checkbox } from "$components";
 
     import PreviewCard from "$lib/previews/ui/PreviewCard.svelte";
     import PreviewGrid from "$lib/previews/ui/PreviewGrid.svelte";
@@ -17,6 +17,8 @@
     let accentOn = $state(true);
     let baseOff = $state(false);
     let baseOn = $state(true);
+    let invalidOff = $state(false);
+    let invalidOn = $state(true);
 
     let small = $state(false);
     let medium = $state(true);
@@ -33,24 +35,31 @@
 
 <PreviewPage>
     <PreviewHeader
-        title="Switch"
+        title="Checkbox"
         description="Compact binary control with semantic colors and responsive sizing."
-        icon={ToggleRight}
+        icon={CircleCheck}
     />
 
     <PreviewSection title="Colors">
-        <PreviewGrid cols={2}>
+        <PreviewGrid cols={3}>
             <PreviewCard label="Accent" bg="elevation-1" class="h-32">
                 <div class="flex items-center gap-6">
-                    <Switch bind:checked={accentOff} color="accent" aria-label="Accent off" />
-                    <Switch bind:checked={accentOn} color="accent" aria-label="Accent on" />
+                    <Checkbox bind:checked={accentOff} color="accent" aria-label="Accent off" />
+                    <Checkbox bind:checked={accentOn} color="accent" aria-label="Accent on" />
                 </div>
             </PreviewCard>
 
             <PreviewCard label="Base" bg="elevation-1" class="h-32">
                 <div class="flex items-center gap-6">
-                    <Switch bind:checked={baseOff} color="base" aria-label="Base off" />
-                    <Switch bind:checked={baseOn} color="base" aria-label="Base on" />
+                    <Checkbox bind:checked={baseOff} color="base" aria-label="Base off" />
+                    <Checkbox bind:checked={baseOn} color="base" aria-label="Base on" />
+                </div>
+            </PreviewCard>
+
+            <PreviewCard label="Base" bg="elevation-1" class="h-32">
+                <div class="flex items-center gap-6">
+                    <Checkbox bind:checked={invalidOff} color="invalid" aria-label="Base off" />
+                    <Checkbox bind:checked={invalidOn} color="invalid" aria-label="Base on" />
                 </div>
             </PreviewCard>
         </PreviewGrid>
@@ -59,15 +68,15 @@
     <PreviewSection title="Sizes">
         <PreviewGrid cols={3}>
             <PreviewCard label="Small" bg="elevation-1" class="h-32">
-                <Switch bind:checked={small} size="sm" aria-label="Small switch" />
+                <Checkbox bind:checked={small} size="sm" aria-label="Small checkbox" />
             </PreviewCard>
 
             <PreviewCard label="Medium" bg="elevation-1" class="h-32">
-                <Switch bind:checked={medium} size="md" aria-label="Medium switch" />
+                <Checkbox bind:checked={medium} size="md" aria-label="Medium checkbox" />
             </PreviewCard>
 
             <PreviewCard label="Large" bg="elevation-1" class="h-32">
-                <Switch bind:checked={large} size="lg" aria-label="Large switch" />
+                <Checkbox bind:checked={large} size="lg" aria-label="Large checkbox" />
             </PreviewCard>
         </PreviewGrid>
     </PreviewSection>
@@ -75,13 +84,21 @@
     <PreviewSection title="States">
         <PreviewGrid cols={2}>
             <PreviewCard label="Interactive" bg="elevation-1" class="h-32">
-                <Switch bind:checked={enabled} aria-label="Interactive switch" />
+                <Checkbox bind:checked={enabled} aria-label="Interactive checkbox" />
             </PreviewCard>
 
             <PreviewCard label="Disabled" bg="elevation-1" class="h-32">
                 <div class="flex items-center gap-6">
-                    <Switch bind:checked={disabledOff} disabled aria-label="Disabled switch off" />
-                    <Switch bind:checked={disabledOn} disabled aria-label="Disabled switch on" />
+                    <Checkbox
+                        bind:checked={disabledOff}
+                        disabled
+                        aria-label="Disabled checkbox off"
+                    />
+                    <Checkbox
+                        bind:checked={disabledOn}
+                        disabled
+                        aria-label="Disabled checkbox on"
+                    />
                 </div>
             </PreviewCard>
         </PreviewGrid>
@@ -90,15 +107,15 @@
     <PreviewSection title="Elevation Layers">
         <PreviewGrid cols={3}>
             <PreviewCard label="Elevation 0" bg="elevation-0" class="h-32">
-                <Switch bind:checked={elevation0} size="md" aria-label="Medium switch" />
+                <Checkbox bind:checked={elevation0} size="md" aria-label="Medium checkbox" />
             </PreviewCard>
 
             <PreviewCard label="Elevation 1" bg="elevation-1" class="h-32">
-                <Switch bind:checked={elevation1} size="md" aria-label="Medium switch" />
+                <Checkbox bind:checked={elevation1} size="md" aria-label="Medium checkbox" />
             </PreviewCard>
 
             <PreviewCard label="Elevation 2" bg="elevation-2" class="h-32">
-                <Switch bind:checked={elevation2} size="md" aria-label="Medium switch" />
+                <Checkbox bind:checked={elevation2} size="md" aria-label="Medium checkbox" />
             </PreviewCard>
         </PreviewGrid>
     </PreviewSection>

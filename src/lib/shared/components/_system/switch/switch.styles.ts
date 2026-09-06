@@ -6,7 +6,7 @@ export const switchTrackStyles = cva({
         frame: "rounded-full squircle-soft",
         interaction: "cursor-pointer",
         motion: "t:(bg-200-quad-out)",
-        misc: "select-none",
+        misc: "",
     },
 
     options: {
@@ -113,4 +113,4 @@ export const switchThumbStyles = cva({
     },
 });
 
-export type SwitchStyleProps = Pick<VariantProps<typeof switchTrackStyles>, "color" | "size">;
+export type SwitchStyleProps = VariantProps<typeof switchTrackStyles>;

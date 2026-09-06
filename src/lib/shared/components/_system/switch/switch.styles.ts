@@ -6,7 +6,7 @@ export const switchTrackStyles = cva({
         frame: "rounded-full squircle-soft",
         interaction: "cursor-pointer",
         motion: "t:(bg-200-quad-out)",
-        misc: "",
+        misc: "isolate",
     },
 
     options: {

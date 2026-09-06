@@ -6,7 +6,7 @@ export const checkboxStyles = cva({
         frame: "rounded-40% squircle-soft shadow-xs",
         interaction: "cursor-pointer",
         motion: "t:(bg-200-quad-out)",
-        misc: "",
+        misc: "isolate",
     },
 
     options: {

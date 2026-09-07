@@ -3,7 +3,7 @@
     import type { HTMLButtonAttributes } from "svelte/elements";
     import { X } from "@lucide/svelte";
     import { disableInteraction } from "$attachments";
-    import { HitArea, type HitAreaSize } from "$components";
+    import { HitArea, resolveHitArea, type HitAreaConfig } from "$components";
 
     import { closeButtonStyles, type CloseButtonStyleProps } from "./close-button.styles";
 
@@ -14,7 +14,7 @@
     } as const;
 
     interface Props extends HTMLButtonAttributes, CloseButtonStyleProps {
-        hitArea?: boolean | HitAreaSize;
+        hitArea?: HitAreaConfig;
         disabled?: boolean;
         class?: string;
         children?: Snippet;
@@ -32,7 +32,7 @@
 
     const iconSize = $derived(ICON_SIZES[size ?? "md"]);
 
-    const resolvedHitAreaSize = $derived(typeof hitArea === "boolean" ? (size ?? "md") : hitArea);
+    const resolvedHitAreaSize = $derived(resolveHitArea(hitArea, size ?? "md"));
 
     const computedClass = $derived(
         closeButtonStyles({
@@ -53,7 +53,7 @@
 >
     <X size={iconSize} strokeWidth={2.5} aria-hidden="true" />
 
-    {#if hitArea !== false}
+    {#if resolvedHitAreaSize !== false}
         <HitArea size={resolvedHitAreaSize} />
     {/if}
 

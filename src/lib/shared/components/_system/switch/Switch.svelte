@@ -1,6 +1,7 @@
 <script lang="ts">
     import type { HTMLInputAttributes } from "svelte/elements";
     import { disableInteraction } from "$attachments";
+    import { HitArea, resolveHitArea, type HitAreaConfig } from "$components";
     import { uuid } from "$utils";
 
     import { focusAttach } from "$core/_system/focus/focus.attach";
@@ -10,6 +11,7 @@
     type Props = SwitchStyleProps &
         Omit<HTMLInputAttributes, "checked" | "class" | "color" | "disabled" | "size" | "type"> & {
             checked?: boolean;
+            hitArea?: HitAreaConfig;
             disabled?: boolean;
             class?: string;
         };
@@ -18,12 +20,14 @@
         checked = $bindable(false),
         color = "accent",
         size = "md",
+        hitArea = true,
         disabled = false,
         class: className = "",
         ...restProps
     }: Props = $props();
 
     const trackId = `switch-${uuid()}`;
+    const resolvedHitAreaSize = $derived(resolveHitArea(hitArea, size));
 
     const trackClass = $derived(switchTrackStyles({ color, size, checked, class: className }));
     const thumbClass = $derived(switchThumbStyles({ color, size, checked }));
@@ -42,4 +46,8 @@
     />
 
     <span class={thumbClass}></span>
+
+    {#if resolvedHitAreaSize !== false}
+        <HitArea size={resolvedHitAreaSize} />
+    {/if}
 </label>

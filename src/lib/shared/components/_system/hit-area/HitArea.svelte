@@ -2,7 +2,7 @@
     import type { HTMLAttributes } from "svelte/elements";
     import { cn } from "$utils";
 
-    export type HitAreaSize = "sm" | "md" | "lg" | number;
+    import type { HitAreaSize } from "./hit-area";
 
     interface Props extends HTMLAttributes<HTMLSpanElement> {
         size?: HitAreaSize;
@@ -42,8 +42,8 @@
         min-height: 100%;
         transform: translate(-50%, -50%);
         contain: strict;
+        cursor: inherit;
         pointer-events: auto;
         user-select: none;
-        cursor: inherit;
     }
 </style>

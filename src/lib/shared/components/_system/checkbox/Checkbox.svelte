@@ -2,6 +2,7 @@
     import { cubicOut, linear, sineInOut } from "svelte/easing";
     import type { HTMLInputAttributes } from "svelte/elements";
     import { disableInteraction } from "$attachments";
+    import { HitArea, resolveHitArea, type HitAreaConfig } from "$components";
     import { uuid } from "$utils";
 
     import { draw, fade, type TransitionConfig } from "$core/_system";
@@ -13,6 +14,7 @@
         Omit<HTMLInputAttributes, "checked" | "class" | "color" | "disabled" | "size" | "type"> & {
             checked?: boolean;
             indeterminate?: boolean;
+            hitArea?: HitAreaConfig;
             disabled?: boolean;
             class?: string;
         };
@@ -23,12 +25,14 @@
         variant = "soft",
         color = "accent",
         size = "md",
+        hitArea = true,
         disabled = false,
         class: className = "",
         ...restProps
     }: Props = $props();
 
     const checkboxId = `checkbox-${uuid()}`;
+    const resolvedHitAreaSize = $derived(resolveHitArea(hitArea, size));
 
     const checkboxClass = $derived(
         checkboxStyles({ variant, color, size, checked, class: className })
@@ -100,4 +104,8 @@
             />
         {/if}
     </svg>
+
+    {#if resolvedHitAreaSize !== false}
+        <HitArea size={resolvedHitAreaSize} />
+    {/if}
 </label>

@@ -63,6 +63,7 @@
 <label id={checkboxId} class={checkboxClass} {@attach disableInteraction({ enabled: disabled })}>
     <input
         {...restProps}
+        {disabled}
         type="checkbox"
         class="sr-only"
         bind:checked

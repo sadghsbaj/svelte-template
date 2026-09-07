@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { cubicOut } from "svelte/easing";
+    import { cubicOut, linear, sineInOut } from "svelte/easing";
     import type { HTMLInputAttributes } from "svelte/elements";
     import { disableInteraction } from "$attachments";
     import { uuid } from "$utils";
@@ -52,7 +52,7 @@
         if (isCrossfade) {
             return fade(node, { duration: 180 });
         }
-        return draw(node, { duration: 350, easing: cubicOut });
+        return draw(node, { duration: 250, easing: sineInOut });
     };
 </script>
 

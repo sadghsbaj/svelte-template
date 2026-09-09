@@ -1,6 +1,7 @@
 import { createGenerator } from "unocss";
 import { describe, expect, test } from "vitest";
 
+// eslint-disable-next-line no-restricted-imports
 import unoConfig from "../uno.config.ts";
 
 describe("Uno transition CSS generation", () => {

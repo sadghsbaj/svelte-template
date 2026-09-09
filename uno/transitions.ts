@@ -8,28 +8,32 @@ const PROP_MAP: Record<string, { prop: string; varName: string }> = {
     shadow: { prop: "box-shadow", varName: "--t-shadow" },
 };
 
-export const TRANSITION_VAR_NAMES = [
-    "--t-bg",
-    "--t-text",
-    "--t-border",
-    "--t-opacity",
-    "--t-transform",
-    "--t-translate",
-    "--t-scale",
-    "--t-shadow",
-    "--t-width",
-    "--t-height",
-    "--t-left",
-    "--t-top",
-    "--t-filter",
-    "--t-backdrop-filter",
-    "--t-outline",
-    "--t-fill",
-    "--t-stroke",
-    "--t-all",
-];
+export const TRANSITION_SLOT_DEFAULTS: Record<string, string> = {
+    "--t-bg": "background-color 0s",
+    "--t-text": "color 0s",
+    "--t-border": "border-color 0s",
+    "--t-opacity": "opacity 0s",
+    "--t-transform": "transform 0s",
+    "--t-translate": "translate 0s",
+    "--t-scale": "scale 0s",
+    "--t-shadow": "box-shadow 0s",
+    "--t-width": "width 0s",
+    "--t-height": "height 0s",
+    "--t-left": "left 0s",
+    "--t-top": "top 0s",
+    "--t-filter": "filter 0s",
+    "--t-backdrop-filter": "backdrop-filter 0s",
+    "--t-outline": "outline-color 0s",
+    "--t-fill": "fill 0s",
+    "--t-stroke": "stroke 0s",
+    "--t-all": "clip-path 0s",
+};
 
-const MASTER_TRANSITION_VARS = TRANSITION_VAR_NAMES.map((name) => `var(${name}, opacity 0s)`);
+export const TRANSITION_VAR_NAMES = Object.keys(TRANSITION_SLOT_DEFAULTS);
+
+const MASTER_TRANSITION_VARS = TRANSITION_VAR_NAMES.map(
+    (name) => `var(${name}, ${TRANSITION_SLOT_DEFAULTS[name]})`
+);
 
 export const transitionRules: Rule[] = [
     [
@@ -77,7 +81,9 @@ export const transitionRules: Rule[] = [
             const transitionValue = `${propInfo.prop} ${duration} ${easingValue}${delay ? ` ${delay}` : ""}`;
 
             const masterList = [...MASTER_TRANSITION_VARS];
-            const currentVarEntry = `var(${propInfo.varName}, opacity 0s)`;
+            const slotDefault =
+                TRANSITION_SLOT_DEFAULTS[propInfo.varName] ?? `${propInfo.prop} 0s`;
+            const currentVarEntry = `var(${propInfo.varName}, ${slotDefault})`;
             if (!masterList.includes(currentVarEntry)) {
                 masterList.push(currentVarEntry);
             }

@@ -19,6 +19,8 @@ class ViewState<T extends string> {
     readonly fromView: T | null;
     readonly activeConfig: ViewConfig<T>;
     readonly activeLabel: string;
+    readonly views: readonly ViewConfig<T>[];
+    readonly rootViews: ViewConfig<T>[];
     readonly currentIndex: number;
     readonly firstView: T;
     readonly lastView: T;
@@ -29,6 +31,8 @@ class ViewState<T extends string> {
     // Hierarchy Methods
     getParent(view?: T): "root" | T;
     getRootView(view?: T): T;
+    getChildren(parent?: "root" | T, includeDisabled?: boolean): ViewConfig<T>[];
+    getViewPath(view?: T): ViewConfig<T>[];
 
     // Navigation Methods
     setView(targetView: T): boolean;

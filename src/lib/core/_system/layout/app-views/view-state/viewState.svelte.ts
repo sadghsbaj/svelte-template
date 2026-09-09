@@ -102,6 +102,14 @@ export class ViewState<T extends string> {
         return this.activeConfig.label ?? this.activeView;
     }
 
+    get views(): readonly ViewConfig<T>[] {
+        return this.config.views;
+    }
+
+    get rootViews(): ViewConfig<T>[] {
+        return this.getChildren("root");
+    }
+
     get firstView(): T {
         return this.config.views[0].view;
     }
@@ -233,6 +241,33 @@ export class ViewState<T extends string> {
             current = parent;
         }
         return view;
+    }
+
+    getChildren(parent: "root" | T = this.activeView, includeDisabled = false): ViewConfig<T>[] {
+        return this.config.views.filter(
+            (v) => v.parent === parent && (includeDisabled || !this.isDisabled(v.view))
+        );
+    }
+
+    getViewPath(view: T = this.activeView): ViewConfig<T>[] {
+        const path: ViewConfig<T>[] = [];
+        const visited = new SvelteSet<T>();
+        let current: T | "root" = view;
+
+        while (current !== "root") {
+            if (visited.has(current)) {
+                break;
+            }
+            visited.add(current);
+            const cfg = this.getConfig(current);
+            if (!cfg) {
+                break;
+            }
+            path.unshift(cfg);
+            current = cfg.parent;
+        }
+
+        return path;
     }
 
     private resolveTransition(view: T, type: "in" | "out"): ViewTransitionFn {

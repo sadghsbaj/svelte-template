@@ -22,3 +22,6 @@ export const viewState = createViewState({
         // @template-remove-end
     ] as const,
 });
+
+export type ViewItem = (typeof viewState.views)[number];
+export type { ViewConfig } from "$core/_system/layout/app-views/types";

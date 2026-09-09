@@ -30,11 +30,15 @@ describe("ViewState (Node SSR Environment)", () => {
         expect(state.direction).toBe("forward");
     });
 
-    test("should handle getParent and getRootView safely in SSR", () => {
+    test("should handle getParent, getRootView, getChildren and getViewPath safely in SSR", () => {
         const state = new ViewState(mockConfig);
         expect(state.getParent("home")).toBe("root");
         expect(state.getParent("statsDetails")).toBe("stats");
         expect(state.getRootView("statsDetails")).toBe("stats");
+        expect(state.views).toEqual(mockConfig.views);
+        expect(state.rootViews.map((r) => r.view)).toEqual(["home", "stats"]);
+        expect(state.getChildren("stats").map((c) => c.view)).toEqual(["statsDetails"]);
+        expect(state.getViewPath("statsDetails").map((p) => p.view)).toEqual(["stats", "statsDetails"]);
     });
 
     test("should handle scroll calls safely without crashing in SSR", () => {

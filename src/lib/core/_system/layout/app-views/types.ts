@@ -1,3 +1,4 @@
+import type { Component } from "svelte";
 import type { TransitionConfig } from "svelte/transition";
 
 export type Direction = "forward" | "backward" | "none";
@@ -33,10 +34,12 @@ export interface ScrollConfig {
 
 // --- View Configurations ---
 
-export interface ViewConfig<T extends string> {
+export interface ViewConfig<T extends string = string> {
     view: T;
     label?: string;
     parent: "root" | T;
+    icon?: Component;
+    color?: string;
     scroll?: false | ScrollConfig;
     transition?: ViewTransitionOption;
     disabled?: boolean;
@@ -44,7 +47,7 @@ export interface ViewConfig<T extends string> {
     stack?: boolean;
 }
 
-export interface ViewsConfig<T extends string> {
+export interface ViewsConfig<T extends string = string> {
     persistKey?: string;
     scroll?: ScrollConfig;
     views: readonly ViewConfig<T>[];

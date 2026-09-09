@@ -83,6 +83,44 @@ describe("ViewState (Browser Client)", () => {
             expect(state.getRootView("statsDetails")).toBe("stats");
             expect(state.getRootView("statsSubDetails")).toBe("stats");
         });
+
+        test("should expose all views via views getter", () => {
+            const state = new ViewState(mockConfig);
+            expect(state.views).toEqual(mockConfig.views);
+        });
+
+        test("should return only active non-disabled root views via rootViews", () => {
+            const state = new ViewState(mockConfig);
+            const roots = state.rootViews;
+            expect(roots.map((r) => r.view)).toEqual(["home", "stats"]);
+        });
+
+        test("should filter children by parent correctly with getChildren", () => {
+            const state = new ViewState(mockConfig);
+            expect(state.getChildren("stats").map((c) => c.view)).toEqual(["statsDetails"]);
+            expect(state.getChildren("statsDetails").map((c) => c.view)).toEqual(["statsSubDetails"]);
+            expect(state.getChildren("home")).toEqual([]);
+
+            // Including disabled views
+            expect(state.getChildren("root", false).map((c) => c.view)).toEqual(["home", "stats"]);
+            expect(state.getChildren("root", true).map((c) => c.view)).toEqual([
+                "home",
+                "stats",
+                "settings",
+            ]);
+        });
+
+        test("should return hierarchy path from root to target view using getViewPath", () => {
+            const state = new ViewState(mockConfig);
+            const homePath = state.getViewPath("home");
+            expect(homePath.map((p) => p.view)).toEqual(["home"]);
+
+            const subPath = state.getViewPath("statsSubDetails");
+            expect(subPath.map((p) => p.view)).toEqual(["stats", "statsDetails", "statsSubDetails"]);
+
+            // Default to active view
+            expect(state.getViewPath().map((p) => p.view)).toEqual(["home"]);
+        });
     });
 
     describe("Navigation & Direction", () => {

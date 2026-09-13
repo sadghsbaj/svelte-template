@@ -8,6 +8,7 @@
         direction?: "auto" | "ltr" | "rtl";
         hoverOpenDelay?: number;
         hoverCloseDelay?: number;
+        submenuMode?: "auto" | "floating" | "drilldown";
     }
 
     let {
@@ -17,6 +18,7 @@
         direction = "auto",
         hoverOpenDelay = 0,
         hoverCloseDelay = 0,
+        submenuMode = "floating",
     }: Props = $props();
 
     // svelte-ignore state_referenced_locally
@@ -32,6 +34,7 @@
     {direction}
     {hoverOpenDelay}
     {hoverCloseDelay}
+    {submenuMode}
     aria-label="File actions"
 >
     {#snippet trigger(context)}

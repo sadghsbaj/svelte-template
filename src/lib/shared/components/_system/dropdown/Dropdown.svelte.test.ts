@@ -20,6 +20,13 @@ const press = (element: HTMLElement, key: string): KeyboardEvent => {
     return event;
 };
 
+const tap = (element: HTMLElement): void => {
+    element.dispatchEvent(
+        new PointerEvent("pointerdown", { bubbles: true, pointerType: "touch", cancelable: true })
+    );
+    element.dispatchEvent(new MouseEvent("click", { bubbles: true, detail: 1, cancelable: true }));
+};
+
 const menus = (): HTMLElement[] => [...document.querySelectorAll<HTMLElement>('[role="menu"]')];
 const menuItem = (label: string): HTMLButtonElement =>
     [...document.querySelectorAll<HTMLButtonElement>('[role="menuitem"]')].find(
@@ -301,6 +308,9 @@ describe("Dropdown", () => {
         window.dispatchEvent(new Event("resize"));
         await settle();
         expect(firstFloating.dataset.placement).toBe("left-start");
+        window.dispatchEvent(new Event("resize"));
+        await settle();
+        expect(firstFloating.dataset.placement).toBe("left-start");
         const branchChevron = firstTrigger.querySelector<SVGElement>(".lucide-chevron-right");
         expect(branchChevron?.classList.contains("t-rotate-200-cubic-out")).toBe(true);
         expect(branchChevron?.classList.contains("rotate-180")).toBe(true);
@@ -319,6 +329,64 @@ describe("Dropdown", () => {
         const secondSubmenu = menus()[2] as HTMLElement;
         const secondFloating = secondSubmenu.parentElement?.parentElement as HTMLDivElement;
         expect(secondFloating.dataset.placement).toBe("left-start");
+    });
+
+    test("uses one drilldown panel for touch navigation on a narrow viewport", async () => {
+        vi.spyOn(window, "matchMedia").mockImplementation(
+            (query) =>
+                ({
+                    matches: query === "(max-width: 599px)",
+                    media: query,
+                    onchange: null,
+                    addEventListener: vi.fn(),
+                    removeEventListener: vi.fn(),
+                    addListener: vi.fn(),
+                    removeListener: vi.fn(),
+                    dispatchEvent: vi.fn(),
+                }) as unknown as MediaQueryList
+        );
+        const component = fixture({ submenuMode: "auto" });
+        tap(trigger());
+        await settle();
+        tap(menuItem("More actions"));
+        await settle();
+        expect(menus()).toHaveLength(1);
+        expect(menuItem("Duplicate")).toBeTruthy();
+        expect(menuItem("New file")).toBeUndefined();
+        expect(menuItem("Back")).toBeTruthy();
+        tap(menuItem("Advanced"));
+        await settle();
+        expect(menus()).toHaveLength(1);
+        expect(menuItem("Archive permanently")).toBeTruthy();
+        tap(menuItem("Archive permanently"));
+        await settle();
+        expect(component.getOpen()).toBe(false);
+        expect(action.mock.calls[0]?.[0].path).toEqual(["more", "advanced"]);
+    });
+
+    test("navigates drilldown levels with Back, Escape, and logical arrows", async () => {
+        const component = fixture({ submenuMode: "drilldown" });
+        await open();
+        menuItem("More actions").focus();
+        press(menuItem("More actions"), "ArrowRight");
+        await settle();
+        expect(menus()).toHaveLength(1);
+        expect(document.activeElement).toBe(menuItem("Duplicate"));
+
+        menuItem("Advanced").click();
+        await settle();
+        menuItem("Back").click();
+        await settle();
+        expect(document.activeElement).toBe(menuItem("Advanced"));
+
+        press(menuItem("Advanced"), "Escape");
+        await settle();
+        expect(component.getOpen()).toBe(true);
+        expect(document.activeElement).toBe(menuItem("More actions"));
+
+        press(menuItem("More actions"), "Escape");
+        await settle();
+        expect(component.getOpen()).toBe(false);
     });
 
     test("closes the entire family on an outside pointer from a nested submenu", async () => {

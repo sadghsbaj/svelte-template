@@ -10,6 +10,7 @@ import type {
 } from "$components/_system/popover/popover.types";
 
 export type DropdownSize = "sm" | "md" | "lg";
+export type DropdownSubmenuMode = "auto" | "floating" | "drilldown";
 
 interface DropdownItemBase {
     id: string;
@@ -67,6 +68,7 @@ export interface DropdownProps {
     closeOnAction?: boolean;
     hoverOpenDelay?: number;
     hoverCloseDelay?: number;
+    submenuMode?: DropdownSubmenuMode;
     emptyText?: string;
     contentClass?: string;
     "aria-label"?: string;

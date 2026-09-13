@@ -189,6 +189,21 @@
         </PreviewGrid>
     </PreviewSection>
 
+    <PreviewSection
+        title="Responsive Submenus"
+        description="Auto uses floating branches on wide pointer layouts and a single-panel drilldown on narrow or touch-first viewports."
+    >
+        <PreviewCard label="Forced drilldown preview" bg="elevation-1" class="h-52">
+            <Dropdown items={actions} submenuMode="drilldown" aria-label="Drilldown file actions">
+                {#snippet trigger(context)}
+                    <Button variant="soft" color="base" {@attach context.attachment}>
+                        Open drilldown
+                    </Button>
+                {/snippet}
+            </Dropdown>
+        </PreviewCard>
+    </PreviewSection>
+
     <PreviewSection title="Sizes">
         <PreviewGrid cols={3}>
             <PreviewCard label="Small" bg="elevation-1" class="h-36">

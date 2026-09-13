@@ -43,6 +43,8 @@
         onPointerEnterLevel?: () => void;
         onPointerLeaveLevel?: () => void;
         branchDirection?: { side: "left" | "right" };
+        drilldown?: boolean;
+        onDrilldownDepthChange?: (depth: number) => void;
     }
 
     let {
@@ -62,6 +64,8 @@
         onPointerEnterLevel: notifyParentPointerEnter,
         onPointerLeaveLevel,
         branchDirection,
+        drilldown = false,
+        onDrilldownDepthChange,
     }: Props = $props();
 
     const instanceId = $props.id();
@@ -73,9 +77,19 @@
     let openTimer: ReturnType<typeof setTimeout> | undefined;
     let closeTimer: ReturnType<typeof setTimeout> | undefined;
     const itemElements = $state<Record<string, HTMLButtonElement | undefined>>({});
+    let drilldownStack = $state<{ submenu: DropdownSubmenu; parentKey: string }[]>([]);
 
     const contentClassName = dropdownContentStyles();
-    const defaultSubmenuSide = $derived(branchDirection?.side ?? (isRtl ? "left" : "right"));
+    const logicalSubmenuSide = $derived<"left" | "right">(isRtl ? "left" : "right");
+    const defaultSubmenuSide = $derived(branchDirection?.side ?? logicalSubmenuSide);
+    const requestedSubmenuSide = $derived(depth === 0 ? logicalSubmenuSide : defaultSubmenuSide);
+    const currentItems = $derived(drilldownStack.at(-1)?.submenu.items ?? items);
+    const currentPath = $derived([...path, ...drilldownStack.map((entry) => entry.submenu.id)]);
+    const currentPrefix = $derived(
+        drilldownStack.length === 0
+            ? `level-${depth}`
+            : `drill-${drilldownStack.map((entry) => entry.submenu.id).join("-")}`
+    );
     const rovingAttachment = $derived(
         rovingFocus({
             selector: "[data-dropdown-item]",
@@ -88,6 +102,21 @@
                 focusIntent === "last" ? (availableItems.at(-1) ?? null) : null,
         })
     );
+
+    const findSubmenu = (
+        entries: readonly DropdownEntry[],
+        id: string | undefined
+    ): DropdownSubmenu | undefined => {
+        if (!id) return undefined;
+        for (const entry of entries) {
+            if (entry.type === "submenu" && entry.id === id) return entry;
+            if (entry.type === "section") {
+                const nested = findSubmenu(entry.items, id);
+                if (nested) return nested;
+            }
+        }
+        return undefined;
+    };
 
     const clearOpenTimer = (): void => {
         if (openTimer) clearTimeout(openTimer);
@@ -140,12 +169,55 @@
         queueMicrotask(() => itemElements[key]?.focus({ preventScroll: true }));
     };
 
+    const focusDrilldownItem = (intent: "first" | "last", parentKey?: string): void => {
+        queueMicrotask(() => {
+            if (parentKey && itemElements[parentKey]) {
+                itemElements[parentKey]?.focus({ preventScroll: true, focusVisible: true });
+                return;
+            }
+            const availableItems = [
+                ...(menuElement?.querySelectorAll<HTMLElement>(
+                    "[data-dropdown-item]:not([data-dropdown-back])"
+                ) ?? []),
+            ].filter((item) => item.ariaDisabled !== "true");
+            const target = intent === "last" ? availableItems.at(-1) : availableItems.at(0);
+            target?.focus({ preventScroll: true, focusVisible: true });
+        });
+    };
+
+    const enterDrilldown = (
+        submenu: DropdownSubmenu,
+        parentKey: string,
+        intent: "first" | "last" = "first"
+    ): void => {
+        if (submenu.disabled) return;
+        drilldownStack.push({ submenu, parentKey });
+        onDrilldownDepthChange?.(drilldownStack.length);
+        focusDrilldownItem(intent);
+    };
+
+    const leaveDrilldown = (): void => {
+        const current = drilldownStack.pop();
+        if (!current) return;
+        onDrilldownDepthChange?.(drilldownStack.length);
+        focusDrilldownItem("first", current.parentKey);
+    };
+
+    const activateSubmenu = (
+        submenu: DropdownSubmenu,
+        key: string,
+        intent: "first" | "last" | null = "first"
+    ): void => {
+        if (drilldown) enterDrilldown(submenu, key, intent ?? "first");
+        else openSubmenu(key, intent);
+    };
+
     const handleAction = (item: DropdownAction, event: MouseEvent): void => {
         if (item.disabled) return;
         const shouldClose = item.closeOnAction ?? closeOnAction;
         if (shouldClose) closeRoot();
         queueMicrotask(() => {
-            void item.onAction({ item, event, path, close: closeRoot });
+            void item.onAction({ item, event, path: currentPath, close: closeRoot });
         });
     };
 
@@ -180,16 +252,28 @@
             return;
         }
 
+        if (event.key === "Escape" && drilldown && drilldownStack.length > 0) {
+            event.preventDefault();
+            event.stopPropagation();
+            leaveDrilldown();
+            return;
+        }
+
         const forwardKey = isRtl ? "ArrowLeft" : "ArrowRight";
         const backwardKey = isRtl ? "ArrowRight" : "ArrowLeft";
         if (event.key === forwardKey && target.dataset.dropdownSubmenu === "true") {
             event.preventDefault();
             event.stopPropagation();
-            openSubmenu(target.dataset.dropdownKey as string, "first");
-        } else if (event.key === backwardKey && depth > 0) {
+            const submenu = findSubmenu(currentItems, target.dataset.dropdownId);
+            if (submenu) activateSubmenu(submenu, target.dataset.dropdownKey as string, "first");
+        } else if (
+            event.key === backwardKey &&
+            ((drilldown && drilldownStack.length > 0) || (!drilldown && depth > 0))
+        ) {
             event.preventDefault();
             event.stopPropagation();
-            closeLevel?.();
+            if (drilldown) leaveDrilldown();
+            else closeLevel?.();
         }
     };
 
@@ -207,6 +291,12 @@
         const resolvedDirection =
             direction === "auto" ? getComputedStyle(menu).direction : direction;
         isRtl = resolvedDirection === "rtl";
+    });
+
+    $effect(() => {
+        if (drilldown || drilldownStack.length === 0) return;
+        drilldownStack = [];
+        onDrilldownDepthChange?.(0);
     });
 
     onDestroy(() => {
@@ -245,6 +335,7 @@
                 tabindex="-1"
                 data-dropdown-item
                 data-dropdown-submenu="true"
+                data-dropdown-id={submenu.id}
                 data-dropdown-submenu-side={branchDirection?.side ??
                     submenuBranches[key]?.side ??
                     defaultSubmenuSide}
@@ -258,13 +349,13 @@
                     described: Boolean(submenu.description),
                     submenuOpen: openSubmenuId === key,
                 })}
-                onclick={() => openSubmenu(key, "first")}
+                onclick={() => activateSubmenu(submenu, key)}
                 onfocus={() => {
                     if (openSubmenuId && openSubmenuId !== key) openSubmenuId = null;
                 }}
                 onpointermove={handlePointerMove}
                 onpointerenter={(event) => {
-                    if (event.pointerType === "mouse" && !submenu.disabled)
+                    if (!drilldown && event.pointerType === "mouse" && !submenu.disabled)
                         openSubmenu(key, null, false);
                 }}
                 onpointerleave={(event) => {
@@ -297,16 +388,12 @@
                 />
             </button>
 
-            {#if openSubmenuId === key}
+            {#if !drilldown && openSubmenuId === key}
                 <Popover
                     open
                     triggerElement={itemElements[key]}
                     anchor={itemElements[key]}
-                    placement={(branchDirection?.side ??
-                        submenuBranches[key]?.side ??
-                        defaultSubmenuSide) === "left"
-                        ? "left-start"
-                        : "right-start"}
+                    placement={requestedSubmenuSide === "left" ? "left-start" : "right-start"}
                     offset={4}
                     flip={depth === 0}
                     {direction}
@@ -422,9 +509,30 @@
     onpointerleave={onPointerLeaveLevel}
     {@attach rovingAttachment}
 >
-    {#if items.length === 0}
+    {#if drilldownStack.length > 0}
+        <button
+            type="button"
+            role="menuitem"
+            tabindex="-1"
+            data-dropdown-item
+            data-dropdown-back
+            data-dropdown-label="Back"
+            class={dropdownItemStyles({ size })}
+            onclick={leaveDrilldown}
+        >
+            <ChevronRight
+                aria-hidden="true"
+                class={["shrink-0 text-weak", isRtl ? "" : "rotate-180"]}
+            />
+            <span class="truncate font-500 leading-normal text-strong">Back</span>
+        </button>
+        <div class={selectionSectionLabelStyles({ size })}>
+            {drilldownStack.at(-1)?.submenu.label}
+        </div>
+    {/if}
+    {#if currentItems.length === 0}
         <div class="px-10px py-8px text-sm text-weak select-none">{emptyText}</div>
     {:else}
-        {@render renderEntries(items, `level-${depth}`)}
+        {@render renderEntries(currentItems, currentPrefix)}
     {/if}
 </div>

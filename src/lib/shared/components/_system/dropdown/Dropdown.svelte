@@ -19,6 +19,7 @@
         closeOnAction = true,
         hoverOpenDelay = 120,
         hoverCloseDelay = 260,
+        submenuMode = "auto",
         emptyText = "No actions available",
         contentClass = "",
         "aria-label": ariaLabel = "Actions",
@@ -28,6 +29,8 @@
 
     let focusIntent = $state<"first" | "last" | null>(null);
     let contentElement = $state<HTMLDivElement>();
+    let drilldown = $state(false);
+    let drilldownDepth = $state(0);
     const contentClassName = $derived(dropdownContentStyles({ class: contentClass }));
 
     const closeRoot = (): void => {
@@ -87,6 +90,26 @@
         };
         return { ...context, attachment };
     };
+
+    $effect(() => {
+        if (submenuMode !== "auto") {
+            drilldown = submenuMode === "drilldown";
+            return;
+        }
+
+        const coarsePointer = window.matchMedia("(pointer: coarse)");
+        const narrowViewport = window.matchMedia("(max-width: 599px)");
+        const update = (): void => {
+            drilldown = coarsePointer.matches || narrowViewport.matches;
+        };
+        update();
+        coarsePointer.addEventListener("change", update);
+        narrowViewport.addEventListener("change", update);
+        return () => {
+            coarsePointer.removeEventListener("change", update);
+            narrowViewport.removeEventListener("change", update);
+        };
+    });
 </script>
 
 <Popover
@@ -96,7 +119,12 @@
     offset={6}
     {direction}
     modal={false}
-    dismiss={{ outsidePointer: true, escape: true, focusOutside: true, anchorDetached: true }}
+    dismiss={{
+        outsidePointer: true,
+        escape: !drilldown || drilldownDepth === 0,
+        focusOutside: true,
+        anchorDetached: true,
+    }}
     initialFocus={focusIntent ? resolveInitialFocus : false}
     restoreFocus="auto"
     role="menu"
@@ -105,7 +133,10 @@
     aria-label={ariaLabel}
     class={contentClassName}
     onOpenChange={(nextOpen, detail) => {
-        if (!nextOpen) focusIntent = null;
+        if (!nextOpen) {
+            focusIntent = null;
+            drilldownDepth = 0;
+        }
         onOpenChange?.(nextOpen, detail);
     }}
 >
@@ -126,5 +157,9 @@
         depth={0}
         path={[]}
         {closeRoot}
+        {drilldown}
+        onDrilldownDepthChange={(depth) => {
+            drilldownDepth = depth;
+        }}
     />
 </Popover>

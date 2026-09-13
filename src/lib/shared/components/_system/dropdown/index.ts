@@ -15,5 +15,6 @@ export type {
     DropdownSeparator,
     DropdownSize,
     DropdownSubmenu,
+    DropdownSubmenuMode,
     DropdownTriggerContext,
 } from "./dropdown.types";

@@ -19,6 +19,13 @@ export type { SwitchStyleProps } from "./switch/switch.styles";
 export { default as Checkbox } from "./checkbox/Checkbox.svelte";
 export type { CheckboxStyleProps } from "./checkbox/checkbox.styles";
 
+export { default as TextInput } from "./text-input/TextInput.svelte";
+export {
+    textInputActionStyles,
+    type TextInputActionStyleProps,
+    type TextInputStyleProps,
+} from "./text-input/text-input.styles";
+
 export { default as Floating } from "./floating/Floating.svelte";
 export type {
     FloatingAlignment,

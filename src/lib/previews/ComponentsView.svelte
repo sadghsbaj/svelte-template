@@ -171,7 +171,7 @@
                                     : 'text-weak/60'}"
                             />
                         {/if}
-                        <span class="text-sm font-500">{item.name}</span>
+                        <span class="text-sm font-500 text-trim">{item.name}</span>
                     </div>
                 </button>
             {/each}

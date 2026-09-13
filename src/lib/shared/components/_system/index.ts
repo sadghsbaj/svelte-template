@@ -19,6 +19,10 @@ export type { SwitchStyleProps } from "./switch/switch.styles";
 export { default as Checkbox } from "./checkbox/Checkbox.svelte";
 export type { CheckboxStyleProps } from "./checkbox/checkbox.styles";
 
+export { default as Select } from "./select/Select.svelte";
+export type { SelectStyleProps } from "./select/select.styles";
+export type { SelectOption, SelectProps } from "./select/select.types";
+
 export { default as TextInput } from "./text-input/TextInput.svelte";
 export {
     textInputActionStyles,

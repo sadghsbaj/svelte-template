@@ -14,13 +14,6 @@
     import PreviewSection from "$lib/previews/ui/PreviewSection.svelte";
 
     let showBounds = $state(true);
-    let clickCount = $state(0);
-    let lastClicked = $state<string>("None");
-
-    function handleClick(name: string): void {
-        clickCount += 1;
-        lastClicked = name;
-    }
 </script>
 
 <PreviewPage>
@@ -41,71 +34,54 @@
                 <span>Show Bounds</span>
             {/if}
         </button>
-
-        <span class="text-xs text-weak px-2">
-            Clicks registered: <strong class="text-accent-500 font-600">{clickCount}</strong> (Last:
-            <span class="text-strong">{lastClicked}</span>)
-        </span>
     </PreviewHeader>
 
     <!-- Size Presets -->
     <PreviewSection
         title="Size Presets"
-        description="Standard WCAG & Apple HIG touch targets (40px, 44px, 48px) on 24x24px micro-buttons."
+        description="Standard WCAG & Apple HIG touch targets on micro-buttons."
     >
         <PreviewGrid cols={3}>
-            <PreviewCard label="Compact (sm: 40px)" bg="elevation-1" class="h-44">
-                <div class="flex flex-col items-center gap-3">
-                    <button
-                        class="w-6 h-6 rounded-lg bg-elevation-2 hover:bg-elevation-3 text-weak hover:text-strong flex-center t-colors shadow-2xs cursor-pointer"
-                        onclick={() => handleClick("Compact Close")}
-                    >
-                        <HitArea
-                            size="sm"
-                            class={showBounds
-                                ? "!border !border-dashed !border-accent-500/60 !bg-accent-500/10 rounded-xl"
-                                : ""}
-                        />
-                        <X size={14} />
-                    </button>
-                    <span class="text-[11px] text-weak">24x24px button / 40px hit area</span>
-                </div>
+            <PreviewCard label="Compact (sm)" bg="elevation-1" class="h-36">
+                <button
+                    class="w-6 h-6 rounded-lg bg-elevation-2 hover:bg-elevation-3 text-weak hover:text-strong flex-center t-colors shadow-2xs cursor-pointer"
+                >
+                    <HitArea
+                        size="sm"
+                        class={showBounds
+                            ? "!border !border-dashed !border-accent-500/60 !bg-accent-500/10 rounded-xl"
+                            : ""}
+                    />
+                    <X size={14} />
+                </button>
             </PreviewCard>
 
-            <PreviewCard label="Standard (md: 44px)" bg="elevation-1" class="h-44">
-                <div class="flex flex-col items-center gap-3">
-                    <button
-                        class="w-6 h-6 rounded-lg bg-elevation-2 hover:bg-elevation-3 text-weak hover:text-strong flex-center t-colors shadow-2xs cursor-pointer"
-                        onclick={() => handleClick("Standard Plus")}
-                    >
-                        <HitArea
-                            size="md"
-                            class={showBounds
-                                ? "!border !border-dashed !border-accent-500/60 !bg-accent-500/10 rounded-xl"
-                                : ""}
-                        />
-                        <Plus size={14} />
-                    </button>
-                    <span class="text-[11px] text-weak">Apple HIG / WCAG standard</span>
-                </div>
+            <PreviewCard label="Standard (md)" bg="elevation-1" class="h-36">
+                <button
+                    class="w-6 h-6 rounded-lg bg-elevation-2 hover:bg-elevation-3 text-weak hover:text-strong flex-center t-colors shadow-2xs cursor-pointer"
+                >
+                    <HitArea
+                        size="md"
+                        class={showBounds
+                            ? "!border !border-dashed !border-accent-500/60 !bg-accent-500/10 rounded-xl"
+                            : ""}
+                    />
+                    <Plus size={14} />
+                </button>
             </PreviewCard>
 
-            <PreviewCard label="Material (lg: 48px)" bg="elevation-1" class="h-44">
-                <div class="flex flex-col items-center gap-3">
-                    <button
-                        class="w-6 h-6 rounded-lg bg-elevation-2 hover:bg-elevation-3 text-weak hover:text-strong flex-center t-colors shadow-2xs cursor-pointer"
-                        onclick={() => handleClick("Material More")}
-                    >
-                        <HitArea
-                            size="lg"
-                            class={showBounds
-                                ? "!border !border-dashed !border-accent-500/60 !bg-accent-500/10 rounded-xl"
-                                : ""}
-                        />
-                        <MoreHorizontal size={14} />
-                    </button>
-                    <span class="text-[11px] text-weak">Material Design 3</span>
-                </div>
+            <PreviewCard label="Material (lg)" bg="elevation-1" class="h-36">
+                <button
+                    class="w-6 h-6 rounded-lg bg-elevation-2 hover:bg-elevation-3 text-weak hover:text-strong flex-center t-colors shadow-2xs cursor-pointer"
+                >
+                    <HitArea
+                        size="lg"
+                        class={showBounds
+                            ? "!border !border-dashed !border-accent-500/60 !bg-accent-500/10 rounded-xl"
+                            : ""}
+                    />
+                    <MoreHorizontal size={14} />
+                </button>
             </PreviewCard>
         </PreviewGrid>
     </PreviewSection>
@@ -119,7 +95,6 @@
             <div class="flex items-center gap-6 p-4 rounded-2xl bg-elevation-2/60">
                 <button
                     class="w-7 h-7 rounded-lg bg-elevation-1 hover:bg-elevation-3 text-weak hover:text-strong flex-center t-colors shadow-xs cursor-pointer"
-                    onclick={() => handleClick("Heart")}
                 >
                     <HitArea
                         size="md"
@@ -132,7 +107,6 @@
 
                 <button
                     class="w-7 h-7 rounded-lg bg-elevation-1 hover:bg-elevation-3 text-weak hover:text-strong flex-center t-colors shadow-xs cursor-pointer"
-                    onclick={() => handleClick("Bell")}
                 >
                     <HitArea
                         size="md"
@@ -145,7 +119,6 @@
 
                 <button
                     class="w-7 h-7 rounded-lg bg-elevation-1 hover:bg-elevation-3 text-weak hover:text-strong flex-center t-colors shadow-xs cursor-pointer"
-                    onclick={() => handleClick("Trash")}
                 >
                     <HitArea
                         size="md"
@@ -165,10 +138,9 @@
         description="min-width: 100% ensures wide pills and custom numeric sizes expand vertically without truncating width."
     >
         <PreviewGrid cols={2}>
-            <PreviewCard label="Pill Badge (80x24px)" bg="elevation-1" class="h-40">
+            <PreviewCard label="Pill Badge" bg="elevation-1" class="h-40">
                 <button
                     class="px-3 h-6 rounded-full bg-accent-500/15 hover:bg-accent-500/25 text-accent-500 text-xs font-600 flex items-center gap-1.5 t-colors cursor-pointer"
-                    onclick={() => handleClick("Tag Pill")}
                 >
                     <HitArea
                         size="md"
@@ -181,10 +153,9 @@
                 </button>
             </PreviewCard>
 
-            <PreviewCard label="Custom Number (56px)" bg="elevation-1" class="h-40">
+            <PreviewCard label="Custom (56px)" bg="elevation-1" class="h-40">
                 <button
                     class="w-8 h-8 rounded-xl bg-elevation-2 hover:bg-elevation-3 text-strong flex-center t-colors shadow-xs cursor-pointer"
-                    onclick={() => handleClick("Custom 56px")}
                 >
                     <HitArea
                         size={56}

@@ -186,22 +186,22 @@
     <!-- Sizes -->
     <PreviewSection
         title="Sizes"
-        description="Carefully calibrated font sizes, line heights, and container paddings matching TextInput."
+        description="Calibrated font sizes, line heights, and paddings matching TextInput."
     >
         <PreviewGrid cols={3}>
-            <PreviewCard label="Small (12px / line 18px)" bg="elevation-0" class="min-h-44">
+            <PreviewCard label="Small (sm)" bg="elevation-0" class="min-h-44">
                 <div class="w-full">
                     <Textarea size="sm" rows={2} bind:value={smVal} />
                 </div>
             </PreviewCard>
 
-            <PreviewCard label="Medium (14px / line 20px)" bg="elevation-0" class="min-h-44">
+            <PreviewCard label="Medium (md)" bg="elevation-0" class="min-h-44">
                 <div class="w-full">
                     <Textarea size="md" rows={2} bind:value={mdVal} />
                 </div>
             </PreviewCard>
 
-            <PreviewCard label="Large (16px / line 24px)" bg="elevation-0" class="min-h-44">
+            <PreviewCard label="Large (lg)" bg="elevation-0" class="min-h-44">
                 <div class="w-full">
                     <Textarea size="lg" rows={2} bind:value={lgVal} />
                 </div>

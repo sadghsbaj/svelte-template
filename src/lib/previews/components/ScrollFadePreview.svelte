@@ -69,8 +69,7 @@
             </PreviewCard>
 
             <PreviewCard label="Horizontal" bg="elevation-1" class="h-64">
-                <div class="w-full h-full flex flex-col justify-center gap-3">
-                    <span class="text-[11px] text-weak px-3">Scroll horizontally:</span>
+                <div class="w-full h-full flex flex-col justify-center">
                     <div
                         class="w-full overflow-x-auto flex gap-2 p-3"
                         {@attach scrollFade({ direction: "horizontal", size: "md" })}

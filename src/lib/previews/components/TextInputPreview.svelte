@@ -108,10 +108,10 @@
     <!-- Sizes -->
     <PreviewSection
         title="Sizes"
-        description="Harmonized typography (sm 12px, md 14px, lg 16px) with icons sized exactly 2px larger and 2.25 stroke width."
+        description="Harmonized typography and icon scaling across sizes."
     >
         <PreviewGrid cols={3}>
-            <PreviewCard label="Small (sm - 12px / Icon 14px)" bg="elevation-1" class="h-32">
+            <PreviewCard label="Small (sm)" bg="elevation-1" class="h-32">
                 <div class="w-full max-w-xs">
                     <TextInput
                         size="sm"
@@ -122,7 +122,7 @@
                 </div>
             </PreviewCard>
 
-            <PreviewCard label="Medium (md - 14px / Icon 16px)" bg="elevation-1" class="h-32">
+            <PreviewCard label="Medium (md)" bg="elevation-1" class="h-32">
                 <div class="w-full max-w-xs">
                     <TextInput
                         size="md"
@@ -133,7 +133,7 @@
                 </div>
             </PreviewCard>
 
-            <PreviewCard label="Large (lg - 16px / Icon 18px)" bg="elevation-1" class="h-32">
+            <PreviewCard label="Large (lg)" bg="elevation-1" class="h-32">
                 <div class="w-full max-w-xs">
                     <TextInput
                         size="lg"

@@ -61,7 +61,7 @@ export const textInputContainerStyles = cva({
 export const textInputInputStyles = cva({
     base: {
         layout: "flex-1 min-w-0 h-auto bg-transparent border-none outline-none focus:outline-none select-text",
-        typography: "font-500 leading-normal",
+        typography: "font-500 leading-none",
         misc: "placeholder:text-weak placeholder:font-400",
     },
 

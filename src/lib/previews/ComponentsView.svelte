@@ -86,7 +86,7 @@
     const activePreview = $derived(previews.find((p) => p.id === selectedId));
 </script>
 
-<div class="p-6 md:p-8 pb-28 flex h-full w-full overflow-hidden relative">
+<div class="flex h-full w-full overflow-hidden relative">
     <!-- Floating Open Button (Appears seamlessly top-left when sidebar is collapsed) -->
     {#if isCollapsed}
         <Button

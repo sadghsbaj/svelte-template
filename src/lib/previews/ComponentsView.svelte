@@ -1,6 +1,6 @@
 <script lang="ts">
     import type { Component } from "svelte";
-    import { Box, Layers, PanelLeftClose, PanelLeftOpen, Search } from "@lucide/svelte";
+    import { Box, Component as ComponentIcon, PanelLeftClose, PanelLeftOpen, Search } from "@lucide/svelte";
     import { Button, TextInput } from "$components";
 
     import { fade } from "$core/_system/motion/svelte";
@@ -113,7 +113,7 @@
         <!-- Sidebar Header with integrated Close Button -->
         <div class="px-2 pt-1 flex items-center justify-between">
             <div class="flex items-center gap-2 text-strong font-700">
-                <Layers size={18} class="text-accent-500" />
+                <ComponentIcon size={18} class="text-accent-500" />
                 <span>Components</span>
             </div>
             <Button

@@ -380,7 +380,7 @@
                 <!-- Heatmap Toggle Button -->
                 <button
                     onclick={onToggleHeatmap}
-                    class="cursor-pointer p-1 rounded-lg flex-center t-bg-150-sine-out t-text-150-sine-out squircle-smooth {isHeatmapActive
+                    class="cursor-pointer p-1 rounded-full flex-center t-bg-150-sine-out t-text-150-sine-out squircle-smooth {isHeatmapActive
                         ? 'text-warning-500 border border-warning-500/30 bg-warning-500/15 dark:text-warning-400'
                         : 'text-weak hover:text-strong hover:bg-elevation-1'}"
                     title={isHeatmapActive
@@ -393,7 +393,7 @@
                 <!-- Inspector Toggle Button -->
                 <button
                     onclick={onToggleInspector}
-                    class="cursor-pointer p-1 rounded-lg flex-center t-bg-150-sine-out t-text-150-sine-out squircle-smooth {isInspectorActive
+                    class="cursor-pointer p-1 rounded-full flex-center t-bg-150-sine-out t-text-150-sine-out squircle-smooth {isInspectorActive
                         ? 'text-cyan-500 border border-cyan-500/30 bg-cyan-500/15 dark:text-cyan-400'
                         : 'text-weak hover:text-strong hover:bg-elevation-1'}"
                     title={isInspectorActive
@@ -405,19 +405,19 @@
 
                 {#if domHealthRating.status === "Critical"}
                     <span
-                        class="text-xs text-danger-600 font-mono font-600 px-2.5 py-0.5 border border-danger-500/40 rounded-full bg-danger-500/15 dark:text-danger-400 dark:border-danger-500/40"
+                        class="text-xs text-danger-600 font-mono font-600 px-2.5 py-0.5 border border-danger-500/40 rounded-full squircle-smooth bg-danger-500/15 dark:text-danger-400 dark:border-danger-500/40"
                     >
                         Critical
                     </span>
                 {:else if domHealthRating.status === "Warning"}
                     <span
-                        class="text-xs text-amber-600 font-mono font-600 px-2.5 py-0.5 border border-amber-500/40 rounded-full bg-amber-500/15 dark:text-amber-400 dark:border-amber-500/40"
+                        class="text-xs text-amber-600 font-mono font-600 px-2.5 py-0.5 border border-amber-500/40 rounded-full squircle-smooth bg-amber-500/15 dark:text-amber-400 dark:border-amber-500/40"
                     >
                         Warning
                     </span>
                 {:else}
                     <span
-                        class="text-xs text-emerald-600 font-mono font-600 px-2.5 py-0.5 border border-emerald-500/40 rounded-full bg-emerald-500/15 dark:text-emerald-400 dark:border-emerald-500/40"
+                        class="text-xs text-emerald-600 font-mono font-600 px-2.5 py-0.5 border border-emerald-500/40 rounded-full squircle-smooth bg-emerald-500/15 dark:text-emerald-400 dark:border-emerald-500/40"
                     >
                         Optimal
                     </span>
@@ -461,19 +461,19 @@
             </div>
             {#if webVitalsRating.status === "Poor"}
                 <span
-                    class="text-xs text-danger-600 font-mono font-600 px-2.5 py-0.5 border border-danger-500/40 rounded-full bg-danger-500/15 dark:text-danger-400 dark:border-danger-500/40"
+                    class="text-xs text-danger-600 font-mono font-600 px-2.5 py-0.5 border border-danger-500/40 rounded-full squircle-smooth bg-danger-500/15 dark:text-danger-400 dark:border-danger-500/40"
                 >
                     Poor
                 </span>
             {:else if webVitalsRating.status === "Needs Improvement"}
                 <span
-                    class="text-xs text-amber-600 font-mono font-600 px-2.5 py-0.5 border border-amber-500/40 rounded-full bg-amber-500/15 dark:text-amber-400 dark:border-amber-500/40"
+                    class="text-xs text-amber-600 font-mono font-600 px-2.5 py-0.5 border border-amber-500/40 rounded-full squircle-smooth bg-amber-500/15 dark:text-amber-400 dark:border-amber-500/40"
                 >
                     Needs Improvement
                 </span>
             {:else}
                 <span
-                    class="text-xs text-emerald-600 font-mono font-600 px-2.5 py-0.5 border border-emerald-500/40 rounded-full bg-emerald-500/15 dark:text-emerald-400 dark:border-emerald-500/40"
+                    class="text-xs text-emerald-600 font-mono font-600 px-2.5 py-0.5 border border-emerald-500/40 rounded-full squircle-smooth bg-emerald-500/15 dark:text-emerald-400 dark:border-emerald-500/40"
                 >
                     Good
                 </span>

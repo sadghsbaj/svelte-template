@@ -30,11 +30,43 @@
         { value: "basil", label: "Basil (unavailable)", icon: Leaf, disabled: true },
         { value: "sage", label: "Sage", icon: Leaf },
     ];
+    const detailedOptions: readonly SelectOption[] = [
+        {
+            value: "apple",
+            label: "Apple",
+            description: "Crisp and lightly sweet",
+            section: "Orchard fruit",
+            icon: Apple,
+        },
+        {
+            value: "cherry",
+            label: "Cherry",
+            description: "Bright, tart, and juicy",
+            section: "Orchard fruit",
+            icon: Cherry,
+        },
+        {
+            value: "banana",
+            label: "Banana",
+            description: "Creamy with a mellow sweetness",
+            section: "Tropical fruit",
+            icon: Banana,
+        },
+        {
+            value: "citrus",
+            label: "Citrus",
+            description: "Fresh with a sharp finish",
+            section: "Tropical fruit",
+            icon: Citrus,
+        },
+    ];
 
     let basicValue = $state<string>();
     let iconValue = $state("banana");
     let keyboardValue = $state<string>();
     let disabledOptionValue = $state("mint");
+    let detailedValue = $state("cherry");
+    let elevatedValue = $state("banana");
     let formValue = $state<string>();
 </script>
 
@@ -58,6 +90,25 @@
             </PreviewCard>
             <PreviewCard label="Icons + selected value" bg="elevation-1" class="h-36">
                 <Select options={iconOptions} bind:value={iconValue} class="w-52" />
+            </PreviewCard>
+        </PreviewGrid>
+    </PreviewSection>
+
+    <PreviewSection
+        title="Descriptions + Sections"
+        description="Secondary text and grouped options add hierarchy without changing selection behavior."
+    >
+        <PreviewGrid cols={2}>
+            <PreviewCard label="Soft" bg="elevation-1" class="h-40">
+                <Select options={detailedOptions} bind:value={detailedValue} class="w-64" />
+            </PreviewCard>
+            <PreviewCard label="Elevated on elevation 0" bg="elevation-0" class="h-40">
+                <Select
+                    options={detailedOptions}
+                    bind:value={elevatedValue}
+                    variant="elevated"
+                    class="w-64"
+                />
             </PreviewCard>
         </PreviewGrid>
     </PreviewSection>

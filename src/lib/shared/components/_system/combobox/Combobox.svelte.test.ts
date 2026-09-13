@@ -137,6 +137,44 @@ describe("Combobox", () => {
         expect(input().value).toBe("ap");
     });
 
+    test("renders described sections and removes empty groups while filtering", async () => {
+        fixture({
+            initialOptions: [
+                {
+                    value: "apple",
+                    label: "Apple",
+                    description: "Crisp and sweet",
+                    section: "Orchard",
+                },
+                {
+                    value: "cherry",
+                    label: "Cherry",
+                    description: "Bright and tart",
+                    section: "Orchard",
+                },
+                {
+                    value: "banana",
+                    label: "Banana",
+                    description: "Soft and creamy",
+                    section: "Tropical",
+                },
+            ],
+        });
+        await open();
+        expect(listbox()?.querySelectorAll('[role="group"]')).toHaveLength(2);
+        expect(option("Apple").textContent).toContain("Crisp and sweet");
+        expect(option("Apple").className).toContain("py-6px");
+        expect(option("Apple").className).toContain("[&>svg]:self-start");
+
+        await type("creamy");
+        const groups = [...(listbox()?.querySelectorAll<HTMLElement>('[role="group"]') ?? [])];
+        expect(options()).toHaveLength(1);
+        expect(option("Banana")).toBeTruthy();
+        expect(groups).toHaveLength(1);
+        expect(groups[0]?.textContent).toContain("Tropical");
+        expect(groups[0]?.textContent).not.toContain("Orchard");
+    });
+
     test("reacts to external query changes and pointer activity without moving input focus", async () => {
         const component = fixture();
         input().focus();
@@ -353,7 +391,8 @@ describe("Combobox", () => {
         await open();
         const floating = listbox()?.parentElement?.parentElement as HTMLDivElement;
         expect(floating.style.getPropertyValue("--floating-anchor-width")).toBe("211px");
-        expect(listbox()?.className).toContain("min-w-[var(--floating-anchor-width)]");
+        expect(listbox()?.className).toContain("w-[var(--floating-anchor-width)]");
+        expect(listbox()?.className).toContain("max-w-[var(--floating-available-width)]");
         expect(listbox()?.className).toContain("max-h-[var(--floating-available-height)]");
     });
 });

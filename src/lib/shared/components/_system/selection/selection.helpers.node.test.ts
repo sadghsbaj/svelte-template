@@ -6,6 +6,7 @@ import {
     getNextEnabledIndex,
     getSelectedIndex,
     getSelectedOption,
+    groupSelectionEntries,
     normalizeStaleValue,
 } from "./selection.helpers";
 import type { SelectionOption } from "./selection.types";
@@ -34,5 +35,26 @@ describe("selection helpers", () => {
         expect(normalizeStaleValue(options, "same")).toBe("same");
         expect(defaultSelectionFilter(options[0] as SelectionOption, " IR ")).toBe(true);
         expect(defaultSelectionFilter(options[0] as SelectionOption, "second")).toBe(false);
+        expect(
+            defaultSelectionFilter(
+                { value: "pear", label: "Pear", description: "Soft and floral" },
+                "FLORAL"
+            )
+        ).toBe(true);
+    });
+
+    test("groups contiguous sections while preserving original indexes", () => {
+        const groups = groupSelectionEntries([
+            { option: { value: "a", label: "A", section: "First" }, index: 2 },
+            { option: { value: "b", label: "B", section: "First" }, index: 4 },
+            { option: { value: "c", label: "C", section: "Second" }, index: 7 },
+            { option: { value: "d", label: "D" }, index: 9 },
+        ]);
+        expect(groups.map((group) => group.section)).toEqual(["First", "Second", undefined]);
+        expect(groups.map((group) => group.entries.map((entry) => entry.index))).toEqual([
+            [2, 4],
+            [7],
+            [9],
+        ]);
     });
 });

@@ -6,16 +6,25 @@
     import {
         getEnabledIndexes,
         getSelectedIndex,
+        groupSelectionEntries,
         normalizeStaleValue,
     } from "$components/_system/selection/selection.helpers";
 
-    import { selectContentStyles, selectOptionStyles, selectTriggerStyles } from "./select.styles";
+    import {
+        selectContentStyles,
+        selectOptionStyles,
+        selectSectionLabelStyles,
+        selectSectionStyles,
+        selectTriggerStyles,
+    } from "./select.styles";
     import type { SelectOption, SelectProps } from "./select.types";
 
     let {
         options,
         value = $bindable<string | undefined>(),
         placeholder = "Select an option",
+        emptyText = "No options available",
+        variant = "soft",
         size = "md",
         disabled = false,
         name,
@@ -32,6 +41,7 @@
     const instanceId = $props.id();
     const labelId = `select-${instanceId}-label`;
     const optionId = (index: number): string => `select-${instanceId}-option-${index}`;
+    const sectionId = (index: number): string => `select-${instanceId}-section-${index}`;
     const initialValue = value;
 
     let open = $state(false);
@@ -43,7 +53,10 @@
 
     const selectedIndex = $derived(getSelectedIndex(options, value));
     const selectedOption = $derived<SelectOption | undefined>(options[selectedIndex]);
-    const triggerClass = $derived(selectTriggerStyles({ size, class: className }));
+    const optionGroups = $derived(
+        groupSelectionEntries(options.map((option, index) => ({ option, index })))
+    );
+    const triggerClass = $derived(selectTriggerStyles({ variant, size, class: className }));
     const contentClassName = $derived(selectContentStyles({ class: contentClass }));
 
     const isPrintableKey = (event: KeyboardEvent): boolean =>
@@ -258,36 +271,77 @@
 
     {#snippet children(context)}
         <div {@attach rovingAttachment}>
-            {#each options as option, index (index)}
-                <div
-                    id={optionId(index)}
-                    role="option"
-                    tabindex="-1"
-                    aria-selected={selectedIndex === index}
-                    aria-disabled={option.disabled ? "true" : undefined}
-                    class={selectOptionStyles({
-                        size,
-                        selected: selectedIndex === index,
-                    })}
-                    onclick={(event) => selectOption(option, event, context.close)}
-                    onkeydown={(event) => {
-                        if (event.key !== "Enter" && event.key !== " " && event.key !== "Spacebar")
-                            return;
-                        event.preventDefault();
-                        selectOption(option, event, context.close);
-                    }}
-                    {@attach disableInteraction({ enabled: option.disabled === true })}
-                >
-                    {#if option.icon}
-                        {const OptionIcon = option.icon}
-                        <OptionIcon aria-hidden="true" class="shrink-0" />
-                    {/if}
-                    <span class="truncate flex-1">{option.label}</span>
-                    {#if selectedIndex === index}
-                        <Check aria-hidden="true" class="text-accent-solid-1 shrink-0 opacity-80" />
-                    {/if}
-                </div>
-            {/each}
+            {#if options.length === 0}
+                <div class="px-10px py-8px text-sm text-weak select-none">{emptyText}</div>
+            {:else}
+                {#each optionGroups as group, groupIndex (groupIndex)}
+                    <div
+                        role={group.section ? "group" : undefined}
+                        aria-labelledby={group.section ? sectionId(groupIndex) : undefined}
+                        class={selectSectionStyles({ separated: groupIndex > 0 })}
+                    >
+                        {#if group.section}
+                            <div
+                                id={sectionId(groupIndex)}
+                                class={selectSectionLabelStyles({ size })}
+                            >
+                                {group.section}
+                            </div>
+                        {/if}
+                        {#each group.entries as entry (entry.index)}
+                            <div
+                                id={optionId(entry.index)}
+                                role="option"
+                                tabindex="-1"
+                                aria-selected={selectedIndex === entry.index}
+                                aria-disabled={entry.option.disabled ? "true" : undefined}
+                                class={selectOptionStyles({
+                                    size,
+                                    selected: selectedIndex === entry.index,
+                                    described: Boolean(entry.option.description),
+                                })}
+                                onclick={(event) =>
+                                    selectOption(entry.option, event, context.close)}
+                                onkeydown={(event) => {
+                                    if (
+                                        event.key !== "Enter" &&
+                                        event.key !== " " &&
+                                        event.key !== "Spacebar"
+                                    )
+                                        return;
+                                    event.preventDefault();
+                                    selectOption(entry.option, event, context.close);
+                                }}
+                                {@attach disableInteraction({
+                                    enabled: entry.option.disabled === true,
+                                })}
+                            >
+                                {#if entry.option.icon}
+                                    {const OptionIcon = entry.option.icon}
+                                    <OptionIcon aria-hidden="true" class="shrink-0 text-weak" />
+                                {/if}
+                                <span class="flex min-w-0 flex-1 flex-col">
+                                    <span class="truncate leading-normal">{entry.option.label}</span
+                                    >
+                                    {#if entry.option.description}
+                                        <span
+                                            class="truncate text-xs font-400 leading-normal text-weak"
+                                        >
+                                            {entry.option.description}
+                                        </span>
+                                    {/if}
+                                </span>
+                                {#if selectedIndex === entry.index}
+                                    <Check
+                                        aria-hidden="true"
+                                        class="text-accent-solid-1 shrink-0 opacity-80"
+                                    />
+                                {/if}
+                            </div>
+                        {/each}
+                    </div>
+                {/each}
+            {/if}
         </div>
     {/snippet}
 </Popover>

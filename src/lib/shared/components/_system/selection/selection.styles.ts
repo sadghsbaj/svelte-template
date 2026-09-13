@@ -4,7 +4,7 @@ export const selectionContentStyles = cva({
     base: {
         layout: "overflow-y-auto",
         frame: "bg-elevation-1 shadow-xl rounded-3xl squircle-smooth p-6px",
-        sizing: "min-w-[var(--floating-anchor-width)] max-h-[var(--floating-available-height)]",
+        sizing: "w-[var(--floating-anchor-width)] max-w-[var(--floating-available-width)] max-h-[var(--floating-available-height)]",
     },
 });
 
@@ -27,6 +27,33 @@ export const selectionOptionStyles = cva({
     modifiers: {
         selected: "text-strong",
         active: "bg-base-soft-2 text-strong",
+        described: "py-6px [&>svg]:self-start",
+    },
+    compounds: [
+        { size: "sm", described: true, class: "[&>svg]:mt-1px" },
+        { size: "md", described: true, class: "[&>svg]:mt-2px" },
+        { size: "lg", described: true, class: "[&>svg]:mt-3px" },
+    ],
+    defaults: { size: "md" },
+});
+
+export const selectionSectionStyles = cva({
+    modifiers: {
+        separated: "mt-4px border-t border-base-soft-2 pt-4px",
+    },
+});
+
+export const selectionSectionLabelStyles = cva({
+    base: {
+        layout: "select-none truncate",
+        typography: "font-600 leading-normal text-weaker",
+    },
+    options: {
+        size: {
+            sm: "px-9px py-4px text-[10px]",
+            md: "px-10px py-4px text-[11px]",
+            lg: "px-12px py-5px text-xs",
+        },
     },
     defaults: { size: "md" },
 });

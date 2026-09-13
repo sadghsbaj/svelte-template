@@ -15,11 +15,41 @@
     import PreviewSection from "$lib/previews/ui/PreviewSection.svelte";
 
     const options: readonly ComboboxOption[] = [
-        { value: "apple", label: "Apple", icon: Apple },
-        { value: "banana", label: "Banana", icon: Banana },
-        { value: "cherry", label: "Cherry", icon: Cherry },
-        { value: "citrus", label: "Citrus", icon: Citrus },
-        { value: "unavailable", label: "Unavailable fruit", disabled: true },
+        {
+            value: "apple",
+            label: "Apple",
+            description: "Crisp and lightly sweet",
+            section: "Orchard fruit",
+            icon: Apple,
+        },
+        {
+            value: "cherry",
+            label: "Cherry",
+            description: "Bright, tart, and juicy",
+            section: "Orchard fruit",
+            icon: Cherry,
+        },
+        {
+            value: "banana",
+            label: "Banana",
+            description: "Creamy with a mellow sweetness",
+            section: "Tropical fruit",
+            icon: Banana,
+        },
+        {
+            value: "citrus",
+            label: "Citrus",
+            description: "Fresh with a sharp finish",
+            section: "Tropical fruit",
+            icon: Citrus,
+        },
+        {
+            value: "unavailable",
+            label: "Unavailable fruit",
+            description: "Temporarily out of season",
+            section: "Seasonal",
+            disabled: true,
+        },
     ];
 
     let value = $state<string>();
@@ -54,7 +84,7 @@
                     </span>
                 </div>
             </PreviewCard>
-            <PreviewCard label="Elevated + initial value" bg="elevation-0" class="h-40">
+            <PreviewCard label="Elevated on elevation 0" bg="elevation-0" class="h-40">
                 <Combobox {options} bind:value={elevatedValue} variant="elevated" class="w-60" />
             </PreviewCard>
         </PreviewGrid>

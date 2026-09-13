@@ -8,11 +8,14 @@
         getEnabledIndexes,
         getNextEnabledIndex,
         getSelectedIndex,
+        groupSelectionEntries,
         normalizeStaleValue,
     } from "$components/_system/selection/selection.helpers";
     import {
         selectionContentStyles,
         selectionOptionStyles,
+        selectionSectionLabelStyles,
+        selectionSectionStyles,
     } from "$components/_system/selection/selection.styles";
     import TextInput from "$components/_system/text-input/TextInput.svelte";
 
@@ -48,6 +51,7 @@
 
     const instanceId = $props.id();
     const optionId = (index: number): string => `combobox-${instanceId}-option-${index}`;
+    const sectionId = (index: number): string => `combobox-${instanceId}-section-${index}`;
     const initialValue = value;
     const initialInputWasExplicit = inputValue !== undefined;
     // svelte-ignore state_referenced_locally
@@ -74,6 +78,7 @@
         options.flatMap((option, index) => (filter(option, popupQuery) ? [{ option, index }] : []))
     );
     const filteredOptions = $derived(filteredEntries.map((entry) => entry.option));
+    const filteredGroups = $derived(groupSelectionEntries(filteredEntries));
     const enabledFilteredIndexes = $derived(
         getEnabledIndexes(filteredOptions).map((index) => filteredEntries[index]?.index as number)
     );
@@ -354,36 +359,60 @@
     {#if filteredEntries.length === 0}
         <div class="px-10px py-8px text-sm text-weak select-none">{emptyText}</div>
     {:else}
-        {#each filteredEntries as entry (entry.index)}
-            <!-- Keyboard interaction remains on the combobox input by design. -->
-            <!-- svelte-ignore a11y_click_events_have_key_events -->
+        {#each filteredGroups as group, groupIndex (groupIndex)}
             <div
-                id={optionId(entry.index)}
-                role="option"
-                tabindex="-1"
-                aria-selected={selectedIndex === entry.index}
-                aria-disabled={entry.option.disabled ? "true" : undefined}
-                class={selectionOptionStyles({
-                    size,
-                    selected: selectedIndex === entry.index,
-                    active: activeIndex === entry.index,
-                })}
-                onpointerdown={(event) => event.preventDefault()}
-                onpointermove={() => {
-                    if (!entry.option.disabled) activeIndex = entry.index;
-                }}
-                onmousedown={(event) => event.preventDefault()}
-                onclick={() => commitOption(entry.option, entry.index)}
-                {@attach disableInteraction({ enabled: entry.option.disabled === true })}
+                role={group.section ? "group" : undefined}
+                aria-labelledby={group.section ? sectionId(groupIndex) : undefined}
+                class={selectionSectionStyles({ separated: groupIndex > 0 })}
             >
-                {#if entry.option.icon}
-                    {const OptionIcon = entry.option.icon}
-                    <OptionIcon aria-hidden="true" class="shrink-0" />
+                {#if group.section}
+                    <div id={sectionId(groupIndex)} class={selectionSectionLabelStyles({ size })}>
+                        {group.section}
+                    </div>
                 {/if}
-                <span class="truncate flex-1">{entry.option.label}</span>
-                {#if selectedIndex === entry.index}
-                    <Check aria-hidden="true" class="text-accent-solid-1 shrink-0 opacity-80" />
-                {/if}
+                {#each group.entries as entry (entry.index)}
+                    <!-- Keyboard interaction remains on the combobox input by design. -->
+                    <!-- svelte-ignore a11y_click_events_have_key_events -->
+                    <div
+                        id={optionId(entry.index)}
+                        role="option"
+                        tabindex="-1"
+                        aria-selected={selectedIndex === entry.index}
+                        aria-disabled={entry.option.disabled ? "true" : undefined}
+                        class={selectionOptionStyles({
+                            size,
+                            selected: selectedIndex === entry.index,
+                            active: activeIndex === entry.index,
+                            described: Boolean(entry.option.description),
+                        })}
+                        onpointerdown={(event) => event.preventDefault()}
+                        onpointermove={() => {
+                            if (!entry.option.disabled) activeIndex = entry.index;
+                        }}
+                        onmousedown={(event) => event.preventDefault()}
+                        onclick={() => commitOption(entry.option, entry.index)}
+                        {@attach disableInteraction({ enabled: entry.option.disabled === true })}
+                    >
+                        {#if entry.option.icon}
+                            {const OptionIcon = entry.option.icon}
+                            <OptionIcon aria-hidden="true" class="shrink-0 text-weak" />
+                        {/if}
+                        <span class="flex min-w-0 flex-1 flex-col">
+                            <span class="truncate leading-normal">{entry.option.label}</span>
+                            {#if entry.option.description}
+                                <span class="truncate text-xs font-400 leading-normal text-weak">
+                                    {entry.option.description}
+                                </span>
+                            {/if}
+                        </span>
+                        {#if selectedIndex === entry.index}
+                            <Check
+                                aria-hidden="true"
+                                class="text-accent-solid-1 shrink-0 opacity-80"
+                            />
+                        {/if}
+                    </div>
+                {/each}
             </div>
         {/each}
     {/if}

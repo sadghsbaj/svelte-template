@@ -9,7 +9,9 @@
         required?: boolean;
         name?: string;
         size?: "sm" | "md" | "lg";
+        variant?: "soft" | "elevated";
         placeholder?: string;
+        emptyText?: string;
         withForm?: boolean;
         onValueChange?: (value: string) => void;
     }
@@ -21,7 +23,9 @@
         required = false,
         name,
         size = "md",
+        variant = "soft",
         placeholder,
+        emptyText,
         withForm = false,
         onValueChange,
     }: Props = $props();
@@ -48,7 +52,9 @@
         {required}
         {name}
         {size}
+        {variant}
         {placeholder}
+        {emptyText}
         {onValueChange}
         aria-label="Fruit"
         data-consumer="forwarded"

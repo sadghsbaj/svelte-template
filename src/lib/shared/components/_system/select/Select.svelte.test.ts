@@ -253,6 +253,47 @@ describe("Select", () => {
         expect(disabledComponent.getValue()).toBeUndefined();
     });
 
+    test("renders described section groups and the elevated trigger variant", async () => {
+        fixture({
+            variant: "elevated",
+            initialOptions: [
+                {
+                    value: "apple",
+                    label: "Apple",
+                    description: "Crisp and sweet",
+                    section: "Orchard",
+                },
+                {
+                    value: "cherry",
+                    label: "Cherry",
+                    description: "Bright and tart",
+                    section: "Orchard",
+                },
+                {
+                    value: "banana",
+                    label: "Banana",
+                    description: "Soft and creamy",
+                    section: "Tropical",
+                },
+            ],
+        });
+        expect(trigger().className).toContain("bg-white");
+        expect(trigger().className).toContain("shadow-sm");
+
+        await open();
+        const groups = [...(listbox()?.querySelectorAll<HTMLElement>('[role="group"]') ?? [])];
+        expect(groups).toHaveLength(2);
+        expect(groups.map((group) => group.textContent)).toEqual([
+            expect.stringContaining("Orchard"),
+            expect.stringContaining("Tropical"),
+        ]);
+        expect(groups[0]?.getAttribute("aria-labelledby")).toBeTruthy();
+        expect(option("Apple").textContent).toContain("Crisp and sweet");
+        expect(option("Apple").className).toContain("py-6px");
+        expect(option("Apple").className).toContain("[&>svg]:self-start");
+        expect(groups[1]?.className).toContain("border-t");
+    });
+
     test("normalizes stale dynamic values without callbacks and handles empty or all-disabled data", async () => {
         const change = vi.fn<(value: string) => void>();
         const component = fixture({ initialValue: "banana", onValueChange: change });
@@ -266,6 +307,7 @@ describe("Select", () => {
         await settle();
         expect(listbox()).toBeTruthy();
         expect(document.querySelectorAll('[role="option"]')).toHaveLength(0);
+        expect(listbox()?.textContent).toContain("No options available");
         press(trigger(), "Escape");
         await settle();
 
@@ -332,7 +374,8 @@ describe("Select", () => {
         await open();
         const floating = listbox()?.parentElement?.parentElement as HTMLDivElement;
         expect(floating.style.getPropertyValue("--floating-anchor-width")).toBe("187px");
-        expect(listbox()?.className).toContain("min-w-[var(--floating-anchor-width)]");
+        expect(listbox()?.className).toContain("w-[var(--floating-anchor-width)]");
+        expect(listbox()?.className).toContain("max-w-[var(--floating-available-width)]");
         expect(listbox()?.className).toContain("max-h-[var(--floating-available-height)]");
     });
 

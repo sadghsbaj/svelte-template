@@ -16,6 +16,7 @@ export interface SelectProps
     options: readonly SelectOption[];
     value?: string;
     placeholder?: string;
+    emptyText?: string;
     disabled?: boolean;
     name?: string;
     required?: boolean;

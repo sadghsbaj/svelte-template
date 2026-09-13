@@ -1,4 +1,4 @@
-import type { SelectionOption } from "./selection.types";
+import type { SelectionEntry, SelectionGroup, SelectionOption } from "./selection.types";
 
 export const getSelectedIndex = (
     options: readonly SelectionOption[],
@@ -32,5 +32,21 @@ export const normalizeStaleValue = (
 
 export const normalizeSelectionQuery = (value: string): string => value.trim().toLocaleLowerCase();
 
-export const defaultSelectionFilter = (option: SelectionOption, query: string): boolean =>
-    normalizeSelectionQuery(option.label).includes(normalizeSelectionQuery(query));
+export const defaultSelectionFilter = (option: SelectionOption, query: string): boolean => {
+    const normalizedQuery = normalizeSelectionQuery(query);
+    return [option.label, option.description].some(
+        (value) => value && normalizeSelectionQuery(value).includes(normalizedQuery)
+    );
+};
+
+export const groupSelectionEntries = <TOption extends SelectionOption>(
+    entries: readonly SelectionEntry<TOption>[]
+): SelectionGroup<TOption>[] => {
+    const groups: SelectionGroup<TOption>[] = [];
+    for (const entry of entries) {
+        const previous = groups.at(-1);
+        if (previous && previous.section === entry.option.section) previous.entries.push(entry);
+        else groups.push({ section: entry.option.section, entries: [entry] });
+    }
+    return groups;
+};

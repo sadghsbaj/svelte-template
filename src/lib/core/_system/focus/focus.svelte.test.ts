@@ -1,9 +1,11 @@
 // @vitest-environment jsdom
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { mount, unmount } from "svelte";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { motionPreference } from "$core/_system/motion/motion.svelte.js";
 
 import { FocusAnimationController } from "./focus.animation.js";
+import FocusHostFixture from "./__fixtures__/FocusHostFixture.svelte";
 import { focusAttach, focusOverridesMap, onFocusOverridesChange } from "./focus.attach.js";
 import {
     computeTargetBox,
@@ -833,6 +835,106 @@ describe("focus.renderer squircle path drawing", () => {
         drawFocusRing(ctx, canvas, box, clip);
         expect(ctx.lineTo).toHaveBeenCalled();
         expect(ctx.bezierCurveTo).not.toHaveBeenCalled();
+    });
+});
+
+describe("FocusHost text entry vs non-text transition", () => {
+    let host: ReturnType<typeof mount>;
+    let container: HTMLDivElement;
+
+    beforeEach(() => {
+        container = document.createElement("div");
+        document.body.append(container);
+    });
+
+    afterEach(async () => {
+        if (host) await unmount(host);
+        container.remove();
+        vi.restoreAllMocks();
+    });
+
+    function setupElement(el: HTMLElement, x = 0, y = 0, w = 100, h = 40): void {
+        container.append(el);
+        vi.spyOn(el, "getBoundingClientRect").mockReturnValue({
+            width: w,
+            height: h,
+            x,
+            y,
+            top: y,
+            left: x,
+            bottom: y + h,
+            right: x + w,
+            toJSON: () => {},
+        } as DOMRect);
+        vi.spyOn(el, "matches").mockImplementation((sel) => sel === ":focus-visible");
+    }
+
+    it("forces teleport when moving to or from text input/textarea, but morphs between checkboxes/buttons", async () => {
+        const startSpy = vi.spyOn(FocusAnimationController.prototype, "start");
+
+        const btn1 = document.createElement("button");
+        const textInput = document.createElement("input");
+        textInput.type = "text";
+        const textarea = document.createElement("textarea");
+        const checkbox1 = document.createElement("input");
+        checkbox1.type = "checkbox";
+        const checkbox2 = document.createElement("input");
+        checkbox2.type = "checkbox";
+
+        setupElement(btn1, 0, 0);
+        setupElement(textInput, 10, 10);
+        setupElement(textarea, 20, 20);
+        setupElement(checkbox1, 30, 30);
+        setupElement(checkbox2, 40, 40);
+
+        host = mount(FocusHostFixture, { target: container });
+
+        // 1. Initial focus on button -> startPulseIn (not start)
+        btn1.focus();
+        window.dispatchEvent(new FocusEvent("focusin", { bubbles: true }));
+        expect(startSpy).not.toHaveBeenCalled();
+
+        // 2. Focus moves from button to text input -> forceTeleport must be true!
+        startSpy.mockClear();
+        textInput.focus();
+        window.dispatchEvent(new FocusEvent("focusin", { bubbles: true }));
+        expect(startSpy).toHaveBeenCalledOnce();
+        expect(startSpy.mock.calls[0][8]).toBe(true);
+
+        // 3. Focus moves from text input to textarea -> forceTeleport must be true!
+        startSpy.mockClear();
+        textarea.focus();
+        window.dispatchEvent(new FocusEvent("focusin", { bubbles: true }));
+        expect(startSpy).toHaveBeenCalledOnce();
+        expect(startSpy.mock.calls[0][8]).toBe(true);
+
+        // 4. Focus moves from textarea back to button -> forceTeleport must be true!
+        startSpy.mockClear();
+        btn1.focus();
+        window.dispatchEvent(new FocusEvent("focusin", { bubbles: true }));
+        expect(startSpy).toHaveBeenCalledOnce();
+        expect(startSpy.mock.calls[0][8]).toBe(true);
+
+        // 5. Focus moves from button to checkbox1 -> forceTeleport must be false (morph)!
+        startSpy.mockClear();
+        checkbox1.focus();
+        window.dispatchEvent(new FocusEvent("focusin", { bubbles: true }));
+        expect(startSpy).toHaveBeenCalledOnce();
+        expect(startSpy.mock.calls[0][8]).toBe(false);
+
+        // 6. Focus moves from checkbox1 to checkbox2 -> forceTeleport must be false (morph)!
+        startSpy.mockClear();
+        checkbox2.focus();
+        window.dispatchEvent(new FocusEvent("focusin", { bubbles: true }));
+        expect(startSpy).toHaveBeenCalledOnce();
+        expect(startSpy.mock.calls[0][8]).toBe(false);
+
+        // 7. Focus moves from checkbox2 to text input -> forceTeleport must be true!
+        startSpy.mockClear();
+        textInput.focus();
+        window.dispatchEvent(new FocusEvent("focusin", { bubbles: true }));
+        expect(startSpy).toHaveBeenCalledOnce();
+        expect(startSpy.mock.calls[0][8]).toBe(true);
     });
 });
 

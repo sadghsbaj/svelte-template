@@ -304,6 +304,7 @@
         const changedLayer = currentLayerZIndex !== null && currentLayerZIndex !== nextLayerZIndex;
 
         const prevActiveElement = activeElement;
+        const prevFocusedElement = focusedElement;
         activeElement = ringElement;
         focusedElement = target;
 
@@ -367,6 +368,11 @@
                 overrides?.lineWidth ?? 2
             );
         } else {
+            const isTextEntryTransition =
+                (prevFocusedElement !== null && isTextEntryControl(prevFocusedElement)) ||
+                isTextEntryControl(target);
+            const forceTeleport = changedLayer || isTextEntryTransition;
+
             if (!changedLayer) setCanvasLayerZIndex(nextLayerZIndex, ringElement);
             animController.start(
                 targetBox,
@@ -381,7 +387,7 @@
                 undefined,
                 false,
                 overrides?.lineWidth ?? 2,
-                changedLayer,
+                forceTeleport,
                 changedLayer ? () => setCanvasLayerZIndex(nextLayerZIndex, ringElement) : undefined
             );
         }

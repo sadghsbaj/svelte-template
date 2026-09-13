@@ -43,7 +43,8 @@ describe("Kbd Component", () => {
         // Inside the single badge, renders Control Lucide icon and K text
         const svg = kbdEl?.querySelector("svg");
         expect(svg).not.toBeNull();
-        expect(svg?.getAttribute("aria-label")).toBe("Control");
+        expect(svg?.getAttribute("aria-hidden")).toBe("true");
+        expect(kbdEl?.getAttribute("aria-label")).toBe("Control plus K");
 
         const span = kbdEl?.querySelector(":scope > span");
         expect(span?.textContent?.trim()).toBe("K");
@@ -69,6 +70,7 @@ describe("Kbd Component", () => {
             target: app,
             props: {
                 combo: "Cmd+K",
+                platform: "mac",
             },
         });
         mounted.push(instance);
@@ -80,7 +82,8 @@ describe("Kbd Component", () => {
         // Contains an SVG for the Command icon
         const svg = kbdEl?.querySelector("svg");
         expect(svg).not.toBeNull();
-        expect(svg?.getAttribute("aria-label")).toBe("Command");
+        expect(svg?.getAttribute("aria-hidden")).toBe("true");
+        expect(kbdEl?.getAttribute("aria-label")).toBe("Command plus K");
 
         // And text for K
         const span = kbdEl?.querySelector(":scope > span");

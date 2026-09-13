@@ -9,9 +9,9 @@ import {
     ArrowRightToLine,
     ArrowUp,
     ArrowUpToLine,
-    ChevronUp,
     ChevronsDown,
     ChevronsUp,
+    ChevronUp,
     Command,
     CornerDownLeft,
     Delete,
@@ -129,10 +129,7 @@ export function splitComboString(combo: string): string[] {
  * Resolves an individual raw key string into a typed KeyItem (icon or text label),
  * formatted by default with universal ISO symbols and crisp Lucide vector icons for visual unity.
  */
-export function resolveKeyItem(
-    rawKey: string,
-    options: ResolveKeyOptions | boolean = {}
-): KeyItem {
+export function resolveKeyItem(rawKey: string, options: ResolveKeyOptions | boolean = {}): KeyItem {
     // Backward compatibility: allow passing boolean for isMac
     const opts: ResolveKeyOptions =
         typeof options === "boolean"
@@ -157,12 +154,20 @@ export function resolveKeyItem(
 
     // Modifier: Mod / Cmd / Command / Meta
     if (["mod", "cmd", "command", "meta"].includes(lower)) {
-        if (format === "symbols" || isMac) {
+        if (isMac) {
             return {
                 type: "icon",
                 label: "⌘",
                 icon: Command,
                 ariaLabel: "Command",
+            };
+        }
+        if (format === "symbols") {
+            return {
+                type: "icon",
+                label: "⌃",
+                icon: ChevronUp,
+                ariaLabel: "Control",
             };
         }
         return {

@@ -36,15 +36,22 @@ describe("kbd.utils", () => {
     });
 
     describe("resolveKeyItem - Symbols Format (Default)", () => {
-        it("resolves Command/Mod as Command icon", () => {
-            const mod = resolveKeyItem("mod");
+        it("resolves Command/Mod as Command icon on macOS", () => {
+            const mod = resolveKeyItem("mod", { platform: "mac" });
             expect(mod.type).toBe("icon");
             expect(mod.label).toBe("⌘");
             expect(mod.ariaLabel).toBe("Command");
 
-            const cmd = resolveKeyItem("cmd");
+            const cmd = resolveKeyItem("cmd", { platform: "mac" });
             expect(cmd.type).toBe("icon");
             expect(cmd.label).toBe("⌘");
+        });
+
+        it("resolves portable Command/Mod as Control outside macOS", () => {
+            const mod = resolveKeyItem("mod", { platform: "windows" });
+            expect(mod.type).toBe("icon");
+            expect(mod.label).toBe("⌃");
+            expect(mod.ariaLabel).toBe("Control");
         });
 
         it("resolves Control modifier as ChevronUp icon", () => {
@@ -193,7 +200,7 @@ describe("kbd.utils", () => {
 
     describe("resolveKeys", () => {
         it("resolves combo string into symbol icons by default", () => {
-            const keys = resolveKeys({ combo: "Cmd+Shift+P" });
+            const keys = resolveKeys({ combo: "Cmd+Shift+P" }, "mac");
             expect(keys).toHaveLength(3);
             expect(keys[0].type).toBe("icon"); // Command icon
             expect(keys[1].type).toBe("icon"); // Shift ArrowBigUp icon
@@ -217,10 +224,7 @@ describe("kbd.utils", () => {
         });
 
         it("resolves text format when requested explicitly", () => {
-            const keys = resolveKeys(
-                { combo: "Ctrl+Alt+Delete", format: "text" },
-                "windows"
-            );
+            const keys = resolveKeys({ combo: "Ctrl+Alt+Delete", format: "text" }, "windows");
             expect(keys).toHaveLength(3);
             expect(keys[0].label).toBe("Ctrl");
             expect(keys[1].label).toBe("Alt");

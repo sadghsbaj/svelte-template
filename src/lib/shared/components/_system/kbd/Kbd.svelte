@@ -13,6 +13,8 @@
         variant = "soft",
         separator = false,
         class: className = "",
+        "aria-label": ariaLabel,
+        "aria-hidden": ariaHidden,
         children,
         ...restProps
     }: KbdProps = $props();
@@ -26,6 +28,14 @@
     );
     const iconSize = $derived(KBD_ICON_SIZES[size ?? "md"]);
     const separatorText = $derived(typeof separator === "string" ? separator : "+");
+    const resolvedAriaLabel = $derived(
+        ariaHidden === true || ariaHidden === "true"
+            ? undefined
+            : (ariaLabel ??
+                  (hasStructuredKeys
+                      ? resolvedKeys.map((item) => item.ariaLabel ?? item.label).join(" plus ")
+                      : undefined))
+    );
 
     const computedClass = $derived(
         kbdStyles({
@@ -43,7 +53,7 @@
     );
 </script>
 
-<kbd class={computedClass} {...restProps}>
+<kbd class={computedClass} aria-label={resolvedAriaLabel} aria-hidden={ariaHidden} {...restProps}>
     {#if hasStructuredKeys}
         {#each resolvedKeys as keyItem, index (index)}
             {#if index > 0 && separator}
@@ -51,14 +61,9 @@
             {/if}
             {#if keyItem.type === "icon" && keyItem.icon}
                 {const IconComponent = keyItem.icon}
-                <IconComponent
-                    size={iconSize}
-                    strokeWidth={2.25}
-                    aria-label={keyItem.ariaLabel}
-                    aria-hidden="true"
-                />
+                <IconComponent size={iconSize} strokeWidth={2.25} aria-hidden="true" />
             {:else}
-                <span aria-label={keyItem.ariaLabel}>{keyItem.label}</span>
+                <span aria-hidden="true">{keyItem.label}</span>
             {/if}
         {/each}
     {:else if children}

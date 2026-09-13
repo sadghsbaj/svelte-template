@@ -50,7 +50,7 @@ export type KbdProps = KbdStyleProps &
 
         /**
          * Modifier rendering format: "symbols" (default, e.g. ⌘, ⌃, ⌥, ⇧) or "text" (e.g. Ctrl, Alt, Shift).
-         * Defaults to "symbols" for a universal, language-neutral, compact display.
+         * Portable Cmd/Mod values resolve to Ctrl outside Apple platforms.
          */
         format?: KbdFormat;
 

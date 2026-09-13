@@ -23,6 +23,25 @@ export {
 export type { KbdFormat, KbdPlatform, KbdProps, KeyItem, KeyItemType } from "./kbd/kbd.types";
 export { isMacPlatform, resolveKeyItem, resolveKeys, splitComboString } from "./kbd/kbd.utils";
 
+export { default as Dropdown } from "./dropdown/Dropdown.svelte";
+export {
+    dropdownContentStyles,
+    dropdownItemStyles,
+    dropdownSeparatorStyles,
+    type DropdownItemStyleProps,
+} from "./dropdown/dropdown.styles";
+export type {
+    DropdownAction,
+    DropdownActionDetail,
+    DropdownEntry,
+    DropdownItem,
+    DropdownProps,
+    DropdownSection,
+    DropdownSeparator,
+    DropdownSize,
+    DropdownSubmenu,
+    DropdownTriggerContext,
+} from "./dropdown/dropdown.types";
 
 export { default as Switch } from "./switch/Switch.svelte";
 export type { SwitchStyleProps } from "./switch/switch.styles";

@@ -6,7 +6,7 @@ export const closeButtonStyles = cva({
         typography: "text-weak leading-none",
         frame: "rounded-full squircle-soft",
         interaction: "cursor-pointer active:scale-93 hover:text-main",
-        motion: "will-change-transform t:(scale-200-cubic-out bg-200-quad-out text-200-quad-out)",
+        motion: "will-change-transform t:(scale-200-cubic-out bg-200-quad-out text-200-quad-out shadow-200-quad-out)",
         misc: "isolate",
     },
 
@@ -14,6 +14,8 @@ export const closeButtonStyles = cva({
         variant: {
             solid: "bg-base-soft-1 hover:(bg-base-soft-2)",
             ghost: "bg-transparent hover:(bg-base-soft-1)",
+            elevated:
+                "bg-white dark:bg-base-900 shadow-sm hover:(shadow-md dark:bg-base-800) active:shadow-sm!",
         },
 
         size: {

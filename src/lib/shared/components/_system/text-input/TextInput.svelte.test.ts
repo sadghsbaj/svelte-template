@@ -132,6 +132,11 @@ describe("TextInput", () => {
         expect(leftIcon?.parentElement?.className).toContain("size-16px");
         expect(leftIcon?.parentElement?.className).toContain("shrink-0");
         expect(leftIcon?.parentElement?.className).toContain("flex-center");
+        expect(
+            (
+                instance as unknown as { getContainerElement: () => HTMLDivElement }
+            ).getContainerElement()
+        ).toBe(container);
     });
 
     test("positions cursor at beginning when clicking left of input and at end when clicking right", () => {
@@ -218,4 +223,3 @@ describe("TextInput", () => {
         }
     });
 });
-

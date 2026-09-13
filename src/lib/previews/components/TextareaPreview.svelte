@@ -127,7 +127,7 @@
         description="Soft sits on flat backgrounds, while Elevated floats with subtle shadow depth."
     >
         <PreviewGrid cols={2}>
-            <PreviewCard label="Soft (Default) on Elevation 0" bg="elevation-0" class="min-h-48">
+            <PreviewCard label="Soft (Default) on Elevation 1" bg="elevation-1" class="min-h-48">
                 <div class="w-full max-w-sm">
                     <Textarea
                         variant="soft"
@@ -138,7 +138,7 @@
                 </div>
             </PreviewCard>
 
-            <PreviewCard label="Elevated on Elevation 1" bg="elevation-1" class="min-h-48">
+            <PreviewCard label="Elevated on Elevation 0" bg="elevation-0" class="min-h-48">
                 <div class="w-full max-w-sm">
                     <Textarea
                         variant="elevated"
@@ -215,7 +215,7 @@
         description="Action buttons, character count, and optional focus ring suppression."
     >
         <PreviewGrid cols={3}>
-            <PreviewCard label="With Action Button (Copy)" bg="elevation-1" class="min-h-48">
+            <PreviewCard label="With Action Button (Copy)" bg="elevation-0" class="min-h-48">
                 <div class="w-full">
                     <Textarea
                         variant="elevated"

@@ -6,7 +6,7 @@
         disableInteraction,
         type AutoResizeOptions,
     } from "$attachments";
-    import { cn, uuid } from "$utils";
+    import { uuid } from "$utils";
 
     import { focusAttach } from "$core/_system/focus/focus.attach";
 
@@ -70,10 +70,17 @@
     const textareaId = $derived(id ?? defaultId);
     const containerId = $derived(`${textareaId}-container`);
 
+    const effectiveRows = $derived(
+        typeof autoResize === "object" && autoResize.minRows !== undefined
+            ? autoResize.minRows
+            : rows
+    );
+
+    const hasFooter = $derived(Boolean(footer || showCount || maxlength !== undefined));
+
     const containerComputedClass = $derived(
         textareaContainerStyles({
             variant,
-            size,
             invalid,
             class: className,
         })
@@ -83,6 +90,9 @@
         textareaElementStyles({
             size,
             invalid,
+            hasFooter,
+            hasIconLeft: Boolean(iconLeft),
+            hasIconRight: Boolean(iconRight),
             class: textareaClass,
         })
     );
@@ -90,6 +100,15 @@
     const iconLeftClass = $derived(
         textareaIconStyles({
             size,
+            position: "left",
+            invalid,
+        })
+    );
+
+    const iconRightClass = $derived(
+        textareaIconStyles({
+            size,
+            position: "right",
             invalid,
         })
     );
@@ -98,13 +117,6 @@
         textareaFooterStyles({
             size,
         })
-    );
-
-    const bodyClass = $derived(
-        cn(
-            "flex items-start w-full min-w-0",
-            size === "sm" ? "gap-2" : size === "lg" ? "gap-3" : "gap-2.5"
-        )
     );
 
     const focusColor = $derived(invalid ? "var(--color-danger-500)" : undefined);
@@ -137,47 +149,7 @@
             .join(" ")
     );
 
-    function getCaretOffsetFromPoint(x: number, y: number): number | null {
-        if (typeof document === "undefined") return null;
-
-        // W3C standard (Chromium 129+, Gecko/Firefox)
-        if (typeof document.caretPositionFromPoint === "function") {
-            const pos = document.caretPositionFromPoint(x, y);
-            if (pos && typeof pos.offset === "number") {
-                return pos.offset;
-            }
-        }
-
-        // WebKit legacy fallback (Safari)
-        const doc = document as unknown as {
-            caretRangeFromPoint?: (x: number, y: number) => Range | null;
-        };
-        if (typeof doc.caretRangeFromPoint === "function") {
-            const range = doc.caretRangeFromPoint(x, y);
-            if (range && typeof range.startOffset === "number") {
-                return range.startOffset;
-            }
-        }
-
-        return null;
-    }
-
-    function getLineBounds(targetLineIndex: number): { start: number; end: number } {
-        if (!element) return { start: 0, end: 0 };
-        const lines = element.value.split("\n");
-        if (targetLineIndex >= lines.length) {
-            const len = element.value.length;
-            return { start: len, end: len };
-        }
-        let start = 0;
-        for (let i = 0; i < targetLineIndex; i++) {
-            start += lines[i].length + 1;
-        }
-        const end = start + lines[targetLineIndex].length;
-        return { start, end };
-    }
-
-    function parseCssPixels(value: string | undefined): number {
+    function parsePixels(value: string | undefined): number {
         if (!value) return 0;
         const match = /^[-+]?\d*\.?\d+/.exec(value);
         if (!match) return 0;
@@ -185,97 +157,190 @@
         return Number.isFinite(num) ? num : 0;
     }
 
-    function getTargetLineIndex(clientY: number, rectTop: number): number {
-        if (!element) return 0;
-        const computed = typeof window !== "undefined" ? window.getComputedStyle(element) : null;
-        const lineHeight = (computed ? parseCssPixels(computed.lineHeight) : 0) || 20;
-        const paddingTop = (computed ? parseCssPixels(computed.paddingTop) : 0) || 0;
-        const relativeY = clientY - rectTop - paddingTop + element.scrollTop;
-        return Math.max(0, Math.floor(relativeY / lineHeight));
+    function getComputedLineHeight(el: HTMLTextAreaElement, computed: CSSStyleDeclaration): number {
+        const raw = computed.lineHeight;
+        if (raw && raw !== "normal") {
+            const parsed = parsePixels(raw);
+            if (parsed > 0) return parsed;
+        }
+        const fontSize = parsePixels(computed.fontSize);
+        return (fontSize > 0 ? fontSize : 14) * 1.35;
+    }
+
+    function getClickLine(el: HTMLTextAreaElement, clientY: number): number {
+        const computed = window.getComputedStyle(el);
+        const rect = el.getBoundingClientRect();
+        const pt = parsePixels(computed.paddingTop);
+        const lh = getComputedLineHeight(el, computed);
+        const relY = clientY - rect.top - pt + el.scrollTop;
+        return Math.max(0, Math.floor(relY / lh));
+    }
+
+    function getLineRange(
+        el: HTMLTextAreaElement,
+        targetLine: number
+    ): { start: number; end: number } {
+        const text = el.value ?? "";
+        if (!text) {
+            return { start: 0, end: 0 };
+        }
+
+        const computed = window.getComputedStyle(el);
+        const rect = el.getBoundingClientRect();
+        const pl = parsePixels(computed.paddingLeft);
+        const pr = parsePixels(computed.paddingRight);
+        const rawWidth = el.clientWidth > 0 ? el.clientWidth : rect.width;
+        const contentWidth = Math.max(0, rawWidth - pl - pr);
+
+        const mirror = document.createElement("div");
+        mirror.style.position = "absolute";
+        mirror.style.visibility = "hidden";
+        mirror.style.pointerEvents = "none";
+        mirror.style.top = "-9999px";
+        mirror.style.left = "-9999px";
+        mirror.style.width = `${contentWidth}px`;
+        mirror.style.font = computed.font;
+        mirror.style.fontSize = computed.fontSize;
+        mirror.style.fontFamily = computed.fontFamily;
+        mirror.style.fontWeight = computed.fontWeight;
+        mirror.style.letterSpacing = computed.letterSpacing;
+        mirror.style.lineHeight = computed.lineHeight;
+        mirror.style.whiteSpace = "pre-wrap";
+        mirror.style.wordBreak = computed.wordBreak;
+        mirror.style.overflowWrap = computed.overflowWrap;
+        mirror.style.boxSizing = "border-box";
+
+        const textNode = document.createTextNode(text);
+        mirror.append(textNode);
+        document.body.append(mirror);
+
+        const mirrorRect = mirror.getBoundingClientRect();
+        const range = document.createRange();
+
+        // Measure actual rendered line height in the mirror container
+        const tSpan = document.createElement("div");
+        tSpan.innerHTML = "<span>A</span><br><span>B</span>";
+        mirror.append(tSpan);
+        const first = tSpan.firstElementChild as HTMLElement | null;
+        const last = tSpan.lastElementChild as HTMLElement | null;
+        const measuredLh =
+            first && last && last.offsetTop > first.offsetTop
+                ? last.offsetTop - first.offsetTop
+                : getComputedLineHeight(el, computed);
+        tSpan.remove();
+
+        function getLineOfChar(offset: number): number {
+            range.setStart(textNode, offset);
+            range.setEnd(textNode, Math.min(offset + 1, text.length));
+            const r = range.getBoundingClientRect();
+            return Math.floor((r.top - mirrorRect.top) / measuredLh);
+        }
+
+        function findStartOfLine(lineIdx: number): number {
+            let low = 0;
+            let high = text.length - 1;
+            let result = text.length;
+            while (low <= high) {
+                const mid = Math.floor((low + high) / 2);
+                if (getLineOfChar(mid) >= lineIdx) {
+                    result = mid;
+                    high = mid - 1;
+                } else {
+                    low = mid + 1;
+                }
+            }
+            return result;
+        }
+
+        function findEndOfLine(lineIdx: number): number {
+            let low = 0;
+            let high = text.length - 1;
+            let result = 0;
+            while (low <= high) {
+                const mid = Math.floor((low + high) / 2);
+                if (getLineOfChar(mid) <= lineIdx) {
+                    result = mid;
+                    low = mid + 1;
+                } else {
+                    high = mid - 1;
+                }
+            }
+            if (text[result] === "\n") {
+                return result;
+            }
+            let endPos = result + 1;
+            if (endPos < text.length && text[endPos - 1] === " ") {
+                while (endPos > 0 && text[endPos - 1] === " ") {
+                    endPos--;
+                }
+            }
+            return endPos;
+        }
+
+        const start = findStartOfLine(targetLine);
+        const end = Math.max(start, findEndOfLine(targetLine));
+        mirror.remove();
+
+        return { start, end };
     }
 
     function handleContainerMouseDown(event: MouseEvent): void {
+        if (disabled || typeof document === "undefined") return;
         const target = event.target as HTMLElement | null;
         if (target?.closest("button, a, [role='button'], input")) {
             return;
         }
-
         if (!element) return;
 
-        // Direct click inside <textarea>: native browser caret placement
-        if (target === element) {
-            return;
-        }
-
-        // Container padding, gap, icon, or footer empty space clicked.
-        // Prevent default so browser never flashes caret to 0 on mousedown!
-        event.preventDefault();
-
-        element.focus();
         const rect = element.getBoundingClientRect();
 
-        // 1. Click above the textarea element (top padding / top icon area above line 1)
+        // 1. Click above textarea
         if (event.clientY < rect.top) {
+            event.preventDefault();
+            element.focus();
             element.setSelectionRange(0, 0);
             return;
         }
 
-        const len = element.value.length;
-
-        // 2. Click below the textarea element (footer area or bottom padding)
+        // 2. Click below textarea
         if (event.clientY > rect.bottom) {
+            event.preventDefault();
+            element.focus();
+            const len = element.value.length;
             element.setSelectionRange(len, len);
             return;
         }
 
-        // 3. Click left of the textarea (left icon, left padding)
-        if (event.clientX < rect.left) {
-            const offset = getCaretOffsetFromPoint(rect.left + 2, event.clientY);
-            if (offset !== null) {
-                element.setSelectionRange(offset, offset);
-                return;
+        const computed = window.getComputedStyle(element);
+        const pl = parsePixels(computed.paddingLeft);
+        const pr = parsePixels(computed.paddingRight);
+
+        const inRightPadding = event.clientX > rect.right - pr;
+        const inLeftPadding = event.clientX < rect.left + pl;
+
+        if (inRightPadding || inLeftPadding || target !== element) {
+            event.preventDefault();
+            element.focus();
+
+            const clickLine = getClickLine(element, event.clientY);
+            const { start, end } = getLineRange(element, clickLine);
+
+            if (inLeftPadding) {
+                element.setSelectionRange(start, start);
+            } else {
+                element.setSelectionRange(end, end);
             }
-            const lineIdx = getTargetLineIndex(event.clientY, rect.top);
-            const { start } = getLineBounds(lineIdx);
-            element.setSelectionRange(start, start);
-            return;
         }
-
-        // 4. Click right of the textarea (right icon, right padding)
-        if (event.clientX > rect.right) {
-            const offset = getCaretOffsetFromPoint(rect.right - 4, event.clientY);
-            if (offset !== null) {
-                // If pointing past a line break (start of next line), adjust to the end of the clicked line
-                const adjustedOffset =
-                    offset > 0 && element.value[offset - 1] === "\n" ? offset - 1 : offset;
-                element.setSelectionRange(adjustedOffset, adjustedOffset);
-                return;
-            }
-            const lineIdx = getTargetLineIndex(event.clientY, rect.top);
-            const { end } = getLineBounds(lineIdx);
-            element.setSelectionRange(end, end);
-            return;
-        }
-
-        // 5. Fallback within boundaries
-        const offset = getCaretOffsetFromPoint(event.clientX, event.clientY);
-        if (offset !== null) {
-            element.setSelectionRange(offset, offset);
-            return;
-        }
-
-        element.setSelectionRange(len, len);
     }
 
     function handleContainerClick(event: MouseEvent): void {
+        if (disabled || typeof document === "undefined") return;
         const target = event.target as HTMLElement | null;
         if (target?.closest("button, a, [role='button'], input")) {
             return;
         }
-
         if (!element) return;
 
-        // Preserve active drag-selection if user selected a range
         if (
             element.selectionStart !== null &&
             element.selectionEnd !== null &&
@@ -284,57 +349,57 @@
             return;
         }
 
-        if (target === element) {
-            return;
-        }
-
         const rect = element.getBoundingClientRect();
-        element.focus();
 
+        // 1. Click above textarea
         if (event.clientY < rect.top) {
+            element.focus();
             element.setSelectionRange(0, 0);
             return;
         }
 
-        const len = element.value.length;
-
+        // 2. Click below textarea
         if (event.clientY > rect.bottom) {
+            element.focus();
+            const len = element.value.length;
             element.setSelectionRange(len, len);
             return;
         }
 
-        if (event.clientX < rect.left) {
-            const offset = getCaretOffsetFromPoint(rect.left + 2, event.clientY);
-            if (offset !== null) {
-                element.setSelectionRange(offset, offset);
-                return;
-            }
-            const lineIdx = getTargetLineIndex(event.clientY, rect.top);
-            const { start } = getLineBounds(lineIdx);
+        const computed = window.getComputedStyle(element);
+        const pl = parsePixels(computed.paddingLeft);
+        const pr = parsePixels(computed.paddingRight);
+
+        const inRightPadding = event.clientX > rect.right - pr;
+        const inLeftPadding = event.clientX < rect.left + pl;
+
+        const clickLine = getClickLine(element, event.clientY);
+        const { start, end } = getLineRange(element, clickLine);
+
+        if (inLeftPadding) {
             element.setSelectionRange(start, start);
             return;
         }
 
-        if (event.clientX > rect.right) {
-            const offset = getCaretOffsetFromPoint(rect.right - 4, event.clientY);
-            if (offset !== null) {
-                const adjustedOffset =
-                    offset > 0 && element.value[offset - 1] === "\n" ? offset - 1 : offset;
-                element.setSelectionRange(adjustedOffset, adjustedOffset);
-                return;
-            }
-            const lineIdx = getTargetLineIndex(event.clientY, rect.top);
-            const { end } = getLineBounds(lineIdx);
+        if (inRightPadding) {
             element.setSelectionRange(end, end);
             return;
         }
 
-        const offset = getCaretOffsetFromPoint(event.clientX, event.clientY);
-        if (offset !== null) {
-            element.setSelectionRange(offset, offset);
+        const curPos = element.selectionStart ?? 0;
+        if (curPos > end) {
+            element.setSelectionRange(end, end);
+        }
+    }
+
+    function handleFooterClick(event: MouseEvent): void {
+        const target = event.target as HTMLElement | null;
+        if (target?.closest("button, a, [role='button'], input")) {
             return;
         }
-
+        if (!element) return;
+        element.focus();
+        const len = element.value.length;
         element.setSelectionRange(len, len);
     }
 </script>
@@ -345,54 +410,52 @@
     id={containerId}
     role="group"
     class={containerComputedClass}
+    {@attach disableInteraction({ enabled: disabled })}
     onmousedown={handleContainerMouseDown}
     onclick={handleContainerClick}
-    {@attach disableInteraction({ enabled: disabled })}
 >
-    <div class={bodyClass}>
-        {#if iconLeft}
-            <span class="{iconLeftClass} [&>svg]:size-full [&>svg]:stroke-[2.25px]">
-                {@render iconLeft()}
-            </span>
-        {/if}
+    {#if iconLeft}
+        <span class="{iconLeftClass} [&>svg]:size-full [&>svg]:stroke-[2.25px]">
+            {@render iconLeft()}
+        </span>
+    {/if}
 
-        <textarea
-            {...restProps}
-            bind:this={element}
-            bind:value
-            id={textareaId}
-            {placeholder}
-            {disabled}
-            {rows}
-            maxlength={maxlength}
-            aria-invalid={invalid ? "true" : undefined}
-            class={textareaComputedClass}
-            style={textareaComputedStyle}
-            {@attach focusAttach({
-                focusTarget: `#${containerId}`,
-                color: focusColor,
-                enabled: focusRing,
-            })}
-            {@attach resolvedAutoResize}
-        ></textarea>
+    <textarea
+        {...restProps}
+        bind:this={element}
+        bind:value
+        id={textareaId}
+        {placeholder}
+        {disabled}
+        rows={effectiveRows}
+        maxlength={maxlength}
+        aria-invalid={invalid ? "true" : undefined}
+        class={textareaComputedClass}
+        style={textareaComputedStyle}
+        {@attach focusAttach({
+            focusTarget: `#${containerId}`,
+            color: focusColor,
+            enabled: focusRing,
+        })}
+        {@attach resolvedAutoResize}
+    ></textarea>
 
-        {#if iconRight}
-            <span
-                class="shrink-0 flex-center {invalid
-                    ? 'text-danger-solid-1'
-                    : 'text-weak'} [&>svg]:pointer-events-none {size === 'lg' ? 'mt-3px' : 'mt-2px'}"
-            >
-                {@render iconRight()}
-            </span>
-        {/if}
-    </div>
+    {#if iconRight}
+        <span class="{iconRightClass} [&>svg]:size-full [&>svg]:stroke-[2.25px]">
+            {@render iconRight()}
+        </span>
+    {/if}
 
     {#if footer}
-        <div class={footerComputedClass}>
+        <!-- svelte-ignore a11y_click_events_have_key_events -->
+        <!-- svelte-ignore a11y_no_static_element_interactions -->
+        <div class={footerComputedClass} onclick={handleFooterClick}>
             {@render footer()}
         </div>
     {:else if showCount || maxlength !== undefined}
-        <div class={footerComputedClass}>
+        <!-- svelte-ignore a11y_click_events_have_key_events -->
+        <!-- svelte-ignore a11y_no_static_element_interactions -->
+        <div class={footerComputedClass} onclick={handleFooterClick}>
             <span class="text-xs font-500 text-weak ml-auto tabular-nums">
                 {value?.length ?? 0}{maxlength !== undefined ? ` / ${maxlength}` : ""}
             </span>

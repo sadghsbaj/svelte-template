@@ -1,6 +1,11 @@
 <script lang="ts">
     import { Search, Sparkles } from "@lucide/svelte";
+
     import TextInput from "$components/_system/text-input/TextInput.svelte";
+
+    let containerElement = $state<HTMLDivElement>();
+
+    export const getContainerElement = (): HTMLDivElement | undefined => containerElement;
 </script>
 
 {#snippet searchIcon()}
@@ -15,4 +20,5 @@
     placeholder="Testing icons..."
     iconLeft={searchIcon}
     iconRight={sparklesIcon}
+    bind:containerElement
 />

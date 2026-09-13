@@ -23,6 +23,11 @@ export { default as Select } from "./select/Select.svelte";
 export type { SelectStyleProps } from "./select/select.styles";
 export type { SelectOption, SelectProps } from "./select/select.types";
 
+export { default as Combobox } from "./combobox/Combobox.svelte";
+export type { ComboboxFilter, ComboboxOption, ComboboxProps } from "./combobox/combobox.types";
+
+export type { SelectionOption } from "./selection/selection.types";
+
 export { default as TextInput } from "./text-input/TextInput.svelte";
 export {
     textInputActionStyles,

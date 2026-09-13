@@ -24,6 +24,7 @@
             class?: string;
             inputClass?: string;
             element?: HTMLInputElement;
+            containerElement?: HTMLDivElement;
         };
 
     let {
@@ -39,6 +40,7 @@
         class: className = "",
         inputClass = "",
         element = $bindable(),
+        containerElement = $bindable(),
         type = "text",
         placeholder = "",
         ...restProps
@@ -195,46 +197,47 @@
     }
 </script>
 
-    <!-- svelte-ignore a11y_click_events_have_key_events -->
-    <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-    <div
-        id={containerId}
-        role="group"
-        class={containerClass}
-        onmousedown={handleContainerMouseDown}
-        onclick={handleContainerClick}
-        {@attach disableInteraction({ enabled: disabled })}
-    >
-        {#if iconLeft}
-            <span class="{iconLeftClass} [&>svg]:size-full [&>svg]:stroke-[2.25px]">
-                {@render iconLeft()}
-            </span>
-        {/if}
+<!-- svelte-ignore a11y_click_events_have_key_events -->
+<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+<div
+    bind:this={containerElement}
+    id={containerId}
+    role="group"
+    class={containerClass}
+    onmousedown={handleContainerMouseDown}
+    onclick={handleContainerClick}
+    {@attach disableInteraction({ enabled: disabled })}
+>
+    {#if iconLeft}
+        <span class="{iconLeftClass} [&>svg]:size-full [&>svg]:stroke-[2.25px]">
+            {@render iconLeft()}
+        </span>
+    {/if}
 
-        <input
-            {...restProps}
-            bind:this={element}
-            bind:value
-            id={inputId}
-            {type}
-            {placeholder}
-            {disabled}
-            aria-invalid={invalid ? "true" : undefined}
-            class={inputComputedClass}
-            {@attach focusAttach({
-                focusTarget: `#${containerId}`,
-                color: focusColor,
-                enabled: focusRing,
-            })}
-        />
+    <input
+        {...restProps}
+        bind:this={element}
+        bind:value
+        id={inputId}
+        {type}
+        {placeholder}
+        {disabled}
+        aria-invalid={invalid ? "true" : undefined}
+        class={inputComputedClass}
+        {@attach focusAttach({
+            focusTarget: `#${containerId}`,
+            color: focusColor,
+            enabled: focusRing,
+        })}
+    />
 
-        {#if iconRight}
-            <span
-                class="shrink-0 flex-center {invalid
-                    ? 'text-danger-solid-1'
-                    : 'text-weak'} [&>svg]:pointer-events-none"
-            >
-                {@render iconRight()}
-            </span>
-        {/if}
-    </div>
+    {#if iconRight}
+        <span
+            class="shrink-0 flex-center {invalid
+                ? 'text-danger-solid-1'
+                : 'text-weak'} [&>svg]:pointer-events-none"
+        >
+            {@render iconRight()}
+        </span>
+    {/if}
+</div>

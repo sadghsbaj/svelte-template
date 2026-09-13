@@ -72,14 +72,19 @@
             requestUpdate();
         },
     });
+    const geometryVariables = $derived(
+        positioned
+            ? `--floating-anchor-width:${result.anchorRect.width}px;` +
+                  `--floating-anchor-height:${result.anchorRect.height}px;` +
+                  `--floating-available-width:${result.availableWidth}px;` +
+                  `--floating-available-height:${result.availableHeight}px;` +
+                  `--floating-x:${result.x}px;--floating-y:${result.y}px;`
+            : ""
+    );
     const internalStyle = $derived(
         `${style ? `${style};` : ""}position:fixed;left:${result.x}px;top:${result.y}px;` +
             `pointer-events:auto;visibility:${hideUntilPositioned && !positioned ? "hidden" : "visible"};` +
-            `--floating-anchor-width:${result.anchorRect.width}px;` +
-            `--floating-anchor-height:${result.anchorRect.height}px;` +
-            `--floating-available-width:${result.availableWidth}px;` +
-            `--floating-available-height:${result.availableHeight}px;` +
-            `--floating-x:${result.x}px;--floating-y:${result.y}px;`
+            geometryVariables
     );
 
     const resolveAnchor = (): FloatingAnchorValue | null => {

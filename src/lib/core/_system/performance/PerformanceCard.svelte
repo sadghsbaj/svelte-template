@@ -266,7 +266,7 @@
     in:fly={{ y: -20, duration: 260, easing: backOut }}
     out:fly={{ y: -16, duration: 150, easing: expoIn }}
     style={position ? `left: ${position.x}px; top: ${position.y}px; right: auto;` : ""}
-    class="text-strong font-sans p-4 border rounded-2xl w-[375px] pointer-events-auto select-none shadow-2xl right-4 top-4 fixed z-10 squircle-smooth border-base-200/80 dark:border-base-800/80 {isHeatmapActive
+    class="text-strong font-sans p-4 rounded-2xl w-[375px] pointer-events-auto select-none shadow-2xl right-4 top-4 fixed z-10 squircle-smooth {isHeatmapActive
         ? 'bg-elevation-1 backdrop-blur-none'
         : 'backdrop-blur-xl bg-elevation-1/90'} {isDragging
         ? '!transition-none'
@@ -289,9 +289,7 @@
 <!-- ========================================================================= -->
 
 {#snippet summaryTile(label: string, value: string | number, suffix = "")}
-    <div
-        class="p-2.5 text-center rounded-xl bg-elevation-2 flex-center flex-col squircle-smooth"
-    >
+    <div class="p-2.5 text-center rounded-xl bg-elevation-2 flex-center flex-col squircle-smooth">
         <span class="text-xs text-weak tracking-wider font-500 uppercase">{label}</span>
         <span class="text-base text-emerald-600 font-700 font-mono dark:text-emerald-400">
             {value}{suffix ? ` ${suffix}` : ""}
@@ -383,7 +381,7 @@
                 <!-- Heatmap Toggle Button -->
                 <button
                     onclick={onToggleHeatmap}
-                    class="p-1 rounded-lg flex-center t-bg-150-sine-out t-text-150-sine-out squircle-smooth{isHeatmapActive
+                    class="cursor-pointer p-1 rounded-lg flex-center t-bg-150-sine-out t-text-150-sine-out squircle-smooth{isHeatmapActive
                         ? 'text-orange-500 border border-orange-500/30 bg-orange-500/15 dark:text-orange-400'
                         : 'text-weak hover:text-strong hover:bg-elevation-1'}"
                     title={isHeatmapActive
@@ -396,7 +394,7 @@
                 <!-- Inspector Toggle Button -->
                 <button
                     onclick={onToggleInspector}
-                    class="p-1 rounded-lg flex-center t-bg-150-sine-out t-text-150-sine-out squircle-smooth{isInspectorActive
+                    class="cursor-pointer p-1 rounded-lg flex-center t-bg-150-sine-out t-text-150-sine-out squircle-smooth{isInspectorActive
                         ? 'text-cyan-500 border border-cyan-500/30 bg-cyan-500/15 dark:text-cyan-400'
                         : 'text-weak hover:text-strong hover:bg-elevation-1'}"
                     title={isInspectorActive

@@ -58,16 +58,14 @@
     </header>
 
     <div class="flex flex-col gap-6">
-        <!-- Appearance Section -->
+        <!-- Appearance Section (Option A: Icon on Top) -->
         <section
             class="p-6 rounded-3xl bg-elevation-1 flex flex-col gap-5 shadow-sm squircle-smooth md:p-8"
         >
-            <div class="flex items-center gap-3">
-                <div class="p-2.5 rounded-2xl bg-elevation-2 text-accent-500">
-                    <Palette size={19} />
-                </div>
+            <div class="flex items-center gap-2.5">
+                <Palette size={18} class="text-weak shrink-0" />
                 <div>
-                    <h2 class="text-base text-strong font-700">Appearance</h2>
+                    <h2 class="text-base text-strong font-600">Appearance</h2>
                     <p class="text-xs text-weak">Select your preferred color mode</p>
                 </div>
             </div>
@@ -78,35 +76,31 @@
                     <button
                         type="button"
                         onclick={() => theme.set(item.id)}
-                        class="p-5 rounded-2xl flex-center flex-col gap-3 text-center select-none squircle-smooth active:scale-97 t:(bg-180-quad-out text-180-quad-out scale-180-quad-out){theme.mode ===
+                        class="cursor-pointer p-4 rounded-2xl flex-center flex-col gap-2.5 text-center select-none squircle-smooth active:scale-97 t:(scale-180-quad-out text-180-quad-out) {theme.mode ===
                         item.id
-                            ? 'text-strong bg-elevation-2 ring-1.5 ring-accent-500/40 shadow-xs font-600'
-                            : 'text-weak bg-elevation-2/40 hover:text-strong hover:bg-elevation-2/70'}"
+                            ? 'text-strong bg-gradient-to-b from-base-100 to-base-200 dark:from-base-700 dark:to-base-800 shadow-xs font-600'
+                            : 'text-weak bg-elevation-2/35 hover:text-strong hover:bg-elevation-2/65'}"
                     >
-                        <div
-                            class="p-3 rounded-2xl t:(bg-180-quad-out text-180-quad-out scale-180-quad-out) {theme.mode ===
-                            item.id
-                                ? 'bg-accent-500/15 text-accent-500 scale-105'
-                                : 'bg-elevation-1 text-weak/70'}"
-                        >
-                            <IconComponent size={20} />
-                        </div>
+                        <IconComponent
+                            size={20}
+                            class="t-colors {theme.mode === item.id
+                                ? 'text-strong'
+                                : 'text-weak'}"
+                        />
                         <span class="text-sm font-500">{item.label}</span>
                     </button>
                 {/each}
             </div>
         </section>
 
-        <!-- Animations Section -->
+        <!-- Animations Section (Option B: Horizontal Icon & Label) -->
         <section
             class="p-6 rounded-3xl bg-elevation-1 flex flex-col gap-5 shadow-sm squircle-smooth md:p-8"
         >
-            <div class="flex items-center gap-3">
-                <div class="p-2.5 rounded-2xl bg-elevation-2 text-accent-500">
-                    <Zap size={19} />
-                </div>
+            <div class="flex items-center gap-2.5">
+                <Zap size={18} class="text-weak shrink-0" />
                 <div>
-                    <h2 class="text-base text-strong font-700">Animations</h2>
+                    <h2 class="text-base text-strong font-600">Animations</h2>
                     <p class="text-xs text-weak">Configure interface motion and transitions</p>
                 </div>
             </div>
@@ -117,19 +111,17 @@
                     <button
                         type="button"
                         onclick={() => motionPreference.set(item.id)}
-                        class="p-5 rounded-2xl flex-center flex-col gap-3 text-center select-none squircle-smooth active:scale-97 t:(bg-180-quad-out text-180-quad-out scale-180-quad-out){motionPreference.preference ===
+                        class="cursor-pointer py-3.5 px-4 rounded-2xl flex-center flex-row gap-2.5 text-center select-none squircle-smooth active:scale-97 t:(scale-180-quad-out text-180-quad-out) {motionPreference.preference ===
                         item.id
-                            ? 'text-strong bg-elevation-2 ring-1.5 ring-accent-500/40 shadow-xs font-600'
-                            : 'text-weak bg-elevation-2/40 hover:text-strong hover:bg-elevation-2/70'}"
+                            ? 'text-strong bg-gradient-to-b from-base-100 to-base-200 dark:from-base-700 dark:to-base-800 shadow-xs font-600'
+                            : 'text-weak bg-elevation-2/35 hover:text-strong hover:bg-elevation-2/65'}"
                     >
-                        <div
-                            class="p-3 rounded-2xl t:(bg-180-quad-out text-180-quad-out scale-180-quad-out) {motionPreference.preference ===
-                            item.id
-                                ? 'bg-accent-500/15 text-accent-500 scale-105'
-                                : 'bg-elevation-1 text-weak/70'}"
-                        >
-                            <IconComponent size={20} />
-                        </div>
+                        <IconComponent
+                            size={18}
+                            class="t-colors shrink-0 {motionPreference.preference === item.id
+                                ? 'text-strong'
+                                : 'text-weak'}"
+                        />
                         <span class="text-sm font-500">{item.label}</span>
                     </button>
                 {/each}

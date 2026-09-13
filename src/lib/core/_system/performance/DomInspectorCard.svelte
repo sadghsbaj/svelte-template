@@ -124,7 +124,7 @@
     in:fly={{ y: -20, duration: 260, easing: backOut }}
     out:fly={{ y: -16, duration: 150, easing: expoIn }}
     style={position ? `left: ${position.x}px; top: ${position.y}px; right: auto;` : ""}
-    class="text-strong font-sans p-4 border rounded-2xl w-[380px] pointer-events-auto select-none shadow-2xl left-4 top-4 fixed z-10 squircle-smooth border-base-200/80 dark:border-base-800/80 {performanceState.isHeatmapActive
+    class="text-strong font-sans p-4 rounded-2xl w-[380px] pointer-events-auto select-none shadow-2xl left-4 top-4 fixed z-10 squircle-smooth {performanceState.isHeatmapActive
         ? 'bg-elevation-1 backdrop-blur-none'
         : 'backdrop-blur-xl bg-elevation-1/90'} {isDragging
         ? '!transition-none'

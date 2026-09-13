@@ -5,7 +5,6 @@
 </script>
 
 <script lang="ts">
-    import { Sparkles, Type } from "@lucide/svelte";
     import { Button, Kbd, type KbdFormat } from "$components";
 
     import PreviewCard from "$lib/previews/ui/PreviewCard.svelte";
@@ -27,30 +26,26 @@
     <!-- Format Switcher Section -->
     <PreviewSection
         title="Rendering Format"
-        description="Universal symbol-first display (standard across Linear, Raycast, Figma) vs. optional localized text format."
+        description="Universal symbol-first display vs. optional localized text format."
     >
         <div class="flex items-center gap-2 mb-4">
             <Button
                 variant={activeFormat === "symbols" ? "solid" : "soft"}
-                color="accent"
+                color={activeFormat === "symbols" ? "accent" : "base"}
                 size="sm"
+                class="text-sm! rounded-full squircle-smooth"
                 onclick={() => (activeFormat = "symbols")}
             >
-                {#snippet iconLeft()}
-                    <Sparkles size={14} />
-                {/snippet}
-                Symbols (Default)
+                <span class="text-trim">Symbols</span>
             </Button>
             <Button
                 variant={activeFormat === "text" ? "solid" : "soft"}
-                color="base"
+                color={activeFormat === "text" ? "accent" : "base"}
                 size="sm"
+                class="text-sm! rounded-full squircle-smooth"
                 onclick={() => (activeFormat = "text")}
             >
-                {#snippet iconLeft()}
-                    <Type size={14} />
-                {/snippet}
-                Text Labels
+                <span class="text-trim">Text Labels</span>
             </Button>
         </div>
 

@@ -40,18 +40,18 @@ describe("kbd.utils", () => {
             const mod = resolveKeyItem("mod", { platform: "mac" });
             expect(mod.type).toBe("icon");
             expect(mod.label).toBe("⌘");
-            expect(mod.ariaLabel).toBe("Command");
+            expect(mod.ariaLabel).toBe("Primary modifier");
 
             const cmd = resolveKeyItem("cmd", { platform: "mac" });
             expect(cmd.type).toBe("icon");
             expect(cmd.label).toBe("⌘");
         });
 
-        it("resolves portable Command/Mod as Control outside macOS", () => {
+        it("uses the universal Command glyph for portable modifiers in symbol format", () => {
             const mod = resolveKeyItem("mod", { platform: "windows" });
             expect(mod.type).toBe("icon");
-            expect(mod.label).toBe("⌃");
-            expect(mod.ariaLabel).toBe("Control");
+            expect(mod.label).toBe("⌘");
+            expect(mod.ariaLabel).toBe("Primary modifier");
         });
 
         it("resolves Control modifier as ChevronUp icon", () => {
@@ -90,7 +90,7 @@ describe("kbd.utils", () => {
     describe("resolveKeyItem - Text Format (Optional)", () => {
         it("resolves modifiers as text when format='text' on Windows", () => {
             const opts = { format: "text" as const, platform: "windows" as const };
-            expect(resolveKeyItem("mod", opts).label).toBe("Ctrl");
+            expect(resolveKeyItem("mod", opts).label).toBe("⌘");
             expect(resolveKeyItem("ctrl", opts).label).toBe("Ctrl");
             expect(resolveKeyItem("alt", opts).label).toBe("Alt");
             expect(resolveKeyItem("shift", opts).label).toBe("Shift");

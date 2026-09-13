@@ -187,7 +187,7 @@ export class AppShortcutManager {
         if (normalized === "SHIFT") return this.modifiers.shift;
         if (["CTRL", "CONTROL"].includes(normalized)) return this.modifiers.ctrl;
         if (["ALT", "OPTION"].includes(normalized)) return this.modifiers.alt;
-        if (["CMD", "META", "COMMAND"].includes(normalized)) return this.modifiers.cmd;
+        if (["MOD", "CMD", "META", "COMMAND"].includes(normalized)) return this.modifiers.cmd;
         return this.pressedKeys.has(normalized);
     }
 
@@ -836,6 +836,7 @@ export function normalizeComboStep(step: string): string {
                 .filter(Boolean);
             const validMods = new SvelteSet([
                 "cmd",
+                "mod",
                 "meta",
                 "command",
                 "super",
@@ -863,7 +864,7 @@ export function normalizeComboStep(step: string): string {
     let hasShift = false;
     let parsedMainKey = "";
 
-    const CMD_MODS = new SvelteSet(["cmd", "meta", "command", "super"]);
+    const CMD_MODS = new SvelteSet(["mod", "cmd", "meta", "command", "super"]);
     const CTRL_MODS = new SvelteSet(["ctrl", "control"]);
     const ALT_MODS = new SvelteSet(["alt", "option"]);
 

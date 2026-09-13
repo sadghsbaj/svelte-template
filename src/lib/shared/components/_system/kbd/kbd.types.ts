@@ -27,7 +27,7 @@ export type KbdProps = KbdStyleProps &
         class?: string;
 
         /**
-         * Shortcut combination string (e.g. "Cmd+Shift+P", "mod+k", "Ctrl+Alt+Delete", "ArrowUp").
+         * Shortcut combination string (e.g. "Mod+Shift+P", "Mod+K", "ArrowUp").
          * All keys in the combo render together inside one compact badge.
          */
         combo?: string;
@@ -50,7 +50,7 @@ export type KbdProps = KbdStyleProps &
 
         /**
          * Modifier rendering format: "symbols" (default, e.g. ⌘, ⌃, ⌥, ⇧) or "text" (e.g. Ctrl, Alt, Shift).
-         * Portable Cmd/Mod values resolve to Ctrl outside Apple platforms.
+         * Symbol format uses the compact Command glyph across platforms.
          */
         format?: KbdFormat;
 

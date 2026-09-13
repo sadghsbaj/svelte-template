@@ -25,6 +25,20 @@ describe("AppShortcutManager (Exhaustive Browser Client Test Suite)", () => {
             expect(spy).toHaveBeenCalledTimes(1);
         });
 
+        test("should treat Mod as the portable primary application modifier", () => {
+            const spy = vi.fn();
+            manager.register("Mod+K", spy);
+
+            const event = new KeyboardEvent("keydown", {
+                key: "k",
+                ctrlKey: true,
+                bubbles: true,
+            });
+
+            expect(manager.handleKeyDown(event)).toBe(true);
+            expect(spy).toHaveBeenCalledOnce();
+        });
+
         test("should enforce exact modifier matching for single keys (e.g. 's' vs 'Cmd+S', 'Shift+S', 'Alt+S')", () => {
             let singleKeyExecuted = false;
             let cmdKeyExecuted = false;

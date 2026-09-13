@@ -20,7 +20,7 @@
 <PreviewPage>
     <PreviewHeader
         title="Keyboard Shortcut (Kbd)"
-        description="Language-neutral, compact single-badge shortcut pill featuring universal ISO symbols (⌘, ⌃, ⌥, ⇧) and Lucide vector icons."
+        description="Language-neutral shortcut badges with a universal ⌘ primary modifier and compact Lucide key symbols."
         icon={Command}
     />
 
@@ -57,29 +57,29 @@
         <PreviewGrid cols={4}>
             <PreviewCard label="Command Palette" bg="elevation-1" class="h-32">
                 <div class="flex-center flex-col gap-2">
-                    <Kbd combo="Cmd+Shift+P" format={activeFormat} size="lg" />
-                    <span class="text-xs text-weak font-sans">Cmd+Shift+P</span>
+                    <Kbd combo="Mod+Shift+P" format={activeFormat} size="lg" />
+                    <span class="text-xs text-weak font-sans">Mod+Shift+P</span>
                 </div>
             </PreviewCard>
 
             <PreviewCard label="Quick Search" bg="elevation-1" class="h-32">
                 <div class="flex-center flex-col gap-2">
-                    <Kbd combo="Ctrl+K" format={activeFormat} size="lg" />
-                    <span class="text-xs text-weak font-sans">Ctrl+K</span>
+                    <Kbd combo="Mod+K" format={activeFormat} size="lg" />
+                    <span class="text-xs text-weak font-sans">Mod+K</span>
                 </div>
             </PreviewCard>
 
             <PreviewCard label="Multi-Modifier" bg="elevation-1" class="h-32">
                 <div class="flex-center flex-col gap-2">
-                    <Kbd combo="Ctrl+Alt+Del" format={activeFormat} size="lg" />
-                    <span class="text-xs text-weak font-sans">Ctrl+Alt+Del</span>
+                    <Kbd combo="Mod+Alt+Del" format={activeFormat} size="lg" />
+                    <span class="text-xs text-weak font-sans">Mod+Alt+Del</span>
                 </div>
             </PreviewCard>
 
             <PreviewCard label="Action Combo" bg="elevation-1" class="h-32">
                 <div class="flex-center flex-col gap-2">
-                    <Kbd combo="Cmd+Enter" format={activeFormat} size="lg" />
-                    <span class="text-xs text-weak font-sans">Cmd+Enter</span>
+                    <Kbd combo="Mod+Enter" format={activeFormat} size="lg" />
+                    <span class="text-xs text-weak font-sans">Mod+Enter</span>
                 </div>
             </PreviewCard>
         </PreviewGrid>
@@ -93,21 +93,21 @@
         <PreviewGrid cols={3}>
             <PreviewCard label="Soft (Default)" bg="elevation-1" class="h-32">
                 <div class="flex items-center gap-4">
-                    <Kbd combo="Ctrl+K" variant="soft" format={activeFormat} />
+                    <Kbd combo="Mod+K" variant="soft" format={activeFormat} />
                     <Kbd combo="Shift+Tab" variant="soft" format={activeFormat} />
                 </div>
             </PreviewCard>
 
             <PreviewCard label="Elevated" bg="elevation-0" class="h-32">
                 <div class="flex items-center gap-4">
-                    <Kbd combo="Ctrl+K" variant="elevated" format={activeFormat} />
+                    <Kbd combo="Mod+K" variant="elevated" format={activeFormat} />
                     <Kbd combo="Shift+Tab" variant="elevated" format={activeFormat} />
                 </div>
             </PreviewCard>
 
             <PreviewCard label="Ghost" bg="elevation-1" class="h-32">
                 <div class="flex items-center gap-4">
-                    <Kbd combo="Ctrl+K" variant="ghost" format={activeFormat} />
+                    <Kbd combo="Mod+K" variant="ghost" format={activeFormat} />
                     <Kbd combo="Shift+Tab" variant="ghost" format={activeFormat} />
                 </div>
             </PreviewCard>
@@ -122,7 +122,7 @@
         <PreviewGrid cols={3}>
             <PreviewCard label="Small (20px)" bg="elevation-1" class="h-32">
                 <div class="flex items-center gap-3">
-                    <Kbd combo="Ctrl+K" size="sm" format={activeFormat} />
+                    <Kbd combo="Mod+K" size="sm" format={activeFormat} />
                     <Kbd key="Esc" size="sm" format={activeFormat} />
                     <Kbd key="P" size="sm" format={activeFormat} />
                 </div>
@@ -130,7 +130,7 @@
 
             <PreviewCard label="Medium (24px, Default)" bg="elevation-1" class="h-32">
                 <div class="flex items-center gap-3">
-                    <Kbd combo="Ctrl+K" size="md" format={activeFormat} />
+                    <Kbd combo="Mod+K" size="md" format={activeFormat} />
                     <Kbd key="Esc" size="md" format={activeFormat} />
                     <Kbd key="P" size="md" format={activeFormat} />
                 </div>
@@ -138,7 +138,7 @@
 
             <PreviewCard label="Large (28px)" bg="elevation-1" class="h-32">
                 <div class="flex items-center gap-3">
-                    <Kbd combo="Ctrl+K" size="lg" format={activeFormat} />
+                    <Kbd combo="Mod+K" size="lg" format={activeFormat} />
                     <Kbd key="Esc" size="lg" format={activeFormat} />
                     <Kbd key="P" size="lg" format={activeFormat} />
                 </div>
@@ -217,15 +217,15 @@
         <PreviewGrid cols={2}>
             <PreviewCard label="Default (Gap Spacing)" bg="elevation-1" class="h-32">
                 <div class="flex items-center gap-4">
-                    <Kbd combo="Ctrl+Alt+Del" format={activeFormat} />
-                    <Kbd combo="Cmd+Shift+P" format={activeFormat} />
+                    <Kbd combo="Mod+Alt+Del" format={activeFormat} />
+                    <Kbd combo="Mod+Shift+P" format={activeFormat} />
                 </div>
             </PreviewCard>
 
             <PreviewCard label="Explicit Separator (+)" bg="elevation-1" class="h-32">
                 <div class="flex items-center gap-4">
-                    <Kbd combo="Ctrl+Alt+Del" separator="+" format={activeFormat} />
-                    <Kbd combo="Cmd+Shift+P" separator="+" format={activeFormat} />
+                    <Kbd combo="Mod+Alt+Del" separator="+" format={activeFormat} />
+                    <Kbd combo="Mod+Shift+P" separator="+" format={activeFormat} />
                 </div>
             </PreviewCard>
         </PreviewGrid>
@@ -238,15 +238,15 @@
     >
         <PreviewGrid cols={3}>
             <PreviewCard label="Elevation 0" bg="elevation-0" class="h-32">
-                <Kbd combo="Cmd+Shift+P" format={activeFormat} />
+                <Kbd combo="Mod+Shift+P" format={activeFormat} />
             </PreviewCard>
 
             <PreviewCard label="Elevation 1" bg="elevation-1" class="h-32">
-                <Kbd combo="Cmd+Shift+P" format={activeFormat} />
+                <Kbd combo="Mod+Shift+P" format={activeFormat} />
             </PreviewCard>
 
             <PreviewCard label="Elevation 2" bg="elevation-2" class="h-32">
-                <Kbd combo="Cmd+Shift+P" format={activeFormat} />
+                <Kbd combo="Mod+Shift+P" format={activeFormat} />
             </PreviewCard>
         </PreviewGrid>
     </PreviewSection>

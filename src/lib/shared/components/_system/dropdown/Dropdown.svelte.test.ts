@@ -53,7 +53,7 @@ describe("Dropdown", () => {
                         label: "New file",
                         description: "Create an empty document",
                         icon: FilePlus,
-                        shortcut: "Cmd+N",
+                        shortcut: "Mod+N",
                         onAction: action,
                     },
                     {

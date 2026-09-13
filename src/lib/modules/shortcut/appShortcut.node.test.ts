@@ -11,6 +11,7 @@ describe("AppShortcutManager (Node SSR Environment)", () => {
 
     test("should normalize single and multi-step key combo strings cleanly", () => {
         expect(normalizeCombo("cmd+s")).toBe("Cmd+S");
+        expect(normalizeCombo("mod+s")).toBe("Cmd+S");
         expect(normalizeCombo("ctrl+shift+p")).toBe("Ctrl+Shift+P");
         expect(normalizeCombo("alt+meta+k")).toBe("Cmd+Alt+K");
         expect(normalizeCombo("g i")).toBe("G I");

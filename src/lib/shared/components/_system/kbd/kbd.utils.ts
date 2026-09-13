@@ -152,22 +152,24 @@ export function resolveKeyItem(rawKey: string, options: ResolveKeyOptions | bool
         };
     }
 
-    // Modifier: Mod / Cmd / Command / Meta
-    if (["mod", "cmd", "command", "meta"].includes(lower)) {
-        if (isMac) {
+    // Portable primary app modifier: always use the universal Command glyph.
+    if (lower === "mod") {
+        return {
+            type: "icon",
+            label: "⌘",
+            icon: Command,
+            ariaLabel: "Primary modifier",
+        };
+    }
+
+    // Modifier: Cmd / Command / Meta
+    if (["cmd", "command", "meta"].includes(lower)) {
+        if (format === "symbols" || isMac) {
             return {
                 type: "icon",
                 label: "⌘",
                 icon: Command,
                 ariaLabel: "Command",
-            };
-        }
-        if (format === "symbols") {
-            return {
-                type: "icon",
-                label: "⌃",
-                icon: ChevronUp,
-                ariaLabel: "Control",
             };
         }
         return {

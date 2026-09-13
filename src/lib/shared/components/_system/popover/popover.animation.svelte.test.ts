@@ -86,7 +86,6 @@ describe("popover animation", () => {
                     opacity: 0,
                     transform: "translate3d(0, -7px, 0) scale(.975, .94)",
                     filter: "blur(4px)",
-                    clipPath: "inset(0 0 18% 0 round 22px)",
                     easing: "cubic-bezier(.16, 1, .3, 1)",
                 },
                 {
@@ -94,7 +93,6 @@ describe("popover animation", () => {
                     opacity: 1,
                     transform: "translate3d(0, .75px, 0) scale(1.004, 1.01)",
                     filter: "blur(0)",
-                    clipPath: "inset(0 round 22px)",
                     easing: "cubic-bezier(.33, 1, .68, 1)",
                 },
                 {
@@ -102,12 +100,11 @@ describe("popover animation", () => {
                     opacity: 1,
                     transform: "translate3d(0, 0, 0) scale(1)",
                     filter: "blur(0)",
-                    clipPath: "inset(0 round 22px)",
                 },
             ],
             expect.objectContaining({ duration: 260, easing: "linear", fill: "both" })
         );
-        expect(element.style.willChange).toBe("transform, opacity, filter, clip-path");
+        expect(element.style.willChange).toBe("transform, opacity, filter");
     });
 
     test("keeps horizontal submenu motion tighter and exits toward its anchor", () => {
@@ -130,13 +127,11 @@ describe("popover animation", () => {
                     opacity: 1,
                     transform: "translate3d(0, 0, 0) scale(1)",
                     filter: "blur(0)",
-                    clipPath: "inset(0 round 22px)",
                 },
                 {
                     opacity: 0,
                     transform: "translate3d(-3px, 0, 0) scale(.965, .985)",
                     filter: "blur(2px)",
-                    clipPath: "inset(0 18% 0 0 round 22px)",
                 },
             ],
             expect.objectContaining({

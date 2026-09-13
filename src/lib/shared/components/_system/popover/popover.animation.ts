@@ -22,15 +22,7 @@ const exitTransform: Record<FloatingSide, string> = {
     bottom: "translate3d(0, -3px, 0) scale(.985, .965)",
     left: "translate3d(3px, 0, 0) scale(.965, .985)",
 };
-const enterClip: Record<FloatingSide, string> = {
-    top: "inset(18% 0 0 0 round 22px)",
-    right: "inset(0 18% 0 0 round 22px)",
-    bottom: "inset(0 0 18% 0 round 22px)",
-    left: "inset(0 0 0 18% round 22px)",
-};
-
 const OPEN_TRANSFORM = "translate3d(0, 0, 0) scale(1)";
-const OPEN_CLIP = "inset(0 round 22px)";
 const ENTER_EASING = "cubic-bezier(.16, 1, .3, 1)";
 const SETTLE_EASING = "cubic-bezier(.33, 1, .68, 1)";
 const EXIT_EASING = "cubic-bezier(.4, 0, 1, 1)";
@@ -76,7 +68,7 @@ export function runPopoverAnimation(
     }
     if (reducedMotion) return null;
     element.style.transformOrigin = transformOrigin;
-    element.style.willChange = "transform, opacity, filter, clip-path";
+    element.style.willChange = "transform, opacity, filter";
     if (typeof animation === "function") return animation(element, context);
 
     const entering = phase === "enter";
@@ -89,7 +81,6 @@ export function runPopoverAnimation(
                       opacity: 0,
                       transform: enterTransform[floating.side],
                       filter: "blur(4px)",
-                      clipPath: enterClip[floating.side],
                       easing: ENTER_EASING,
                   },
                   {
@@ -97,7 +88,6 @@ export function runPopoverAnimation(
                       opacity: 1,
                       transform: overshootTransform[floating.side],
                       filter: "blur(0)",
-                      clipPath: OPEN_CLIP,
                       easing: SETTLE_EASING,
                   },
                   {
@@ -105,7 +95,6 @@ export function runPopoverAnimation(
                       opacity: 1,
                       transform: OPEN_TRANSFORM,
                       filter: "blur(0)",
-                      clipPath: OPEN_CLIP,
                   },
               ]
             : [
@@ -113,13 +102,11 @@ export function runPopoverAnimation(
                       opacity: 1,
                       transform: OPEN_TRANSFORM,
                       filter: "blur(0)",
-                      clipPath: OPEN_CLIP,
                   },
                   {
                       opacity: 0,
                       transform: exitTransform[floating.side],
                       filter: "blur(2px)",
-                      clipPath: enterClip[floating.side],
                   },
               ],
         {

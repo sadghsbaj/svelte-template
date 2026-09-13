@@ -274,15 +274,8 @@
                 {@attach disableInteraction({ enabled: submenu.disabled === true })}
             >
                 {#if submenu.icon}
-                    <span
-                        class={[
-                            "flex-center size-18px shrink-0 text-weak",
-                            submenu.description && "self-start mt-2px",
-                        ]}
-                    >
-                        {const ItemIcon = submenu.icon}
-                        <ItemIcon aria-hidden="true" class="size-full" />
-                    </span>
+                    {const ItemIcon = submenu.icon}
+                    <ItemIcon aria-hidden="true" class="shrink-0 text-weak" />
                 {/if}
                 <span class="flex min-w-0 flex-1 flex-col">
                     <span class="truncate font-500 leading-normal text-strong">{submenu.label}</span
@@ -386,16 +379,11 @@
                 {@attach disableInteraction({ enabled: action.disabled === true })}
             >
                 {#if action.icon}
-                    <span
-                        class={[
-                            "flex-center size-18px shrink-0",
-                            action.danger ? "text-danger-500" : "text-weak",
-                            action.description && "self-start mt-2px",
-                        ]}
-                    >
-                        {const ItemIcon = action.icon}
-                        <ItemIcon aria-hidden="true" class="size-full" />
-                    </span>
+                    {const ItemIcon = action.icon}
+                    <ItemIcon
+                        aria-hidden="true"
+                        class={["shrink-0", action.danger ? "text-danger-500" : "text-weak"]}
+                    />
                 {/if}
                 <span class="flex min-w-0 flex-1 flex-col">
                     <span

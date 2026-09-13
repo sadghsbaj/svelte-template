@@ -22,6 +22,7 @@
             loading?: boolean;
             class?: string;
             children?: Snippet;
+            element?: HTMLElement | null;
         };
 
     let {
@@ -38,6 +39,7 @@
         loading = false,
         class: className = "",
         children,
+        element = $bindable(),
         ...restProps
     }: Props = $props();
 
@@ -60,6 +62,7 @@
 
 <svelte:element
     this={as}
+    bind:this={element}
     type={as === "button" ? "button" : undefined}
     {...restProps}
     class={computedClass}

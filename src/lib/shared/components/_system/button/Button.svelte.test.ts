@@ -69,4 +69,22 @@ describe("Button", () => {
         expect(link).not.toBeNull();
         expect(link?.getAttribute("href")).toBe("/test");
     });
+
+    test("exposes DOM element via bindable element prop", () => {
+        let btnEl: HTMLElement | undefined;
+        const component = mount(Button, {
+            target: app,
+            props: {
+                get element() {
+                    return btnEl;
+                },
+                set element(val) {
+                    btnEl = val;
+                },
+            },
+        });
+        mounted.push(component);
+        flushSync();
+        expect(btnEl).toBeInstanceOf(HTMLButtonElement);
+    });
 });

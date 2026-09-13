@@ -2,7 +2,7 @@
     import type { Component } from "svelte";
     import { Box, Layers, PanelLeftClose, PanelLeftOpen, Search } from "@lucide/svelte";
 
-    import { TextInput } from "$components";
+    import { Button, TextInput } from "$components";
     import { fade } from "$core/_system/motion/svelte";
 
     const STORAGE_KEY = "template_dev_preview_active_component_id";
@@ -57,7 +57,7 @@
     let selectedId = $state<string>(getInitialSelectedId());
     let searchQuery = $state<string>("");
     let isCollapsed = $state<boolean>(getInitialSidebarCollapsed());
-    let openButtonEl = $state<HTMLButtonElement | null>(null);
+    let openButtonEl = $state<HTMLElement | null>(null);
 
     $effect(() => {
         if (typeof window !== "undefined" && selectedId) {
@@ -89,15 +89,19 @@
 <div class="p-6 md:p-8 pb-28 flex h-full w-full overflow-hidden relative">
     <!-- Floating Open Button (Appears seamlessly top-left when sidebar is collapsed) -->
     {#if isCollapsed}
-        <button
-            bind:this={openButtonEl}
-            type="button"
+        <Button
+            bind:element={openButtonEl}
+            variant="elevated"
+            color="base"
+            size="md"
+            iconOnly
             onclick={() => (isCollapsed = false)}
-            class="cursor-pointer p-2.5 rounded-2xl bg-elevation-1 text-weak shadow-md hover:text-strong hover:bg-elevation-2 select-none active:scale-95 t:(bg-180-quad-out text-180-quad-out scale-180-quad-out opacity-200-quad-out) squircle-smooth absolute top-1 md:top-2 left-1 md:left-2 z-40"
+            class="absolute top-1 md:top-2 left-1 md:left-2 z-40"
             title="Open sidebar"
+            aria-label="Open sidebar"
         >
-            <PanelLeftOpen size={18} />
-        </button>
+            <PanelLeftOpen />
+        </Button>
     {/if}
 
     <!-- Rectangular Edge-Aligned Sidebar -->
@@ -112,21 +116,18 @@
                 <Layers size={18} class="text-accent-500" />
                 <span>Components</span>
             </div>
-            <div class="flex items-center gap-2">
-                <span
-                    class="text-xs text-accent-500 font-600 px-2 py-0.5 rounded-full bg-accent-500/10"
-                >
-                    {previews.length}
-                </span>
-                <button
-                    type="button"
-                    onclick={() => (isCollapsed = true)}
-                    class="cursor-pointer p-1.5 rounded-xl text-weak hover:text-strong hover:bg-elevation-2 select-none active:scale-95 squircle-smooth t:(bg-180-quad-out text-180-quad-out)"
-                    title="Close sidebar"
-                >
-                    <PanelLeftClose size={17} />
-                </button>
-            </div>
+            <Button
+                variant="ghost"
+                color="base"
+                size="md"
+                iconOnly
+                onclick={() => (isCollapsed = true)}
+                class="size-8! -mr-1"
+                title="Close sidebar"
+                aria-label="Close sidebar"
+            >
+                <PanelLeftClose />
+            </Button>
         </div>
 
         <!-- Search Bar -->

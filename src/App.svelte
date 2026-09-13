@@ -4,6 +4,7 @@
     import { initPreload } from "$core/_system";
     import FocusHost from "$core/_system/focus/FocusHost.svelte";
     import AppLayer from "$core/_system/layout/app-layer/AppLayer.svelte";
+    import AppLayerHost from "$core/_system/layout/app-layer/AppLayerHost.svelte";
     import AppView from "$core/_system/layout/app-views/AppView.svelte";
     import AppViews from "$core/_system/layout/app-views/AppViews.svelte";
     import PerformanceHost from "$core/_system/performance/PerformanceHost.svelte";
@@ -52,4 +53,9 @@
     <FloatingNavbar />
 </AppLayer>
 <!-- @template-remove-end -->
+
+<!-- Keep permanent hosts last so dynamic utility layers remain later in body paint order. -->
+<AppLayer z={1000} layer="floating">
+    <AppLayerHost />
+</AppLayer>
 <!-- /AppLayers -->

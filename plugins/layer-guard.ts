@@ -1,11 +1,11 @@
 /**
  * @file layer-guard.ts
- * Vite plugin to enforce layerAttach usage on overlay components rendered inside AppLayer
+ * Vite plugin to enforce layer attachment usage on components rendered inside AppLayer
  * and validate z-index prop values at compile time.
  *
  * This compiler-level guard inspects Svelte source files during development and build.
  * When an <AppLayer> component tag is detected, it validates the z-index prop range (0-9999 or "top-layer")
- * and verifies that child overlay components contain `{@attach layerAttach}`.
+ * and verifies that child components contain `{@attach layerAttach}` or a layer host attachment.
  */
 
 import fs from "node:fs";
@@ -182,7 +182,7 @@ function checkChildComponent(
 
     try {
         const childCode = fs.readFileSync(resolvedPath, "utf8");
-        const hasAttachDirective = /@attach\s+layerAttach\b/.test(childCode);
+        const hasAttachDirective = /@attach\s+(?:layerAttach|layerHostAttach)\b/.test(childCode);
 
         if (!hasAttachDirective) {
             onError(

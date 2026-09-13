@@ -21,6 +21,45 @@ let isAppInertState = $state(false);
 let savedPaddingRight = "";
 let savedOverflow = "";
 
+interface LayerHostRegistration {
+    element: HTMLElement;
+    setContextActive: (active: boolean) => void;
+}
+
+type LayerHostListener = (host: LayerHostRegistration | null) => void;
+
+// These registries use explicit subscriptions; Svelte reactivity would add unused tracking.
+// eslint-disable-next-line svelte/prefer-svelte-reactivity
+const layerHosts = new Map<string, LayerHostRegistration>();
+// eslint-disable-next-line svelte/prefer-svelte-reactivity
+const layerHostListeners = new Map<string, Set<LayerHostListener>>();
+
+function notifyLayerHostListeners(layer: string): void {
+    const host = layerHosts.get(layer) ?? null;
+    const listeners = layerHostListeners.get(layer);
+    if (!listeners) return;
+    for (const listener of listeners) listener(host);
+}
+
+function subscribeToLayerHost(layer: string, listener: LayerHostListener): () => void {
+    // eslint-disable-next-line svelte/prefer-svelte-reactivity
+    const listeners = layerHostListeners.get(layer) ?? new Set<LayerHostListener>();
+    listeners.add(listener);
+    layerHostListeners.set(layer, listeners);
+    listener(layerHosts.get(layer) ?? null);
+
+    return () => {
+        listeners.delete(listener);
+        if (listeners.size === 0) layerHostListeners.delete(layer);
+    };
+}
+
+function moveToBodyLayer(node: HTMLElement): void {
+    const appMount = document.getElementById("app");
+    if (appMount) appMount.after(node);
+    else document.body.append(node);
+}
+
 /**
  * Global reactive state manager for coordinating background inertness and body scroll locks
  * when modal overlays or dialog layers are active.
@@ -116,12 +155,7 @@ export const layerAttach: Attachment = (element) => {
         assignedPosition = true;
     }
 
-    const appMount = document.getElementById("app");
-    if (appMount) {
-        appMount.after(node);
-    } else {
-        document.body.append(node);
-    }
+    moveToBodyLayer(node);
 
     layer.setContextActive(true);
 
@@ -133,3 +167,60 @@ export const layerAttach: Attachment = (element) => {
         node.remove();
     };
 };
+
+/** Registers a permanent, named portal destination for an AppLayer. */
+export const layerHostAttach: Attachment = (element) => {
+    const layer = getLayerContext();
+    if (!layer) return;
+
+    const node = element as HTMLElement;
+    const registration: LayerHostRegistration = {
+        element: node,
+        setContextActive: layer.setContextActive,
+    };
+
+    node.style.zIndex = String(layer.zIndex);
+    moveToBodyLayer(node);
+    layerHosts.set(layer.layer, registration);
+    notifyLayerHostListeners(layer.layer);
+
+    return () => {
+        if (layerHosts.get(layer.layer) === registration) {
+            layerHosts.delete(layer.layer);
+            notifyLayerHostListeners(layer.layer);
+        }
+        node.remove();
+    };
+};
+
+/** Portals an element into the currently registered host for a named AppLayer. */
+export function portalToLayer(layer: string): Attachment {
+    return (element) => {
+        const node = element as HTMLElement;
+        let currentHost: LayerHostRegistration | null = null;
+        let initialized = false;
+
+        const move = (nextHost: LayerHostRegistration | null): void => {
+            if (initialized && nextHost === currentHost) return;
+            initialized = true;
+            currentHost?.setContextActive(false);
+            currentHost = nextHost;
+
+            if (currentHost) {
+                currentHost.element.append(node);
+                currentHost.setContextActive(true);
+            } else {
+                node.remove();
+            }
+        };
+
+        const unsubscribe = subscribeToLayerHost(layer, move);
+
+        return () => {
+            unsubscribe();
+            currentHost?.setContextActive(false);
+            currentHost = null;
+            node.remove();
+        };
+    };
+}

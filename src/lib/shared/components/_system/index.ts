@@ -18,3 +18,21 @@ export type { SwitchStyleProps } from "./switch/switch.styles";
 
 export { default as Checkbox } from "./checkbox/Checkbox.svelte";
 export type { CheckboxStyleProps } from "./checkbox/checkbox.styles";
+
+export { default as Floating } from "./floating/Floating.svelte";
+export type {
+    FloatingAlignment,
+    FloatingAnchor,
+    FloatingAnchorValue,
+    FloatingContext,
+    FloatingDirection,
+    FloatingOffset,
+    FloatingPadding,
+    FloatingPlacement,
+    FloatingPositionResult,
+    FloatingProps,
+    FloatingRect,
+    FloatingSide,
+    PointAnchor,
+    VirtualAnchor,
+} from "./floating/floating.types";

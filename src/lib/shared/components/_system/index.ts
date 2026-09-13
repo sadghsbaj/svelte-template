@@ -30,6 +30,21 @@ export {
     type TextInputStyleProps,
 } from "./text-input/text-input.styles";
 
+export { default as Textarea, type TextareaAutoResizeOption } from "./textarea/Textarea.svelte";
+export {
+    textareaActionStyles,
+    textareaContainerStyles,
+    textareaElementStyles,
+    textareaFooterStyles,
+    textareaIconStyles,
+    type TextareaActionStyleProps,
+    type TextareaContainerStyleProps,
+    type TextareaElementStyleProps,
+    type TextareaFooterStyleProps,
+    type TextareaIconStyleProps,
+    type TextareaStyleProps,
+} from "./textarea/textarea.styles";
+
 export { default as Floating } from "./floating/Floating.svelte";
 export type {
     FloatingAlignment,

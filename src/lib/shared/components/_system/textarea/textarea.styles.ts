@@ -146,7 +146,7 @@ export const textareaElementStyles = cva({
 
 export const textareaIconStyles = cva({
     base: {
-        layout: "absolute shrink-0 flex-center pointer-events-none select-none z-1",
+        layout: "absolute shrink-0 flex-center pointer-events-none select-none z-1 [&_button]:pointer-events-auto [&_a]:pointer-events-auto [&_[role=button]]:pointer-events-auto",
         motion: "t:(text-180-quad-out)",
     },
 

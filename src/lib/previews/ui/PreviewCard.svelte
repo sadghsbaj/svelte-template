@@ -41,7 +41,7 @@
 >
     {#if label}
         <span
-            class="px-2.5 py-1 rounded-xl bg-elevation-2/80 text-weak text-[11px] font-600 tracking-wide uppercase absolute top-3 left-3 select-none pointer-events-none z-10"
+            class="px-2.5 py-1.5 rounded-full squircle-smooth bg-base-soft-1 text-weak text-[11px] font-600 tracking-wide uppercase text-trim absolute top-3 left-3 select-none pointer-events-none z-10"
         >
             {label}
         </span>

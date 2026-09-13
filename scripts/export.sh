@@ -49,6 +49,24 @@ if ! command -v rsync &> /dev/null; then
     exit 1
 fi
 
+if ! command -v bun &> /dev/null; then
+    log_error "Bun is required but not installed. Aborting."
+    exit 1
+fi
+
+# Refuse to publish a template from a source tree with lint, test, type, or build errors.
+log_info "Validating source project before export..."
+if ! (
+    cd "$PROJECT_ROOT"
+    bun run lint
+    bun run ci
+); then
+    log_error "Project validation failed. Export aborted without modifying $TARGET_DIR."
+    exit 1
+fi
+
+log_success "Source project validation passed."
+
 # --- Step 1: Sync to Temporary Directory ---
 log_info "Copying files to isolated temporary build environment..."
 

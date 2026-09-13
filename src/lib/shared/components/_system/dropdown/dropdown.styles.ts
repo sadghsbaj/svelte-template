@@ -13,8 +13,8 @@ export const dropdownItemStyles = cva({
         layout: "flex items-center w-full min-w-0 select-none",
         typography: "text-left",
         frame: "rounded-xl squircle-smooth",
-        interaction: "cursor-pointer hover:bg-base-soft-1 focus:bg-base-soft-2 outline-none",
-        motion: "t:(bg-160-quad-out text-160-quad-out opacity-160-quad-out)",
+        interaction: "cursor-pointer hover:bg-base-soft-1 focus:bg-base-soft-1 outline-none",
+        motion: "t:(bg-200-quad-out text-200-quad-out opacity-200-quad-out)",
     },
     options: {
         size: {
@@ -25,7 +25,7 @@ export const dropdownItemStyles = cva({
     },
     modifiers: {
         described: "py-6px [&>svg]:self-start",
-        submenuOpen: "bg-base-soft-2",
+        submenuOpen: "bg-base-soft-1",
     },
     compounds: [
         { size: "sm", described: true, class: "[&>svg]:mt-1px" },

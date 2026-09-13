@@ -1,9 +1,9 @@
 import { cva, type VariantProps } from "$utils";
 
 export const KBD_ICON_SIZES = {
-    sm: 11,
-    md: 13,
-    lg: 15,
+    sm: 12,
+    md: 14,
+    lg: 16,
 } as const;
 
 export const kbdStyles = cva({
@@ -22,9 +22,9 @@ export const kbdStyles = cva({
         },
 
         size: {
-            sm: "h-20px min-w-20px px-1.5 text-[10px] gap-0.5",
-            md: "h-24px min-w-24px px-2 text-xs gap-1",
-            lg: "h-28px min-w-28px px-2.5 text-sm gap-1.5",
+            sm: "h-20px min-w-20px px-1.5 text-[11px] gap-0.5",
+            md: "h-24px min-w-24px px-2 text-sm gap-1",
+            lg: "h-28px min-w-28px px-2.5 text-base gap-1.5",
         },
     },
 
@@ -46,9 +46,9 @@ export const kbdSeparatorStyles = cva({
     },
     options: {
         size: {
-            sm: "text-[9px]",
-            md: "text-[11px]",
-            lg: "text-xs",
+            sm: "text-[10px]",
+            md: "text-xs",
+            lg: "text-sm",
         },
     },
     defaults: {

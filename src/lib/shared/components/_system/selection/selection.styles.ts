@@ -15,7 +15,7 @@ export const selectionOptionStyles = cva({
         frame: "rounded-xl squircle-smooth",
         interaction:
             "cursor-pointer hover:bg-base-soft-1 focus:(bg-base-soft-2 text-strong) outline-none",
-        motion: "t:(bg-160-quad-out text-160-quad-out opacity-160-quad-out)",
+        motion: "t:(bg-200-quad-out text-200-quad-out opacity-200-quad-out)",
     },
     options: {
         size: {

@@ -417,7 +417,7 @@
                     {/if}
                 </span>
                 {#if action.shortcut}
-                    <Kbd combo={action.shortcut} size="sm" variant="ghost" aria-hidden="true" />
+                    <Kbd combo={action.shortcut} {size} variant="ghost" aria-hidden="true" />
                 {/if}
             </button>
         {/if}

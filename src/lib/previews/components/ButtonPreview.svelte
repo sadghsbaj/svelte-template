@@ -181,6 +181,43 @@
         </PreviewCard>
     </PreviewSection>
 
+    <!-- Alignment -->
+    <PreviewSection title="Alignment">
+        <PreviewGrid cols={4}>
+            <PreviewCard label="Start" bg="elevation-1" class="h-32">
+                <div class="w-full max-w-200px">
+                    <Button fullWidth align="start" iconLeft={plusIcon} variant="soft" color="base">
+                        Start
+                    </Button>
+                </div>
+            </PreviewCard>
+
+            <PreviewCard label="Center" bg="elevation-1" class="h-32">
+                <div class="w-full max-w-200px">
+                    <Button fullWidth align="center" iconLeft={plusIcon} variant="soft" color="base">
+                        Center
+                    </Button>
+                </div>
+            </PreviewCard>
+
+            <PreviewCard label="End" bg="elevation-1" class="h-32">
+                <div class="w-full max-w-200px">
+                    <Button fullWidth align="end" iconRight={arrowIcon} variant="soft" color="base">
+                        End
+                    </Button>
+                </div>
+            </PreviewCard>
+
+            <PreviewCard label="Between" bg="elevation-1" class="h-32">
+                <div class="w-full max-w-200px">
+                    <Button fullWidth align="between" iconLeft={plusIcon} iconRight={arrowIcon} variant="soft" color="base">
+                        Between
+                    </Button>
+                </div>
+            </PreviewCard>
+        </PreviewGrid>
+    </PreviewSection>
+
     <!-- Interactive States -->
     <PreviewSection
         title="States"

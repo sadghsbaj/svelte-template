@@ -2,7 +2,7 @@ import { cva, type VariantProps } from "$utils";
 
 export const buttonStyles = cva({
     base: {
-        layout: "text-trim inline-flex justify-center items-center shrink-0 w-fit select-none",
+        layout: "text-trim inline-flex items-center shrink-0 w-fit select-none",
         typography: "font-600 leading-normal",
         frame: "rounded-full squircle",
         interaction: "cursor-pointer active:scale-97",
@@ -32,6 +32,13 @@ export const buttonStyles = cva({
             sm: "h-36px px-12px text-xs gap-4px [&_svg]:(size-14px stroke-2.5)",
             md: "h-40px px-16px text-sm gap-6px [&_svg]:(size-16px stroke-2.5)",
             lg: "h-44px px-20px  text-base gap-8px [&_svg]:(size-18px stroke-2.5)",
+        },
+
+        align: {
+            center: "justify-center text-center",
+            start: "justify-start text-left",
+            end: "justify-end text-right",
+            between: "justify-between",
         },
     },
 
@@ -166,6 +173,7 @@ export const buttonStyles = cva({
         variant: "solid",
         color: "accent",
         size: "md",
+        align: "center",
     },
 });
 

@@ -99,6 +99,51 @@
         return null;
     }
 
+    function handleContainerMouseDown(event: MouseEvent): void {
+        const target = event.target as HTMLElement | null;
+        if (target?.closest("button, a, [role='button']")) {
+            return;
+        }
+
+        if (!element) return;
+
+        // If the user clicked directly inside <input>, let the browser's native caret handler run
+        if (target === element) {
+            return;
+        }
+
+        // User clicked in the container (top/bottom area, padding, icon, gap).
+        // Prevent default so the browser never sets the caret to 0 on mousedown!
+        event.preventDefault();
+
+        element.focus();
+        const rect = element.getBoundingClientRect();
+
+        // 1. Click left of the input (left padding, left icon, left gap)
+        if (event.clientX < rect.left) {
+            element.setSelectionRange(0, 0);
+            return;
+        }
+
+        const len = element.value.length;
+
+        // 2. Click right of the input (right padding, trailing icon, right gap)
+        if (event.clientX > rect.right) {
+            element.setSelectionRange(len, len);
+            return;
+        }
+
+        // 3. Click above or below the text:
+        const centerY = rect.top + rect.height / 2;
+        const offset = getCaretOffsetFromPoint(event.clientX, centerY);
+        if (offset !== null) {
+            element.setSelectionRange(offset, offset);
+            return;
+        }
+
+        element.setSelectionRange(len, len);
+    }
+
     function handleContainerClick(event: MouseEvent): void {
         const target = event.target as HTMLElement | null;
         if (target?.closest("button, a, [role='button']")) {
@@ -116,8 +161,12 @@
             return;
         }
 
+        // If clicked on the input itself, native caret placement already finished
+        if (target === element) {
+            return;
+        }
+
         const rect = element.getBoundingClientRect();
-        const len = element.value.length;
         element.focus();
 
         // 1. Click left of the input (left padding, left icon, left gap)
@@ -126,6 +175,8 @@
             return;
         }
 
+        const len = element.value.length;
+
         // 2. Click right of the input (right padding, trailing icon, right gap)
         if (event.clientX > rect.right) {
             element.setSelectionRange(len, len);
@@ -133,7 +184,6 @@
         }
 
         // 3. Click within horizontal boundaries of the input:
-        // Project click Y onto the vertical center of the text line to eliminate line-box edge bugs
         const centerY = rect.top + rect.height / 2;
         const offset = getCaretOffsetFromPoint(event.clientX, centerY);
         if (offset !== null) {
@@ -152,6 +202,7 @@
         id={containerId}
         role="group"
         class={containerClass}
+        onmousedown={handleContainerMouseDown}
         onclick={handleContainerClick}
         {@attach disableInteraction({ enabled: disabled })}
     >

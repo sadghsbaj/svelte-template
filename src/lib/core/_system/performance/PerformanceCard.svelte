@@ -113,15 +113,15 @@
             return {
                 level: 4,
                 label: "High",
-                color: "text-orange-600 dark:text-orange-400",
-                bg: "bg-orange-500",
+                color: "text-warning-600 dark:text-warning-400",
+                bg: "bg-warning-500",
             };
         }
         return {
             level: 5,
             label: "Critical",
-            color: "text-red-600 dark:text-red-400",
-            bg: "bg-red-500",
+            color: "text-danger-600 dark:text-danger-400",
+            bg: "bg-danger-500",
         };
     });
 
@@ -380,8 +380,8 @@
                 <!-- Heatmap Toggle Button -->
                 <button
                     onclick={onToggleHeatmap}
-                    class="cursor-pointer p-1 rounded-lg flex-center t-bg-150-sine-out t-text-150-sine-out squircle-smooth{isHeatmapActive
-                        ? 'text-orange-500 border border-orange-500/30 bg-orange-500/15 dark:text-orange-400'
+                    class="cursor-pointer p-1 rounded-lg flex-center t-bg-150-sine-out t-text-150-sine-out squircle-smooth {isHeatmapActive
+                        ? 'text-warning-500 border border-warning-500/30 bg-warning-500/15 dark:text-warning-400'
                         : 'text-weak hover:text-strong hover:bg-elevation-1'}"
                     title={isHeatmapActive
                         ? "Disable DOM Heatmap (Alt+H)"
@@ -393,7 +393,7 @@
                 <!-- Inspector Toggle Button -->
                 <button
                     onclick={onToggleInspector}
-                    class="cursor-pointer p-1 rounded-lg flex-center t-bg-150-sine-out t-text-150-sine-out squircle-smooth{isInspectorActive
+                    class="cursor-pointer p-1 rounded-lg flex-center t-bg-150-sine-out t-text-150-sine-out squircle-smooth {isInspectorActive
                         ? 'text-cyan-500 border border-cyan-500/30 bg-cyan-500/15 dark:text-cyan-400'
                         : 'text-weak hover:text-strong hover:bg-elevation-1'}"
                     title={isInspectorActive

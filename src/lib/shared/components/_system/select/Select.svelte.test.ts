@@ -41,6 +41,10 @@ describe("Select", () => {
         app.id = "app";
         document.body.append(app);
         mounted = [mount(FloatingLayerFixture, { target: app })];
+        vi.spyOn(Element.prototype, "animate").mockReturnValue({
+            finished: Promise.resolve(),
+            cancel: vi.fn(),
+        } as unknown as Animation);
     });
 
     afterEach(async () => {
@@ -86,6 +90,7 @@ describe("Select", () => {
         flushSync(() => component.setValue("banana"));
         expect(trigger().textContent).toContain("Banana");
         await open();
+        expect(listbox()?.dataset.popoverPhase).toBe("open");
         expect(listbox()?.getAttribute("aria-label")).toBe("Fruit");
         expect(listbox()?.hasAttribute("aria-labelledby")).toBe(false);
         expect(listbox()?.classList.contains("fixture-content")).toBe(true);

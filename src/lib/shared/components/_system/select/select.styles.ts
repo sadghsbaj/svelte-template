@@ -7,7 +7,7 @@ export const selectTriggerStyles = cva({
         frame: "bg-base-soft-1 shadow-xs rounded-2xl squircle-smooth",
         interaction:
             "cursor-pointer hover:(bg-base-soft-2 text-strong shadow-sm) aria-expanded:bg-base-soft-2 active:scale-97",
-        motion: "transform-gpu t:(scale-200-cubic-out bg-200-quad-out text-200-quad-out shadow-200-quad-out)",
+        motion: "will-change-transform transform-gpu t:(scale-200-cubic-out bg-200-quad-out text-200-quad-out shadow-200-quad-out)",
     },
     options: {
         size: {

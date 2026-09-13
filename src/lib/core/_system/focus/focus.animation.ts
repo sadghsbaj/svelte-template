@@ -261,6 +261,8 @@ export class FocusAnimationController {
      *
      * - Same element / short distance: morph glide (frame lerp — feel intentionally unchanged).
      * - Long distance: single-timeline teleport (exit at origin, reveal at target).
+     * - Forced teleport: same timeline regardless of distance or rapid tabbing, allowing callers
+     *   to move the renderer between stacking layers while the ring is invisible.
      */
     start(
         targetBox: FocusBox,
@@ -270,7 +272,9 @@ export class FocusAnimationController {
         onFrame: (curBox: FocusBox, curClip: ClipBox, paint: FocusPaintState) => void,
         onDone?: () => void,
         isSameElement = false,
-        targetLineWidth = 2
+        targetLineWidth = 2,
+        forceTeleport = false,
+        onTeleport?: () => void
     ): void {
         const from: FocusPaintState = {
             opacity: Math.min(1, this.lastPaint.opacity),
@@ -290,6 +294,7 @@ export class FocusAnimationController {
         if (prefersReduced) {
             this.animFrame = 0;
             this.lastPaint = steadyPaint();
+            onTeleport?.();
             onFrame(targetBox, targetClip, steadyPaint());
             onDone?.();
             return;
@@ -305,7 +310,7 @@ export class FocusAnimationController {
         // opacity/offsetDelta/lineWidth only recover toward steady state when a previous
         // animation was interrupted mid-flight; in steady state they stay at 1 / 0 / target
         // (no-op), so the glide itself is driven purely by the box lerp below.
-        if (isSameElement || dist < TELEPORT_THRESHOLD || isRapidTab) {
+        if (!forceTeleport && (isSameElement || dist < TELEPORT_THRESHOLD || isRapidTab)) {
             const cur = { ...initialBox };
             const curClip = { ...initialClip };
 
@@ -381,6 +386,7 @@ export class FocusAnimationController {
         // so updateOrigin() stays a no-op for every other animation kind.
         this.currentOriginBox = { ...initialBox };
         this.currentOriginClip = { ...initialClip };
+        let hasTeleported = false;
 
         const loop = (): void => {
             const elapsed = performance.now() - startTime;
@@ -398,6 +404,10 @@ export class FocusAnimationController {
             }
 
             // Phase 2 (..TELEPORT_IN_MS): reveal at the live target (grows outward)
+            if (!hasTeleported) {
+                hasTeleported = true;
+                onTeleport?.();
+            }
             Object.assign(cur, this.currentTargetBox || targetBox);
             Object.assign(curClip, this.currentTargetClip || targetClip);
 

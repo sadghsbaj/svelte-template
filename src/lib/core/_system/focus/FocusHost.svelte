@@ -9,6 +9,7 @@
         computeTargetBox,
         getParentElement,
         invalidateGeometryCache,
+        resolveFocusLayerZIndex,
         resolveFocusTarget,
     } from "./focus.geometry.js";
     import {
@@ -40,6 +41,7 @@
     let focusedElement: HTMLElement | null = null;
     let elementObserver: ResizeObserver | null = null;
     let overrides: FocusOverrides | undefined;
+    let currentLayerZIndex: number | null = null;
 
     let lastObservedW = 0;
     let lastObservedH = 0;
@@ -143,6 +145,11 @@
         return undefined;
     }
 
+    function setCanvasLayerZIndex(zIndex: number): void {
+        if (canvas) canvas.style.zIndex = String(zIndex);
+        currentLayerZIndex = zIndex;
+    }
+
     function doUpdateTargetBox(el: HTMLElement): boolean {
         const result = computeTargetBox(el, overrides?.offset ?? OFFSET, overrides?.lineWidth ?? 2);
         if (!result) {
@@ -198,6 +205,8 @@
             elementObserver?.disconnect();
             elementObserver?.observe(activeElement);
         }
+
+        setCanvasLayerZIndex(resolveFocusLayerZIndex(ringElement));
 
         if (!doUpdateTargetBox(activeElement)) return;
 
@@ -282,6 +291,9 @@
 
         if (!doUpdateTargetBox(ringElement)) return;
 
+        const nextLayerZIndex = resolveFocusLayerZIndex(ringElement);
+        const changedLayer = currentLayerZIndex !== null && currentLayerZIndex !== nextLayerZIndex;
+
         const prevActiveElement = activeElement;
         activeElement = ringElement;
         focusedElement = target;
@@ -331,6 +343,7 @@
         elementObserver.observe(activeElement);
 
         if (isInitialFocus || !prevActiveElement) {
+            setCanvasLayerZIndex(nextLayerZIndex);
             currentBox = { ...targetBox };
             currentClip = { ...targetClip };
             animController.startPulseIn(
@@ -345,6 +358,7 @@
                 overrides?.lineWidth ?? 2
             );
         } else {
+            if (!changedLayer) setCanvasLayerZIndex(nextLayerZIndex);
             animController.start(
                 targetBox,
                 targetClip,
@@ -357,7 +371,9 @@
                 },
                 undefined,
                 false,
-                overrides?.lineWidth ?? 2
+                overrides?.lineWidth ?? 2,
+                changedLayer,
+                changedLayer ? () => setCanvasLayerZIndex(nextLayerZIndex) : undefined
             );
         }
 

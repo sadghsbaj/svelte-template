@@ -5,7 +5,7 @@ import { motionPreference } from "$core/_system/motion/motion.svelte.js";
 
 import { FocusAnimationController } from "./focus.animation.js";
 import { focusAttach, focusOverridesMap, onFocusOverridesChange } from "./focus.attach.js";
-import { computeTargetBox, resolveFocusTarget } from "./focus.geometry.js";
+import { computeTargetBox, resolveFocusLayerZIndex, resolveFocusTarget } from "./focus.geometry.js";
 import {
     clearCanvas,
     drawFocusRing,
@@ -231,6 +231,49 @@ describe("focus.geometry DOM functions", () => {
         expect(result).toBe(proxy);
 
         proxy.remove();
+    });
+
+    it("resolves the z-index from the direct body layer instead of a local stacking context", () => {
+        const layer = document.createElement("div");
+        const localStack = document.createElement("div");
+        const button = document.createElement("button");
+        layer.style.position = "relative";
+        layer.style.zIndex = "100";
+        localStack.style.position = "relative";
+        localStack.style.zIndex = "900";
+        localStack.append(button);
+        layer.append(localStack);
+        document.body.append(layer);
+
+        expect(resolveFocusLayerZIndex(button)).toBe(100);
+
+        layer.remove();
+    });
+
+    it("uses zero for elements in an app root without an explicit z-index", () => {
+        const app = document.createElement("div");
+        const button = document.createElement("button");
+        app.append(button);
+        document.body.append(app);
+
+        expect(resolveFocusLayerZIndex(button)).toBe(0);
+
+        app.remove();
+    });
+
+    it("uses the outermost local z-index when the app root has no stacking level", () => {
+        const app = document.createElement("div");
+        const positionedContent = document.createElement("div");
+        const button = document.createElement("button");
+        positionedContent.style.position = "relative";
+        positionedContent.style.zIndex = "40";
+        positionedContent.append(button);
+        app.append(positionedContent);
+        document.body.append(app);
+
+        expect(resolveFocusLayerZIndex(button)).toBe(40);
+
+        app.remove();
     });
 });
 
@@ -546,6 +589,21 @@ describe("FocusAnimationController (Houdini Pulse & Same-Element Handling)", () 
 
         expect(paintStates.length).toBeGreaterThan(0);
         expect(paintStates.some((p) => (p.opacity ?? 1) !== 1)).toBe(true);
+    });
+
+    it("forced teleport switches layers between exit and reveal even over a short distance", async () => {
+        vi.spyOn(motionPreference, "resolved", "get").mockReturnValue("no-preference");
+        const onTeleport = vi.fn();
+        const clip: ClipBox = { x: 0, y: 0, w: 1000, h: 1000 };
+        const boxA: FocusBox = { x: 0, y: 0, w: 50, h: 30, r: 4 };
+        const boxB: FocusBox = { x: 20, y: 20, w: 50, h: 30, r: 4 };
+
+        await new Promise<void>((resolve) => {
+            const ctrl = new FocusAnimationController();
+            ctrl.start(boxB, clip, boxA, clip, () => {}, resolve, false, 2, true, onTeleport);
+        });
+
+        expect(onTeleport).toHaveBeenCalledOnce();
     });
 
     it("startPulseIn animates initial focus appearance smoothly with offset and opacity", async () => {

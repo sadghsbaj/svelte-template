@@ -16,8 +16,8 @@ export const textInputContainerStyles = cva({
 
         size: {
             sm: "h-36px px-10px gap-2 text-xs [&_svg]:size-14px [&_svg]:stroke-[2.25px]",
-            md: "h-42px px-14px gap-2.5 text-sm [&_svg]:size-16px [&_svg]:stroke-[2.25px]",
-            lg: "h-48px px-16px gap-3 text-base [&_svg]:size-18px [&_svg]:stroke-[2.25px]",
+            md: "h-40px px-14px gap-2.5 text-sm [&_svg]:size-16px [&_svg]:stroke-[2.25px]",
+            lg: "h-44px px-16px gap-3 text-base [&_svg]:size-18px [&_svg]:stroke-[2.25px]",
         },
     },
 

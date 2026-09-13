@@ -36,3 +36,24 @@ export type {
     PointAnchor,
     VirtualAnchor,
 } from "./floating/floating.types";
+
+export { default as Popover } from "./popover/Popover.svelte";
+export type {
+    PopoverAnimation,
+    PopoverAnimationContext,
+    PopoverChangeDetail,
+    PopoverCloseReason,
+    PopoverContentContext,
+    PopoverContext,
+    PopoverDismissDetail,
+    PopoverDismissOptions,
+    PopoverInitialFocus,
+    PopoverMethods,
+    PopoverOpenReason,
+    PopoverPhase,
+    PopoverProps,
+    PopoverReason,
+    PopoverRestoreFocus,
+    PopoverRole,
+    PopoverTriggerContext,
+} from "./popover/popover.types";

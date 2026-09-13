@@ -15,16 +15,13 @@ export function extractClassTokens(input: string): string[] {
     const variantGroupRegex = /([a-z0-9-]+:)\(([^)]+)\)/g;
     let expanded = input;
     while (variantGroupRegex.test(expanded)) {
-        expanded = expanded.replaceAll(
-            variantGroupRegex,
-            (_, prefix: string, inner: string) => {
-                return inner
-                    .split(/\s+/)
-                    .filter(Boolean)
-                    .map((token) => `${prefix}${token}`)
-                    .join(" ");
-            }
-        );
+        expanded = expanded.replaceAll(variantGroupRegex, (_, prefix: string, inner: string) => {
+            return inner
+                .split(/\s+/)
+                .filter(Boolean)
+                .map((token) => `${prefix}${token}`)
+                .join(" ");
+        });
     }
 
     return expanded.split(/\s+/).filter(Boolean);
@@ -78,7 +75,7 @@ function inspectStringNode(
 }
 
 function inspectArgumentTokens(
-    arg: Rule.Node,
+    arg: Parameters<Rule.RuleContext["sourceCode"]["getTokens"]>[0],
     blocklist: (string | RegExp)[],
     context: Rule.RuleContext
 ): void {
@@ -89,18 +86,11 @@ function inspectArgumentTokens(
         }
         // Strip surrounding quotes
         const rawValue = token.value.slice(1, -1);
-        inspectStringNode(
-            rawValue,
-            token as unknown as Rule.Node,
-            blocklist,
-            context
-        );
+        inspectStringNode(rawValue, token as unknown as Rule.Node, blocklist, context);
     }
 }
 
-export function createCvaBlocklistRule(
-    blocklist: (string | RegExp)[]
-): Rule.RuleModule {
+export function createCvaBlocklistRule(blocklist: (string | RegExp)[]): Rule.RuleModule {
     return {
         meta: {
             type: "problem",
@@ -122,21 +112,16 @@ export function createCvaBlocklistRule(
             }
 
             return {
-                CallExpression(
-                    node: Rule.Node & {
-                        callee?: { name?: string; type?: string };
-                        arguments?: Rule.Node[];
-                    }
-                ): void {
-                    if (
-                        node.callee?.type !== "Identifier" ||
-                        node.callee.name !== "cva"
-                    ) {
+                CallExpression(node: Rule.Node): void {
+                    if (node.type !== "CallExpression") {
                         return;
                     }
 
-                    const args = node.arguments ?? [];
-                    for (const arg of args) {
+                    if (node.callee.type !== "Identifier" || node.callee.name !== "cva") {
+                        return;
+                    }
+
+                    for (const arg of node.arguments) {
                         inspectArgumentTokens(arg, blocklist, context);
                     }
                 },
@@ -145,9 +130,7 @@ export function createCvaBlocklistRule(
     };
 }
 
-export function createCvaBlocklistConfig(
-    blocklist: (string | RegExp)[]
-): Linter.Config {
+export function createCvaBlocklistConfig(blocklist: (string | RegExp)[]): Linter.Config {
     return {
         plugins: {
             "cva-blocklist": {

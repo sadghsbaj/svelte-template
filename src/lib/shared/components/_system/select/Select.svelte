@@ -321,8 +321,9 @@
                                     <OptionIcon aria-hidden="true" class="shrink-0 text-weak" />
                                 {/if}
                                 <span class="flex min-w-0 flex-1 flex-col">
-                                    <span class="truncate leading-normal">{entry.option.label}</span
-                                    >
+                                    <span class="truncate font-500 leading-normal text-strong">
+                                        {entry.option.label}
+                                    </span>
                                     {#if entry.option.description}
                                         <span
                                             class="truncate text-xs font-400 leading-normal text-weak"

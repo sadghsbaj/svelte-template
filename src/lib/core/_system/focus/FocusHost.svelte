@@ -7,6 +7,9 @@
     import { focusOverridesMap, onFocusOverridesChange } from "./focus.attach.js";
     import {
         computeTargetBox,
+        focusBoxChanged,
+        focusClipChanged,
+        getFocusLayerRoot,
         getParentElement,
         invalidateGeometryCache,
         resolveFocusLayerZIndex,
@@ -42,6 +45,7 @@
     let elementObserver: ResizeObserver | null = null;
     let overrides: FocusOverrides | undefined;
     let currentLayerZIndex: number | null = null;
+    let currentLayerRoot: HTMLElement | null = null;
 
     let lastObservedW = 0;
     let lastObservedH = 0;
@@ -73,12 +77,16 @@
             return;
         }
 
-        const prevX = targetBox.x;
-        const prevY = targetBox.y;
+        if (!currentLayerRoot?.contains(activeElement)) {
+            setCanvasLayerZIndex(resolveFocusLayerZIndex(activeElement), activeElement);
+        }
+
+        const previousBox = { ...targetBox };
+        const previousClip = { ...targetClip };
 
         if (
             doUpdateTargetBox(activeElement) &&
-            (Math.abs(targetBox.x - prevX) > 0.5 || Math.abs(targetBox.y - prevY) > 0.5)
+            (focusBoxChanged(previousBox, targetBox) || focusClipChanged(previousClip, targetClip))
         ) {
             if (animController.isAnimating()) {
                 animController.updateTarget(targetBox, targetClip);
@@ -145,9 +153,10 @@
         return undefined;
     }
 
-    function setCanvasLayerZIndex(zIndex: number): void {
+    function setCanvasLayerZIndex(zIndex: number, element: HTMLElement): void {
         if (canvas) canvas.style.zIndex = String(zIndex);
         currentLayerZIndex = zIndex;
+        currentLayerRoot = getFocusLayerRoot(element);
     }
 
     function doUpdateTargetBox(el: HTMLElement): boolean {
@@ -206,7 +215,7 @@
             elementObserver?.observe(activeElement);
         }
 
-        setCanvasLayerZIndex(resolveFocusLayerZIndex(ringElement));
+        setCanvasLayerZIndex(resolveFocusLayerZIndex(ringElement), ringElement);
 
         if (!doUpdateTargetBox(activeElement)) return;
 
@@ -343,7 +352,7 @@
         elementObserver.observe(activeElement);
 
         if (isInitialFocus || !prevActiveElement) {
-            setCanvasLayerZIndex(nextLayerZIndex);
+            setCanvasLayerZIndex(nextLayerZIndex, ringElement);
             currentBox = { ...targetBox };
             currentClip = { ...targetClip };
             animController.startPulseIn(
@@ -358,7 +367,7 @@
                 overrides?.lineWidth ?? 2
             );
         } else {
-            if (!changedLayer) setCanvasLayerZIndex(nextLayerZIndex);
+            if (!changedLayer) setCanvasLayerZIndex(nextLayerZIndex, ringElement);
             animController.start(
                 targetBox,
                 targetClip,
@@ -373,7 +382,7 @@
                 false,
                 overrides?.lineWidth ?? 2,
                 changedLayer,
-                changedLayer ? () => setCanvasLayerZIndex(nextLayerZIndex) : undefined
+                changedLayer ? () => setCanvasLayerZIndex(nextLayerZIndex, ringElement) : undefined
             );
         }
 

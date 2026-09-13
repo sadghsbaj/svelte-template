@@ -14,6 +14,28 @@ export function boxDistance(a: FocusBox, b: FocusBox): number {
     return Math.hypot(dx, dy);
 }
 
+export function focusBoxChanged(a: FocusBox, b: FocusBox, epsilon = 0.1): boolean {
+    const exponentA = a.cornerShape?.type === "squircle" ? a.cornerShape.exponent : 1;
+    const exponentB = b.cornerShape?.type === "squircle" ? b.cornerShape.exponent : 1;
+    return (
+        Math.abs(a.x - b.x) > epsilon ||
+        Math.abs(a.y - b.y) > epsilon ||
+        Math.abs(a.w - b.w) > epsilon ||
+        Math.abs(a.h - b.h) > epsilon ||
+        Math.abs(a.r - b.r) > epsilon ||
+        Math.abs(exponentA - exponentB) > epsilon
+    );
+}
+
+export function focusClipChanged(a: ClipBox, b: ClipBox, epsilon = 0.1): boolean {
+    return (
+        Math.abs(a.x - b.x) > epsilon ||
+        Math.abs(a.y - b.y) > epsilon ||
+        Math.abs(a.w - b.w) > epsilon ||
+        Math.abs(a.h - b.h) > epsilon
+    );
+}
+
 export function getParentElement(el: Element): HTMLElement | null {
     if (el.parentElement) return el.parentElement as HTMLElement;
     const root = el.getRootNode?.();
@@ -21,6 +43,18 @@ export function getParentElement(el: Element): HTMLElement | null {
         return root.host as HTMLElement;
     }
     return null;
+}
+
+export function getFocusLayerRoot(el: HTMLElement): HTMLElement {
+    let root = el;
+    let parent = getParentElement(root);
+
+    while (parent && parent !== document.body) {
+        root = parent;
+        parent = getParentElement(root);
+    }
+
+    return root;
 }
 
 /**

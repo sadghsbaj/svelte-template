@@ -5,7 +5,12 @@ import { motionPreference } from "$core/_system/motion/motion.svelte.js";
 
 import { FocusAnimationController } from "./focus.animation.js";
 import { focusAttach, focusOverridesMap, onFocusOverridesChange } from "./focus.attach.js";
-import { computeTargetBox, resolveFocusLayerZIndex, resolveFocusTarget } from "./focus.geometry.js";
+import {
+    computeTargetBox,
+    getFocusLayerRoot,
+    resolveFocusLayerZIndex,
+    resolveFocusTarget,
+} from "./focus.geometry.js";
 import {
     clearCanvas,
     drawFocusRing,
@@ -274,6 +279,21 @@ describe("focus.geometry DOM functions", () => {
         expect(resolveFocusLayerZIndex(button)).toBe(40);
 
         app.remove();
+    });
+
+    it("detects when a focused element is reparented into a body layer", () => {
+        const app = document.createElement("div");
+        const layer = document.createElement("div");
+        const button = document.createElement("button");
+        app.append(button);
+        document.body.append(app, layer);
+
+        expect(getFocusLayerRoot(button)).toBe(app);
+        layer.append(button);
+        expect(getFocusLayerRoot(button)).toBe(layer);
+
+        app.remove();
+        layer.remove();
     });
 });
 

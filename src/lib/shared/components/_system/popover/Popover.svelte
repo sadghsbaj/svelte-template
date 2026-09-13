@@ -14,6 +14,7 @@
 
     import { runPopoverAnimation, waitForPopoverAnimation } from "./popover.animation";
     import {
+        connectPopoverTabBridge,
         focusPopoverTarget,
         isValidFocusTarget,
         resolveInitialFocus,
@@ -23,6 +24,7 @@
     import {
         createPopoverParentContext,
         popoverBranchContains,
+        popoverOwnsNode,
         registerPopover,
     } from "./popover.stack.svelte";
     import { popoverTrigger } from "./popover.trigger";
@@ -347,6 +349,16 @@
             unregisterStack?.();
             unregisterStack = null;
         };
+    });
+
+    $effect(() => {
+        if (!open || modal || !triggerElement || !element) return;
+        return connectPopoverTabBridge(
+            triggerElement,
+            element,
+            (node) => popoverOwnsNode(parent.id, node),
+            (node) => popoverBranchContains(parent.id, node)
+        );
     });
 
     $effect(() => {

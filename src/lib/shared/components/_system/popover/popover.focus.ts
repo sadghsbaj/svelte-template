@@ -47,7 +47,7 @@ export function focusPopoverTarget(content: HTMLElement, target: HTMLElement | n
     }
     if (target === content && !content.hasAttribute("tabindex"))
         content.setAttribute("tabindex", "-1");
-    target.focus({ preventScroll: true });
+    target.focus({ preventScroll: true, focusVisible: true });
     return getActiveElement() === target;
 }
 
@@ -83,4 +83,54 @@ export function isValidFocusTarget(target: HTMLElement | null): target is HTMLEl
         isElementVisible(target) &&
         !target.matches(":disabled")
     );
+}
+
+export function connectPopoverTabBridge(
+    trigger: HTMLElement,
+    content: HTMLElement,
+    ownsNode: (node: Node) => boolean,
+    branchContains: (node: Node) => boolean
+): () => void {
+    const handleKeyDown = (event: KeyboardEvent): void => {
+        if (event.key !== "Tab" || event.defaultPrevented) return;
+
+        const active = getActiveElement();
+        if (!active || !ownsNode(active)) return;
+
+        const contentStops = getFocusableElements(content);
+        const first = contentStops.at(0);
+
+        if (active === trigger && !event.shiftKey && first) {
+            event.preventDefault();
+            first.focus();
+            return;
+        }
+
+        if (!content.contains(active)) return;
+
+        if (event.shiftKey) {
+            if (active === first) {
+                event.preventDefault();
+                trigger.focus();
+            }
+            return;
+        }
+
+        if (active !== contentStops.at(-1)) return;
+
+        const documentStops = getFocusableElements(document.body);
+        const triggerIndex = documentStops.indexOf(trigger);
+        if (triggerIndex === -1) return;
+
+        const next = documentStops
+            .slice(triggerIndex + 1)
+            .find((candidate) => !branchContains(candidate));
+        if (!next) return;
+
+        event.preventDefault();
+        next.focus();
+    };
+
+    document.addEventListener("keydown", handleKeyDown, { capture: true });
+    return () => document.removeEventListener("keydown", handleKeyDown, { capture: true });
 }

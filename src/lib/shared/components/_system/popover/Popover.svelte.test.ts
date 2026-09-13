@@ -163,9 +163,9 @@ describe("Popover", () => {
         trigger.focus();
         trigger.dispatchEvent(new MouseEvent("click", { bubbles: true, detail: 0 }));
         await settle();
-        expect(document.activeElement).toBe(
-            (component.getContent() as HTMLDivElement).querySelector("#first-focus")
-        );
+        const firstFocus = (component.getContent() as HTMLDivElement).querySelector("#first-focus");
+        expect(document.activeElement).toBe(firstFocus);
+        expect(firstFocus?.matches(":focus-visible")).toBe(true);
         document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
         await settle();
         expect(document.activeElement).toBe(trigger);
@@ -175,6 +175,43 @@ describe("Popover", () => {
         document.body.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true }));
         await settle();
         expect(document.activeElement).not.toBe(trigger);
+    });
+
+    test("bridges nonmodal Tab order between the trigger, portal content, and following page", async () => {
+        const component = fixture();
+        const trigger = component.getTrigger() as HTMLButtonElement;
+        const following = document.createElement("button");
+        following.textContent = "Following page action";
+        app.append(following);
+
+        trigger.focus();
+        trigger.dispatchEvent(new MouseEvent("click", { bubbles: true, detail: 1 }));
+        await settle();
+        expect(document.activeElement).toBe(trigger);
+
+        trigger.dispatchEvent(
+            new KeyboardEvent("keydown", { key: "Tab", bubbles: true, cancelable: true })
+        );
+        const content = component.getContent() as HTMLDivElement;
+        const first = content.querySelector<HTMLButtonElement>("#first-focus");
+        const last = [...content.querySelectorAll<HTMLButtonElement>("button")].at(-1);
+        expect(document.activeElement).toBe(first);
+
+        first?.dispatchEvent(
+            new KeyboardEvent("keydown", {
+                key: "Tab",
+                shiftKey: true,
+                bubbles: true,
+                cancelable: true,
+            })
+        );
+        expect(document.activeElement).toBe(trigger);
+
+        last?.focus();
+        last?.dispatchEvent(
+            new KeyboardEvent("keydown", { key: "Tab", bubbles: true, cancelable: true })
+        );
+        expect(document.activeElement).toBe(following);
     });
 
     test("uses an explicit anchor before the trigger and dismisses when it detaches", async () => {

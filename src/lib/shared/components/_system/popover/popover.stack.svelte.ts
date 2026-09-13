@@ -110,3 +110,12 @@ export function popoverBranchContains(entryId: symbol, node: Node | null): boole
         return Boolean(entry.content()?.contains(node) || entry.trigger()?.contains(node));
     });
 }
+
+export function popoverOwnsNode(entryId: symbol, node: Node): boolean {
+    const owner = entries.findLast((entry) => {
+        const content = entry.content();
+        const trigger = entry.trigger();
+        return Boolean(content?.contains(node) || trigger?.contains(node));
+    });
+    return owner?.id === entryId;
+}

@@ -96,6 +96,8 @@ describe("Select", () => {
         expect(listbox()?.classList.contains("fixture-content")).toBe(true);
         expect(document.querySelectorAll('[role="option"]')).toHaveLength(4);
         expect(option("Banana").getAttribute("aria-selected")).toBe("true");
+        expect(option("Banana").dataset.noCanvasFocus).toBe("");
+        expect(option("Banana").className).toContain("focus-visible:bg-base-soft-1");
         expect(option("Apricot").getAttribute("aria-disabled")).toBe("true");
         expect(
             new Set([...document.querySelectorAll('[role="option"]')].map((item) => item.id)).size

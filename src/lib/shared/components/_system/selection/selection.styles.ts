@@ -14,7 +14,7 @@ export const selectionOptionStyles = cva({
         typography: "text-main text-left",
         frame: "rounded-2xl squircle-smooth",
         interaction:
-            "cursor-pointer hover:bg-base-soft-1 focus:(bg-base-soft-2 text-strong) outline-none",
+            "cursor-pointer hover:bg-base-soft-1 focus-visible:(bg-base-soft-1 text-strong) outline-none",
         motion: "t:(bg-200-quad-out text-200-quad-out opacity-200-quad-out)",
     },
     options: {
@@ -26,7 +26,7 @@ export const selectionOptionStyles = cva({
     },
     modifiers: {
         selected: "text-strong",
-        active: "bg-base-soft-2 text-strong",
+        active: "bg-base-soft-1 text-strong",
         described: "py-6px [&>svg]:self-start",
     },
     compounds: [

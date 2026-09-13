@@ -188,7 +188,7 @@ describe("Combobox", () => {
         option("Banana").dispatchEvent(new PointerEvent("pointermove", { bubbles: true }));
         flushSync();
         expect(input().getAttribute("aria-activedescendant")).toBe(option("Banana").id);
-        expect(option("Banana").classList.contains("bg-base-soft-2")).toBe(true);
+        expect(option("Banana").classList.contains("bg-base-soft-1")).toBe(true);
         expect(document.activeElement).toBe(input());
     });
 

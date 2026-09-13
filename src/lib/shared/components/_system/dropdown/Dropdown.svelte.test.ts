@@ -163,6 +163,8 @@ describe("Dropdown", () => {
         expect(menuItem("Delete file").textContent).toContain("Delete file");
         expect(menuItem("Delete file").querySelector(".text-danger-500")).toBeTruthy();
         expect(menuItem("Locked action").firstElementChild?.textContent).toContain("Locked action");
+        expect(menuItem("New file").dataset.noCanvasFocus).toBe("");
+        expect(menuItem("New file").className).toContain("focus-visible:bg-base-soft-1");
         expect(menuItem("Locked action").ariaDisabled).toBe("true");
         expect(menuItem("Locked action").style.cursor).toBe("not-allowed");
     });
@@ -352,8 +354,11 @@ describe("Dropdown", () => {
         await settle();
         expect(menus()).toHaveLength(1);
         expect(menuItem("Duplicate")).toBeTruthy();
+        expect(document.activeElement).toBe(menuItem("Duplicate"));
+        expect(menuItem("Duplicate").matches(":focus-visible")).toBe(false);
         expect(menuItem("New file")).toBeUndefined();
         expect(menuItem("Back")).toBeTruthy();
+        expect(menuItem("Back").dataset.noCanvasFocus).toBe("");
         tap(menuItem("Advanced"));
         await settle();
         expect(menus()).toHaveLength(1);
@@ -372,6 +377,7 @@ describe("Dropdown", () => {
         await settle();
         expect(menus()).toHaveLength(1);
         expect(document.activeElement).toBe(menuItem("Duplicate"));
+        expect(menuItem("Duplicate").matches(":focus-visible")).toBe(true);
 
         menuItem("Advanced").click();
         await settle();

@@ -2,6 +2,8 @@
     import { Check, ChevronDown } from "@lucide/svelte";
     import { disableInteraction, rovingFocus } from "$attachments";
 
+    import { focusAttach } from "$core/_system/focus/focus.attach";
+
     import Popover from "$components/_system/popover/Popover.svelte";
     import {
         getEnabledIndexes,
@@ -315,6 +317,7 @@
                                 {@attach disableInteraction({
                                     enabled: entry.option.disabled === true,
                                 })}
+                                {@attach focusAttach({ enabled: false })}
                             >
                                 {#if entry.option.icon}
                                     {const OptionIcon = entry.option.icon}

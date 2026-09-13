@@ -4,6 +4,8 @@
     import { ChevronRight } from "@lucide/svelte";
     import { disableInteraction, rovingFocus } from "$attachments";
 
+    import { focusAttach } from "$core/_system/focus/focus.attach";
+
     import type { FloatingSide } from "$components/_system/floating/floating.types";
     import Kbd from "$components/_system/kbd/Kbd.svelte";
     import Popover from "$components/_system/popover/Popover.svelte";
@@ -169,10 +171,14 @@
         queueMicrotask(() => itemElements[key]?.focus({ preventScroll: true }));
     };
 
-    const focusDrilldownItem = (intent: "first" | "last", parentKey?: string): void => {
+    const focusDrilldownItem = (
+        intent: "first" | "last",
+        parentKey?: string,
+        focusVisible = true
+    ): void => {
         queueMicrotask(() => {
             if (parentKey && itemElements[parentKey]) {
-                itemElements[parentKey]?.focus({ preventScroll: true, focusVisible: true });
+                itemElements[parentKey]?.focus({ preventScroll: true, focusVisible });
                 return;
             }
             const availableItems = [
@@ -181,34 +187,36 @@
                 ) ?? []),
             ].filter((item) => item.ariaDisabled !== "true");
             const target = intent === "last" ? availableItems.at(-1) : availableItems.at(0);
-            target?.focus({ preventScroll: true, focusVisible: true });
+            target?.focus({ preventScroll: true, focusVisible });
         });
     };
 
     const enterDrilldown = (
         submenu: DropdownSubmenu,
         parentKey: string,
-        intent: "first" | "last" = "first"
+        intent: "first" | "last" = "first",
+        focusVisible = true
     ): void => {
         if (submenu.disabled) return;
         drilldownStack.push({ submenu, parentKey });
         onDrilldownDepthChange?.(drilldownStack.length);
-        focusDrilldownItem(intent);
+        focusDrilldownItem(intent, undefined, focusVisible);
     };
 
-    const leaveDrilldown = (): void => {
+    const leaveDrilldown = (focusVisible = true): void => {
         const current = drilldownStack.pop();
         if (!current) return;
         onDrilldownDepthChange?.(drilldownStack.length);
-        focusDrilldownItem("first", current.parentKey);
+        focusDrilldownItem("first", current.parentKey, focusVisible);
     };
 
     const activateSubmenu = (
         submenu: DropdownSubmenu,
         key: string,
-        intent: "first" | "last" | null = "first"
+        intent: "first" | "last" | null = "first",
+        focusVisible = true
     ): void => {
-        if (drilldown) enterDrilldown(submenu, key, intent ?? "first");
+        if (drilldown) enterDrilldown(submenu, key, intent ?? "first", focusVisible);
         else openSubmenu(key, intent);
     };
 
@@ -349,7 +357,7 @@
                     described: Boolean(submenu.description),
                     submenuOpen: openSubmenuId === key,
                 })}
-                onclick={() => activateSubmenu(submenu, key)}
+                onclick={(event) => activateSubmenu(submenu, key, "first", event.detail === 0)}
                 onfocus={() => {
                     if (openSubmenuId && openSubmenuId !== key) openSubmenuId = null;
                 }}
@@ -363,6 +371,7 @@
                 }}
                 {@attach captureItem(key)}
                 {@attach disableInteraction({ enabled: submenu.disabled === true })}
+                {@attach focusAttach({ enabled: false })}
             >
                 {#if submenu.icon}
                     {const ItemIcon = submenu.icon}
@@ -464,6 +473,7 @@
                 onpointermove={handlePointerMove}
                 {@attach captureItem(key)}
                 {@attach disableInteraction({ enabled: action.disabled === true })}
+                {@attach focusAttach({ enabled: false })}
             >
                 {#if action.icon}
                     {const ItemIcon = action.icon}
@@ -518,7 +528,8 @@
             data-dropdown-back
             data-dropdown-label="Back"
             class={dropdownItemStyles({ size })}
-            onclick={leaveDrilldown}
+            onclick={(event) => leaveDrilldown(event.detail === 0)}
+            {@attach focusAttach({ enabled: false })}
         >
             <ChevronRight
                 aria-hidden="true"

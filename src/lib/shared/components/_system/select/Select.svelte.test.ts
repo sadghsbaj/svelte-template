@@ -145,6 +145,21 @@ describe("Select", () => {
         expect(document.activeElement).toBe(option("Banana"));
     });
 
+    test("enters keyboard navigation after the listbox was opened by pointer", async () => {
+        fixture();
+        trigger().focus();
+        trigger().dispatchEvent(new MouseEvent("click", { bubbles: true, detail: 1 }));
+        await settle();
+        expect(document.activeElement).toBe(trigger());
+
+        expect(press(trigger(), "ArrowDown").defaultPrevented).toBe(true);
+        await settle();
+        expect(document.activeElement).toBe(option("Apple"));
+
+        press(option("Apple"), "ArrowDown");
+        expect(document.activeElement).toBe(option("Banana"));
+    });
+
     test("selects with Enter and Space, while Escape makes no change", async () => {
         const change = vi.fn<(value: string) => void>();
         const component = fixture({ onValueChange: change });

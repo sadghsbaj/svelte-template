@@ -3,6 +3,11 @@
     import { disableInteraction, rovingFocus } from "$attachments";
 
     import Popover from "$components/_system/popover/Popover.svelte";
+    import {
+        getEnabledIndexes,
+        getSelectedIndex,
+        normalizeStaleValue,
+    } from "$components/_system/selection/selection.helpers";
 
     import { selectContentStyles, selectOptionStyles, selectTriggerStyles } from "./select.styles";
     import type { SelectOption, SelectProps } from "./select.types";
@@ -36,7 +41,7 @@
     let proxyElement = $state<HTMLSelectElement>();
     let focusIntent = $state<number | "first" | "last" | null>(null);
 
-    const selectedIndex = $derived(options.findIndex((option) => option.value === value));
+    const selectedIndex = $derived(getSelectedIndex(options, value));
     const selectedOption = $derived<SelectOption | undefined>(options[selectedIndex]);
     const triggerClass = $derived(selectTriggerStyles({ size, class: className }));
     const contentClassName = $derived(selectContentStyles({ class: contentClass }));
@@ -49,8 +54,7 @@
         !event.altKey &&
         !event.isComposing;
 
-    const availableIndexes = (): number[] =>
-        options.flatMap((option, index) => (option.disabled ? [] : [index]));
+    const availableIndexes = (): number[] => getEnabledIndexes(options);
 
     const selectedOrFirst = (): number | "first" =>
         selectedIndex >= 0 && !options[selectedIndex]?.disabled ? selectedIndex : "first";
@@ -111,7 +115,20 @@
         openPopover: (reason?: "trigger", event?: Event) => void
     ): void => {
         onkeydown?.(event as Parameters<NonNullable<SelectProps["onkeydown"]>>[0]);
-        if (event.defaultPrevented || disabled || open) return;
+        if (event.defaultPrevented || disabled) return;
+
+        if (open && (event.key === "ArrowDown" || event.key === "ArrowUp")) {
+            event.preventDefault();
+            focusIntent =
+                event.key === "ArrowDown"
+                    ? selectedOrFirst()
+                    : selectedIndex >= 0 && !options[selectedIndex]?.disabled
+                      ? selectedIndex
+                      : "last";
+            return;
+        }
+
+        if (open) return;
 
         if (event.key === "ArrowDown" || event.key === "ArrowUp") {
             event.preventDefault();
@@ -149,7 +166,7 @@
     };
 
     $effect(() => {
-        if (options.length > 0 && value !== undefined && selectedIndex < 0) value = undefined;
+        if (options.length > 0) value = normalizeStaleValue(options, value);
     });
 
     $effect(() => {

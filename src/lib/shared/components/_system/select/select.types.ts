@@ -1,14 +1,10 @@
-import type { Component } from "svelte";
 import type { HTMLButtonAttributes } from "svelte/elements";
+
+import type { SelectionOption } from "$components/_system/selection/selection.types";
 
 import type { SelectStyleProps } from "./select.styles";
 
-export interface SelectOption {
-    value: string;
-    label: string;
-    icon?: Component;
-    disabled?: boolean;
-}
+export type SelectOption = SelectionOption;
 
 export interface SelectProps
     extends

@@ -74,12 +74,74 @@
 
     const focusColor = $derived(invalid ? "var(--color-danger-500)" : undefined);
 
+    function getCaretOffsetFromPoint(x: number, y: number): number | null {
+        if (typeof document === "undefined") return null;
+
+        // W3C standard (Chromium 129+, Gecko/Firefox)
+        if (typeof document.caretPositionFromPoint === "function") {
+            const pos = document.caretPositionFromPoint(x, y);
+            if (pos && typeof pos.offset === "number") {
+                return pos.offset;
+            }
+        }
+
+        // WebKit legacy fallback (Safari)
+        const doc = document as unknown as {
+            caretRangeFromPoint?: (x: number, y: number) => Range | null;
+        };
+        if (typeof doc.caretRangeFromPoint === "function") {
+            const range = doc.caretRangeFromPoint(x, y);
+            if (range && typeof range.startOffset === "number") {
+                return range.startOffset;
+            }
+        }
+
+        return null;
+    }
+
     function handleContainerClick(event: MouseEvent): void {
         const target = event.target as HTMLElement | null;
         if (target?.closest("button, a, [role='button']")) {
             return;
         }
-        element?.focus();
+
+        if (!element) return;
+
+        // Preserve active drag-selection if user selected a range
+        if (
+            element.selectionStart !== null &&
+            element.selectionEnd !== null &&
+            element.selectionStart !== element.selectionEnd
+        ) {
+            return;
+        }
+
+        const rect = element.getBoundingClientRect();
+        const len = element.value.length;
+        element.focus();
+
+        // 1. Click left of the input (left padding, left icon, left gap)
+        if (event.clientX < rect.left) {
+            element.setSelectionRange(0, 0);
+            return;
+        }
+
+        // 2. Click right of the input (right padding, trailing icon, right gap)
+        if (event.clientX > rect.right) {
+            element.setSelectionRange(len, len);
+            return;
+        }
+
+        // 3. Click within horizontal boundaries of the input:
+        // Project click Y onto the vertical center of the text line to eliminate line-box edge bugs
+        const centerY = rect.top + rect.height / 2;
+        const offset = getCaretOffsetFromPoint(event.clientX, centerY);
+        if (offset !== null) {
+            element.setSelectionRange(offset, offset);
+            return;
+        }
+
+        element.setSelectionRange(len, len);
     }
 </script>
 

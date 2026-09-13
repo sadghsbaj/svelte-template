@@ -136,5 +136,89 @@ describe("TextInput", () => {
         expect(leftIcon?.parentElement?.className).toContain("shrink-0");
         expect(leftIcon?.parentElement?.className).toContain("flex-center");
     });
+
+    test("positions cursor at beginning when clicking left of input and at end when clicking right", () => {
+        const instance = mount(TextInput, {
+            target: app,
+            props: {
+                value: "Hello World",
+            },
+        });
+        mounted.push(instance);
+        flushSync();
+
+        const container = app.querySelector<HTMLElement>("[role='group']");
+        const input = app.querySelector<HTMLInputElement>("input");
+        expect(container).not.toBeNull();
+        expect(input).not.toBeNull();
+
+        if (container && input) {
+            // Mock getBoundingClientRect for input
+            input.getBoundingClientRect = () =>
+                ({
+                    x: 50,
+                    y: 20,
+                    left: 50,
+                    top: 20,
+                    right: 250,
+                    bottom: 60,
+                    width: 200,
+                    height: 40,
+                }) as DOMRect;
+
+            // 1. Click to the left of the input (e.g. clientX = 30 < left = 50)
+            const leftClick = new MouseEvent("click", {
+                bubbles: true,
+                clientX: 30,
+                clientY: 40,
+            });
+            container.dispatchEvent(leftClick);
+            expect(input.selectionStart).toBe(0);
+            expect(input.selectionEnd).toBe(0);
+
+            // 2. Click to the right of the input (e.g. clientX = 270 > right = 250)
+            const rightClick = new MouseEvent("click", {
+                bubbles: true,
+                clientX: 270,
+                clientY: 40,
+            });
+            container.dispatchEvent(rightClick);
+            expect(input.selectionStart).toBe(11);
+            expect(input.selectionEnd).toBe(11);
+        }
+    });
+
+    test("preserves active text selection on container click", () => {
+        const instance = mount(TextInput, {
+            target: app,
+            props: {
+                value: "Selection Test",
+            },
+        });
+        mounted.push(instance);
+        flushSync();
+
+        const container = app.querySelector<HTMLElement>("[role='group']");
+        const input = app.querySelector<HTMLInputElement>("input");
+        expect(container).not.toBeNull();
+        expect(input).not.toBeNull();
+
+        if (container && input) {
+            input.focus();
+            input.setSelectionRange(2, 7);
+
+            // Click event triggered while text is selected
+            const clickEvent = new MouseEvent("click", {
+                bubbles: true,
+                clientX: 20,
+                clientY: 20,
+            });
+            container.dispatchEvent(clickEvent);
+
+            // Selection range should be preserved
+            expect(input.selectionStart).toBe(2);
+            expect(input.selectionEnd).toBe(7);
+        }
+    });
 });
 

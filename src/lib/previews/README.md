@@ -56,6 +56,7 @@ Always compose previews using the lightweight layout primitives from `$lib/previ
     - **Isolated States:** Use `<PreviewGrid>` + `<PreviewCard label="...">` when each item needs a distinct label (e.g., _Disabled_, _Loading_, _Active_).
     - **Grouped Comparison:** Put multiple interactive elements in a single `<PreviewCard>` with flex layout (`class="flex flex-wrap gap-4 items-center"`) when comparing size or variant hierarchies side-by-side.
 5. **Transparency & Overlays:** For transparent, glassmorphic, fade, pattern, or container/surface elements, set `checkerboard={true}` or `bg="elevation-0"` on `<PreviewCard>` to guarantee clear background contrast.
+6. **Clean & Concise Labels (No Parenthetical Clutter):** Keep `<PreviewCard label="...">` badges minimal, clean, and direct (e.g. `Small`, `Medium`, `Soft on Elevation 1`, `Dynamic Auto-Resize`, `Loading`). Never append redundant explanations, prop names, or parenthetical clutter such as `(Default)`, `(SM)`, `(min 2, max 7 rows)`, `(Left & Right)`, or `(focusRing={false})`. The label itself is already self-describing; AI agents and contributors must always inspect existing previews in `src/lib/previews/components/` to match the established level of detail.
 
 ---
 

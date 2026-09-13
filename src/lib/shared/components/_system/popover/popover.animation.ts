@@ -4,18 +4,36 @@ import type { FloatingContext, FloatingSide } from "$components/_system/floating
 
 import type { PopoverAnimation, PopoverAnimationContext, PopoverReason } from "./popover.types";
 
-const enterOffset: Record<FloatingSide, string> = {
-    top: "translateY(4px)",
-    right: "translateX(-4px)",
-    bottom: "translateY(-4px)",
-    left: "translateX(4px)",
+const enterTransform: Record<FloatingSide, string> = {
+    top: "translate3d(0, 7px, 0) scale(.975, .94)",
+    right: "translate3d(-7px, 0, 0) scale(.94, .975)",
+    bottom: "translate3d(0, -7px, 0) scale(.975, .94)",
+    left: "translate3d(7px, 0, 0) scale(.94, .975)",
 };
-const exitOffset: Record<FloatingSide, string> = {
-    top: "translateY(2px)",
-    right: "translateX(-2px)",
-    bottom: "translateY(-2px)",
-    left: "translateX(2px)",
+const overshootTransform: Record<FloatingSide, string> = {
+    top: "translate3d(0, -.75px, 0) scale(1.004, 1.01)",
+    right: "translate3d(.75px, 0, 0) scale(1.01, 1.004)",
+    bottom: "translate3d(0, .75px, 0) scale(1.004, 1.01)",
+    left: "translate3d(-.75px, 0, 0) scale(1.01, 1.004)",
 };
+const exitTransform: Record<FloatingSide, string> = {
+    top: "translate3d(0, 3px, 0) scale(.985, .965)",
+    right: "translate3d(-3px, 0, 0) scale(.965, .985)",
+    bottom: "translate3d(0, -3px, 0) scale(.985, .965)",
+    left: "translate3d(3px, 0, 0) scale(.965, .985)",
+};
+const enterClip: Record<FloatingSide, string> = {
+    top: "inset(18% 0 0 0 round 22px)",
+    right: "inset(0 18% 0 0 round 22px)",
+    bottom: "inset(0 0 18% 0 round 22px)",
+    left: "inset(0 0 0 18% round 22px)",
+};
+
+const OPEN_TRANSFORM = "translate3d(0, 0, 0) scale(1)";
+const OPEN_CLIP = "inset(0 round 22px)";
+const ENTER_EASING = "cubic-bezier(.16, 1, .3, 1)";
+const SETTLE_EASING = "cubic-bezier(.33, 1, .68, 1)";
+const EXIT_EASING = "cubic-bezier(.4, 0, 1, 1)";
 
 export function getPopoverTransformOrigin(context: FloatingContext): string {
     const rawCross =
@@ -58,24 +76,55 @@ export function runPopoverAnimation(
     }
     if (reducedMotion) return null;
     element.style.transformOrigin = transformOrigin;
-    element.style.willChange = "transform, opacity, filter";
+    element.style.willChange = "transform, opacity, filter, clip-path";
     if (typeof animation === "function") return animation(element, context);
 
     const entering = phase === "enter";
-    const offset = entering ? enterOffset[floating.side] : exitOffset[floating.side];
+    const horizontal = floating.side === "left" || floating.side === "right";
     return element.animate(
         entering
             ? [
-                  { opacity: 0, transform: `${offset} scale(.97)`, filter: "blur(2px)" },
-                  { opacity: 1, transform: "translate(0) scale(1)", filter: "blur(0)" },
+                  {
+                      offset: 0,
+                      opacity: 0,
+                      transform: enterTransform[floating.side],
+                      filter: "blur(4px)",
+                      clipPath: enterClip[floating.side],
+                      easing: ENTER_EASING,
+                  },
+                  {
+                      offset: 0.7,
+                      opacity: 1,
+                      transform: overshootTransform[floating.side],
+                      filter: "blur(0)",
+                      clipPath: OPEN_CLIP,
+                      easing: SETTLE_EASING,
+                  },
+                  {
+                      offset: 1,
+                      opacity: 1,
+                      transform: OPEN_TRANSFORM,
+                      filter: "blur(0)",
+                      clipPath: OPEN_CLIP,
+                  },
               ]
             : [
-                  { opacity: 1, transform: "translate(0) scale(1)", filter: "blur(0)" },
-                  { opacity: 0, transform: `${offset} scale(.985)`, filter: "blur(1px)" },
+                  {
+                      opacity: 1,
+                      transform: OPEN_TRANSFORM,
+                      filter: "blur(0)",
+                      clipPath: OPEN_CLIP,
+                  },
+                  {
+                      opacity: 0,
+                      transform: exitTransform[floating.side],
+                      filter: "blur(2px)",
+                      clipPath: enterClip[floating.side],
+                  },
               ],
         {
-            duration: entering ? 180 : 125,
-            easing: entering ? "cubic-bezier(.16, 1, .3, 1)" : "cubic-bezier(.4, 0, 1, 1)",
+            duration: entering ? (horizontal ? 220 : 260) : horizontal ? 120 : 145,
+            easing: entering ? "linear" : EXIT_EASING,
             fill: "both",
         }
     );

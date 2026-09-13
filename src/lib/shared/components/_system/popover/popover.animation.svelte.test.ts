@@ -71,7 +71,7 @@ describe("popover animation", () => {
         expect(element.style.willChange).toBe("");
     });
 
-    test("default enter keyframes move from the resolved anchor side", () => {
+    test("default enter blooms from the resolved anchor side and settles from a small overshoot", () => {
         const element = document.createElement("div");
         const finished = Promise.resolve();
         const nativeAnimation = { finished, cancel: vi.fn() } as unknown as Animation;
@@ -82,17 +82,67 @@ describe("popover animation", () => {
         expect(animate).toHaveBeenCalledWith(
             [
                 {
+                    offset: 0,
                     opacity: 0,
-                    transform: "translateY(-4px) scale(.97)",
-                    filter: "blur(2px)",
+                    transform: "translate3d(0, -7px, 0) scale(.975, .94)",
+                    filter: "blur(4px)",
+                    clipPath: "inset(0 0 18% 0 round 22px)",
+                    easing: "cubic-bezier(.16, 1, .3, 1)",
                 },
                 {
+                    offset: 0.7,
                     opacity: 1,
-                    transform: "translate(0) scale(1)",
+                    transform: "translate3d(0, .75px, 0) scale(1.004, 1.01)",
                     filter: "blur(0)",
+                    clipPath: "inset(0 round 22px)",
+                    easing: "cubic-bezier(.33, 1, .68, 1)",
+                },
+                {
+                    offset: 1,
+                    opacity: 1,
+                    transform: "translate3d(0, 0, 0) scale(1)",
+                    filter: "blur(0)",
+                    clipPath: "inset(0 round 22px)",
                 },
             ],
-            expect.objectContaining({ duration: 180, fill: "both" })
+            expect.objectContaining({ duration: 260, easing: "linear", fill: "both" })
+        );
+        expect(element.style.willChange).toBe("transform, opacity, filter, clip-path");
+    });
+
+    test("keeps horizontal submenu motion tighter and exits toward its anchor", () => {
+        const element = document.createElement("div");
+        const nativeAnimation = {
+            finished: Promise.resolve(),
+            cancel: vi.fn(),
+        } as unknown as Animation;
+        const animate = vi.spyOn(element, "animate").mockReturnValue(nativeAnimation);
+
+        runPopoverAnimation(element, "enter", "programmatic", floating("left"), "default");
+        expect(animate.mock.calls[0]?.[1]).toEqual(
+            expect.objectContaining({ duration: 220, easing: "linear" })
+        );
+
+        runPopoverAnimation(element, "exit", "escape", floating("right"), "default");
+        expect(animate).toHaveBeenLastCalledWith(
+            [
+                {
+                    opacity: 1,
+                    transform: "translate3d(0, 0, 0) scale(1)",
+                    filter: "blur(0)",
+                    clipPath: "inset(0 round 22px)",
+                },
+                {
+                    opacity: 0,
+                    transform: "translate3d(-3px, 0, 0) scale(.965, .985)",
+                    filter: "blur(2px)",
+                    clipPath: "inset(0 18% 0 0 round 22px)",
+                },
+            ],
+            expect.objectContaining({
+                duration: 120,
+                easing: "cubic-bezier(.4, 0, 1, 1)",
+            })
         );
     });
 });

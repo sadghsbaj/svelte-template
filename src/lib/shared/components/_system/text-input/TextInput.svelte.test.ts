@@ -95,22 +95,19 @@ describe("TextInput", () => {
         expect(container?.style.cursor).toBe("not-allowed");
     });
 
-    test("renders external label when provided", () => {
+    test("suppresses canvas focus ring when focusRing is false", () => {
         const instance = mount(TextInput, {
             target: app,
             props: {
-                label: "Username",
+                focusRing: false,
             },
         });
         mounted.push(instance);
         flushSync();
 
-        const label = app.querySelector("label");
         const input = app.querySelector("input");
-
-        expect(label).not.toBeNull();
-        expect(label?.textContent?.trim()).toBe("Username");
-        expect(label?.getAttribute("for")).toBe(input?.id);
+        expect(input).not.toBeNull();
+        expect(input?.dataset.noCanvasFocus).toBe("");
     });
 
     test("renders iconLeft and iconRight SVGs with correct dimensions and stroke classes", () => {

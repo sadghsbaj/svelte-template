@@ -278,11 +278,11 @@
                 </div>
             </PreviewCard>
 
-            <PreviewCard label="With External Label" bg="elevation-1" class="h-36">
+            <PreviewCard label="No Focus Ring (focusRing={false})" bg="elevation-1" class="h-36">
                 <div class="w-full max-w-xs">
                     <TextInput
-                        label="User Handle"
-                        placeholder="Username..."
+                        focusRing={false}
+                        placeholder="Click me, no focus ring..."
                         iconLeft={userIcon}
                         bind:value={labeledVal}
                     />

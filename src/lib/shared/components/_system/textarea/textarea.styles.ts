@@ -129,28 +129,6 @@ export const textareaIconStyles = cva({
     },
 });
 
-export const textareaActionStyles = cva({
-    base: {
-        layout: "inline-flex justify-center items-center shrink-0 cursor-pointer select-none",
-        frame: "rounded-full squircle-soft",
-        typography: "text-weak hover:text-strong",
-        interaction: "active:scale-93 hover:bg-base-soft-2",
-        motion: "will-change-transform t:(bg-150-quad-out text-150-quad-out scale-150-quad-out)",
-    },
-
-    options: {
-        size: {
-            sm: "size-24px [&_svg]:size-14px [&_svg]:stroke-[2.25px]",
-            md: "size-28px [&_svg]:size-16px [&_svg]:stroke-[2.25px]",
-            lg: "size-32px [&_svg]:size-18px [&_svg]:stroke-[2.25px]",
-        },
-    },
-
-    defaults: {
-        size: "md",
-    },
-});
-
 export const textareaFooterStyles = cva({
     base: {
         layout: "flex items-center justify-between w-full mt-auto select-none",
@@ -172,6 +150,5 @@ export const textareaFooterStyles = cva({
 export type TextareaContainerStyleProps = VariantProps<typeof textareaContainerStyles>;
 export type TextareaElementStyleProps = VariantProps<typeof textareaElementStyles>;
 export type TextareaIconStyleProps = VariantProps<typeof textareaIconStyles>;
-export type TextareaActionStyleProps = VariantProps<typeof textareaActionStyles>;
 export type TextareaFooterStyleProps = VariantProps<typeof textareaFooterStyles>;
 export type TextareaStyleProps = TextareaContainerStyleProps;

@@ -27,9 +27,9 @@
     type Props = TextareaStyleProps &
         Omit<HTMLTextareaAttributes, "class" | "disabled" | "size"> & {
             value?: string;
-            label?: string;
             invalid?: boolean;
             disabled?: boolean;
+            focusRing?: boolean;
             rows?: number;
             autoResize?: TextareaAutoResizeOption;
             resize?: "none" | "vertical" | "horizontal" | "both";
@@ -45,11 +45,11 @@
 
     let {
         value = $bindable(""),
-        label,
         variant = "soft",
         size = "md",
         invalid = false,
         disabled = false,
+        focusRing = true,
         rows = 3,
         autoResize = false,
         resize = "none",
@@ -162,6 +162,38 @@
         return null;
     }
 
+    function getLineBounds(targetLineIndex: number): { start: number; end: number } {
+        if (!element) return { start: 0, end: 0 };
+        const lines = element.value.split("\n");
+        if (targetLineIndex >= lines.length) {
+            const len = element.value.length;
+            return { start: len, end: len };
+        }
+        let start = 0;
+        for (let i = 0; i < targetLineIndex; i++) {
+            start += lines[i].length + 1;
+        }
+        const end = start + lines[targetLineIndex].length;
+        return { start, end };
+    }
+
+    function parseCssPixels(value: string | undefined): number {
+        if (!value) return 0;
+        const match = /^[-+]?\d*\.?\d+/.exec(value);
+        if (!match) return 0;
+        const num = Number(match[0]);
+        return Number.isFinite(num) ? num : 0;
+    }
+
+    function getTargetLineIndex(clientY: number, rectTop: number): number {
+        if (!element) return 0;
+        const computed = typeof window !== "undefined" ? window.getComputedStyle(element) : null;
+        const lineHeight = (computed ? parseCssPixels(computed.lineHeight) : 0) || 20;
+        const paddingTop = (computed ? parseCssPixels(computed.paddingTop) : 0) || 0;
+        const relativeY = clientY - rectTop - paddingTop + element.scrollTop;
+        return Math.max(0, Math.floor(relativeY / lineHeight));
+    }
+
     function handleContainerMouseDown(event: MouseEvent): void {
         const target = event.target as HTMLElement | null;
         if (target?.closest("button, a, [role='button'], input")) {
@@ -203,18 +235,25 @@
                 element.setSelectionRange(offset, offset);
                 return;
             }
-            element.setSelectionRange(0, 0);
+            const lineIdx = getTargetLineIndex(event.clientY, rect.top);
+            const { start } = getLineBounds(lineIdx);
+            element.setSelectionRange(start, start);
             return;
         }
 
         // 4. Click right of the textarea (right icon, right padding)
         if (event.clientX > rect.right) {
-            const offset = getCaretOffsetFromPoint(rect.right - 2, event.clientY);
+            const offset = getCaretOffsetFromPoint(rect.right - 4, event.clientY);
             if (offset !== null) {
-                element.setSelectionRange(offset, offset);
+                // If pointing past a line break (start of next line), adjust to the end of the clicked line
+                const adjustedOffset =
+                    offset > 0 && element.value[offset - 1] === "\n" ? offset - 1 : offset;
+                element.setSelectionRange(adjustedOffset, adjustedOffset);
                 return;
             }
-            element.setSelectionRange(len, len);
+            const lineIdx = getTargetLineIndex(event.clientY, rect.top);
+            const { end } = getLineBounds(lineIdx);
+            element.setSelectionRange(end, end);
             return;
         }
 
@@ -270,17 +309,23 @@
                 element.setSelectionRange(offset, offset);
                 return;
             }
-            element.setSelectionRange(0, 0);
+            const lineIdx = getTargetLineIndex(event.clientY, rect.top);
+            const { start } = getLineBounds(lineIdx);
+            element.setSelectionRange(start, start);
             return;
         }
 
         if (event.clientX > rect.right) {
-            const offset = getCaretOffsetFromPoint(rect.right - 2, event.clientY);
+            const offset = getCaretOffsetFromPoint(rect.right - 4, event.clientY);
             if (offset !== null) {
-                element.setSelectionRange(offset, offset);
+                const adjustedOffset =
+                    offset > 0 && element.value[offset - 1] === "\n" ? offset - 1 : offset;
+                element.setSelectionRange(adjustedOffset, adjustedOffset);
                 return;
             }
-            element.setSelectionRange(len, len);
+            const lineIdx = getTargetLineIndex(event.clientY, rect.top);
+            const { end } = getLineBounds(lineIdx);
+            element.setSelectionRange(end, end);
             return;
         }
 
@@ -294,72 +339,63 @@
     }
 </script>
 
-{#snippet field()}
-    <!-- svelte-ignore a11y_click_events_have_key_events -->
-    <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-    <div
-        id={containerId}
-        role="group"
-        class={containerComputedClass}
-        onmousedown={handleContainerMouseDown}
-        onclick={handleContainerClick}
-        {@attach disableInteraction({ enabled: disabled })}
-    >
-        <div class={bodyClass}>
-            {#if iconLeft}
-                <span class="{iconLeftClass} [&>svg]:size-full [&>svg]:stroke-[2.25px]">
-                    {@render iconLeft()}
-                </span>
-            {/if}
+<!-- svelte-ignore a11y_click_events_have_key_events -->
+<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+<div
+    id={containerId}
+    role="group"
+    class={containerComputedClass}
+    onmousedown={handleContainerMouseDown}
+    onclick={handleContainerClick}
+    {@attach disableInteraction({ enabled: disabled })}
+>
+    <div class={bodyClass}>
+        {#if iconLeft}
+            <span class="{iconLeftClass} [&>svg]:size-full [&>svg]:stroke-[2.25px]">
+                {@render iconLeft()}
+            </span>
+        {/if}
 
-            <textarea
-                {...restProps}
-                bind:this={element}
-                bind:value
-                id={textareaId}
-                {placeholder}
-                {disabled}
-                {rows}
-                maxlength={maxlength}
-                aria-invalid={invalid ? "true" : undefined}
-                class={textareaComputedClass}
-                style={textareaComputedStyle}
-                {@attach focusAttach({ focusTarget: `#${containerId}`, color: focusColor })}
-                {@attach resolvedAutoResize}
-            ></textarea>
+        <textarea
+            {...restProps}
+            bind:this={element}
+            bind:value
+            id={textareaId}
+            {placeholder}
+            {disabled}
+            {rows}
+            maxlength={maxlength}
+            aria-invalid={invalid ? "true" : undefined}
+            class={textareaComputedClass}
+            style={textareaComputedStyle}
+            {@attach focusAttach({
+                focusTarget: `#${containerId}`,
+                color: focusColor,
+                enabled: focusRing,
+            })}
+            {@attach resolvedAutoResize}
+        ></textarea>
 
-            {#if iconRight}
-                <span
-                    class="shrink-0 flex-center {invalid
-                        ? 'text-danger-solid-1'
-                        : 'text-weak'} [&>svg]:pointer-events-none {size === 'lg' ? 'mt-3px' : 'mt-2px'}"
-                >
-                    {@render iconRight()}
-                </span>
-            {/if}
-        </div>
-
-        {#if footer}
-            <div class={footerComputedClass}>
-                {@render footer()}
-            </div>
-        {:else if showCount || maxlength !== undefined}
-            <div class={footerComputedClass}>
-                <span class="text-xs font-500 text-weak ml-auto tabular-nums">
-                    {value?.length ?? 0}{maxlength !== undefined ? ` / ${maxlength}` : ""}
-                </span>
-            </div>
+        {#if iconRight}
+            <span
+                class="shrink-0 flex-center {invalid
+                    ? 'text-danger-solid-1'
+                    : 'text-weak'} [&>svg]:pointer-events-none {size === 'lg' ? 'mt-3px' : 'mt-2px'}"
+            >
+                {@render iconRight()}
+            </span>
         {/if}
     </div>
-{/snippet}
 
-{#if label}
-    <div class="flex flex-col gap-1.5 w-full">
-        <label for={textareaId} class="text-xs font-600 text-weak select-none">
-            {label}
-        </label>
-        {@render field()}
-    </div>
-{:else}
-    {@render field()}
-{/if}
+    {#if footer}
+        <div class={footerComputedClass}>
+            {@render footer()}
+        </div>
+    {:else if showCount || maxlength !== undefined}
+        <div class={footerComputedClass}>
+            <span class="text-xs font-500 text-weak ml-auto tabular-nums">
+                {value?.length ?? 0}{maxlength !== undefined ? ` / ${maxlength}` : ""}
+            </span>
+        </div>
+    {/if}
+</div>

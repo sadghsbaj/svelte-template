@@ -14,7 +14,7 @@
         Paperclip,
         Sparkles,
     } from "@lucide/svelte";
-    import { Textarea, textareaActionStyles } from "$components";
+    import { Textarea } from "$components";
 
     import PreviewCard from "$lib/previews/ui/PreviewCard.svelte";
     import PreviewGrid from "$lib/previews/ui/PreviewGrid.svelte";
@@ -40,6 +40,7 @@
     let invalidVal = $state("This content exceeds moderation limits or contains errors.");
     let disabledVal = $state("This field is read-only and interactions are completely disabled.");
     let countedVal = $state("Building borderless, responsive components in Svelte 5.");
+    let noFocusRingVal = $state("This textarea has no canvas focus ring when focused.");
 
     function handleCopy(): void {
         if (!noteVal) return;
@@ -62,15 +63,15 @@
 {#snippet copyAction()}
     <button
         type="button"
-        class={textareaActionStyles({ size: "sm" })}
+        class="size-24px rounded-full squircle-soft flex-center text-weak hover:text-strong hover:bg-base-soft-2 active:scale-93 cursor-pointer select-none t:(bg-150-quad-out scale-150-quad-out)"
         onclick={handleCopy}
         aria-label="Copy text"
         title="Copy"
     >
         {#if copied}
-            <Check class="text-success-500" />
+            <Check class="size-14px text-success-500" />
         {:else}
-            <Copy />
+            <Copy class="size-14px" />
         {/if}
     </button>
 {/snippet}
@@ -80,19 +81,19 @@
         <div class="flex items-center gap-1.5">
             <button
                 type="button"
-                class={textareaActionStyles({ size: "sm" })}
+                class="size-28px rounded-full squircle-soft flex-center text-weak hover:text-strong hover:bg-base-soft-2 active:scale-93 cursor-pointer select-none t:(bg-150-quad-out scale-150-quad-out)"
                 aria-label="Attach file"
                 title="Attach file"
             >
-                <Paperclip />
+                <Paperclip class="size-16px" />
             </button>
             <button
                 type="button"
-                class={textareaActionStyles({ size: "sm" })}
+                class="size-28px rounded-full squircle-soft flex-center text-weak hover:text-strong hover:bg-base-soft-2 active:scale-93 cursor-pointer select-none t:(bg-150-quad-out scale-150-quad-out)"
                 aria-label="Voice input"
                 title="Voice input"
             >
-                <Mic />
+                <Mic class="size-16px" />
             </button>
         </div>
 
@@ -123,10 +124,10 @@
     <!-- Surface Variants -->
     <PreviewSection
         title="Surface Variants"
-        description="Soft sits natively on flat backgrounds, while Elevated floats with subtle shadow depth."
+        description="Soft sits on flat backgrounds, while Elevated floats with subtle shadow depth."
     >
         <PreviewGrid cols={2}>
-            <PreviewCard label="Soft (Default) on Elevation 1" bg="elevation-1" class="min-h-48">
+            <PreviewCard label="Soft (Default) on Elevation 0" bg="elevation-0" class="min-h-48">
                 <div class="w-full max-w-sm">
                     <Textarea
                         variant="soft"
@@ -137,7 +138,7 @@
                 </div>
             </PreviewCard>
 
-            <PreviewCard label="Elevated on Elevation 0" bg="elevation-0" class="min-h-48">
+            <PreviewCard label="Elevated on Elevation 1" bg="elevation-1" class="min-h-48">
                 <div class="w-full max-w-sm">
                     <Textarea
                         variant="elevated"
@@ -167,10 +168,10 @@
                 </div>
             </PreviewCard>
 
-            <PreviewCard label="AI Chat Prompt Box (with Footer Toolbar)" bg="elevation-1" class="min-h-56">
+            <PreviewCard label="AI Chat Prompt Box (with Footer Toolbar)" bg="elevation-0" class="min-h-56">
                 <div class="w-full max-w-sm">
                     <Textarea
-                        variant="elevated"
+                        variant="soft"
                         autoResize={{ minRows: 1, maxRows: 6 }}
                         iconLeft={sparklesIcon}
                         footer={promptFooter}
@@ -188,19 +189,19 @@
         description="Carefully calibrated font sizes, line heights, and container paddings matching TextInput."
     >
         <PreviewGrid cols={3}>
-            <PreviewCard label="Small (12px / line 18px)" bg="elevation-1" class="min-h-44">
+            <PreviewCard label="Small (12px / line 18px)" bg="elevation-0" class="min-h-44">
                 <div class="w-full">
                     <Textarea size="sm" rows={2} bind:value={smVal} />
                 </div>
             </PreviewCard>
 
-            <PreviewCard label="Medium (14px / line 20px)" bg="elevation-1" class="min-h-44">
+            <PreviewCard label="Medium (14px / line 20px)" bg="elevation-0" class="min-h-44">
                 <div class="w-full">
                     <Textarea size="md" rows={2} bind:value={mdVal} />
                 </div>
             </PreviewCard>
 
-            <PreviewCard label="Large (16px / line 24px)" bg="elevation-1" class="min-h-44">
+            <PreviewCard label="Large (16px / line 24px)" bg="elevation-0" class="min-h-44">
                 <div class="w-full">
                     <Textarea size="lg" rows={2} bind:value={lgVal} />
                 </div>
@@ -210,12 +211,12 @@
 
     <!-- Actions & Character Counter -->
     <PreviewSection
-        title="Actions & Character Counter"
-        description="Top-right action buttons and built-in counter for maxlength limits."
+        title="Actions & Features"
+        description="Action buttons, character count, and optional focus ring suppression."
     >
-        <PreviewGrid cols={2}>
-            <PreviewCard label="With Action Button (Copy)" bg="elevation-0" class="min-h-48">
-                <div class="w-full max-w-sm">
+        <PreviewGrid cols={3}>
+            <PreviewCard label="With Action Button (Copy)" bg="elevation-1" class="min-h-48">
+                <div class="w-full">
                     <Textarea
                         variant="elevated"
                         iconLeft={fileIcon}
@@ -226,13 +227,23 @@
                 </div>
             </PreviewCard>
 
-            <PreviewCard label="With Label & Built-in Counter" bg="elevation-1" class="min-h-48">
-                <div class="w-full max-w-sm">
+            <PreviewCard label="Built-in Counter (maxlength)" bg="elevation-0" class="min-h-48">
+                <div class="w-full">
                     <Textarea
-                        label="Project Pitch"
                         maxlength={120}
                         showCount={true}
                         bind:value={countedVal}
+                        rows={3}
+                    />
+                </div>
+            </PreviewCard>
+
+            <PreviewCard label="No Focus Ring (focusRing={false})" bg="elevation-0" class="min-h-48">
+                <div class="w-full">
+                    <Textarea
+                        focusRing={false}
+                        placeholder="No focus ring shown here..."
+                        bind:value={noFocusRingVal}
                         rows={3}
                     />
                 </div>
@@ -246,10 +257,9 @@
         description="Invalid and disabled states following the design system tokens."
     >
         <PreviewGrid cols={2}>
-            <PreviewCard label="Invalid / Error State" bg="elevation-1" class="min-h-48">
+            <PreviewCard label="Invalid / Error State" bg="elevation-0" class="min-h-48">
                 <div class="w-full max-w-sm">
                     <Textarea
-                        label="Validation Message"
                         invalid={true}
                         bind:value={invalidVal}
                         rows={2}
@@ -257,10 +267,9 @@
                 </div>
             </PreviewCard>
 
-            <PreviewCard label="Disabled State" bg="elevation-1" class="min-h-48">
+            <PreviewCard label="Disabled State" bg="elevation-0" class="min-h-48">
                 <div class="w-full max-w-sm">
                     <Textarea
-                        label="System Log (Locked)"
                         disabled={true}
                         bind:value={disabledVal}
                         rows={2}

@@ -16,9 +16,9 @@
     type Props = TextInputStyleProps &
         Omit<HTMLInputAttributes, "class" | "disabled" | "size"> & {
             value?: string;
-            label?: string;
             invalid?: boolean;
             disabled?: boolean;
+            focusRing?: boolean;
             iconLeft?: Snippet;
             iconRight?: Snippet;
             class?: string;
@@ -28,11 +28,11 @@
 
     let {
         value = $bindable(""),
-        label,
         variant = "soft",
         size = "md",
         invalid = false,
         disabled = false,
+        focusRing = true,
         iconLeft,
         iconRight,
         id,
@@ -195,7 +195,6 @@
     }
 </script>
 
-{#snippet field()}
     <!-- svelte-ignore a11y_click_events_have_key_events -->
     <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
     <div
@@ -222,7 +221,11 @@
             {disabled}
             aria-invalid={invalid ? "true" : undefined}
             class={inputComputedClass}
-            {@attach focusAttach({ focusTarget: `#${containerId}`, color: focusColor })}
+            {@attach focusAttach({
+                focusTarget: `#${containerId}`,
+                color: focusColor,
+                enabled: focusRing,
+            })}
         />
 
         {#if iconRight}
@@ -235,15 +238,3 @@
             </span>
         {/if}
     </div>
-{/snippet}
-
-{#if label}
-    <div class="flex flex-col gap-1.5 w-full">
-        <label for={inputId} class="text-xs font-600 text-weak select-none">
-            {label}
-        </label>
-        {@render field()}
-    </div>
-{:else}
-    {@render field()}
-{/if}

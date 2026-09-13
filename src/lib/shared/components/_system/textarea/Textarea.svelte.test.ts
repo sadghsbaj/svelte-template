@@ -95,22 +95,19 @@ describe("Textarea", () => {
         expect(container?.style.cursor).toBe("not-allowed");
     });
 
-    test("renders external label when provided", () => {
+    test("suppresses canvas focus ring when focusRing is false", () => {
         const instance = mount(Textarea, {
             target: app,
             props: {
-                label: "Description",
+                focusRing: false,
             },
         });
         mounted.push(instance);
         flushSync();
 
-        const label = app.querySelector("label");
         const textarea = app.querySelector("textarea");
-
-        expect(label).not.toBeNull();
-        expect(label?.textContent?.trim()).toBe("Description");
-        expect(label?.getAttribute("for")).toBe(textarea?.id);
+        expect(textarea).not.toBeNull();
+        expect(textarea?.dataset.noCanvasFocus).toBe("");
     });
 
     test("applies autoResize attachment when enabled", () => {
@@ -210,6 +207,38 @@ describe("Textarea", () => {
             container.dispatchEvent(bottomClick);
             expect(textarea.selectionStart).toBe(13); // "Line 1\nLine 2".length
             expect(textarea.selectionEnd).toBe(13);
+        }
+    });
+
+    test("positions cursor at end of line 1 (not start of line 2) when clicking in right padding of line 1", () => {
+        const instance = mount(Textarea, {
+            target: app,
+            props: {
+                value: "Line 1\nLine 2",
+            },
+        });
+        mounted.push(instance);
+        flushSync();
+
+        const container = app.querySelector<HTMLElement>("[role='group']");
+        const textarea = app.querySelector<HTMLTextAreaElement>("textarea");
+        expect(container).not.toBeNull();
+        expect(textarea).not.toBeNull();
+
+        if (container && textarea) {
+            const rect = textarea.getBoundingClientRect();
+
+            // Click to the right of line 1 in the container padding
+            const rightClick = new MouseEvent("click", {
+                bubbles: true,
+                clientX: rect.right + 5,
+                clientY: rect.top + 8,
+            });
+            container.dispatchEvent(rightClick);
+
+            // "Line 1" has length 6. Selection must be at 6 (before '\n'), NOT at 7 (start of Line 2)!
+            expect(textarea.selectionStart).toBe(6);
+            expect(textarea.selectionEnd).toBe(6);
         }
     });
 

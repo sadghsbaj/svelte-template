@@ -2,7 +2,7 @@
     import type { Component } from "svelte";
     import { Box, Layers, PanelLeftClose, PanelLeftOpen, Search } from "@lucide/svelte";
 
-    import { focusAttach } from "$core/_system/focus/focus.attach";
+    import { TextInput } from "$components";
     import { fade } from "$core/_system/motion/svelte";
 
     const STORAGE_KEY = "template_dev_preview_active_component_id";
@@ -129,20 +129,18 @@
             </div>
         </div>
 
-        <!-- Search Bar Container -->
-        <label
-            id="component-search-container"
-            class="px-3.5 py-2.5 rounded-2xl bg-elevation-2 flex items-center gap-2.5 squircle-smooth cursor-text"
-        >
-            <Search size={16} class="text-weak shrink-0 pointer-events-none" />
-            <input
-                type="text"
-                bind:value={searchQuery}
-                placeholder="Filter components..."
-                class="text-sm font-500 text-strong placeholder:text-weak bg-transparent border-none w-full focus:outline-none"
-                {@attach focusAttach({ focusTarget: "#component-search-container", offset: 0 })}
-            />
-        </label>
+        <!-- Search Bar -->
+        {#snippet searchIcon()}
+            <Search />
+        {/snippet}
+        <TextInput
+            bind:value={searchQuery}
+            placeholder="Filter components..."
+            variant="soft"
+            size="md"
+            iconLeft={searchIcon}
+            class="w-full"
+        />
 
         <!-- Component List without no-scrollbar class -->
         <nav class="flex flex-col gap-1 flex-1 min-h-0 w-full overflow-y-auto no-scrollbar">

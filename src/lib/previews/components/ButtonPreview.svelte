@@ -153,7 +153,7 @@
                 </div>
             </PreviewCard>
 
-            <PreviewCard label="Icon Only (Variants)" bg="elevation-1" class="h-32">
+            <PreviewCard label="Icon Variants" bg="elevation-1" class="h-32">
                 <div class="flex items-center gap-2.5">
                     <Button iconOnly variant="soft" aria-label="Magic">
                         <Sparkles />
@@ -228,7 +228,7 @@
                 <Button>Active Button</Button>
             </PreviewCard>
 
-            <PreviewCard label="Loading (Pending)" bg="elevation-1" class="h-32">
+            <PreviewCard label="Loading" bg="elevation-1" class="h-32">
                 <Button loading>Saving Changes</Button>
             </PreviewCard>
 

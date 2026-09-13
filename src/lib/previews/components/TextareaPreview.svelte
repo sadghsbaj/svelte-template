@@ -127,7 +127,7 @@
         description="Soft sits on flat backgrounds, while Elevated floats with subtle shadow depth."
     >
         <PreviewGrid cols={2}>
-            <PreviewCard label="Soft (Default) on Elevation 1" bg="elevation-1" class="min-h-48">
+            <PreviewCard label="Soft on Elevation 1" bg="elevation-1" class="min-h-48">
                 <div class="w-full max-w-sm">
                     <Textarea
                         variant="soft"
@@ -157,7 +157,7 @@
         description="Expands dynamically as you type without flickering, and supports bottom footer toolbars for chat inputs."
     >
         <PreviewGrid cols={2}>
-            <PreviewCard label="Dynamic Auto-Resize (min 2, max 7 rows)" bg="elevation-0" class="min-h-56">
+            <PreviewCard label="Dynamic Auto-Resize" bg="elevation-0" class="min-h-56">
                 <div class="w-full max-w-sm">
                     <Textarea
                         variant="soft"
@@ -168,7 +168,7 @@
                 </div>
             </PreviewCard>
 
-            <PreviewCard label="AI Chat Prompt Box (with Footer Toolbar)" bg="elevation-0" class="min-h-56">
+            <PreviewCard label="AI Chat Prompt Box" bg="elevation-0" class="min-h-56">
                 <div class="w-full max-w-sm">
                     <Textarea
                         variant="soft"
@@ -215,7 +215,7 @@
         description="Action buttons, character count, and optional focus ring suppression."
     >
         <PreviewGrid cols={3}>
-            <PreviewCard label="With Action Button (Copy)" bg="elevation-0" class="min-h-48">
+            <PreviewCard label="Action Button" bg="elevation-0" class="min-h-48">
                 <div class="w-full">
                     <Textarea
                         variant="elevated"
@@ -227,7 +227,7 @@
                 </div>
             </PreviewCard>
 
-            <PreviewCard label="Built-in Counter (maxlength)" bg="elevation-0" class="min-h-48">
+            <PreviewCard label="Character Counter" bg="elevation-0" class="min-h-48">
                 <div class="w-full">
                     <Textarea
                         maxlength={120}
@@ -238,7 +238,7 @@
                 </div>
             </PreviewCard>
 
-            <PreviewCard label="No Focus Ring (focusRing={false})" bg="elevation-0" class="min-h-48">
+            <PreviewCard label="No Focus Ring" bg="elevation-0" class="min-h-48">
                 <div class="w-full">
                     <Textarea
                         focusRing={false}

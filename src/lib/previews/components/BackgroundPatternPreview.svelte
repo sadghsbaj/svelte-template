@@ -88,7 +88,7 @@
                     darkOpacity={45}
                 />
             </PreviewCard>
-            <PreviewCard label="Dense Spacing (16px)" bg="elevation-1" padless class="h-36">
+            <PreviewCard label="Dense Spacing" bg="elevation-1" padless class="h-36">
                 <BackgroundPattern variant="grid" spacing={16} size={1} />
             </PreviewCard>
         </PreviewGrid>

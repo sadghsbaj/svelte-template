@@ -85,7 +85,7 @@
                 </div>
             </PreviewCard>
 
-            <PreviewCard label="Both Axes (2D)" bg="elevation-1" class="h-64">
+            <PreviewCard label="Both Axes" bg="elevation-1" class="h-64">
                 <div
                     class="w-full h-full overflow-auto p-3"
                     {@attach scrollFade({ direction: "both", size: "md" })}

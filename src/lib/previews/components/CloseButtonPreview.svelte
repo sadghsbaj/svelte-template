@@ -59,15 +59,15 @@
         description="Automatic touch target expansion, configurable or disableable for dense layouts."
     >
         <PreviewGrid cols={3}>
-            <PreviewCard label="Auto (44px Target)" bg="elevation-1" class="h-32">
+            <PreviewCard label="Auto" bg="elevation-1" class="h-32">
                 <CloseButton size="md" />
             </PreviewCard>
 
-            <PreviewCard label="Custom Large (48px Target)" bg="elevation-1" class="h-32">
+            <PreviewCard label="Custom Large" bg="elevation-1" class="h-32">
                 <CloseButton size="sm" hitArea="lg" />
             </PreviewCard>
 
-            <PreviewCard label="Disabled (No Expansion)" bg="elevation-1" class="h-32">
+            <PreviewCard label="Disabled" bg="elevation-1" class="h-32">
                 <CloseButton size="md" hitArea={false} />
             </PreviewCard>
         </PreviewGrid>

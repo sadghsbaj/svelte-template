@@ -83,7 +83,7 @@
         description="Soft on matching surfaces without shadows, and elevated with subtle depth."
     >
         <PreviewGrid cols={2}>
-            <PreviewCard label="Soft (Default) on Elevation 1" bg="elevation-1" class="h-32">
+            <PreviewCard label="Soft on Elevation 1" bg="elevation-1" class="h-32">
                 <div class="w-full max-w-xs">
                     <TextInput
                         variant="soft"
@@ -180,7 +180,7 @@
                 </div>
             </PreviewCard>
 
-            <PreviewCard label="Dual Icons (Left & Right)" bg="elevation-1" class="h-32">
+            <PreviewCard label="Dual Icons" bg="elevation-1" class="h-32">
                 <div class="w-full max-w-xs">
                     <TextInput
                         placeholder="Account email..."
@@ -268,7 +268,7 @@
                 </div>
             </PreviewCard>
 
-            <PreviewCard label="Invalid (Soft)" bg="elevation-1" class="h-36">
+            <PreviewCard label="Invalid" bg="elevation-1" class="h-36">
                 <div class="w-full max-w-xs">
                     <TextInput
                         invalid
@@ -278,7 +278,7 @@
                 </div>
             </PreviewCard>
 
-            <PreviewCard label="No Focus Ring (focusRing={false})" bg="elevation-1" class="h-36">
+            <PreviewCard label="No Focus Ring" bg="elevation-1" class="h-36">
                 <div class="w-full max-w-xs">
                     <TextInput
                         focusRing={false}

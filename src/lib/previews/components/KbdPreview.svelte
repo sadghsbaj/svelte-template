@@ -86,7 +86,7 @@
         description="Pure monotone surface contrast without borders across soft, elevated, and ghost styles."
     >
         <PreviewGrid cols={3}>
-            <PreviewCard label="Soft (Default)" bg="elevation-1" class="h-32">
+            <PreviewCard label="Soft" bg="elevation-1" class="h-32">
                 <div class="flex items-center gap-4">
                     <Kbd combo="Mod+K" variant="soft" format={activeFormat} />
                     <Kbd combo="Shift+Tab" variant="soft" format={activeFormat} />
@@ -210,14 +210,14 @@
         description="Clean gap spacing by default, with optional explicit separator character."
     >
         <PreviewGrid cols={2}>
-            <PreviewCard label="Default (Gap Spacing)" bg="elevation-1" class="h-32">
+            <PreviewCard label="Gap Spacing" bg="elevation-1" class="h-32">
                 <div class="flex items-center gap-4">
                     <Kbd combo="Mod+Alt+Del" format={activeFormat} />
                     <Kbd combo="Mod+Shift+P" format={activeFormat} />
                 </div>
             </PreviewCard>
 
-            <PreviewCard label="Explicit Separator (+)" bg="elevation-1" class="h-32">
+            <PreviewCard label="Explicit Separator" bg="elevation-1" class="h-32">
                 <div class="flex items-center gap-4">
                     <Kbd combo="Mod+Alt+Del" separator="+" format={activeFormat} />
                     <Kbd combo="Mod+Shift+P" separator="+" format={activeFormat} />

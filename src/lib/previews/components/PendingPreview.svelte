@@ -152,7 +152,7 @@
         description="Preserves full accessibility and click suppression without the visual pulse ring."
     >
         <PreviewGrid cols={2}>
-            <PreviewCard label="Visual Pulse (ring=true)" bg="elevation-1" class="h-32">
+            <PreviewCard label="Visual Pulse" bg="elevation-1" class="h-32">
                 <div
                     class="w-32 h-12 rounded-2xl bg-elevation-2 flex-center shadow-xs squircle-smooth select-none cursor-wait"
                     {@attach pending({ active: true, ring: true })}
@@ -161,7 +161,7 @@
                 </div>
             </PreviewCard>
 
-            <PreviewCard label="Headless (ring=false)" bg="elevation-1" class="h-32">
+            <PreviewCard label="Headless" bg="elevation-1" class="h-32">
                 <div
                     class="w-32 h-12 rounded-2xl bg-elevation-2 flex-center shadow-xs squircle-smooth select-none cursor-wait"
                     {@attach pending({ active: true, ring: false })}

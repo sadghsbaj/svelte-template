@@ -6,6 +6,7 @@
     import { fade } from "$core/_system/motion/svelte";
 
     const STORAGE_KEY = "template_dev_preview_active_component_id";
+    const SIDEBAR_COLLAPSED_KEY = "template_dev_preview_sidebar_collapsed";
 
     type PreviewIcon = Component<{ size?: number; class?: string }>;
 
@@ -48,14 +49,25 @@
         return previews[0]?.id ?? "";
     }
 
+    function getInitialSidebarCollapsed(): boolean {
+        if (typeof window === "undefined") return false;
+        return localStorage.getItem(SIDEBAR_COLLAPSED_KEY) === "true";
+    }
+
     let selectedId = $state<string>(getInitialSelectedId());
     let searchQuery = $state<string>("");
-    let isCollapsed = $state<boolean>(false);
+    let isCollapsed = $state<boolean>(getInitialSidebarCollapsed());
     let openButtonEl = $state<HTMLButtonElement | null>(null);
 
     $effect(() => {
         if (typeof window !== "undefined" && selectedId) {
             localStorage.setItem(STORAGE_KEY, selectedId);
+        }
+    });
+
+    $effect(() => {
+        if (typeof window !== "undefined") {
+            localStorage.setItem(SIDEBAR_COLLAPSED_KEY, String(isCollapsed));
         }
     });
 
@@ -81,7 +93,7 @@
             bind:this={openButtonEl}
             type="button"
             onclick={() => (isCollapsed = false)}
-            class="p-2.5 rounded-2xl bg-elevation-1 text-weak shadow-md hover:text-strong hover:bg-elevation-2 select-none active:scale-95 t:(bg-180-quad-out text-180-quad-out scale-180-quad-out opacity-200-quad-out) squircle-smooth absolute top-1 md:top-2 left-1 md:left-2 z-40"
+            class="cursor-pointer p-2.5 rounded-2xl bg-elevation-1 text-weak shadow-md hover:text-strong hover:bg-elevation-2 select-none active:scale-95 t:(bg-180-quad-out text-180-quad-out scale-180-quad-out opacity-200-quad-out) squircle-smooth absolute top-1 md:top-2 left-1 md:left-2 z-40"
             title="Open sidebar"
         >
             <PanelLeftOpen size={18} />
@@ -109,7 +121,7 @@
                 <button
                     type="button"
                     onclick={() => (isCollapsed = true)}
-                    class="p-1.5 rounded-xl text-weak hover:text-strong hover:bg-elevation-2 select-none active:scale-95 squircle-smooth t:(bg-180-quad-out text-180-quad-out)"
+                    class="cursor-pointer p-1.5 rounded-xl text-weak hover:text-strong hover:bg-elevation-2 select-none active:scale-95 squircle-smooth t:(bg-180-quad-out text-180-quad-out)"
                     title="Close sidebar"
                 >
                     <PanelLeftClose size={17} />
@@ -138,7 +150,7 @@
                 <button
                     type="button"
                     onclick={() => (selectedId = item.id)}
-                    class="w-full p-3 rounded-2xl flex items-center justify-between text-left select-none active:scale-97 squircle-smooth t:(bg-180-quad-out text-180-quad-out scale-180-quad-out) {selectedId ===
+                    class="cursor-pointer w-full p-3 rounded-2xl flex items-center justify-between text-left select-none active:scale-97 squircle-smooth t:(bg-180-quad-out text-180-quad-out scale-180-quad-out) {selectedId ===
                     item.id
                         ? 'text-strong bg-elevation-2 font-600'
                         : 'text-weak hover:text-strong hover:bg-elevation-2/50'}"

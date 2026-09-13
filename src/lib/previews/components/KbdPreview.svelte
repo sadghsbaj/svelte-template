@@ -20,7 +20,7 @@
 <PreviewPage>
     <PreviewHeader
         title="Keyboard Shortcut (Kbd)"
-        description="Language-neutral shortcut badges with a universal ⌘ primary modifier and compact Lucide key symbols."
+        description="Language-neutral shortcut badges with a universal primary modifier, stable vector symbols, and compact text legends."
         icon={Command}
     />
 
@@ -149,7 +149,7 @@
     <!-- Arrow & Action Keys -->
     <PreviewSection
         title="Arrow & Action Keys"
-        description="Unified Lucide SVG vectors replacing inconsistent Unicode arrows and symbols."
+        description="Cross-platform vector symbols avoid inconsistent mobile font fallbacks for arrows and action keys."
     >
         <PreviewGrid cols={2}>
             <PreviewCard label="Directional Arrows" bg="elevation-1" class="h-36">

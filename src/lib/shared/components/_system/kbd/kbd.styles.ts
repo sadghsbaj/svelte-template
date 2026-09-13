@@ -1,11 +1,5 @@
 import { cva, type VariantProps } from "$utils";
 
-export const KBD_ICON_SIZES = {
-    sm: 12,
-    md: 14,
-    lg: 16,
-} as const;
-
 export const kbdStyles = cva({
     base: {
         layout: "inline-flex justify-center items-center shrink-0 select-none",
@@ -22,9 +16,9 @@ export const kbdStyles = cva({
         },
 
         size: {
-            sm: "h-20px min-w-20px px-1.5 text-[11px] gap-0.5",
-            md: "h-24px min-w-24px px-2 text-sm gap-1",
-            lg: "h-28px min-w-28px px-2.5 text-base gap-1.5",
+            sm: "h-20px min-w-20px px-1.5 text-[11px] gap-0.5 [&_svg]:(size-12px stroke-[2.25px])",
+            md: "h-24px min-w-24px px-2 text-sm gap-1 [&_svg]:(size-14px stroke-[2.25px])",
+            lg: "h-28px min-w-28px px-2.5 text-base gap-1.5 [&_svg]:(size-16px stroke-[2.25px])",
         },
     },
 
@@ -49,6 +43,23 @@ export const kbdSeparatorStyles = cva({
             sm: "text-[10px]",
             md: "text-xs",
             lg: "text-sm",
+        },
+    },
+    defaults: {
+        size: "md",
+    },
+});
+
+export const kbdSequenceSeparatorStyles = cva({
+    base: {
+        layout: "inline-flex items-center justify-center select-none leading-none opacity-40",
+        typography: "font-500 font-sans",
+    },
+    options: {
+        size: {
+            sm: "px-0.5 text-[10px]",
+            md: "px-0.5 text-xs",
+            lg: "px-1 text-sm",
         },
     },
     defaults: {

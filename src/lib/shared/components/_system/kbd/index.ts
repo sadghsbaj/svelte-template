@@ -1,4 +1,25 @@
 export { default as Kbd } from "./Kbd.svelte";
-export { KBD_ICON_SIZES, kbdSeparatorStyles, kbdStyles, type KbdStyleProps } from "./kbd.styles";
-export type { KbdFormat, KbdPlatform, KbdProps, KeyItem, KeyItemType } from "./kbd.types";
-export { isMacPlatform, resolveKeyItem, resolveKeys, splitComboString } from "./kbd.utils";
+export {
+    kbdSeparatorStyles,
+    kbdSequenceSeparatorStyles,
+    kbdStyles,
+    type KbdStyleProps,
+} from "./kbd.styles";
+export type {
+    KbdFormat,
+    KbdPlatform,
+    KbdProps,
+    KeyItem,
+    KeyItemType,
+    ResolvedShortcut,
+} from "./kbd.types";
+export {
+    getShortcutAriaLabel,
+    getShortcutTitle,
+    isMacPlatform,
+    resolveKeyItem,
+    resolveKeys,
+    resolveShortcut,
+    splitComboString,
+    splitShortcutSteps,
+} from "./kbd.utils";

@@ -15,13 +15,29 @@ export type { CloseButtonStyleProps } from "./close-button/close-button.styles";
 
 export { default as Kbd } from "./kbd/Kbd.svelte";
 export {
-    KBD_ICON_SIZES,
     kbdSeparatorStyles,
+    kbdSequenceSeparatorStyles,
     kbdStyles,
     type KbdStyleProps,
 } from "./kbd/kbd.styles";
-export type { KbdFormat, KbdPlatform, KbdProps, KeyItem, KeyItemType } from "./kbd/kbd.types";
-export { isMacPlatform, resolveKeyItem, resolveKeys, splitComboString } from "./kbd/kbd.utils";
+export type {
+    KbdFormat,
+    KbdPlatform,
+    KbdProps,
+    KeyItem,
+    KeyItemType,
+    ResolvedShortcut,
+} from "./kbd/kbd.types";
+export {
+    getShortcutAriaLabel,
+    getShortcutTitle,
+    isMacPlatform,
+    resolveKeyItem,
+    resolveKeys,
+    resolveShortcut,
+    splitComboString,
+    splitShortcutSteps,
+} from "./kbd/kbd.utils";
 
 export { default as Dropdown } from "./dropdown/Dropdown.svelte";
 export {

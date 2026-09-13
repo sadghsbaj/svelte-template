@@ -11,15 +11,16 @@ export type KeyItemType = "icon" | "text";
 
 export interface KeyItem {
     type: KeyItemType;
-    label: string;
+    value: string;
+    title: string;
     icon?: Component<{
-        size?: number;
         class?: string;
-        strokeWidth?: number;
         "aria-hidden"?: boolean | "true" | "false";
-        "aria-label"?: string;
     }>;
-    ariaLabel?: string;
+}
+
+export interface ResolvedShortcut {
+    steps: KeyItem[][];
 }
 
 export type KbdProps = KbdStyleProps &
@@ -35,7 +36,7 @@ export type KbdProps = KbdStyleProps &
         /**
          * Explicit list of key identifiers (e.g. ["Cmd", "Shift", "P"]).
          */
-        keys?: string[];
+        keys?: readonly string[];
 
         /**
          * Single key shortcut (e.g. "Enter", "Escape", "K").

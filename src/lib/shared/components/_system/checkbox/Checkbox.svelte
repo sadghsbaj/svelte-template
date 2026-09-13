@@ -56,7 +56,7 @@
         if (isCrossfade) {
             return fade(node, { duration: 180 });
         }
-        return draw(node, { duration: 250, easing: sineInOut });
+        return draw(node, { duration: 200, easing: sineInOut });
     };
 </script>
 

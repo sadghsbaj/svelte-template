@@ -31,7 +31,7 @@
                     ? 'text-accent-500 scale-110'
                     : 'text-weak/70'}"
             />
-            <span>{item.label}</span>
+            <span class="text-trim">{item.label}</span>
         </button>
     {/each}
 </nav>

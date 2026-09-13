@@ -111,15 +111,15 @@
         description="Proportional dimensions across sm, md, and lg with harmonized typographic metrics."
     >
         <PreviewGrid cols={3}>
-            <PreviewCard label="Small (sm)" bg="elevation-1" class="h-32">
+            <PreviewCard label="Small" bg="elevation-1" class="h-32">
                 <Button size="sm">Small Action</Button>
             </PreviewCard>
 
-            <PreviewCard label="Medium (md)" bg="elevation-1" class="h-32">
+            <PreviewCard label="Medium" bg="elevation-1" class="h-32">
                 <Button size="md">Medium Action</Button>
             </PreviewCard>
 
-            <PreviewCard label="Large (lg)" bg="elevation-1" class="h-32">
+            <PreviewCard label="Large" bg="elevation-1" class="h-32">
                 <Button size="lg">Large Action</Button>
             </PreviewCard>
         </PreviewGrid>

@@ -53,7 +53,7 @@
         description="Supports vertical lists, horizontal carousels, and 2D scroll containers."
     >
         <PreviewGrid cols={3}>
-            <PreviewCard label="Vertical (Default)" bg="elevation-1" class="h-64">
+            <PreviewCard label="Vertical" bg="elevation-1" class="h-64">
                 <div
                     class="w-full h-full overflow-y-auto flex flex-col gap-2 p-3"
                     {@attach scrollFade({ size: "md" })}
@@ -107,10 +107,10 @@
     <!-- Size Presets -->
     <PreviewSection
         title="Size Presets"
-        description="Choose semantic presets (sm: 24px, md: 40px, lg: 64px) or custom pixel numbers."
+        description="Choose semantic presets or custom dimensions."
     >
         <PreviewGrid cols={3}>
-            <PreviewCard label="Compact (sm: 24px)" bg="elevation-1" class="h-56">
+            <PreviewCard label="Compact" bg="elevation-1" class="h-56">
                 <div
                     class="w-full h-full overflow-y-auto flex flex-col gap-1.5 p-3"
                     {@attach scrollFade({ size: "sm" })}
@@ -125,7 +125,7 @@
                 </div>
             </PreviewCard>
 
-            <PreviewCard label="Standard (md: 40px)" bg="elevation-1" class="h-56">
+            <PreviewCard label="Standard" bg="elevation-1" class="h-56">
                 <div
                     class="w-full h-full overflow-y-auto flex flex-col gap-1.5 p-3"
                     {@attach scrollFade({ size: "md" })}
@@ -140,7 +140,7 @@
                 </div>
             </PreviewCard>
 
-            <PreviewCard label="Prominent (lg: 64px)" bg="elevation-1" class="h-56">
+            <PreviewCard label="Prominent" bg="elevation-1" class="h-56">
                 <div
                     class="w-full h-full overflow-y-auto flex flex-col gap-1.5 p-3"
                     {@attach scrollFade({ size: "lg" })}

@@ -42,7 +42,7 @@
         description="Standard WCAG & Apple HIG touch targets on micro-buttons."
     >
         <PreviewGrid cols={3}>
-            <PreviewCard label="Compact (sm)" bg="elevation-1" class="h-36">
+            <PreviewCard label="Compact" bg="elevation-1" class="h-36">
                 <button
                     class="w-6 h-6 rounded-lg bg-elevation-2 hover:bg-elevation-3 text-weak hover:text-strong flex-center t-colors shadow-2xs cursor-pointer"
                 >
@@ -56,7 +56,7 @@
                 </button>
             </PreviewCard>
 
-            <PreviewCard label="Standard (md)" bg="elevation-1" class="h-36">
+            <PreviewCard label="Standard" bg="elevation-1" class="h-36">
                 <button
                     class="w-6 h-6 rounded-lg bg-elevation-2 hover:bg-elevation-3 text-weak hover:text-strong flex-center t-colors shadow-2xs cursor-pointer"
                 >
@@ -70,7 +70,7 @@
                 </button>
             </PreviewCard>
 
-            <PreviewCard label="Material (lg)" bg="elevation-1" class="h-36">
+            <PreviewCard label="Material" bg="elevation-1" class="h-36">
                 <button
                     class="w-6 h-6 rounded-lg bg-elevation-2 hover:bg-elevation-3 text-weak hover:text-strong flex-center t-colors shadow-2xs cursor-pointer"
                 >
@@ -153,7 +153,7 @@
                 </button>
             </PreviewCard>
 
-            <PreviewCard label="Custom (56px)" bg="elevation-1" class="h-40">
+            <PreviewCard label="Custom" bg="elevation-1" class="h-40">
                 <button
                     class="w-8 h-8 rounded-xl bg-elevation-2 hover:bg-elevation-3 text-strong flex-center t-colors shadow-xs cursor-pointer"
                 >

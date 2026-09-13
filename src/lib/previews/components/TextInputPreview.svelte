@@ -111,7 +111,7 @@
         description="Harmonized typography and icon scaling across sizes."
     >
         <PreviewGrid cols={3}>
-            <PreviewCard label="Small (sm)" bg="elevation-1" class="h-32">
+            <PreviewCard label="Small" bg="elevation-1" class="h-32">
                 <div class="w-full max-w-xs">
                     <TextInput
                         size="sm"
@@ -122,7 +122,7 @@
                 </div>
             </PreviewCard>
 
-            <PreviewCard label="Medium (md)" bg="elevation-1" class="h-32">
+            <PreviewCard label="Medium" bg="elevation-1" class="h-32">
                 <div class="w-full max-w-xs">
                     <TextInput
                         size="md"
@@ -133,7 +133,7 @@
                 </div>
             </PreviewCard>
 
-            <PreviewCard label="Large (lg)" bg="elevation-1" class="h-32">
+            <PreviewCard label="Large" bg="elevation-1" class="h-32">
                 <div class="w-full max-w-xs">
                     <TextInput
                         size="lg"

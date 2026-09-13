@@ -115,7 +115,7 @@
         description="Carefully calibrated dimensions maintaining squircle-smooth curves."
     >
         <PreviewGrid cols={3}>
-            <PreviewCard label="Small (20px)" bg="elevation-1" class="h-32">
+            <PreviewCard label="Small" bg="elevation-1" class="h-32">
                 <div class="flex items-center gap-3">
                     <Kbd combo="Mod+K" size="sm" format={activeFormat} />
                     <Kbd key="Esc" size="sm" format={activeFormat} />
@@ -123,7 +123,7 @@
                 </div>
             </PreviewCard>
 
-            <PreviewCard label="Medium (24px, Default)" bg="elevation-1" class="h-32">
+            <PreviewCard label="Medium" bg="elevation-1" class="h-32">
                 <div class="flex items-center gap-3">
                     <Kbd combo="Mod+K" size="md" format={activeFormat} />
                     <Kbd key="Esc" size="md" format={activeFormat} />
@@ -131,7 +131,7 @@
                 </div>
             </PreviewCard>
 
-            <PreviewCard label="Large (28px)" bg="elevation-1" class="h-32">
+            <PreviewCard label="Large" bg="elevation-1" class="h-32">
                 <div class="flex items-center gap-3">
                     <Kbd combo="Mod+K" size="lg" format={activeFormat} />
                     <Kbd key="Esc" size="lg" format={activeFormat} />

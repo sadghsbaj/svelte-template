@@ -2,7 +2,7 @@ import { cva, type VariantProps } from "$utils";
 
 export const kbdStyles = cva({
     base: {
-        layout: "inline-flex justify-center items-center shrink-0 select-none",
+        layout: "text-trim inline-flex justify-center items-center shrink-0 select-none",
         typography: "font-500 font-sans leading-none text-center",
         frame: "rounded-full squircle-smooth",
         misc: "isolate",

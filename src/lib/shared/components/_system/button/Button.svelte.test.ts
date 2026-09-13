@@ -87,4 +87,14 @@ describe("Button", () => {
         flushSync();
         expect(btnEl).toBeInstanceOf(HTMLButtonElement);
     });
+
+    test("calibrates SVG size optically for iconOnly buttons", () => {
+        const sm = render({ iconOnly: true, size: "sm" });
+        const md = render({ iconOnly: true, size: "md" });
+        const lg = render({ iconOnly: true, size: "lg" });
+
+        expect(sm.className).toContain("[&_svg]:size-16px!");
+        expect(md.className).toContain("[&_svg]:size-18px!");
+        expect(lg.className).toContain("[&_svg]:size-20px!");
+    });
 });

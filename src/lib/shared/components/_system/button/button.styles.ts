@@ -167,6 +167,23 @@ export const buttonStyles = cva({
             color: "base",
             class: "text-main hover:(text-strong)",
         },
+
+        // --- ICON ONLY OPTICAL SCALING ---
+        {
+            iconOnly: true,
+            size: "sm",
+            class: "[&_svg]:size-16px!",
+        },
+        {
+            iconOnly: true,
+            size: "md",
+            class: "[&_svg]:size-18px!",
+        },
+        {
+            iconOnly: true,
+            size: "lg",
+            class: "[&_svg]:size-20px!",
+        },
     ],
 
     defaults: {

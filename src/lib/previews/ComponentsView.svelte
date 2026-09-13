@@ -1,8 +1,8 @@
 <script lang="ts">
     import type { Component } from "svelte";
     import { Box, Layers, PanelLeftClose, PanelLeftOpen, Search } from "@lucide/svelte";
-
     import { Button, TextInput } from "$components";
+
     import { fade } from "$core/_system/motion/svelte";
 
     const STORAGE_KEY = "template_dev_preview_active_component_id";

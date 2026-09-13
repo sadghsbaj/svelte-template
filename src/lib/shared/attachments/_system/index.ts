@@ -12,3 +12,4 @@ export * from "./paste-on-click.attach";
 export * from "./fade-mask.attach";
 export * from "./scroll-fade.attach";
 export * from "./pending.attach";
+export * from "./roving-focus.attach";

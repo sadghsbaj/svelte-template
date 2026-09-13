@@ -30,7 +30,8 @@
 
 <div
     class={cn(
-        "shadow-sm rounded-3xl squircle-smooth flex-center flex-col relative min-h-[120px] overflow-hidden",
+        "rounded-3xl squircle-smooth flex-center flex-col relative min-h-[120px] overflow-hidden",
+        (bg === "elevation-1" || bg === "elevation-2") && "shadow-sm",
         !padless && "p-6",
         !padless && label && "pt-9",
         bgClasses[bg] ?? "bg-elevation-1",

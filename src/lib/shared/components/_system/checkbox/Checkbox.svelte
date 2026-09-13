@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { cubicOut, linear, sineInOut } from "svelte/easing";
+    import { cubicOut, sineInOut } from "svelte/easing";
     import type { HTMLInputAttributes } from "svelte/elements";
     import { disableInteraction } from "$attachments";
     import { HitArea, resolveHitArea, type HitAreaConfig } from "$components";

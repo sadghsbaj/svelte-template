@@ -23,6 +23,37 @@ export function getParentElement(el: Element): HTMLElement | null {
     return null;
 }
 
+/**
+ * Resolves the app-layer z-index that contains an element.
+ *
+ * App layers are teleported to direct children of body, so their root z-index takes priority
+ * over local stacking contexts. The regular #app root has no z-index of its own, therefore
+ * the first explicit z-index below it is used so the canvas also stays above positioned app
+ * content while remaining below higher app layers.
+ */
+export function resolveFocusLayerZIndex(el: HTMLElement): number {
+    const ancestry: HTMLElement[] = [];
+    let current: HTMLElement | null = el;
+
+    while (current && current !== document.body) {
+        ancestry.push(current);
+        current = getParentElement(current);
+    }
+
+    ancestry.reverse();
+
+    for (const element of ancestry) {
+        const rawZIndex =
+            element.style.zIndex.trim() || window.getComputedStyle(element).zIndex?.trim() || "";
+        if (!rawZIndex || rawZIndex === "auto") continue;
+
+        const zIndex = Number(rawZIndex);
+        if (Number.isFinite(zIndex)) return zIndex;
+    }
+
+    return 0;
+}
+
 export function parseCornerShape(computedStyle: CSSStyleDeclaration): CornerShape {
     const rawVal =
         typeof computedStyle.getPropertyValue === "function"

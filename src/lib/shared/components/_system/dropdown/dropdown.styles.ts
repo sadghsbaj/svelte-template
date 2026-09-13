@@ -4,7 +4,7 @@ export const dropdownContentStyles = cva({
     base: {
         layout: "overflow-y-auto",
         frame: "bg-elevation-1 shadow-xl rounded-3xl squircle-smooth p-6px",
-        sizing: "w-272px max-w-[var(--floating-available-width)] max-h-[var(--floating-available-height)]",
+        sizing: "w-max min-w-180px max-w-[min(280px,var(--floating-available-width))] max-h-[var(--floating-available-height)]",
     },
 });
 

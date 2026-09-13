@@ -237,6 +237,13 @@
 
     const handlePositionChange = (result: FloatingPositionResult): void => {
         onPositionChange?.(result);
+        const positionedFloating: FloatingContext = {
+            ...result,
+            positioned: true,
+            update: latestFloating?.update ?? (() => {}),
+        };
+        latestFloating = positionedFloating;
+        if (phase === "positioning") queueMicrotask(() => void enter(positionedFloating));
     };
 
     const triggerAttachment = $derived(

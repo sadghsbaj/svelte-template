@@ -24,9 +24,9 @@
     <!-- Variants & Sizes -->
     <PreviewSection
         title="Variants & Sizes"
-        description="Solid subtle fill and transparent ghost across sm, md, and lg dimensions."
+        description="Solid subtle fill, transparent ghost, and elevated surface across sm, md, and lg dimensions."
     >
-        <PreviewGrid cols={2}>
+        <PreviewGrid cols={3}>
             <PreviewCard label="Solid" bg="elevation-1" class="h-32">
                 <div class="flex items-center gap-6">
                     <CloseButton variant="solid" size="sm" />
@@ -40,6 +40,14 @@
                     <CloseButton variant="ghost" size="sm" />
                     <CloseButton variant="ghost" size="md" />
                     <CloseButton variant="ghost" size="lg" />
+                </div>
+            </PreviewCard>
+
+            <PreviewCard label="Elevated" bg="elevation-0" class="h-32">
+                <div class="flex items-center gap-6">
+                    <CloseButton variant="elevated" size="sm" />
+                    <CloseButton variant="elevated" size="md" />
+                    <CloseButton variant="elevated" size="lg" />
                 </div>
             </PreviewCard>
         </PreviewGrid>
@@ -75,6 +83,7 @@
                 <div class="flex items-center gap-4">
                     <CloseButton variant="solid" />
                     <CloseButton variant="ghost" />
+                    <CloseButton variant="elevated" />
                 </div>
             </PreviewCard>
 
@@ -82,6 +91,7 @@
                 <div class="flex items-center gap-4">
                     <CloseButton variant="solid" disabled />
                     <CloseButton variant="ghost" disabled />
+                    <CloseButton variant="elevated" disabled />
                 </div>
             </PreviewCard>
         </PreviewGrid>

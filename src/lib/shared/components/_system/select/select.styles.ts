@@ -11,7 +11,7 @@ export const selectTriggerStyles = cva({
     base: {
         layout: "group inline-flex items-center justify-between min-w-0 select-none",
         typography: "font-600 text-main text-left",
-        frame: "rounded-2xl squircle-smooth",
+        frame: "rounded-full squircle-smooth",
         interaction: "cursor-pointer hover:text-strong active:scale-97",
         motion: "will-change-transform transform-gpu t:(scale-200-cubic-out bg-200-quad-out text-200-quad-out shadow-200-quad-out)",
     },

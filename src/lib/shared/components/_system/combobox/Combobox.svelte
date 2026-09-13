@@ -1,6 +1,7 @@
 <script lang="ts">
     import { Check, ChevronDown } from "@lucide/svelte";
     import { disableInteraction } from "$attachments";
+    import { cn } from "$utils";
 
     import Popover from "$components/_system/popover/Popover.svelte";
     import {
@@ -294,8 +295,8 @@
     {size}
     {variant}
     {disabled}
-    {invalid}
-    class={className}
+    invalid={invalid}
+    class={cn("!rounded-full squircle-smooth", className)}
     {inputClass}
     bind:element={inputElement}
     bind:containerElement={surfaceElement}

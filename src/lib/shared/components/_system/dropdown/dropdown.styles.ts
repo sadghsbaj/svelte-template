@@ -12,7 +12,7 @@ export const dropdownItemStyles = cva({
     base: {
         layout: "flex items-center w-full min-w-0 select-none",
         typography: "text-left",
-        frame: "rounded-xl squircle-smooth",
+        frame: "rounded-full squircle-smooth",
         interaction: "cursor-pointer hover:bg-base-soft-1 focus:bg-base-soft-1 outline-none",
         motion: "t:(bg-200-quad-out text-200-quad-out opacity-200-quad-out)",
     },

@@ -63,7 +63,7 @@
 {#snippet copyAction()}
     <button
         type="button"
-        class="size-24px rounded-full squircle-soft flex-center text-weak hover:text-strong hover:bg-base-soft-2 active:scale-93 cursor-pointer select-none t:(bg-150-quad-out scale-150-quad-out)"
+        class="size-24px rounded-full squircle-soft flex-center shrink-0 text-weak hover:text-strong hover:bg-base-soft-2 active:scale-93 cursor-pointer select-none t:(bg-150-quad-out scale-150-quad-out)"
         onclick={handleCopy}
         aria-label="Copy text"
         title="Copy"

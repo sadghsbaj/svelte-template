@@ -13,6 +13,7 @@ export const closeButtonStyles = cva({
     options: {
         variant: {
             solid: "bg-base-soft-1 hover:(bg-base-soft-2)",
+            soft: "bg-base-soft-1 hover:(bg-base-soft-2)",
             ghost: "bg-transparent hover:(bg-base-soft-1)",
             elevated:
                 "bg-white dark:bg-base-900 shadow-sm hover:(shadow-md dark:bg-base-800) active:shadow-sm!",

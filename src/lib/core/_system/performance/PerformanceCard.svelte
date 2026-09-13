@@ -9,8 +9,8 @@
         Layers,
         Maximize,
         MousePointerClick,
-        X,
     } from "@lucide/svelte";
+    import { CloseButton } from "$components";
 
     import { fly } from "$core/_system/motion";
 
@@ -351,13 +351,12 @@
             <span class="text-sm text-strong tracking-wide font-600"> Performance Engine </span>
         </div>
 
-        <button
+        <CloseButton
+            variant="soft"
+            size="md"
             onclick={onClose}
-            class="text-weak p-1 rounded-lg t-bg-150-sine-out t-text-150-sine-out squircle-smooth hover:text-strong hover:bg-elevation-2"
             title="Close Overlay (Alt+P to reopen)"
-        >
-            <X class="h-4.5 w-4.5" />
-        </button>
+        />
     </div>
 {/snippet}
 

@@ -1,6 +1,7 @@
 <script lang="ts">
     import { backOut, expoIn } from "svelte/easing";
-    import { ChevronRight, Layers, MousePointerClick, X } from "@lucide/svelte";
+    import { ChevronRight, Layers, MousePointerClick } from "@lucide/svelte";
+    import { CloseButton } from "$components";
 
     import { fly } from "$core/_system/motion";
 
@@ -146,13 +147,12 @@
             <span class="text-sm text-strong tracking-wide font-600"> DOM Inspector </span>
         </div>
 
-        <button
+        <CloseButton
+            variant="soft"
+            size="md"
             onclick={onClose}
-            class="text-weak p-1 rounded-lg t-bg-150-sine-out t-text-150-sine-out squircle-smooth hover:text-strong hover:bg-elevation-2"
             title="Close Inspector"
-        >
-            <X class="h-4.5 w-4.5" />
-        </button>
+        />
     </div>
 
     <!-- Active Status / Selected Element Info -->

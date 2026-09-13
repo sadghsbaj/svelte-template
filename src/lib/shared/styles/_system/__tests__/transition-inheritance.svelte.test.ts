@@ -1,7 +1,13 @@
 import { mount, unmount } from "svelte";
 import { afterEach, beforeEach, describe, expect, test } from "vitest";
 
-import TransitionInheritanceFixture from "../__fixtures__/TransitionInheritanceFixture.svelte";
+import TransitionInheritanceFixture from "$styles/_system/__fixtures__/TransitionInheritanceFixture.svelte";
+
+function getRequiredElement(selector: string): HTMLElement {
+    const element = document.querySelector<HTMLElement>(selector);
+    if (!element) throw new Error(`Expected element matching ${selector}`);
+    return element;
+}
 
 describe("Uno transition utilities", () => {
     let fixture: ReturnType<typeof mount>;
@@ -15,8 +21,8 @@ describe("Uno transition utilities", () => {
     });
 
     test("does not inherit a parent transition slot", () => {
-        const parent = document.querySelector<HTMLElement>("[data-transition-parent]")!;
-        const child = document.querySelector<HTMLElement>("[data-transition-child]")!;
+        const parent = getRequiredElement("[data-transition-parent]");
+        const child = getRequiredElement("[data-transition-child]");
 
         const parentStyle = getComputedStyle(parent);
         const childStyle = getComputedStyle(child);
@@ -30,7 +36,7 @@ describe("Uno transition utilities", () => {
     });
 
     test("preserves independent durations on the same element", () => {
-        const element = document.querySelector<HTMLElement>("[data-transition-independent]")!;
+        const element = getRequiredElement("[data-transition-independent]");
 
         const style = getComputedStyle(element);
         const properties = style.transitionProperty.split(", ");

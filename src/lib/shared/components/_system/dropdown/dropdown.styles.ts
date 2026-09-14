@@ -14,8 +14,8 @@ export const dropdownItemStyles = cva({
         typography: "text-left",
         frame: "rounded-2xl squircle-smooth",
         interaction:
-            "cursor-pointer hover:bg-base-soft-1 focus-visible:bg-base-soft-1 outline-none",
-        motion: "t:(bg-200-quad-out text-200-quad-out opacity-200-quad-out)",
+            "cursor-pointer hover:bg-base-soft-1 focus-visible:bg-base-soft-1 outline-none active:scale-97",
+        motion: "will-change-transform t:(bg-200-quad-out text-200-quad-out opacity-200-quad-out scale-200-cubic-out)",
     },
     options: {
         size: {

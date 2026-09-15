@@ -39,8 +39,8 @@ export const themeConfig = {
     },
 
     font: {
-        sans: "var(--font-sans)",
-        mono: "var(--font-mono)",
+        sans: '"Google Sans Flex", "Inter", system-ui, -apple-system, sans-serif',
+        mono: '"Google Sans Code", "Fira Code", monospace',
     },
 
     ease: {

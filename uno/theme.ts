@@ -39,8 +39,8 @@ export const themeConfig = {
     },
 
     font: {
-        sans: '"Google Sans Flex", "Inter", system-ui, -apple-system, sans-serif',
-        mono: '"Google Sans Code", "Fira Code", monospace',
+        sans: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica", sans-serif',
+        mono: 'ui-monospace, SFMono-Regular, "Cascadia Code", Menlo, Monaco, Consolas, "Liberation Mono", monospace',
     },
 
     ease: {

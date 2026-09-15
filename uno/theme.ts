@@ -39,7 +39,7 @@ export const themeConfig = {
     },
 
     font: {
-        sans: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica", sans-serif',
+        sans: '"Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica", sans-serif',
         mono: 'ui-monospace, SFMono-Regular, "Cascadia Code", Menlo, Monaco, Consolas, "Liberation Mono", monospace',
     },
 

@@ -74,7 +74,7 @@
         {@render iconLeft()}
     {/if}
 
-    <span class="truncate">
+    <span class="text-trim-truncate">
         {@render children?.()}
     </span>
 

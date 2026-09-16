@@ -257,7 +257,11 @@
                         {const SelectedIcon = selectedOption.icon}
                         <SelectedIcon aria-hidden="true" />
                     {/if}
-                    <span class={selectedOption ? "truncate" : "truncate text-weak"}>
+                    <span
+                        class={selectedOption
+                            ? "text-trim-truncate"
+                            : "text-trim-truncate text-weak"}
+                    >
                         {selectedOption?.label ?? placeholder}
                     </span>
                 </span>
@@ -324,7 +328,14 @@
                                     <OptionIcon aria-hidden="true" class="shrink-0 text-weak" />
                                 {/if}
                                 <span class="flex min-w-0 flex-1 flex-col">
-                                    <span class="truncate font-500 leading-normal text-strong">
+                                    <span
+                                        class={[
+                                            "font-500 text-strong",
+                                            entry.option.description
+                                                ? "truncate leading-normal"
+                                                : "text-trim-truncate",
+                                        ]}
+                                    >
                                         {entry.option.label}
                                     </span>
                                     {#if entry.option.description}

@@ -378,7 +378,11 @@
                     <ItemIcon aria-hidden="true" class="shrink-0 text-weak" />
                 {/if}
                 <span class="flex min-w-0 flex-1 flex-col">
-                    <span class="truncate font-500 leading-normal text-strong">{submenu.label}</span
+                    <span
+                        class={[
+                            "font-500 text-strong",
+                            submenu.description ? "truncate leading-normal" : "text-trim-truncate",
+                        ]}>{submenu.label}</span
                     >
                     {#if submenu.description}
                         <span class="truncate text-xs font-400 leading-normal text-weak">
@@ -486,7 +490,8 @@
                     <span
                         id={labelId}
                         class={[
-                            "truncate font-500 leading-normal",
+                            "font-500",
+                            action.description ? "truncate leading-normal" : "text-trim-truncate",
                             action.danger ? "text-danger-500" : "text-strong",
                         ]}
                     >
@@ -535,7 +540,7 @@
                 aria-hidden="true"
                 class={["shrink-0 text-weak", isRtl ? "" : "rotate-180"]}
             />
-            <span class="truncate font-500 leading-normal text-strong">Back</span>
+            <span class="text-trim-truncate font-500 text-strong">Back</span>
         </button>
         <div class={selectionSectionLabelStyles({ size })}>
             {drilldownStack.at(-1)?.submenu.label}

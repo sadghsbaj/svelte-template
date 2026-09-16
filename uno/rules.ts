@@ -12,6 +12,12 @@ const PROPERTY_MAP: Record<string, string> = {
     stroke: "stroke",
 };
 
+const SCROLLBAR_SIZE_MAP = {
+    sm: { size: "8px", border: "2px", firefoxWidth: "thin" },
+    md: { size: "10px", border: "2px", firefoxWidth: "auto" },
+    lg: { size: "12px", border: "2px", firefoxWidth: "auto" },
+} as const;
+
 export const rulesConfig: Rule[] = [
     ...transitionRules,
     [
@@ -34,6 +40,18 @@ export const rulesConfig: Rule[] = [
             "text-overflow": "ellipsis",
             "white-space": "nowrap",
         },
+    ],
+    [
+        /^scrollbar-(sm|md|lg)$/,
+        ([, size]) => {
+            const values = SCROLLBAR_SIZE_MAP[size as keyof typeof SCROLLBAR_SIZE_MAP];
+            return {
+                "--scrollbar-size": values.size,
+                "--scrollbar-thumb-border": values.border,
+                "--scrollbar-firefox-width": values.firefoxWidth,
+            };
+        },
+        { autocomplete: "scrollbar-(sm|md|lg)" },
     ],
     [
         "app-views",

@@ -4,7 +4,7 @@ export const buttonStyles = cva({
     base: {
         layout: "inline-flex items-center shrink-0 w-fit select-none",
         typography: "font-600 leading-normal",
-        frame: "rounded-full squircle",
+        frame: "rounded-full",
         interaction: "cursor-pointer active:scale-97",
         motion: "will-change-transform transform-gpu backface-hidden t:(scale-200-cubic-out bg-200-quad-out text-200-quad-out border-200-quad-out shadow-200-quad-out)",
         misc: "isolate",
@@ -44,10 +44,15 @@ export const buttonStyles = cva({
 
     modifiers: {
         fullWidth: "w-full!",
-        iconOnly: "p-0! aspect-square",
+        iconOnly: "p-0! aspect-square squircle-soft",
     },
 
     compounds: [
+        {
+            iconOnly: false,
+            class: "squircle",
+        },
+
         // --- SOLID ---
         {
             variant: "solid",
@@ -191,6 +196,7 @@ export const buttonStyles = cva({
         color: "accent",
         size: "md",
         align: "center",
+        iconOnly: false,
     },
 });
 

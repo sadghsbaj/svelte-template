@@ -48,7 +48,7 @@
         description="Every color token uses design system scales with automatic dark-mode handling."
     >
         <PreviewGrid cols={3}>
-            <PreviewCard label="Success (Online / Ready)" bg="elevation-1" class="h-32">
+            <PreviewCard label="Success" bg="elevation-1" class="h-32">
                 <div class="flex-center size-full">
                     <PulseDot
                         color="success"
@@ -58,7 +58,7 @@
                 </div>
             </PreviewCard>
 
-            <PreviewCard label="Danger (Recording / Error)" bg="elevation-1" class="h-32">
+            <PreviewCard label="Danger" bg="elevation-1" class="h-32">
                 <div class="flex-center size-full">
                     <PulseDot
                         color="danger"
@@ -68,7 +68,7 @@
                 </div>
             </PreviewCard>
 
-            <PreviewCard label="Warning (Idle / Degraded)" bg="elevation-1" class="h-32">
+            <PreviewCard label="Warning" bg="elevation-1" class="h-32">
                 <div class="flex-center size-full">
                     <PulseDot
                         color="warning"
@@ -78,7 +78,7 @@
                 </div>
             </PreviewCard>
 
-            <PreviewCard label="Accent (Active / Live)" bg="elevation-1" class="h-32">
+            <PreviewCard label="Accent" bg="elevation-1" class="h-32">
                 <div class="flex-center size-full">
                     <PulseDot
                         color="accent"
@@ -88,13 +88,13 @@
                 </div>
             </PreviewCard>
 
-            <PreviewCard label="Info (Syncing / Updating)" bg="elevation-1" class="h-32">
+            <PreviewCard label="Info" bg="elevation-1" class="h-32">
                 <div class="flex-center size-full">
                     <PulseDot color="info" pulsing={isPulsing} glow={hasGlow} />
                 </div>
             </PreviewCard>
 
-            <PreviewCard label="Base (Muted / Paused)" bg="elevation-1" class="h-32">
+            <PreviewCard label="Base" bg="elevation-1" class="h-32">
                 <div class="flex-center size-full">
                     <PulseDot color="base" pulsing={isPulsing} glow={hasGlow} />
                 </div>

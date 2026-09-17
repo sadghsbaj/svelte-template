@@ -95,8 +95,8 @@ describe("Button", () => {
         const lg = render({ iconOnly: true, size: "lg" });
 
         expect(regular.classList).toContain("squircle");
-        expect(regular.classList).not.toContain("squircle-smooth");
-        expect(md.classList).toContain("squircle-smooth");
+        expect(regular.classList).not.toContain("squircle-soft");
+        expect(md.classList).toContain("squircle-soft");
         expect(md.classList).not.toContain("squircle");
         expect(sm.className).toContain("[&_svg]:size-16px!");
         expect(md.className).toContain("[&_svg]:size-18px!");

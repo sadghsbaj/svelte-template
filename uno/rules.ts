@@ -167,17 +167,4 @@ export const rulesConfig: Rule[] = [
         },
         { autocomplete: "bg-app/(10|20|30|40|50|60|70|80|90)" },
     ],
-    [
-        "animate-pulse-dot",
-        {
-            animation: "pulse-dot-ping 2.2s cubic-bezier(0, 0, 0.2, 1) infinite",
-        },
-    ],
-    [
-        "pulse-dot-glow",
-        {
-            "box-shadow":
-                "0 0 6px 1px currentColor, 0 0 12px 2px color-mix(in srgb, currentColor 35%, transparent)",
-        },
-    ],
 ];

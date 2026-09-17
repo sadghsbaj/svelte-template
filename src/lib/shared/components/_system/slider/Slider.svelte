@@ -91,6 +91,8 @@
     const thumbConfig = $derived(THUMB_DIMENSIONS[thumbShape][size]);
     const thumbAxisPx = $derived(thumbConfig.axis);
     const thumbCrossPx = $derived(thumbConfig.cross);
+    const thumbWidthPx = $derived(orientation === "horizontal" ? thumbAxisPx : thumbCrossPx);
+    const thumbHeightPx = $derived(orientation === "horizontal" ? thumbCrossPx : thumbAxisPx);
     const resolvedHitAreaSize = $derived(resolveHitArea(hitArea, size));
     const touchTargetPx = $derived(
         resolvedHitAreaSize === false
@@ -322,6 +324,8 @@
     onpointerleave={handlePointerLeave}
     {@attach disableInteraction({ enabled: disabled })}
     style:--slider-touch-size="{touchTargetPx}px"
+    style:--slider-thumb-width="{thumbWidthPx}px"
+    style:--slider-thumb-height="{thumbHeightPx}px"
     {...restProps}
 >
     {#snippet minInput()}
@@ -480,8 +484,8 @@
         -webkit-appearance: none;
         background: transparent;
         border: none;
-        width: var(--slider-touch-size);
-        height: var(--slider-touch-size);
+        width: var(--slider-thumb-width);
+        height: var(--slider-thumb-height);
         cursor: grab;
     }
 
@@ -494,8 +498,8 @@
         appearance: none;
         background: transparent;
         border: none;
-        width: var(--slider-touch-size);
-        height: var(--slider-touch-size);
+        width: var(--slider-thumb-width);
+        height: var(--slider-thumb-height);
         cursor: grab;
     }
 

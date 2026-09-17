@@ -193,6 +193,20 @@ describe("Slider", () => {
         expect(elWithoutHitArea.style.getPropertyValue("--slider-touch-size")).toBe("20px");
     });
 
+    test("sets --slider-thumb-width and --slider-thumb-height matching thumb shape and orientation", () => {
+        const horizBar = render({ thumbShape: "bar", size: "md", orientation: "horizontal" });
+        expect(horizBar.style.getPropertyValue("--slider-thumb-width")).toBe("8px");
+        expect(horizBar.style.getPropertyValue("--slider-thumb-height")).toBe("24px");
+
+        const vertBar = render({ thumbShape: "bar", size: "md", orientation: "vertical" });
+        expect(vertBar.style.getPropertyValue("--slider-thumb-width")).toBe("24px");
+        expect(vertBar.style.getPropertyValue("--slider-thumb-height")).toBe("8px");
+
+        const circle = render({ thumbShape: "circle", size: "md" });
+        expect(circle.style.getPropertyValue("--slider-thumb-width")).toBe("20px");
+        expect(circle.style.getPropertyValue("--slider-thumb-height")).toBe("20px");
+    });
+
     test("binds to element prop correctly", () => {
         let boundEl: HTMLDivElement | null = null;
         const component = mount(Slider, {

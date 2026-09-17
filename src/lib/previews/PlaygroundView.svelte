@@ -1,4 +1,4 @@
-<div class="p-5 flex-center min-h-full md:p-10">
+<div class="p-5 flex-center min-h-full md:p-10 pb-40 md:pb-40">
     <div class="flex flex-wrap justify-center gap-6">
         <div
             aria-label="Small scrollbar"

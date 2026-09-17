@@ -25,7 +25,7 @@
 
 <AppViews {viewState}>
     <!-- @template-remove-start -->
-    <AppView view="components">
+    <AppView view="components" overflow="hidden">
         <ComponentsView />
     </AppView>
     <AppView view="playground">

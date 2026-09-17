@@ -50,7 +50,7 @@
     ];
 </script>
 
-<div class="mx-auto p-6 pb-28 flex flex-col gap-8 max-w-3xl md:p-10 md:pb-28">
+<div class="mx-auto px-6 pt-6 pb-40 md:px-10 md:pt-10 md:pb-40 scroll-pb-40 flex flex-col gap-8 max-w-3xl">
     <!-- Header -->
     <header class="flex flex-col gap-1">
         <h1 class="text-3xl text-strong tracking-tight font-700">{viewState.activeLabel}</h1>

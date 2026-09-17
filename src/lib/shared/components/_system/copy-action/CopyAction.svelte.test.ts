@@ -138,6 +138,17 @@ describe("CopyAction", () => {
         expect(onclick).toHaveBeenCalledTimes(1);
     });
 
+    test("respects controlled status='pending' prop with breathing pulse", () => {
+        const el = render({ status: "pending" });
+        expect(el.getAttribute("aria-label")).toBe("Copying...");
+        expect(el.classList).toContain("pointer-events-none");
+        const copySvg = el.querySelector(".copy-icon");
+        expect(copySvg?.classList).toContain("is-pending");
+        expect(copySvg?.classList).not.toContain("is-hidden");
+        expect(el.querySelector(".check-icon")?.classList).not.toContain("is-active");
+        expect(el.querySelector(".x-icon")?.classList).not.toContain("is-active");
+    });
+
     test("allows overriding size and custom classes", () => {
         const el = render({ class: "size-5 text-weak" });
         expect(el.classList).toContain("size-5");

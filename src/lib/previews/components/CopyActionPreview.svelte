@@ -32,10 +32,21 @@
                 </div>
             </PreviewCard>
 
-            <PreviewCard label="Error" bg="elevation-1" class="h-32">
+            <PreviewCard label="Async (1s)" bg="elevation-1" class="h-32">
                 <div class="flex-center size-full">
                     <CopyAction
                         onclick={async () => {
+                            await new Promise((r) => setTimeout(r, 1000));
+                        }}
+                    />
+                </div>
+            </PreviewCard>
+
+            <PreviewCard label="Async Error" bg="elevation-1" class="h-32">
+                <div class="flex-center size-full">
+                    <CopyAction
+                        onclick={async () => {
+                            await new Promise((r) => setTimeout(r, 800));
                             throw new Error("Failed");
                         }}
                     />
@@ -45,12 +56,6 @@
             <PreviewCard label="Custom Size" bg="elevation-1" class="h-32">
                 <div class="flex-center size-full">
                     <CopyAction class="size-22px" strokeWidth={2.25} />
-                </div>
-            </PreviewCard>
-
-            <PreviewCard label="Muted Tone" bg="elevation-1" class="h-32">
-                <div class="flex-center size-full">
-                    <CopyAction class="text-weak hover:text-main" />
                 </div>
             </PreviewCard>
         </PreviewGrid>

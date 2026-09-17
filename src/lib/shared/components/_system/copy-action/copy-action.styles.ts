@@ -14,6 +14,7 @@ export const copyActionStyles = cva({
         },
         status: {
             idle: "",
+            pending: "",
             copied: "text-success-500",
             error: "text-danger-500",
         },

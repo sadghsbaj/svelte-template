@@ -4,7 +4,7 @@
 
     import { copyActionStyles } from "./copy-action.styles";
 
-    export type CopyActionStatus = "idle" | "copied" | "error";
+    export type CopyActionStatus = "idle" | "pending" | "copied" | "error";
 
     interface Props extends Omit<HTMLButtonAttributes, "children"> {
         as?: "button" | "span";
@@ -15,8 +15,8 @@
         preventSpam?: boolean;
         class?: string;
         element?: HTMLElement | null;
-        icon?: Snippet<[{ status: CopyActionStatus; copied: boolean; error: boolean }]>;
-        children?: Snippet<[{ status: CopyActionStatus; copied: boolean; error: boolean }]>;
+        icon?: Snippet<[{ status: CopyActionStatus; copied: boolean; error: boolean; pending: boolean }]>;
+        children?: Snippet<[{ status: CopyActionStatus; copied: boolean; error: boolean; pending: boolean }]>;
     }
 
     let {
@@ -36,6 +36,7 @@
 
     let internalStatus = $state<CopyActionStatus>("idle");
     let timerId: ReturnType<typeof setTimeout> | null = null;
+    let pendingTimerId: ReturnType<typeof setTimeout> | null = null;
 
     const activeStatus = $derived.by<CopyActionStatus>(() => {
         if (status !== undefined) return status;
@@ -43,9 +44,11 @@
         return internalStatus;
     });
 
+    const isPending = $derived(activeStatus === "pending");
     const isCopied = $derived(activeStatus === "copied");
     const isError = $derived(activeStatus === "error");
-    const isTriggered = $derived(activeStatus !== "idle");
+    const isFeedback = $derived(isCopied || isError);
+    const isLocked = $derived(activeStatus !== "idle");
 
     function setStatus(newStatus: CopyActionStatus): void {
         if (status !== undefined) {
@@ -56,7 +59,7 @@
         }
         internalStatus = newStatus;
 
-        if (newStatus !== "idle") {
+        if (newStatus === "copied" || newStatus === "error") {
             timerId = setTimeout(() => {
                 if (status !== undefined) {
                     status = "idle";
@@ -72,17 +75,39 @@
 
     async function handleClick(event: MouseEvent): Promise<void> {
         if (event.defaultPrevented) return;
-        if (preventSpam && isTriggered) return;
+        if (preventSpam && isLocked) return;
 
-        if (timerId !== null) clearTimeout(timerId);
+        if (timerId !== null) {
+            clearTimeout(timerId);
+            timerId = null;
+        }
+        if (pendingTimerId !== null) {
+            clearTimeout(pendingTimerId);
+            pendingTimerId = null;
+        }
 
         const result = onclick?.(event as never);
 
         if (result instanceof Promise) {
+            pendingTimerId = setTimeout(() => {
+                if (activeStatus === "idle") {
+                    setStatus("pending");
+                }
+                pendingTimerId = null;
+            }, 150);
+
             try {
                 await result;
+                if (pendingTimerId !== null) {
+                    clearTimeout(pendingTimerId);
+                    pendingTimerId = null;
+                }
                 setStatus("copied");
             } catch {
+                if (pendingTimerId !== null) {
+                    clearTimeout(pendingTimerId);
+                    pendingTimerId = null;
+                }
                 setStatus("error");
             }
         } else {
@@ -92,13 +117,14 @@
 
     onDestroy(() => {
         if (timerId !== null) clearTimeout(timerId);
+        if (pendingTimerId !== null) clearTimeout(pendingTimerId);
     });
 
     const computedClass = $derived(
         copyActionStyles({
             as,
             status: activeStatus,
-            locked: preventSpam && isTriggered,
+            locked: preventSpam && isLocked,
             class: className,
         })
     );
@@ -111,13 +137,19 @@
     class={computedClass}
     onclick={handleClick}
     aria-label={restProps["aria-label"] ??
-        (isCopied ? "Copied" : isError ? "Failed to copy" : "Copy to clipboard")}
+        (isCopied
+            ? "Copied"
+            : isError
+              ? "Failed to copy"
+              : isPending
+                ? "Copying..."
+                : "Copy to clipboard")}
     {...restProps}
 >
     {#if icon}
-        {@render icon({ status: activeStatus, copied: isCopied, error: isError })}
+        {@render icon({ status: activeStatus, copied: isCopied, error: isError, pending: isPending })}
     {:else if children}
-        {@render children({ status: activeStatus, copied: isCopied, error: isError })}
+        {@render children({ status: activeStatus, copied: isCopied, error: isError, pending: isPending })}
     {:else}
         <!-- Copy Icon -->
         <svg
@@ -129,7 +161,8 @@
             stroke-linecap="round"
             stroke-linejoin="round"
             class="copy-icon"
-            class:is-hidden={isTriggered}
+            class:is-hidden={isFeedback}
+            class:is-pending={isPending}
             aria-hidden="true"
         >
             <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
@@ -170,7 +203,7 @@
         </svg>
 
         <!-- Celebration / Feedback Micro-Sparkles Burst -->
-        {#if isTriggered}
+        {#if isFeedback}
             <span class="particles" class:is-error={isError} aria-hidden="true">
                 <!-- 4-point micro-stars -->
                 <svg viewBox="0 0 16 16" class="particle star star-1">
@@ -202,6 +235,10 @@
             opacity 180ms var(--ease-sine-out);
     }
 
+    .copy-icon.is-pending {
+        animation: copy-pulse 1.2s var(--ease-sine-in-out) infinite;
+    }
+
     .copy-icon.is-hidden {
         transform: scale(0.6) rotate(-12deg);
         opacity: 0;
@@ -209,6 +246,18 @@
         transition:
             transform 200ms var(--ease-cubic-out),
             opacity 150ms var(--ease-sine-out);
+    }
+
+    @keyframes copy-pulse {
+        0%,
+        100% {
+            opacity: 1;
+            transform: scale(1);
+        }
+        50% {
+            opacity: 0.45;
+            transform: scale(0.96);
+        }
     }
 
     .status-icon {
@@ -419,6 +468,10 @@
         .particle {
             animation: none !important;
             transition: none !important;
+        }
+
+        .copy-icon.is-pending {
+            opacity: 0.6;
         }
     }
 </style>

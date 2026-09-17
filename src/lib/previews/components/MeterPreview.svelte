@@ -5,7 +5,7 @@
 </script>
 
 <script lang="ts">
-    import { Button, Meter } from "$components";
+    import { Button, Meter, Slider } from "$components";
 
     import PreviewCard from "$lib/previews/ui/PreviewCard.svelte";
     import PreviewGrid from "$lib/previews/ui/PreviewGrid.svelte";
@@ -33,13 +33,9 @@
         <div class="flex flex-wrap items-center gap-5 p-4 rounded-2xl bg-elevation-1 shadow-sm w-fit mb-6">
             <div class="flex items-center gap-3">
                 <span class="text-sm font-500 text-main select-none">Value</span>
-                <input
-                    type="range"
-                    min="0"
-                    max="100"
-                    bind:value={meterValue}
-                    class="w-40 h-2 bg-base-soft-2 rounded-lg appearance-none cursor-pointer accent-accent-solid-1"
-                />
+                <div class="w-40">
+                    <Slider bind:value={meterValue} min={0} max={100} ariaLabel="Meter value slider" />
+                </div>
                 <span class="tabular-nums font-600 text-xs px-2.5 py-1 rounded-full bg-base-soft-1 text-main select-none">
                     {meterValue}%
                 </span>

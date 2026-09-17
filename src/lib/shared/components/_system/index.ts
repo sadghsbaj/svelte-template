@@ -133,3 +133,11 @@ export type {
     PopoverRole,
     PopoverTriggerContext,
 } from "./popover/popover.types";
+
+export { default as PulseDot } from "./pulse-dot/PulseDot.svelte";
+export {
+    pulseDotCoreStyles,
+    pulseDotPingStyles,
+    pulseDotStyles,
+    type PulseDotStyleProps,
+} from "./pulse-dot/pulse-dot.styles";

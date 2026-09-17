@@ -141,3 +141,7 @@ export {
     pulseDotStyles,
     type PulseDotStyleProps,
 } from "./pulse-dot/pulse-dot.styles";
+
+export { default as CopyAction } from "./copy-action/CopyAction.svelte";
+export { copyActionStyles, type CopyActionStyleProps } from "./copy-action/copy-action.styles";
+

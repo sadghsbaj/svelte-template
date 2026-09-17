@@ -29,15 +29,17 @@
         title="Interactive Controls"
         description="Toggle pulse animations and ambient glow halo."
     >
-        <div class="flex flex-wrap items-center gap-6 p-4 rounded-xl bg-elevation-1 shadow-sm w-fit mb-6">
+        <div
+            class="flex flex-wrap items-center gap-6 p-4 rounded-xl bg-elevation-1 shadow-sm w-fit mb-6"
+        >
             <label class="flex items-center gap-3 cursor-pointer select-none">
                 <Switch bind:checked={isPulsing} size="sm" />
-                <span class="label-md">Pulsing Wave</span>
+                <span class="label-md text-trim">Pulsing Wave</span>
             </label>
 
             <label class="flex items-center gap-3 cursor-pointer select-none">
                 <Switch bind:checked={hasGlow} size="sm" />
-                <span class="label-md">Ambient Glow</span>
+                <span class="label-md text-trim">Ambient Glow</span>
             </label>
         </div>
     </PreviewSection>
@@ -50,41 +52,25 @@
         <PreviewGrid cols={3}>
             <PreviewCard label="Success" bg="elevation-1" class="h-32">
                 <div class="flex-center size-full">
-                    <PulseDot
-                        color="success"
-                        pulsing={isPulsing}
-                        glow={hasGlow}
-                    />
+                    <PulseDot color="success" pulsing={isPulsing} glow={hasGlow} />
                 </div>
             </PreviewCard>
 
             <PreviewCard label="Danger" bg="elevation-1" class="h-32">
                 <div class="flex-center size-full">
-                    <PulseDot
-                        color="danger"
-                        pulsing={isPulsing}
-                        glow={hasGlow}
-                    />
+                    <PulseDot color="danger" pulsing={isPulsing} glow={hasGlow} />
                 </div>
             </PreviewCard>
 
             <PreviewCard label="Warning" bg="elevation-1" class="h-32">
                 <div class="flex-center size-full">
-                    <PulseDot
-                        color="warning"
-                        pulsing={isPulsing}
-                        glow={hasGlow}
-                    />
+                    <PulseDot color="warning" pulsing={isPulsing} glow={hasGlow} />
                 </div>
             </PreviewCard>
 
             <PreviewCard label="Accent" bg="elevation-1" class="h-32">
                 <div class="flex-center size-full">
-                    <PulseDot
-                        color="accent"
-                        pulsing={isPulsing}
-                        glow={hasGlow}
-                    />
+                    <PulseDot color="accent" pulsing={isPulsing} glow={hasGlow} />
                 </div>
             </PreviewCard>
 
@@ -103,10 +89,7 @@
     </PreviewSection>
 
     <!-- Sizes Comparison -->
-    <PreviewSection
-        title="Size Scale"
-        description="Three precise sizes: small, medium, and large."
-    >
+    <PreviewSection title="Size Scale" description="Three precise sizes: small, medium, and large.">
         <PreviewGrid cols={3}>
             <PreviewCard label="Small" bg="elevation-1" class="h-32">
                 <div class="flex-center size-full">

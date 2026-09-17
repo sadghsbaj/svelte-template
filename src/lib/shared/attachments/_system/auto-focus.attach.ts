@@ -1,5 +1,14 @@
 import type { Attachment } from "svelte/attachments";
 
+import {
+    getActiveElement,
+    getFocusableElements,
+    isCandidateFocusable,
+    isElementDisabledOrInert,
+    isElementVisible,
+    isNativelyFocusable,
+} from "./focus.utils";
+
 export type AutoFocusTarget =
     | "self"
     | "first-focusable"
@@ -100,15 +109,6 @@ export interface AutoFocusOptions {
 
 export type AutoFocusSource = boolean | AutoFocusTarget | AutoFocusOptions;
 
-import {
-    getActiveElement,
-    getFocusableElements,
-    isCandidateFocusable,
-    isElementDisabledOrInert,
-    isElementVisible,
-    isNativelyFocusable,
-} from "./focus.utils";
-
 /**
  * Finds the target focusable element within a container based on the target strategy.
  */
@@ -163,7 +163,6 @@ function resolveTargetElement(
     return isCandidateFocusable(container) ? container : null;
 }
 
-
 /**
  * Safely applies text selection or cursor placement to inputs, textareas, and contenteditable elements.
  */
@@ -172,10 +171,7 @@ function applyTextSelection(element: HTMLElement, selection: AutoFocusSelection)
         return;
     }
 
-    if (
-        element instanceof HTMLInputElement ||
-        element instanceof HTMLTextAreaElement
-    ) {
+    if (element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement) {
         if (selection === true || selection === "all") {
             try {
                 element.select();
@@ -345,7 +341,9 @@ export function autoFocus<T extends HTMLElement = HTMLElement>(
                 if (!isUnmounted) {
                     container.dataset.autofocusFailed = "";
                     onError?.({
-                        error: new Error("AutoFocus target could not be resolved or is not focusable"),
+                        error: new Error(
+                            "AutoFocus target could not be resolved or is not focusable"
+                        ),
                         container,
                     });
                 }

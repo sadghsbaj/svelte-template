@@ -5,10 +5,7 @@
 
 import { describe, expect, test } from "vitest";
 
-import {
-    checkTokenAgainstBlocklist,
-    extractClassTokens,
-} from "./cva-blocklist.ts";
+import { checkTokenAgainstBlocklist, extractClassTokens } from "./cva-blocklist.ts";
 
 const SAMPLE_BLOCKLIST = [
     /^font-(thin|extralight|light|normal|medium|semibold|bold|extrabold|black)$/,
@@ -20,11 +17,7 @@ const SAMPLE_BLOCKLIST = [
 describe("cva-blocklist helper functions", () => {
     describe("extractClassTokens", () => {
         test("should split simple class strings", () => {
-            expect(extractClassTokens("flex gap-2 p-4")).toEqual([
-                "flex",
-                "gap-2",
-                "p-4",
-            ]);
+            expect(extractClassTokens("flex gap-2 p-4")).toEqual(["flex", "gap-2", "p-4"]);
         });
 
         test("should expand UnoCSS variant groups correctly", () => {
@@ -65,22 +58,36 @@ describe("cva-blocklist helper functions", () => {
 
         test("should block raw non-semantic color names", () => {
             expect(checkTokenAgainstBlocklist("bg-red-500", SAMPLE_BLOCKLIST)).toBe("bg-red-500");
-            expect(checkTokenAgainstBlocklist("text-blue-400", SAMPLE_BLOCKLIST)).toBe("text-blue-400");
-            expect(checkTokenAgainstBlocklist("border-green-600", SAMPLE_BLOCKLIST)).toBe("border-green-600");
-            expect(checkTokenAgainstBlocklist("bg-slate-800", SAMPLE_BLOCKLIST)).toBe("bg-slate-800");
+            expect(checkTokenAgainstBlocklist("text-blue-400", SAMPLE_BLOCKLIST)).toBe(
+                "text-blue-400"
+            );
+            expect(checkTokenAgainstBlocklist("border-green-600", SAMPLE_BLOCKLIST)).toBe(
+                "border-green-600"
+            );
+            expect(checkTokenAgainstBlocklist("bg-slate-800", SAMPLE_BLOCKLIST)).toBe(
+                "bg-slate-800"
+            );
             expect(checkTokenAgainstBlocklist("bg-zinc-100", SAMPLE_BLOCKLIST)).toBe("bg-zinc-100");
         });
 
         test("should block raw colors wrapped with variant prefixes", () => {
-            expect(checkTokenAgainstBlocklist("hover:bg-red-500", SAMPLE_BLOCKLIST)).toBe("hover:bg-red-500");
-            expect(checkTokenAgainstBlocklist("dark:text-blue-400", SAMPLE_BLOCKLIST)).toBe("dark:text-blue-400");
-            expect(checkTokenAgainstBlocklist("active:border-green-600", SAMPLE_BLOCKLIST)).toBe("active:border-green-600");
+            expect(checkTokenAgainstBlocklist("hover:bg-red-500", SAMPLE_BLOCKLIST)).toBe(
+                "hover:bg-red-500"
+            );
+            expect(checkTokenAgainstBlocklist("dark:text-blue-400", SAMPLE_BLOCKLIST)).toBe(
+                "dark:text-blue-400"
+            );
+            expect(checkTokenAgainstBlocklist("active:border-green-600", SAMPLE_BLOCKLIST)).toBe(
+                "active:border-green-600"
+            );
         });
 
         test("should block named font weights", () => {
             expect(checkTokenAgainstBlocklist("font-bold", SAMPLE_BLOCKLIST)).toBe("font-bold");
             expect(checkTokenAgainstBlocklist("font-medium", SAMPLE_BLOCKLIST)).toBe("font-medium");
-            expect(checkTokenAgainstBlocklist("font-semibold", SAMPLE_BLOCKLIST)).toBe("font-semibold");
+            expect(checkTokenAgainstBlocklist("font-semibold", SAMPLE_BLOCKLIST)).toBe(
+                "font-semibold"
+            );
         });
 
         test("should block excessive z-indices", () => {
@@ -89,7 +96,9 @@ describe("cva-blocklist helper functions", () => {
         });
 
         test("should block aria-disabled prefix", () => {
-            expect(checkTokenAgainstBlocklist("aria-disabled:opacity-50", SAMPLE_BLOCKLIST)).toBe("aria-disabled:opacity-50");
+            expect(checkTokenAgainstBlocklist("aria-disabled:opacity-50", SAMPLE_BLOCKLIST)).toBe(
+                "aria-disabled:opacity-50"
+            );
         });
     });
 });

@@ -53,9 +53,9 @@ export function isElementVisible(element: HTMLElement): boolean {
 
     return Boolean(
         element.offsetWidth ||
-            element.offsetHeight ||
-            element.getClientRects().length > 0 ||
-            element.parentElement
+        element.offsetHeight ||
+        element.getClientRects().length > 0 ||
+        element.parentElement
     );
 }
 

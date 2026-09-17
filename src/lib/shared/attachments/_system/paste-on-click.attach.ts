@@ -1,5 +1,4 @@
 import type { Attachment } from "svelte/attachments";
-
 import { readFromClipboard } from "$utils";
 
 export type PasteTarget = HTMLInputElement | HTMLTextAreaElement | HTMLElement;

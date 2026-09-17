@@ -26,7 +26,9 @@
     let elevatedVal = $state("");
 
     let smVal = $state("Compact query or brief note.");
-    let mdVal = $state("Standard textarea size with comfortable line-height for multiline editing.");
+    let mdVal = $state(
+        "Standard textarea size with comfortable line-height for multiline editing."
+    );
     let lgVal = $state("Large statement or prominent input for editorial workflows.");
 
     let autoResizeVal = $state(
@@ -229,12 +231,7 @@
 
             <PreviewCard label="Character Counter" bg="elevation-0" class="min-h-48">
                 <div class="w-full">
-                    <Textarea
-                        maxlength={120}
-                        showCount={true}
-                        bind:value={countedVal}
-                        rows={3}
-                    />
+                    <Textarea maxlength={120} showCount={true} bind:value={countedVal} rows={3} />
                 </div>
             </PreviewCard>
 
@@ -259,21 +256,13 @@
         <PreviewGrid cols={2}>
             <PreviewCard label="Invalid / Error State" bg="elevation-0" class="min-h-48">
                 <div class="w-full max-w-sm">
-                    <Textarea
-                        invalid={true}
-                        bind:value={invalidVal}
-                        rows={2}
-                    />
+                    <Textarea invalid={true} bind:value={invalidVal} rows={2} />
                 </div>
             </PreviewCard>
 
             <PreviewCard label="Disabled State" bg="elevation-0" class="min-h-48">
                 <div class="w-full max-w-sm">
-                    <Textarea
-                        disabled={true}
-                        bind:value={disabledVal}
-                        rows={2}
-                    />
+                    <Textarea disabled={true} bind:value={disabledVal} rows={2} />
                 </div>
             </PreviewCard>
         </PreviewGrid>

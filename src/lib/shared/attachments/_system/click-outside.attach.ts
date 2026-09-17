@@ -1,16 +1,10 @@
 import type { Attachment } from "svelte/attachments";
 
 export type ClickOutsideTarget =
-    | Element
-    | string
-    | (() => Element | null | undefined)
-    | null
-    | undefined;
+    Element | string | (() => Element | null | undefined) | null | undefined;
 
 export type ClickOutsideIgnore =
-    | ClickOutsideTarget
-    | ClickOutsideTarget[]
-    | ((target: Element, event: Event) => boolean);
+    ClickOutsideTarget | ClickOutsideTarget[] | ((target: Element, event: Event) => boolean);
 
 export type ClickOutsideEventName = "pointerdown" | "pointerup" | "click" | "contextmenu";
 
@@ -124,7 +118,8 @@ function isEventInside(
     ignore?: ClickOutsideIgnore,
     cachedPath?: EventTarget[]
 ): boolean {
-    const path = cachedPath ?? (typeof event.composedPath === "function" ? event.composedPath() : []);
+    const path =
+        cachedPath ?? (typeof event.composedPath === "function" ? event.composedPath() : []);
 
     // 1. Direct container match in composed path
     if (path.includes(container)) {
@@ -320,9 +315,7 @@ export function clickOutside<T extends HTMLElement | SVGElement = HTMLElement>(
 
             const rawTarget = event.target;
             const targetElement =
-                rawTarget instanceof Element
-                    ? rawTarget
-                    : (document.documentElement ?? container);
+                rawTarget instanceof Element ? rawTarget : (document.documentElement ?? container);
 
             resetPointerDownState();
 
@@ -369,14 +362,23 @@ export function clickOutside<T extends HTMLElement | SVGElement = HTMLElement>(
                 if (requireMatchingPointerDown) {
                     if (hasPointerEvents) {
                         document.addEventListener("pointerdown", handlePointerDown, { capture });
-                        document.addEventListener("pointerup", handlePointerUpOrCancel, { capture });
-                        document.addEventListener("pointercancel", resetPointerDownState, { capture });
+                        document.addEventListener("pointerup", handlePointerUpOrCancel, {
+                            capture,
+                        });
+                        document.addEventListener("pointercancel", resetPointerDownState, {
+                            capture,
+                        });
                     } else {
                         document.addEventListener("mousedown", handlePointerDown, { capture });
-                        document.addEventListener("touchstart", handlePointerDown, { capture, passive: true });
+                        document.addEventListener("touchstart", handlePointerDown, {
+                            capture,
+                            passive: true,
+                        });
                         document.addEventListener("mouseup", handlePointerUpOrCancel, { capture });
                         document.addEventListener("touchend", handlePointerUpOrCancel, { capture });
-                        document.addEventListener("touchcancel", resetPointerDownState, { capture });
+                        document.addEventListener("touchcancel", resetPointerDownState, {
+                            capture,
+                        });
                     }
                 }
 
@@ -417,14 +419,24 @@ export function clickOutside<T extends HTMLElement | SVGElement = HTMLElement>(
                 if (requireMatchingPointerDown) {
                     if (hasPointerEvents) {
                         document.removeEventListener("pointerdown", handlePointerDown, { capture });
-                        document.removeEventListener("pointerup", handlePointerUpOrCancel, { capture });
-                        document.removeEventListener("pointercancel", resetPointerDownState, { capture });
+                        document.removeEventListener("pointerup", handlePointerUpOrCancel, {
+                            capture,
+                        });
+                        document.removeEventListener("pointercancel", resetPointerDownState, {
+                            capture,
+                        });
                     } else {
                         document.removeEventListener("mousedown", handlePointerDown, { capture });
                         document.removeEventListener("touchstart", handlePointerDown, { capture });
-                        document.removeEventListener("mouseup", handlePointerUpOrCancel, { capture });
-                        document.removeEventListener("touchend", handlePointerUpOrCancel, { capture });
-                        document.removeEventListener("touchcancel", resetPointerDownState, { capture });
+                        document.removeEventListener("mouseup", handlePointerUpOrCancel, {
+                            capture,
+                        });
+                        document.removeEventListener("touchend", handlePointerUpOrCancel, {
+                            capture,
+                        });
+                        document.removeEventListener("touchcancel", resetPointerDownState, {
+                            capture,
+                        });
                     }
                 }
 

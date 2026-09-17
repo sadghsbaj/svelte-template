@@ -295,7 +295,7 @@
     {size}
     {variant}
     {disabled}
-    invalid={invalid}
+    {invalid}
     class={cn("!rounded-full squircle-smooth", className)}
     {inputClass}
     bind:element={inputElement}

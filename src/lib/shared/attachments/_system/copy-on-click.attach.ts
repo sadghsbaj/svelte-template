@@ -1,5 +1,4 @@
 import type { Attachment } from "svelte/attachments";
-
 import { copyToClipboard } from "$utils";
 
 export type CopySource = string | (() => string | Promise<string>) | HTMLElement | SVGElement;
@@ -135,10 +134,7 @@ async function resolveCopyText(
     const targetElement =
         source instanceof HTMLElement || source instanceof SVGElement ? source : fallbackNode;
 
-    if (
-        targetElement instanceof HTMLInputElement ||
-        targetElement instanceof HTMLTextAreaElement
-    ) {
+    if (targetElement instanceof HTMLInputElement || targetElement instanceof HTMLTextAreaElement) {
         return targetElement.value;
     }
 

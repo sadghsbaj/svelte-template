@@ -98,7 +98,9 @@ describe("ViewState (Browser Client)", () => {
         test("should filter children by parent correctly with getChildren", () => {
             const state = new ViewState(mockConfig);
             expect(state.getChildren("stats").map((c) => c.view)).toEqual(["statsDetails"]);
-            expect(state.getChildren("statsDetails").map((c) => c.view)).toEqual(["statsSubDetails"]);
+            expect(state.getChildren("statsDetails").map((c) => c.view)).toEqual([
+                "statsSubDetails",
+            ]);
             expect(state.getChildren("home")).toEqual([]);
 
             // Including disabled views
@@ -116,7 +118,11 @@ describe("ViewState (Browser Client)", () => {
             expect(homePath.map((p) => p.view)).toEqual(["home"]);
 
             const subPath = state.getViewPath("statsSubDetails");
-            expect(subPath.map((p) => p.view)).toEqual(["stats", "statsDetails", "statsSubDetails"]);
+            expect(subPath.map((p) => p.view)).toEqual([
+                "stats",
+                "statsDetails",
+                "statsSubDetails",
+            ]);
 
             // Default to active view
             expect(state.getViewPath().map((p) => p.view)).toEqual(["home"]);

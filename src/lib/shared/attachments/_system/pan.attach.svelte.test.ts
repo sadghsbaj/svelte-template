@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
+
 import {
     pan,
     type PanCancelEvent,
@@ -587,13 +588,29 @@ describe("pan Svelte 5 Element Attachment", () => {
             const cleanupLeft = attachLeft(el);
 
             el.dispatchEvent(
-                new PointerEvent("pointerdown", { pointerId: 1, button: 0, clientX: 100, clientY: 100, bubbles: true })
+                new PointerEvent("pointerdown", {
+                    pointerId: 1,
+                    button: 0,
+                    clientX: 100,
+                    clientY: 100,
+                    bubbles: true,
+                })
             );
             el.dispatchEvent(
-                new PointerEvent("pointermove", { pointerId: 1, clientX: 50, clientY: 100, bubbles: true })
+                new PointerEvent("pointermove", {
+                    pointerId: 1,
+                    clientX: 50,
+                    clientY: 100,
+                    bubbles: true,
+                })
             );
             el.dispatchEvent(
-                new PointerEvent("pointerup", { pointerId: 1, clientX: 50, clientY: 100, bubbles: true })
+                new PointerEvent("pointerup", {
+                    pointerId: 1,
+                    clientX: 50,
+                    clientY: 100,
+                    bubbles: true,
+                })
             );
 
             expect(onSwipeLeftSpy).toHaveBeenCalledTimes(1);
@@ -610,13 +627,29 @@ describe("pan Svelte 5 Element Attachment", () => {
             const cleanupUp = attachUp(el);
 
             el.dispatchEvent(
-                new PointerEvent("pointerdown", { pointerId: 2, button: 0, clientX: 100, clientY: 100, bubbles: true })
+                new PointerEvent("pointerdown", {
+                    pointerId: 2,
+                    button: 0,
+                    clientX: 100,
+                    clientY: 100,
+                    bubbles: true,
+                })
             );
             el.dispatchEvent(
-                new PointerEvent("pointermove", { pointerId: 2, clientX: 100, clientY: 50, bubbles: true })
+                new PointerEvent("pointermove", {
+                    pointerId: 2,
+                    clientX: 100,
+                    clientY: 50,
+                    bubbles: true,
+                })
             );
             el.dispatchEvent(
-                new PointerEvent("pointerup", { pointerId: 2, clientX: 100, clientY: 50, bubbles: true })
+                new PointerEvent("pointerup", {
+                    pointerId: 2,
+                    clientX: 100,
+                    clientY: 50,
+                    bubbles: true,
+                })
             );
 
             expect(onSwipeUpSpy).toHaveBeenCalledTimes(1);
@@ -633,13 +666,29 @@ describe("pan Svelte 5 Element Attachment", () => {
             const cleanupDown = attachDown(el);
 
             el.dispatchEvent(
-                new PointerEvent("pointerdown", { pointerId: 3, button: 0, clientX: 100, clientY: 100, bubbles: true })
+                new PointerEvent("pointerdown", {
+                    pointerId: 3,
+                    button: 0,
+                    clientX: 100,
+                    clientY: 100,
+                    bubbles: true,
+                })
             );
             el.dispatchEvent(
-                new PointerEvent("pointermove", { pointerId: 3, clientX: 100, clientY: 160, bubbles: true })
+                new PointerEvent("pointermove", {
+                    pointerId: 3,
+                    clientX: 100,
+                    clientY: 160,
+                    bubbles: true,
+                })
             );
             el.dispatchEvent(
-                new PointerEvent("pointerup", { pointerId: 3, clientX: 100, clientY: 160, bubbles: true })
+                new PointerEvent("pointerup", {
+                    pointerId: 3,
+                    clientX: 100,
+                    clientY: 160,
+                    bubbles: true,
+                })
             );
 
             expect(onSwipeDownSpy).toHaveBeenCalledTimes(1);
@@ -662,13 +711,29 @@ describe("pan Svelte 5 Element Attachment", () => {
             const cleanup = attach(el);
 
             el.dispatchEvent(
-                new PointerEvent("pointerdown", { pointerId: 1, button: 0, clientX: 100, clientY: 100, bubbles: true })
+                new PointerEvent("pointerdown", {
+                    pointerId: 1,
+                    button: 0,
+                    clientX: 100,
+                    clientY: 100,
+                    bubbles: true,
+                })
             );
             window.dispatchEvent(
-                new PointerEvent("pointermove", { pointerId: 1, clientX: 102, clientY: 40, bubbles: true })
+                new PointerEvent("pointermove", {
+                    pointerId: 1,
+                    clientX: 102,
+                    clientY: 40,
+                    bubbles: true,
+                })
             );
             window.dispatchEvent(
-                new PointerEvent("pointerup", { pointerId: 1, clientX: 102, clientY: 40, bubbles: true })
+                new PointerEvent("pointerup", {
+                    pointerId: 1,
+                    clientX: 102,
+                    clientY: 40,
+                    bubbles: true,
+                })
             );
 
             expect(onPanEndSpy).toHaveBeenCalledTimes(1);
@@ -690,13 +755,29 @@ describe("pan Svelte 5 Element Attachment", () => {
             const cleanup = attach(el);
 
             el.dispatchEvent(
-                new PointerEvent("pointerdown", { pointerId: 1, button: 0, clientX: 100, clientY: 100, bubbles: true })
+                new PointerEvent("pointerdown", {
+                    pointerId: 1,
+                    button: 0,
+                    clientX: 100,
+                    clientY: 100,
+                    bubbles: true,
+                })
             );
             el.dispatchEvent(
-                new PointerEvent("pointermove", { pointerId: 1, clientX: 150, clientY: 100, bubbles: true })
+                new PointerEvent("pointermove", {
+                    pointerId: 1,
+                    clientX: 150,
+                    clientY: 100,
+                    bubbles: true,
+                })
             );
             el.dispatchEvent(
-                new PointerEvent("pointerup", { pointerId: 1, clientX: 150, clientY: 100, bubbles: true })
+                new PointerEvent("pointerup", {
+                    pointerId: 1,
+                    clientX: 150,
+                    clientY: 100,
+                    bubbles: true,
+                })
             );
 
             const clickEvent = new MouseEvent("click", { bubbles: true, cancelable: true });
@@ -717,10 +798,21 @@ describe("pan Svelte 5 Element Attachment", () => {
             const cleanup = attach(el);
 
             el.dispatchEvent(
-                new PointerEvent("pointerdown", { pointerId: 1, button: 0, clientX: 100, clientY: 100, bubbles: true })
+                new PointerEvent("pointerdown", {
+                    pointerId: 1,
+                    button: 0,
+                    clientX: 100,
+                    clientY: 100,
+                    bubbles: true,
+                })
             );
             el.dispatchEvent(
-                new PointerEvent("pointerup", { pointerId: 1, clientX: 100, clientY: 100, bubbles: true })
+                new PointerEvent("pointerup", {
+                    pointerId: 1,
+                    clientX: 100,
+                    clientY: 100,
+                    bubbles: true,
+                })
             );
 
             const clickEvent = new MouseEvent("click", { bubbles: true, cancelable: true });
@@ -740,16 +832,32 @@ describe("pan Svelte 5 Element Attachment", () => {
             const onPanStartSpy = vi.fn((_event: PanStartEvent) => {});
             const onPanSpy = vi.fn((_event: PanMoveEvent) => {});
             const onPanEndSpy = vi.fn((_event: PanEndEvent) => {});
-            const attach = pan({ threshold: 8, onPanStart: onPanStartSpy, onPan: onPanSpy, onPanEnd: onPanEndSpy });
+            const attach = pan({
+                threshold: 8,
+                onPanStart: onPanStartSpy,
+                onPan: onPanSpy,
+                onPanEnd: onPanEndSpy,
+            });
             const cleanup = attach(el);
 
             el.dispatchEvent(
-                new PointerEvent("pointerdown", { pointerId: 1, button: 0, clientX: 100, clientY: 100, bubbles: true })
+                new PointerEvent("pointerdown", {
+                    pointerId: 1,
+                    button: 0,
+                    clientX: 100,
+                    clientY: 100,
+                    bubbles: true,
+                })
             );
 
             // Fast swipe: pointer immediately moves outside node, dispatched to window
             window.dispatchEvent(
-                new PointerEvent("pointermove", { pointerId: 1, clientX: 150, clientY: 100, bubbles: true })
+                new PointerEvent("pointermove", {
+                    pointerId: 1,
+                    clientX: 150,
+                    clientY: 100,
+                    bubbles: true,
+                })
             );
 
             expect(onPanStartSpy).toHaveBeenCalledTimes(1);
@@ -757,7 +865,12 @@ describe("pan Svelte 5 Element Attachment", () => {
             expect(el.style.userSelect).toBe("none");
 
             window.dispatchEvent(
-                new PointerEvent("pointerup", { pointerId: 1, clientX: 150, clientY: 100, bubbles: true })
+                new PointerEvent("pointerup", {
+                    pointerId: 1,
+                    clientX: 150,
+                    clientY: 100,
+                    bubbles: true,
+                })
             );
 
             expect(onPanEndSpy).toHaveBeenCalledTimes(1);
@@ -777,16 +890,31 @@ describe("pan Svelte 5 Element Attachment", () => {
             const cleanup = attach(el);
 
             el.dispatchEvent(
-                new PointerEvent("pointerdown", { pointerId: 1, button: 0, clientX: 100, clientY: 100, bubbles: true })
+                new PointerEvent("pointerdown", {
+                    pointerId: 1,
+                    button: 0,
+                    clientX: 100,
+                    clientY: 100,
+                    bubbles: true,
+                })
             );
             window.dispatchEvent(
-                new PointerEvent("pointermove", { pointerId: 1, clientX: 120, clientY: 100, bubbles: true })
+                new PointerEvent("pointermove", {
+                    pointerId: 1,
+                    clientX: 120,
+                    clientY: 100,
+                    bubbles: true,
+                })
             );
 
             expect(el.dataset.panning).toBe("");
             expect(el.style.userSelect).toBe("none");
 
-            const escapeEvent = new KeyboardEvent("keydown", { key: "Escape", bubbles: true, cancelable: true });
+            const escapeEvent = new KeyboardEvent("keydown", {
+                key: "Escape",
+                bubbles: true,
+                cancelable: true,
+            });
             window.dispatchEvent(escapeEvent);
 
             expect(onCancelSpy).toHaveBeenCalledWith(
@@ -811,15 +939,24 @@ describe("pan Svelte 5 Element Attachment", () => {
             const cleanup = attach(el);
 
             el.dispatchEvent(
-                new PointerEvent("pointerdown", { pointerId: 1, button: 0, clientX: 100, clientY: 100, bubbles: true })
+                new PointerEvent("pointerdown", {
+                    pointerId: 1,
+                    button: 0,
+                    clientX: 100,
+                    clientY: 100,
+                    bubbles: true,
+                })
             );
             el.dispatchEvent(
-                new PointerEvent("pointermove", { pointerId: 1, clientX: 120, clientY: 100, bubbles: true })
+                new PointerEvent("pointermove", {
+                    pointerId: 1,
+                    clientX: 120,
+                    clientY: 100,
+                    bubbles: true,
+                })
             );
 
-            el.dispatchEvent(
-                new PointerEvent("pointercancel", { pointerId: 1, bubbles: true })
-            );
+            el.dispatchEvent(new PointerEvent("pointercancel", { pointerId: 1, bubbles: true }));
 
             expect(onCancelSpy).toHaveBeenCalledWith(
                 expect.objectContaining({
@@ -840,10 +977,21 @@ describe("pan Svelte 5 Element Attachment", () => {
             const cleanup = attach(el);
 
             el.dispatchEvent(
-                new PointerEvent("pointerdown", { pointerId: 1, button: 0, clientX: 100, clientY: 100, bubbles: true })
+                new PointerEvent("pointerdown", {
+                    pointerId: 1,
+                    button: 0,
+                    clientX: 100,
+                    clientY: 100,
+                    bubbles: true,
+                })
             );
             el.dispatchEvent(
-                new PointerEvent("pointermove", { pointerId: 1, clientX: 120, clientY: 100, bubbles: true })
+                new PointerEvent("pointermove", {
+                    pointerId: 1,
+                    clientX: 120,
+                    clientY: 100,
+                    bubbles: true,
+                })
             );
 
             el.dispatchEvent(
@@ -869,10 +1017,21 @@ describe("pan Svelte 5 Element Attachment", () => {
             const cleanup = attach(el);
 
             el.dispatchEvent(
-                new PointerEvent("pointerdown", { pointerId: 1, button: 0, clientX: 100, clientY: 100, bubbles: true })
+                new PointerEvent("pointerdown", {
+                    pointerId: 1,
+                    button: 0,
+                    clientX: 100,
+                    clientY: 100,
+                    bubbles: true,
+                })
             );
             el.dispatchEvent(
-                new PointerEvent("pointermove", { pointerId: 1, clientX: 120, clientY: 100, bubbles: true })
+                new PointerEvent("pointermove", {
+                    pointerId: 1,
+                    clientX: 120,
+                    clientY: 100,
+                    bubbles: true,
+                })
             );
 
             window.dispatchEvent(new FocusEvent("blur"));
@@ -899,10 +1058,21 @@ describe("pan Svelte 5 Element Attachment", () => {
             const cleanup = attach(el);
 
             el.dispatchEvent(
-                new PointerEvent("pointerdown", { pointerId: 1, button: 0, clientX: 100, clientY: 100, bubbles: true })
+                new PointerEvent("pointerdown", {
+                    pointerId: 1,
+                    button: 0,
+                    clientX: 100,
+                    clientY: 100,
+                    bubbles: true,
+                })
             );
             el.dispatchEvent(
-                new PointerEvent("pointermove", { pointerId: 1, clientX: 150, clientY: 100, bubbles: true })
+                new PointerEvent("pointermove", {
+                    pointerId: 1,
+                    clientX: 150,
+                    clientY: 100,
+                    bubbles: true,
+                })
             );
 
             expect(onPanStartSpy).not.toHaveBeenCalled();
@@ -924,10 +1094,21 @@ describe("pan Svelte 5 Element Attachment", () => {
             expect(el.style.touchAction).toBe("pan-y");
 
             el.dispatchEvent(
-                new PointerEvent("pointerdown", { pointerId: 1, button: 0, clientX: 100, clientY: 100, bubbles: true })
+                new PointerEvent("pointerdown", {
+                    pointerId: 1,
+                    button: 0,
+                    clientX: 100,
+                    clientY: 100,
+                    bubbles: true,
+                })
             );
             el.dispatchEvent(
-                new PointerEvent("pointermove", { pointerId: 1, clientX: 120, clientY: 100, bubbles: true })
+                new PointerEvent("pointermove", {
+                    pointerId: 1,
+                    clientX: 120,
+                    clientY: 100,
+                    bubbles: true,
+                })
             );
 
             expect(el.dataset.panning).toBe("");

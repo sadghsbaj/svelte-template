@@ -23,7 +23,7 @@ export const SCROLL_FADE_SIZE_PRESETS: Record<ScrollFadeSizePreset, number> = {
 export function resolveScrollFadeSize(size: ScrollFadeSize = "md"): number {
     return typeof size === "number"
         ? size
-        : SCROLL_FADE_SIZE_PRESETS[size] ?? SCROLL_FADE_SIZE_PRESETS.md;
+        : (SCROLL_FADE_SIZE_PRESETS[size] ?? SCROLL_FADE_SIZE_PRESETS.md);
 }
 
 export interface ScrollFadeState {
@@ -202,7 +202,9 @@ export function scrollFade(options?: ScrollFadeOptions): Attachment<Element> {
                         clampedScrollTop > opts.threshold
                     ) {
                         canScrollTop = true;
-                        topFade = opts.smooth ? Math.min(resolvedSize, clampedScrollTop) : resolvedSize;
+                        topFade = opts.smooth
+                            ? Math.min(resolvedSize, clampedScrollTop)
+                            : resolvedSize;
                     }
 
                     const remaining = maxScrollTop - clampedScrollTop;
@@ -244,7 +246,9 @@ export function scrollFade(options?: ScrollFadeOptions): Attachment<Element> {
                         clampedScrollLeft > opts.threshold
                     ) {
                         canScrollLeft = true;
-                        leftFade = opts.smooth ? Math.min(resolvedSize, clampedScrollLeft) : resolvedSize;
+                        leftFade = opts.smooth
+                            ? Math.min(resolvedSize, clampedScrollLeft)
+                            : resolvedSize;
                     }
 
                     const remaining = maxScrollLeft - clampedScrollLeft;

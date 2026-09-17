@@ -5,6 +5,7 @@
  */
 
 import type { Attachment } from "svelte/attachments";
+
 import { ease } from "$core/_system/motion/easings";
 
 export type PendingColor = "accent" | "success" | "danger" | "base";
@@ -71,12 +72,7 @@ const COLOR_MAP: Record<PendingColor, string> = {
     base: "light-dark(var(--color-base-900), var(--color-base-100))",
 };
 
-const BLOCKED_EVENTS = [
-    "click",
-    "dblclick",
-    "pointerdown",
-    "submit",
-] as const;
+const BLOCKED_EVENTS = ["click", "dblclick", "pointerdown", "submit"] as const;
 
 const BLOCKED_KEYS = new Set<string>(["Enter", " ", "Spacebar"]);
 

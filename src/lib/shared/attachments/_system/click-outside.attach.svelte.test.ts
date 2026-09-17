@@ -40,7 +40,9 @@ describe("clickOutside Svelte 5 Element Attachment", () => {
 
             expect(Object.hasOwn(container.dataset, "clickOutside")).toBe(false);
 
-            outsideElement.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
+            outsideElement.dispatchEvent(
+                new MouseEvent("click", { bubbles: true, cancelable: true })
+            );
             expect(handler).not.toHaveBeenCalled();
 
             cleanup?.();

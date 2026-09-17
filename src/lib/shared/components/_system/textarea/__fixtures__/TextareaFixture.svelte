@@ -19,9 +19,4 @@
     </div>
 {/snippet}
 
-<Textarea
-    bind:value
-    iconLeft={leftIcon}
-    iconRight={rightIcon}
-    footer={customFooter}
-/>
+<Textarea bind:value iconLeft={leftIcon} iconRight={rightIcon} footer={customFooter} />

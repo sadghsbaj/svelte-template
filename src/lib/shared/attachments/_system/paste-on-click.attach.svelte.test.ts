@@ -51,7 +51,9 @@ describe("pasteOnClick Svelte 5 Element Attachment", () => {
             const attach = pasteOnClick(input);
             const cleanup = attach(btn);
 
-            btn.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 }));
+            btn.dispatchEvent(
+                new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 })
+            );
             await vi.advanceTimersByTimeAsync(10);
 
             expect(input.value).toBe("clipboard-payload");
@@ -75,7 +77,9 @@ describe("pasteOnClick Svelte 5 Element Attachment", () => {
             // Set ref later (simulating lazy Svelte bind:this inside {#if})
             dynamicRef = input;
 
-            btn.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 }));
+            btn.dispatchEvent(
+                new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 })
+            );
             await vi.advanceTimersByTimeAsync(10);
 
             expect(input.value).toBe("clipboard-payload");
@@ -95,7 +99,9 @@ describe("pasteOnClick Svelte 5 Element Attachment", () => {
             });
             const cleanup = attach(btn);
 
-            btn.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 }));
+            btn.dispatchEvent(
+                new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 })
+            );
             await vi.advanceTimersByTimeAsync(10);
 
             expect(onError).toHaveBeenCalledTimes(1);
@@ -118,7 +124,9 @@ describe("pasteOnClick Svelte 5 Element Attachment", () => {
             const attach = pasteOnClick({ target: input, mode: "insert" });
             const cleanup = attach(btn);
 
-            btn.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 }));
+            btn.dispatchEvent(
+                new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 })
+            );
             await vi.advanceTimersByTimeAsync(10);
 
             expect(input.value).toBe("Hello Beautiful World");
@@ -136,7 +144,9 @@ describe("pasteOnClick Svelte 5 Element Attachment", () => {
             const attach = pasteOnClick({ target: input, mode: "replace" });
             const cleanup = attach(btn);
 
-            btn.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 }));
+            btn.dispatchEvent(
+                new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 })
+            );
             await vi.advanceTimersByTimeAsync(10);
 
             expect(input.value).toBe("New Token");
@@ -156,7 +166,9 @@ describe("pasteOnClick Svelte 5 Element Attachment", () => {
             const attach = pasteOnClick(textarea);
             const cleanup = attach(btn);
 
-            btn.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 }));
+            btn.dispatchEvent(
+                new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 })
+            );
             await vi.advanceTimersByTimeAsync(10);
 
             expect(textarea.value).toBe("line 1\nline 2");
@@ -174,7 +186,9 @@ describe("pasteOnClick Svelte 5 Element Attachment", () => {
             const attach = pasteOnClick();
             const cleanup = attach(input);
 
-            input.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 }));
+            input.dispatchEvent(
+                new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 })
+            );
             await vi.advanceTimersByTimeAsync(10);
 
             expect(input.value).toBe("prefix-12345");
@@ -194,7 +208,9 @@ describe("pasteOnClick Svelte 5 Element Attachment", () => {
             const attach = pasteOnClick(editableDiv);
             const cleanup = attach(btn);
 
-            btn.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 }));
+            btn.dispatchEvent(
+                new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 })
+            );
             await vi.advanceTimersByTimeAsync(10);
 
             // Bold tag preserved and text appended/inserted
@@ -213,7 +229,9 @@ describe("pasteOnClick Svelte 5 Element Attachment", () => {
             const attach = pasteOnClick(callback);
             const cleanup = attach(btn);
 
-            btn.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 }));
+            btn.dispatchEvent(
+                new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 })
+            );
             await vi.advanceTimersByTimeAsync(10);
 
             expect(callback).toHaveBeenCalledTimes(1);
@@ -241,7 +259,9 @@ describe("pasteOnClick Svelte 5 Element Attachment", () => {
             });
             const cleanup = attach(btn);
 
-            btn.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 }));
+            btn.dispatchEvent(
+                new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 })
+            );
             await vi.advanceTimersByTimeAsync(10);
             expect(Object.hasOwn(btn.dataset, "pasted")).toBe(true);
 
@@ -264,14 +284,18 @@ describe("pasteOnClick Svelte 5 Element Attachment", () => {
 
             // 1. First trigger empty state
             clipboardText = "";
-            btn.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 }));
+            btn.dispatchEvent(
+                new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 })
+            );
             await vi.advanceTimersByTimeAsync(10);
             expect(Object.hasOwn(btn.dataset, "pasteEmpty")).toBe(true);
             expect(Object.hasOwn(btn.dataset, "pasted")).toBe(false);
 
             // 2. Next trigger successful paste -> pasteEmpty must be deleted
             clipboardText = "valid-token";
-            btn.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 }));
+            btn.dispatchEvent(
+                new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 })
+            );
             await vi.advanceTimersByTimeAsync(10);
 
             expect(Object.hasOwn(btn.dataset, "pasted")).toBe(true);
@@ -292,11 +316,15 @@ describe("pasteOnClick Svelte 5 Element Attachment", () => {
             });
             const cleanup = attach(btn);
 
-            btn.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 }));
+            btn.dispatchEvent(
+                new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 })
+            );
             await vi.advanceTimersByTimeAsync(600);
             expect(Object.hasOwn(btn.dataset, "pasted")).toBe(true);
 
-            btn.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 }));
+            btn.dispatchEvent(
+                new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 })
+            );
             await vi.advanceTimersByTimeAsync(600);
             expect(Object.hasOwn(btn.dataset, "pasted")).toBe(true);
 
@@ -318,7 +346,9 @@ describe("pasteOnClick Svelte 5 Element Attachment", () => {
             });
             const cleanup = attach(btn);
 
-            btn.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 }));
+            btn.dispatchEvent(
+                new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 })
+            );
             await vi.advanceTimersByTimeAsync(10);
 
             expect(onSuccess).toHaveBeenCalledTimes(1);
@@ -355,7 +385,9 @@ describe("pasteOnClick Svelte 5 Element Attachment", () => {
             });
             const cleanup = attach(btn);
 
-            btn.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 }));
+            btn.dispatchEvent(
+                new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 })
+            );
             await vi.advanceTimersByTimeAsync(10);
 
             expect(onError).toHaveBeenCalledTimes(1);
@@ -380,7 +412,9 @@ describe("pasteOnClick Svelte 5 Element Attachment", () => {
             });
             const cleanup = attach(btn);
 
-            btn.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 }));
+            btn.dispatchEvent(
+                new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 })
+            );
             await vi.advanceTimersByTimeAsync(10);
 
             expect(onEmpty).toHaveBeenCalledTimes(1);
@@ -406,7 +440,9 @@ describe("pasteOnClick Svelte 5 Element Attachment", () => {
             });
             const cleanup = attach(btn);
 
-            btn.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 }));
+            btn.dispatchEvent(
+                new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 })
+            );
             await vi.advanceTimersByTimeAsync(10);
 
             expect(onError).toHaveBeenCalledTimes(1);
@@ -439,7 +475,9 @@ describe("pasteOnClick Svelte 5 Element Attachment", () => {
 
             expect(onSuccess).not.toHaveBeenCalled();
 
-            btn.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 }));
+            btn.dispatchEvent(
+                new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 })
+            );
             await vi.advanceTimersByTimeAsync(10);
 
             expect(onSuccess).toHaveBeenCalledTimes(1);
@@ -471,7 +509,9 @@ describe("pasteOnClick Svelte 5 Element Attachment", () => {
 
             expect(onSuccess).not.toHaveBeenCalled();
 
-            innerBtn.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 }));
+            innerBtn.dispatchEvent(
+                new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 })
+            );
             await vi.advanceTimersByTimeAsync(10);
 
             expect(onSuccess).toHaveBeenCalledTimes(1);
@@ -618,7 +658,9 @@ describe("pasteOnClick Svelte 5 Element Attachment", () => {
             const attach = pasteOnClick(input);
             const cleanup = attach(btn);
 
-            btn.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 }));
+            btn.dispatchEvent(
+                new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 })
+            );
             await vi.advanceTimersByTimeAsync(10);
 
             expect(input.value).toBe("");
@@ -637,7 +679,9 @@ describe("pasteOnClick Svelte 5 Element Attachment", () => {
             const attach = pasteOnClick(input);
             const cleanup = attach(btn);
 
-            btn.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 }));
+            btn.dispatchEvent(
+                new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 })
+            );
             await vi.advanceTimersByTimeAsync(10);
 
             expect(input.value).toBe("");
@@ -655,7 +699,9 @@ describe("pasteOnClick Svelte 5 Element Attachment", () => {
             const attach = pasteOnClick(input);
             const cleanup = attach(btn);
 
-            btn.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 }));
+            btn.dispatchEvent(
+                new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 })
+            );
             await vi.advanceTimersByTimeAsync(10);
             expect(Object.hasOwn(btn.dataset, "pasted")).toBe(true);
 
@@ -664,7 +710,9 @@ describe("pasteOnClick Svelte 5 Element Attachment", () => {
             expect(Object.hasOwn(btn.dataset, "pasted")).toBe(false);
 
             input.value = "";
-            btn.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 }));
+            btn.dispatchEvent(
+                new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 })
+            );
             await vi.advanceTimersByTimeAsync(10);
 
             expect(input.value).toBe("");

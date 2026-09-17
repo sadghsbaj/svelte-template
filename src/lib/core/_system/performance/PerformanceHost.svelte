@@ -1,8 +1,8 @@
 <script lang="ts">
     import { onMount } from "svelte";
+    import { appShortcut } from "$modules/shortcut";
 
     import { layerAttach } from "$core/_system/layout/app-layer/layer.svelte";
-    import { appShortcut } from "$modules/shortcut";
 
     import DomHeatmap from "./DomHeatmap.svelte";
     import DomInspector from "./DomInspector.svelte";

@@ -131,7 +131,8 @@ export function disableInteraction<T extends HTMLElement = HTMLElement>(
             node.setAttribute("tabindex", "-1");
 
             if (typeof document !== "undefined") {
-                const root = (node.getRootNode?.() as Document | ShadowRoot | undefined) ?? document;
+                const root =
+                    (node.getRootNode?.() as Document | ShadowRoot | undefined) ?? document;
                 const activeEl = root?.activeElement ?? document.activeElement;
                 if (activeEl && node.contains(activeEl)) {
                     (activeEl as HTMLElement)?.blur?.();

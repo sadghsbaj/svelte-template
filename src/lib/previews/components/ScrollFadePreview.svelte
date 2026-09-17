@@ -6,6 +6,7 @@
 
 <script lang="ts">
     import { scrollFade } from "$attachments";
+
     import PreviewCard from "$lib/previews/ui/PreviewCard.svelte";
     import PreviewGrid from "$lib/previews/ui/PreviewGrid.svelte";
     import PreviewHeader from "$lib/previews/ui/PreviewHeader.svelte";

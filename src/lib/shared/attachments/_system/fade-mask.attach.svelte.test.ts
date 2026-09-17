@@ -23,7 +23,9 @@ describe("fadeMask Svelte 5 Element Attachment", () => {
             const attach = fadeMask();
             const cleanup = attach(div);
 
-            expect(div.style.maskImage).toContain("radial-gradient(in oklch, black 30%, transparent 90%)");
+            expect(div.style.maskImage).toContain(
+                "radial-gradient(in oklch, black 30%, transparent 90%)"
+            );
             expect(div.style.maskRepeat).toBe("no-repeat");
             expect(div.style.maskSize).toBe("100% 100%");
 
@@ -111,9 +113,7 @@ describe("fadeMask Svelte 5 Element Attachment", () => {
             const attach = fadeMask({ type: "radial", strength: "lg" });
             const cleanup = attach(el);
 
-            expect(el.style.maskImage).toBe(
-                "radial-gradient(in oklch, black 0%, transparent 75%)"
-            );
+            expect(el.style.maskImage).toBe("radial-gradient(in oklch, black 0%, transparent 75%)");
             cleanup?.();
         });
     });

@@ -1,4 +1,5 @@
 import type { Attachment } from "svelte/attachments";
+
 import { isElementDisabledOrInert } from "./focus.utils";
 
 export type PanAxis = "x" | "y" | "both" | "lock-on-start";
@@ -228,14 +229,16 @@ function applyRubberBandResistance(
     if (min !== undefined && value < min) {
         const overshoot = min - value;
         const dimension = 200;
-        const dampedOvershoot = (overshoot * dimension) / (dimension + (1 / Math.max(0.01, resistance)) * overshoot);
+        const dampedOvershoot =
+            (overshoot * dimension) / (dimension + (1 / Math.max(0.01, resistance)) * overshoot);
         return min - dampedOvershoot;
     }
 
     if (max !== undefined && value > max) {
         const overshoot = value - max;
         const dimension = 200;
-        const dampedOvershoot = (overshoot * dimension) / (dimension + (1 / Math.max(0.01, resistance)) * overshoot);
+        const dampedOvershoot =
+            (overshoot * dimension) / (dimension + (1 / Math.max(0.01, resistance)) * overshoot);
         return max + dampedOvershoot;
     }
 
@@ -273,10 +276,7 @@ function computeDominantDirection(dx: number, dy: number): PanDirection {
 /**
  * Resolves touch-action CSS property string from configuration.
  */
-function resolveTouchAction(
-    touchAction: PanOptions["touchAction"],
-    axis: PanAxis
-): string | null {
+function resolveTouchAction(touchAction: PanOptions["touchAction"], axis: PanAxis): string | null {
     if (touchAction === false) {
         return null;
     }
@@ -315,9 +315,7 @@ export function pan<T extends HTMLElement = HTMLElement>(
     sourceOrOptions: PanSource = {}
 ): Attachment<T> {
     const options: PanOptions =
-        typeof sourceOrOptions === "function"
-            ? { onPan: sourceOrOptions }
-            : sourceOrOptions;
+        typeof sourceOrOptions === "function" ? { onPan: sourceOrOptions } : sourceOrOptions;
 
     const {
         enabled = true,
@@ -416,10 +414,7 @@ export function pan<T extends HTMLElement = HTMLElement>(
             sampleHistory = [];
         };
 
-        const handleCancel = (
-            reason: PanCancelEvent["reason"],
-            originalEvent?: Event
-        ): void => {
+        const handleCancel = (reason: PanCancelEvent["reason"], originalEvent?: Event): void => {
             if (gestureState === "active" && !isUnmounted) {
                 onCancel?.({ target: node, reason, originalEvent });
             }
@@ -447,7 +442,11 @@ export function pan<T extends HTMLElement = HTMLElement>(
             }
 
             // Check disabled state
-            if (ignoreDisabled && (isElementDisabledOrInert(node) || (e.target instanceof Element && isElementDisabledOrInert(e.target)))) {
+            if (
+                ignoreDisabled &&
+                (isElementDisabledOrInert(node) ||
+                    (e.target instanceof Element && isElementDisabledOrInert(e.target)))
+            ) {
                 return;
             }
 
@@ -553,7 +552,10 @@ export function pan<T extends HTMLElement = HTMLElement>(
                     const rawDelta: PanVector = { x: dx, y: dy };
                     const resistedDelta = computeResistedDelta(rawDelta, initialBounds, resistance);
                     const direction = computeDominantDirection(dx, dy);
-                    const progress = Math.min(1, Math.max(0, distance / Math.max(1, swipeDistanceThreshold)));
+                    const progress = Math.min(
+                        1,
+                        Math.max(0, distance / Math.max(1, swipeDistanceThreshold))
+                    );
 
                     onPanStart?.({
                         target: node,
@@ -563,7 +565,10 @@ export function pan<T extends HTMLElement = HTMLElement>(
                         currentPoint,
                         delta: rawDelta,
                         resistedDelta,
-                        stepDelta: { x: currentPoint.x - lastPoint.x, y: currentPoint.y - lastPoint.y },
+                        stepDelta: {
+                            x: currentPoint.x - lastPoint.x,
+                            y: currentPoint.y - lastPoint.y,
+                        },
                         velocity: { x: 0, y: 0 },
                         direction,
                         progress,
@@ -590,7 +595,10 @@ export function pan<T extends HTMLElement = HTMLElement>(
                 };
                 const velocity = calculateSmoothedVelocity(sampleHistory, now);
                 const direction = computeDominantDirection(dx, dy);
-                const progress = Math.min(1, Math.max(0, distance / Math.max(1, swipeDistanceThreshold)));
+                const progress = Math.min(
+                    1,
+                    Math.max(0, distance / Math.max(1, swipeDistanceThreshold))
+                );
 
                 node.dataset.panDirection = direction;
 
@@ -632,7 +640,10 @@ export function pan<T extends HTMLElement = HTMLElement>(
                 };
                 const velocity = calculateSmoothedVelocity(sampleHistory, now);
                 const direction = computeDominantDirection(dx, dy);
-                const progress = Math.min(1, Math.max(0, distance / Math.max(1, swipeDistanceThreshold)));
+                const progress = Math.min(
+                    1,
+                    Math.max(0, distance / Math.max(1, swipeDistanceThreshold))
+                );
 
                 // Evaluate Swipe & Fling criteria
                 const isVertical =

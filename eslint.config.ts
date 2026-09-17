@@ -12,6 +12,7 @@ import globals from "globals";
 import ts from "typescript-eslint";
 
 import { baseRulesConfig } from "./eslint/base-rules.ts";
+import { createCvaBlocklistConfig } from "./eslint/cva-blocklist.ts";
 import { ignoresConfig } from "./eslint/ignores.ts";
 import { restrictedImportsConfig } from "./eslint/imports.ts";
 import { shortcutsConfig } from "./eslint/shortcuts.ts";
@@ -20,7 +21,6 @@ import { forbiddenTransitionsConfig } from "./eslint/transitions.ts";
 import { unicornConfig } from "./eslint/unicorn.ts";
 import { unocssConfig } from "./eslint/unocss.ts";
 import { blocklistConfig } from "./uno/blocklist.ts";
-import { createCvaBlocklistConfig } from "./eslint/cva-blocklist.ts";
 
 export default defineConfig([
     ignoresConfig,

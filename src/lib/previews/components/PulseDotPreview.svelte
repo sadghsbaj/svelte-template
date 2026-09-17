@@ -112,33 +112,20 @@
 
             <PreviewCard label="Info (Syncing / Updating)" bg="elevation-1" class="h-32">
                 <div class="flex-center size-full">
-                    <PulseDot
-                        color="info"
-                        size={selectedSize}
-                        pulsing={isPulsing}
-                        glow={hasGlow}
-                    />
+                    <PulseDot color="info" size={selectedSize} pulsing={isPulsing} glow={hasGlow} />
                 </div>
             </PreviewCard>
 
             <PreviewCard label="Base (Muted / Paused)" bg="elevation-1" class="h-32">
                 <div class="flex-center size-full">
-                    <PulseDot
-                        color="base"
-                        size={selectedSize}
-                        pulsing={isPulsing}
-                        glow={hasGlow}
-                    />
+                    <PulseDot color="base" size={selectedSize} pulsing={isPulsing} glow={hasGlow} />
                 </div>
             </PreviewCard>
         </PreviewGrid>
     </PreviewSection>
 
     <!-- Sizes Comparison -->
-    <PreviewSection
-        title="Size Scale"
-        description="Three precise pixel sizes: 6px, 8px, and 10px."
-    >
+    <PreviewSection title="Size Scale" description="Three precise pixel sizes: 6px, 8px, and 10px.">
         <PreviewGrid cols={3}>
             <PreviewCard label="Small (6px)" bg="elevation-1" class="h-32">
                 <div class="flex-center size-full">

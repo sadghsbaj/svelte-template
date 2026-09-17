@@ -5,17 +5,7 @@
 </script>
 
 <script lang="ts">
-    import {
-        Check,
-        Eye,
-        EyeOff,
-        Lock,
-        Mail,
-        Search,
-        Sparkles,
-        User,
-        X,
-    } from "@lucide/svelte";
+    import { Check, Eye, EyeOff, Lock, Mail, Search, Sparkles, User, X } from "@lucide/svelte";
     import { TextInput, textInputActionStyles } from "$components";
 
     import PreviewCard from "$lib/previews/ui/PreviewCard.svelte";
@@ -154,10 +144,7 @@
         <PreviewGrid cols={2}>
             <PreviewCard label="Text Only" bg="elevation-1" class="h-32">
                 <div class="w-full max-w-xs">
-                    <TextInput
-                        placeholder="Enter description..."
-                        bind:value={textOnly}
-                    />
+                    <TextInput placeholder="Enter description..." bind:value={textOnly} />
                 </div>
             </PreviewCard>
 
@@ -173,10 +160,7 @@
 
             <PreviewCard label="Text + Icon Right" bg="elevation-1" class="h-32">
                 <div class="w-full max-w-xs">
-                    <TextInput
-                        placeholder="AI Prompt..."
-                        iconRight={sparklesIcon}
-                    />
+                    <TextInput placeholder="AI Prompt..." iconRight={sparklesIcon} />
                 </div>
             </PreviewCard>
 
@@ -260,21 +244,13 @@
         <PreviewGrid cols={3}>
             <PreviewCard label="Disabled State" bg="elevation-1" class="h-36">
                 <div class="w-full max-w-xs">
-                    <TextInput
-                        disabled
-                        iconLeft={lockIcon}
-                        bind:value={disabledVal}
-                    />
+                    <TextInput disabled iconLeft={lockIcon} bind:value={disabledVal} />
                 </div>
             </PreviewCard>
 
             <PreviewCard label="Invalid" bg="elevation-1" class="h-36">
                 <div class="w-full max-w-xs">
-                    <TextInput
-                        invalid
-                        iconLeft={mailIcon}
-                        bind:value={invalidVal}
-                    />
+                    <TextInput invalid iconLeft={mailIcon} bind:value={invalidVal} />
                 </div>
             </PreviewCard>
 

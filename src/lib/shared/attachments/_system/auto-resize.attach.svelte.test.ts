@@ -1,9 +1,6 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 
-import {
-    autoResize,
-    type AutoResizeDetail,
-} from "./auto-resize.attach";
+import { autoResize, type AutoResizeDetail } from "./auto-resize.attach";
 
 describe("autoResize Svelte 5 Element Attachment", () => {
     let container: HTMLDivElement;

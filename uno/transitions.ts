@@ -81,8 +81,7 @@ export const transitionRules: Rule[] = [
             const transitionValue = `${propInfo.prop} ${duration} ${easingValue}${delay ? ` ${delay}` : ""}`;
 
             const masterList = [...MASTER_TRANSITION_VARS];
-            const slotDefault =
-                TRANSITION_SLOT_DEFAULTS[propInfo.varName] ?? `${propInfo.prop} 0s`;
+            const slotDefault = TRANSITION_SLOT_DEFAULTS[propInfo.varName] ?? `${propInfo.prop} 0s`;
             const currentVarEntry = `var(${propInfo.varName}, ${slotDefault})`;
             if (!masterList.includes(currentVarEntry)) {
                 masterList.push(currentVarEntry);

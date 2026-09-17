@@ -1,6 +1,12 @@
 <script lang="ts">
     import type { Component } from "svelte";
-    import { Box, Component as ComponentIcon, PanelLeftClose, PanelLeftOpen, Search } from "@lucide/svelte";
+    import {
+        Box,
+        Component as ComponentIcon,
+        PanelLeftClose,
+        PanelLeftOpen,
+        Search,
+    } from "@lucide/svelte";
     import { Button, TextInput } from "$components";
 
     import { fade } from "$core/_system/motion/svelte";

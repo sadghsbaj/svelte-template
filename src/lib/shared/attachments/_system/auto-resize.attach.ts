@@ -136,10 +136,7 @@ function getComputedLineHeight(computed: CSSStyleDeclaration): number {
 /**
  * Measures text width for horizontal input auto-resizing using an offscreen canvas or mirror span.
  */
-function measureInputTextWidth(
-    text: string,
-    computed: CSSStyleDeclaration
-): number {
+function measureInputTextWidth(text: string, computed: CSSStyleDeclaration): number {
     if (typeof document === "undefined") {
         return 0;
     }

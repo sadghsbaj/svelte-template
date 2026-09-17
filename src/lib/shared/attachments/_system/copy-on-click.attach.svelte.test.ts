@@ -43,7 +43,9 @@ describe("copyOnClick Svelte 5 Element Attachment", () => {
             const attach = copyOnClick("static-token-123");
             const cleanup = attach(btn);
 
-            btn.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 }));
+            btn.dispatchEvent(
+                new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 })
+            );
             await vi.advanceTimersByTimeAsync(10);
 
             expect(navigator.clipboard.writeText).toHaveBeenCalledWith("static-token-123");
@@ -60,13 +62,17 @@ describe("copyOnClick Svelte 5 Element Attachment", () => {
             const attach = copyOnClick(() => token);
             const cleanup = attach(btn);
 
-            btn.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 }));
+            btn.dispatchEvent(
+                new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 })
+            );
             await vi.advanceTimersByTimeAsync(10);
 
             expect(navigator.clipboard.writeText).toHaveBeenCalledWith("token-v1");
 
             token = "token-v2";
-            btn.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 }));
+            btn.dispatchEvent(
+                new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 })
+            );
             await vi.advanceTimersByTimeAsync(10);
 
             expect(navigator.clipboard.writeText).toHaveBeenCalledWith("token-v2");
@@ -83,7 +89,9 @@ describe("copyOnClick Svelte 5 Element Attachment", () => {
             });
             const cleanup = attach(btn);
 
-            btn.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 }));
+            btn.dispatchEvent(
+                new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 })
+            );
             await vi.advanceTimersByTimeAsync(10);
 
             expect(navigator.clipboard.writeText).toHaveBeenCalledWith("async-resolved-data");
@@ -101,7 +109,9 @@ describe("copyOnClick Svelte 5 Element Attachment", () => {
             const attach = copyOnClick(input);
             const cleanup = attach(btn);
 
-            btn.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 }));
+            btn.dispatchEvent(
+                new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 })
+            );
             await vi.advanceTimersByTimeAsync(10);
 
             expect(navigator.clipboard.writeText).toHaveBeenCalledWith("input-field-value");
@@ -118,7 +128,9 @@ describe("copyOnClick Svelte 5 Element Attachment", () => {
             const attach = copyOnClick(svgText);
             const cleanup = attach(btn);
 
-            btn.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 }));
+            btn.dispatchEvent(
+                new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 })
+            );
             await vi.advanceTimersByTimeAsync(10);
 
             expect(navigator.clipboard.writeText).toHaveBeenCalledWith("svg-source-content");
@@ -134,7 +146,9 @@ describe("copyOnClick Svelte 5 Element Attachment", () => {
             const attach = copyOnClick();
             const cleanup = attach(input);
 
-            input.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 }));
+            input.dispatchEvent(
+                new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 })
+            );
             await vi.advanceTimersByTimeAsync(10);
 
             expect(navigator.clipboard.writeText).toHaveBeenCalledWith("my-input-content");
@@ -155,7 +169,9 @@ describe("copyOnClick Svelte 5 Element Attachment", () => {
             );
             await vi.advanceTimersByTimeAsync(10);
 
-            expect(navigator.clipboard.writeText).toHaveBeenCalledWith("multiline\ntextarea\ncontent");
+            expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
+                "multiline\ntextarea\ncontent"
+            );
 
             cleanup?.();
         });
@@ -168,7 +184,9 @@ describe("copyOnClick Svelte 5 Element Attachment", () => {
             const attach = copyOnClick();
             const cleanup = attach(btn);
 
-            btn.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 }));
+            btn.dispatchEvent(
+                new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 })
+            );
             await vi.advanceTimersByTimeAsync(10);
 
             expect(navigator.clipboard.writeText).toHaveBeenCalledWith("Copy this content");
@@ -183,7 +201,9 @@ describe("copyOnClick Svelte 5 Element Attachment", () => {
             const attach = copyOnClick<SVGSVGElement>("svg-copy-token");
             const cleanup = attach(svg);
 
-            svg.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 }));
+            svg.dispatchEvent(
+                new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 })
+            );
             await vi.advanceTimersByTimeAsync(10);
 
             expect(navigator.clipboard.writeText).toHaveBeenCalledWith("svg-copy-token");
@@ -204,7 +224,9 @@ describe("copyOnClick Svelte 5 Element Attachment", () => {
             });
             const cleanup = attach(btn);
 
-            btn.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 }));
+            btn.dispatchEvent(
+                new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 })
+            );
 
             // Immediately after microtasks
             await vi.advanceTimersByTimeAsync(10);
@@ -232,12 +254,16 @@ describe("copyOnClick Svelte 5 Element Attachment", () => {
             const cleanup = attach(btn);
 
             // First click
-            btn.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 }));
+            btn.dispatchEvent(
+                new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 })
+            );
             await vi.advanceTimersByTimeAsync(600);
             expect(Object.hasOwn(btn.dataset, "copied")).toBe(true);
 
             // Second click resets the 1000ms timer
-            btn.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 }));
+            btn.dispatchEvent(
+                new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 })
+            );
             await vi.advanceTimersByTimeAsync(600);
             expect(Object.hasOwn(btn.dataset, "copied")).toBe(true);
 
@@ -258,7 +284,9 @@ describe("copyOnClick Svelte 5 Element Attachment", () => {
             });
             const cleanup = attach(btn);
 
-            btn.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 }));
+            btn.dispatchEvent(
+                new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 })
+            );
             await vi.advanceTimersByTimeAsync(10);
 
             expect(onSuccess).toHaveBeenCalledTimes(1);
@@ -298,7 +326,9 @@ describe("copyOnClick Svelte 5 Element Attachment", () => {
             });
             const cleanup = attach(btn);
 
-            btn.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 }));
+            btn.dispatchEvent(
+                new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 })
+            );
             await vi.advanceTimersByTimeAsync(10);
 
             expect(onError).toHaveBeenCalledTimes(1);
@@ -324,7 +354,9 @@ describe("copyOnClick Svelte 5 Element Attachment", () => {
             });
             const cleanup = attach(btn);
 
-            btn.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 }));
+            btn.dispatchEvent(
+                new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 })
+            );
             await vi.advanceTimersByTimeAsync(10);
 
             expect(onError).toHaveBeenCalledTimes(1);
@@ -358,7 +390,9 @@ describe("copyOnClick Svelte 5 Element Attachment", () => {
             expect(onSuccess).not.toHaveBeenCalled();
 
             // Native browser dispatches click on Enter/Space
-            btn.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 }));
+            btn.dispatchEvent(
+                new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 })
+            );
             await vi.advanceTimersByTimeAsync(10);
 
             expect(onSuccess).toHaveBeenCalledTimes(1);
@@ -392,7 +426,9 @@ describe("copyOnClick Svelte 5 Element Attachment", () => {
             expect(onSuccess).not.toHaveBeenCalled();
 
             // Then native click bubbled from inner button
-            innerBtn.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 }));
+            innerBtn.dispatchEvent(
+                new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 })
+            );
             await vi.advanceTimersByTimeAsync(10);
 
             expect(onSuccess).toHaveBeenCalledTimes(1);
@@ -583,7 +619,9 @@ describe("copyOnClick Svelte 5 Element Attachment", () => {
             const attach = copyOnClick("disabled-test");
             const cleanup = attach(btn);
 
-            btn.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 }));
+            btn.dispatchEvent(
+                new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 })
+            );
             await vi.advanceTimersByTimeAsync(10);
 
             expect(navigator.clipboard.writeText).not.toHaveBeenCalled();
@@ -599,7 +637,9 @@ describe("copyOnClick Svelte 5 Element Attachment", () => {
             const attach = copyOnClick("disabled-test");
             const cleanup = attach(btn);
 
-            btn.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 }));
+            btn.dispatchEvent(
+                new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 })
+            );
             await vi.advanceTimersByTimeAsync(10);
 
             expect(navigator.clipboard.writeText).not.toHaveBeenCalled();
@@ -617,7 +657,9 @@ describe("copyOnClick Svelte 5 Element Attachment", () => {
             const attach = copyOnClick("inert-test");
             const cleanup = attach(btn);
 
-            btn.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 }));
+            btn.dispatchEvent(
+                new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 })
+            );
             await vi.advanceTimersByTimeAsync(10);
 
             expect(navigator.clipboard.writeText).not.toHaveBeenCalled();
@@ -636,7 +678,9 @@ describe("copyOnClick Svelte 5 Element Attachment", () => {
             });
             const cleanup = attach(btn);
 
-            btn.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 }));
+            btn.dispatchEvent(
+                new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 })
+            );
             await vi.advanceTimersByTimeAsync(10);
 
             expect(navigator.clipboard.writeText).toHaveBeenCalledWith("allow-disabled");
@@ -708,7 +752,9 @@ describe("copyOnClick Svelte 5 Element Attachment", () => {
             });
             const cleanup = attach(btn);
 
-            btn.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 }));
+            btn.dispatchEvent(
+                new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 })
+            );
             await vi.advanceTimersByTimeAsync(10);
 
             expect(navigator.clipboard.writeText).not.toHaveBeenCalled();
@@ -726,7 +772,9 @@ describe("copyOnClick Svelte 5 Element Attachment", () => {
             const cleanup = attach(btn);
 
             // Trigger copy
-            btn.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 }));
+            btn.dispatchEvent(
+                new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 })
+            );
             await vi.advanceTimersByTimeAsync(10);
             expect(Object.hasOwn(btn.dataset, "copied")).toBe(true);
 
@@ -736,7 +784,9 @@ describe("copyOnClick Svelte 5 Element Attachment", () => {
             expect(Object.hasOwn(btn.dataset, "copied")).toBe(false);
 
             // Subsequent clicks do nothing
-            btn.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 }));
+            btn.dispatchEvent(
+                new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 })
+            );
             await vi.advanceTimersByTimeAsync(10);
 
             expect(navigator.clipboard.writeText).toHaveBeenCalledTimes(1);

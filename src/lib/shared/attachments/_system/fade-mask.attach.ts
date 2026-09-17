@@ -6,14 +6,7 @@
 
 import type { Attachment } from "svelte/attachments";
 
-export type FadeMaskType =
-    | "radial"
-    | "top"
-    | "bottom"
-    | "left"
-    | "right"
-    | "block"
-    | "inline";
+export type FadeMaskType = "radial" | "top" | "bottom" | "left" | "right" | "block" | "inline";
 
 export type FadeMaskStrength = "sm" | "md" | "lg";
 
@@ -56,10 +49,7 @@ const STRENGTH_MAP: Record<FadeMaskStrength, { start: string; end: string; edge:
 /**
  * Resolves the CSS gradient definition for the requested mask type and strength.
  */
-function resolveGradient(
-    type: FadeMaskType = "radial",
-    strength: FadeMaskStrength = "md"
-): string {
+function resolveGradient(type: FadeMaskType = "radial", strength: FadeMaskStrength = "md"): string {
     const active = STRENGTH_MAP[strength] ?? STRENGTH_MAP.md;
 
     const GRADIENT_MAP: Record<FadeMaskType, string> = {

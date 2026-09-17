@@ -147,12 +147,7 @@
             <span class="text-sm text-strong tracking-wide font-600"> DOM Inspector </span>
         </div>
 
-        <CloseButton
-            variant="soft"
-            size="md"
-            onclick={onClose}
-            title="Close Inspector"
-        />
+        <CloseButton variant="soft" size="md" onclick={onClose} title="Close Inspector" />
     </div>
 
     <!-- Active Status / Selected Element Info -->

@@ -38,7 +38,10 @@ describe("ViewState (Node SSR Environment)", () => {
         expect(state.views).toEqual(mockConfig.views);
         expect(state.rootViews.map((r) => r.view)).toEqual(["home", "stats"]);
         expect(state.getChildren("stats").map((c) => c.view)).toEqual(["statsDetails"]);
-        expect(state.getViewPath("statsDetails").map((p) => p.view)).toEqual(["stats", "statsDetails"]);
+        expect(state.getViewPath("statsDetails").map((p) => p.view)).toEqual([
+            "stats",
+            "statsDetails",
+        ]);
     });
 
     test("should handle scroll calls safely without crashing in SSR", () => {

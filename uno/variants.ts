@@ -10,7 +10,8 @@ export const variantsConfig: Variant[] = [
             return {
                 matcher: matcher.slice(6),
                 parent: "@media (hover: hover) and (pointer: fine)",
-                selector: (s) => `${s}:hover:not([aria-disabled="true"], [aria-busy="true"], :disabled)`,
+                selector: (s) =>
+                    `${s}:hover:not([aria-disabled="true"], [aria-busy="true"], :disabled)`,
             };
         },
     },
@@ -36,7 +37,8 @@ export const variantsConfig: Variant[] = [
             if (!matcher.startsWith("active:")) return;
             return {
                 matcher: matcher.slice(7),
-                selector: (s) => `${s}:active:not([aria-disabled="true"], [aria-busy="true"], :disabled)`,
+                selector: (s) =>
+                    `${s}:active:not([aria-disabled="true"], [aria-busy="true"], :disabled)`,
             };
         },
     },

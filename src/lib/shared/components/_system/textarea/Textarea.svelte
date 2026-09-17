@@ -141,10 +141,7 @@
     });
 
     const textareaComputedStyle = $derived(
-        [
-            resize && !autoResize ? `resize: ${resize};` : "resize: none;",
-            restProps.style,
-        ]
+        [resize && !autoResize ? `resize: ${resize};` : "resize: none;", restProps.style]
             .filter(Boolean)
             .join(" ")
     );
@@ -428,7 +425,7 @@
         {placeholder}
         {disabled}
         rows={effectiveRows}
-        maxlength={maxlength}
+        {maxlength}
         aria-invalid={invalid ? "true" : undefined}
         class={textareaComputedClass}
         style={textareaComputedStyle}
@@ -437,8 +434,7 @@
             color: focusColor,
             enabled: focusRing,
         })}
-        {@attach resolvedAutoResize}
-    ></textarea>
+        {@attach resolvedAutoResize}></textarea>
 
     {#if iconRight}
         <span class="{iconRightClass} [&>svg]:size-full [&>svg]:stroke-[2.25px]">

@@ -83,9 +83,7 @@
                     >
                         <IconComponent
                             size={20}
-                            class="t-colors {theme.mode === item.id
-                                ? 'text-strong'
-                                : 'text-weak'}"
+                            class="t-colors {theme.mode === item.id ? 'text-strong' : 'text-weak'}"
                         />
                         <span class="text-sm font-500">{item.label}</span>
                     </button>

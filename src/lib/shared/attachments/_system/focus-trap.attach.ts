@@ -169,11 +169,7 @@ function resolveTarget(
         return container;
     }
 
-    if (
-        typeof target === "string" &&
-        target !== "first-focusable" &&
-        target !== "last-focusable"
-    ) {
+    if (typeof target === "string" && target !== "first-focusable" && target !== "last-focusable") {
         try {
             const matched = container.querySelector<HTMLElement>(target);
             if (matched && !isElementDisabledOrInert(matched) && isElementVisible(matched)) {
@@ -322,7 +318,8 @@ export function focusTrap<T extends HTMLElement = HTMLElement>(
             let targetToFocus: HTMLElement | null;
             try {
                 targetToFocus =
-                    resolveTarget(container, initialFocus) ?? resolveTarget(container, fallbackFocus);
+                    resolveTarget(container, initialFocus) ??
+                    resolveTarget(container, fallbackFocus);
             } catch (error: unknown) {
                 if (isUnmounted) return;
                 container.dataset.focusTrapFailed = "";
@@ -345,7 +342,9 @@ export function focusTrap<T extends HTMLElement = HTMLElement>(
                     if (!isUnmounted) {
                         container.dataset.focusTrapFailed = "";
                         onError?.({
-                            error: new Error("FocusTrap: Unable to resolve initial or fallback focusable element"),
+                            error: new Error(
+                                "FocusTrap: Unable to resolve initial or fallback focusable element"
+                            ),
                             container,
                         });
                     }
@@ -606,7 +605,9 @@ export function focusTrap<T extends HTMLElement = HTMLElement>(
                       : initialActiveElement;
 
             const validRestoreTarget =
-                restoreFocus && targetToRestore?.isConnected && !isElementDisabledOrInert(targetToRestore)
+                restoreFocus &&
+                targetToRestore?.isConnected &&
+                !isElementDisabledOrInert(targetToRestore)
                     ? targetToRestore
                     : undefined;
 

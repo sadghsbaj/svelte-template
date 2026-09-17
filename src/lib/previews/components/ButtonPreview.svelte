@@ -194,7 +194,13 @@
 
             <PreviewCard label="Center" bg="elevation-1" class="h-32">
                 <div class="w-full max-w-200px">
-                    <Button fullWidth align="center" iconLeft={plusIcon} variant="soft" color="base">
+                    <Button
+                        fullWidth
+                        align="center"
+                        iconLeft={plusIcon}
+                        variant="soft"
+                        color="base"
+                    >
                         Center
                     </Button>
                 </div>
@@ -210,7 +216,14 @@
 
             <PreviewCard label="Between" bg="elevation-1" class="h-32">
                 <div class="w-full max-w-200px">
-                    <Button fullWidth align="between" iconLeft={plusIcon} iconRight={arrowIcon} variant="soft" color="base">
+                    <Button
+                        fullWidth
+                        align="between"
+                        iconLeft={plusIcon}
+                        iconRight={arrowIcon}
+                        variant="soft"
+                        color="base"
+                    >
                         Between
                     </Button>
                 </div>

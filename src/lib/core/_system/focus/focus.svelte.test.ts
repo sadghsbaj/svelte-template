@@ -4,8 +4,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { motionPreference } from "$core/_system/motion/motion.svelte.js";
 
-import { FocusAnimationController } from "./focus.animation.js";
 import FocusHostFixture from "./__fixtures__/FocusHostFixture.svelte";
+import { FocusAnimationController } from "./focus.animation.js";
 import { focusAttach, focusOverridesMap, onFocusOverridesChange } from "./focus.attach.js";
 import {
     computeTargetBox,

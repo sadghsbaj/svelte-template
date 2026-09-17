@@ -37,6 +37,10 @@
     let vertCenterValue = $state<number>(70);
 
     let noHitAreaValue = $state<number>(60);
+
+    let elevation0Value = $state<number>(35);
+    let elevation1Value = $state<number>(55);
+    let elevation2Value = $state<number>(75);
 </script>
 
 <PreviewPage>
@@ -246,6 +250,44 @@
                         bind:value={noHitAreaValue}
                         hitArea={false}
                         ariaLabel="Slider with hit area disabled"
+                    />
+                </div>
+            </PreviewCard>
+        </PreviewGrid>
+    </PreviewSection>
+
+    <!-- Elevation Layers -->
+    <PreviewSection
+        title="Elevation Layers"
+        description="Contrast and visual depth verification across surface elevation levels."
+    >
+        <PreviewGrid cols={3}>
+            <PreviewCard label="Elevation 0" bg="elevation-0" class="h-32">
+                <div class="w-full px-6">
+                    <Slider
+                        thumbShape={selectedShape}
+                        bind:value={elevation0Value}
+                        ariaLabel="Elevation 0 slider"
+                    />
+                </div>
+            </PreviewCard>
+
+            <PreviewCard label="Elevation 1" bg="elevation-1" class="h-32">
+                <div class="w-full px-6">
+                    <Slider
+                        thumbShape={selectedShape}
+                        bind:value={elevation1Value}
+                        ariaLabel="Elevation 1 slider"
+                    />
+                </div>
+            </PreviewCard>
+
+            <PreviewCard label="Elevation 2" bg="elevation-2" class="h-32">
+                <div class="w-full px-6">
+                    <Slider
+                        thumbShape={selectedShape}
+                        bind:value={elevation2Value}
+                        ariaLabel="Elevation 2 slider"
                     />
                 </div>
             </PreviewCard>

@@ -129,7 +129,7 @@ export const sliderFillStyles = cva({
 export const sliderThumbStyles = cva({
     base: {
         layout: "absolute flex-center rounded-full squircle-soft pointer-events-none select-none",
-        frame: "border-none shadow-sm",
+        frame: "border-none shadow-[0_0_1px_rgba(0,0,0,0.2),0_2px_4px_rgba(0,0,0,0.08)] dark:shadow-sm",
         motion: "will-change-transform transform-gpu backface-hidden t:(scale-200-cubic-out bg-200-quad-out shadow-200-quad-out)",
     },
     options: {

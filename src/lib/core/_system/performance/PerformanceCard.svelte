@@ -10,7 +10,7 @@
         Maximize,
         MousePointerClick,
     } from "@lucide/svelte";
-    import { CloseButton } from "$components";
+    import { Badge, CloseButton, Separator } from "$components";
 
     import { fly } from "$core/_system/motion";
 
@@ -53,9 +53,9 @@
             suffix: "",
             statusColorClass:
                 performanceState.cls > 0.25
-                    ? "text-red-600 dark:text-red-400"
+                    ? "text-danger-600 dark:text-danger-400"
                     : performanceState.cls > 0.1
-                      ? "text-amber-600 dark:text-amber-400"
+                      ? "text-warning-600 dark:text-warning-400"
                       : "",
         },
         {
@@ -64,9 +64,9 @@
             suffix: "ms",
             statusColorClass:
                 performanceState.lcp > 4000
-                    ? "text-red-600 dark:text-red-400"
+                    ? "text-danger-600 dark:text-danger-400"
                     : performanceState.lcp > 2500
-                      ? "text-amber-600 dark:text-amber-400"
+                      ? "text-warning-600 dark:text-warning-400"
                       : "",
         },
         {
@@ -75,9 +75,9 @@
             suffix: "ms",
             statusColorClass:
                 performanceState.inp > 500
-                    ? "text-red-600 dark:text-red-400"
+                    ? "text-danger-600 dark:text-danger-400"
                     : performanceState.inp > 200
-                      ? "text-amber-600 dark:text-amber-400"
+                      ? "text-warning-600 dark:text-warning-400"
                       : "",
         },
     ]);
@@ -105,8 +105,8 @@
             return {
                 level: 3,
                 label: "Moderate",
-                color: "text-amber-600 dark:text-amber-400",
-                bg: "bg-amber-400",
+                color: "text-warning-500 dark:text-warning-400",
+                bg: "bg-warning-400",
             };
         }
         if (used <= 300) {
@@ -142,21 +142,18 @@
         if (count >= 1500 || depth >= 25) {
             return {
                 status: "Critical",
-                textClass: "text-red-600 dark:text-red-400",
-                borderClass: "border-red-500/40 bg-red-500/15",
+                color: "danger" as const,
             };
         }
         if (count >= 800 || depth >= 15) {
             return {
                 status: "Warning",
-                textClass: "text-amber-600 dark:text-amber-400",
-                borderClass: "border-amber-500/40 bg-amber-500/15",
+                color: "warning" as const,
             };
         }
         return {
             status: "Optimal",
-            textClass: "text-emerald-600 dark:text-emerald-400",
-            borderClass: "border-emerald-500/40 bg-emerald-500/15",
+            color: "success" as const,
         };
     });
 
@@ -169,15 +166,18 @@
         if (cls > 0.25 || lcp > 4000 || inp > 500) {
             return {
                 status: "Poor",
+                color: "danger" as const,
             };
         }
         if (cls > 0.1 || lcp > 2500 || inp > 200) {
             return {
                 status: "Needs Improvement",
+                color: "warning" as const,
             };
         }
         return {
             status: "Good",
+            color: "success" as const,
         };
     });
 
@@ -275,9 +275,9 @@
     {@render header()}
     {@render summaryBar()}
 
-    <div
-        class="mt-3.5 pt-3.5 border-t flex flex-col gap-3 border-base-200/60 dark:border-base-800/60"
-    >
+    <Separator class="my-3.5" />
+
+    <div class="flex flex-col gap-3">
         {@render domHealthCard()}
         {@render webVitalsCard()}
         {@render memoryCard()}
@@ -403,25 +403,9 @@
                     <MousePointerClick class="h-3.5 w-3.5" />
                 </button>
 
-                {#if domHealthRating.status === "Critical"}
-                    <span
-                        class="text-xs text-danger-600 font-mono font-600 px-2.5 py-0.5 border border-danger-500/40 rounded-full squircle-smooth bg-danger-500/15 dark:text-danger-400 dark:border-danger-500/40"
-                    >
-                        Critical
-                    </span>
-                {:else if domHealthRating.status === "Warning"}
-                    <span
-                        class="text-xs text-amber-600 font-mono font-600 px-2.5 py-0.5 border border-amber-500/40 rounded-full squircle-smooth bg-amber-500/15 dark:text-amber-400 dark:border-amber-500/40"
-                    >
-                        Warning
-                    </span>
-                {:else}
-                    <span
-                        class="text-xs text-emerald-600 font-mono font-600 px-2.5 py-0.5 border border-emerald-500/40 rounded-full squircle-smooth bg-emerald-500/15 dark:text-emerald-400 dark:border-emerald-500/40"
-                    >
-                        Optimal
-                    </span>
-                {/if}
+                <Badge variant="soft" color={domHealthRating.color} size="sm">
+                    {domHealthRating.status}
+                </Badge>
             </div>
         </div>
 
@@ -434,7 +418,7 @@
                 performanceState.domCount >= 1500
                     ? "text-danger-600 dark:text-danger-400"
                     : performanceState.domCount >= 800
-                      ? "text-amber-600 dark:text-amber-400"
+                      ? "text-warning-600 dark:text-warning-400"
                       : ""
             )}
             {@render subCard(
@@ -445,7 +429,7 @@
                 performanceState.domDepth >= 25
                     ? "text-danger-600 dark:text-danger-400"
                     : performanceState.domDepth >= 15
-                      ? "text-amber-600 dark:text-amber-400"
+                      ? "text-warning-600 dark:text-warning-400"
                       : ""
             )}
         </div>
@@ -456,28 +440,12 @@
     <div class="p-3 rounded-xl bg-elevation-2 flex flex-col gap-2.5 squircle-smooth">
         <div class="text-sm flex items-center justify-between">
             <div class="text-main font-500 flex gap-2 items-center">
-                <Activity class="text-amber-500 h-4 w-4" />
+                <Activity class="text-warning-500 h-4 w-4" />
                 <span>Web Vitals</span>
             </div>
-            {#if webVitalsRating.status === "Poor"}
-                <span
-                    class="text-xs text-danger-600 font-mono font-600 px-2.5 py-0.5 border border-danger-500/40 rounded-full squircle-smooth bg-danger-500/15 dark:text-danger-400 dark:border-danger-500/40"
-                >
-                    Poor
-                </span>
-            {:else if webVitalsRating.status === "Needs Improvement"}
-                <span
-                    class="text-xs text-amber-600 font-mono font-600 px-2.5 py-0.5 border border-amber-500/40 rounded-full squircle-smooth bg-amber-500/15 dark:text-amber-400 dark:border-amber-500/40"
-                >
-                    Needs Improvement
-                </span>
-            {:else}
-                <span
-                    class="text-xs text-emerald-600 font-mono font-600 px-2.5 py-0.5 border border-emerald-500/40 rounded-full squircle-smooth bg-emerald-500/15 dark:text-emerald-400 dark:border-emerald-500/40"
-                >
-                    Good
-                </span>
-            {/if}
+            <Badge variant="soft" color={webVitalsRating.color} size="sm">
+                {webVitalsRating.status}
+            </Badge>
         </div>
 
         <div class="mt-0.5 text-center gap-2 grid grid-cols-3">

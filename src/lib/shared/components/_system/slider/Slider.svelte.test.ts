@@ -1,5 +1,5 @@
 import { flushSync, mount, unmount } from "svelte";
-import { afterEach, beforeEach, describe, expect, test } from "vitest";
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 
 import Slider from "./Slider.svelte";
 
@@ -122,14 +122,21 @@ describe("Slider", () => {
 
     test("renders hit-area touch targets on thumbs by default", () => {
         const el = render({ hitArea: true });
-        const hitArea = el.querySelector(".hit-area");
+        const hitArea = el.querySelector(".slider-thumb-target") as HTMLElement;
         expect(hitArea).not.toBeNull();
+        expect(hitArea.style.width).toBe("44px");
+        expect(hitArea.style.height).toBe("44px");
+        expect(el.style.height).toBe("44px");
+        expect(el.style.marginBlock).toBe("-12px");
     });
 
     test("allows disabling hit-area when hitArea=false", () => {
-        const el = render({ hitArea: false });
-        const hitArea = el.querySelector(".hit-area");
-        expect(hitArea).toBeNull();
+        const el = render({ hitArea: false, thumbShape: "bar", size: "md" });
+        const hitArea = el.querySelector(".slider-thumb-target") as HTMLElement;
+        expect(hitArea.style.width).toBe("8px");
+        expect(hitArea.style.height).toBe("24px");
+        expect(el.style.height).toBe("24px");
+        expect(el.style.marginBlock).toBe("-2px");
     });
 
     test("handles disabled state via disableInteraction", () => {
@@ -193,6 +200,23 @@ describe("Slider", () => {
         expect(elWithoutHitArea.style.getPropertyValue("--slider-touch-size")).toBe("20px");
     });
 
+    test("supports a custom numeric hit-area size", () => {
+        const el = render({ hitArea: 56, size: "md" });
+        const hitArea = el.querySelector(".slider-thumb-target") as HTMLElement;
+
+        expect(hitArea.style.width).toBe("56px");
+        expect(hitArea.style.height).toBe("56px");
+        expect(el.style.height).toBe("56px");
+        expect(el.style.marginBlock).toBe("-18px");
+    });
+
+    test("expands vertical touch geometry without changing its occupied width", () => {
+        const el = render({ hitArea: true, orientation: "vertical", size: "md" });
+
+        expect(el.style.width).toBe("44px");
+        expect(el.style.marginInline).toBe("-12px");
+    });
+
     test("sets --slider-thumb-width and --slider-thumb-height matching thumb shape and orientation", () => {
         const horizBar = render({ thumbShape: "bar", size: "md", orientation: "horizontal" });
         expect(horizBar.style.getPropertyValue("--slider-thumb-width")).toBe("8px");
@@ -224,5 +248,64 @@ describe("Slider", () => {
         flushSync();
 
         expect(boundEl).toBeInstanceOf(HTMLDivElement);
+    });
+
+    test("renders thumb target with higher z-index than native input for touch accessibility", () => {
+        const el = render({ value: 50, size: "md" });
+        const thumbTarget = el.querySelector(".slider-thumb-target-min") as HTMLElement;
+        const input = el.querySelector("input[type='range']") as HTMLInputElement;
+
+        expect(Number(thumbTarget.style.zIndex || "0")).toBeGreaterThan(
+            Number(input.style.zIndex || "0")
+        );
+    });
+
+    test("drags from the touch target outside the visual thumb", () => {
+        let val = 50;
+        const el = render({
+            get value() {
+                return val;
+            },
+            set value(v) {
+                val = v as number;
+            },
+        });
+        const target = el.querySelector(".slider-thumb-target-min") as HTMLElement;
+
+        vi.spyOn(el, "getBoundingClientRect").mockReturnValue({
+            bottom: 20,
+            height: 20,
+            left: 0,
+            right: 200,
+            top: 0,
+            width: 200,
+            x: 0,
+            y: 0,
+            toJSON: () => ({}),
+        });
+
+        target.dispatchEvent(
+            new PointerEvent("pointerdown", {
+                bubbles: true,
+                button: 0,
+                cancelable: true,
+                clientX: 100,
+                clientY: -10,
+                pointerId: 1,
+                pointerType: "touch",
+            })
+        );
+        el.dispatchEvent(
+            new PointerEvent("pointermove", {
+                bubbles: true,
+                clientX: 140,
+                clientY: -10,
+                pointerId: 1,
+                pointerType: "touch",
+            })
+        );
+        flushSync();
+
+        expect(val).toBe(70);
     });
 });

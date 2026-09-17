@@ -1,6 +1,6 @@
 <script lang="ts">
     import { disableInteraction } from "$attachments";
-    import { HitArea, resolveHitArea, resolveHitAreaPx } from "$components";
+    import { resolveHitArea, resolveHitAreaPx } from "$components";
     import { uuid } from "$utils";
 
     import { focusAttach } from "$core/_system/focus/focus.attach";
@@ -99,9 +99,24 @@
             ? Math.max(thumbAxisPx, thumbCrossPx)
             : resolveHitAreaPx(resolvedHitAreaSize)
     );
+    const targetWidthPx = $derived(
+        resolvedHitAreaSize === false ? thumbWidthPx : Math.max(touchTargetPx, thumbWidthPx)
+    );
+    const targetHeightPx = $derived(
+        resolvedHitAreaSize === false ? thumbHeightPx : Math.max(touchTargetPx, thumbHeightPx)
+    );
+    const containerCrossPx = $derived(THUMB_DIMENSIONS.circle[size].cross);
+    const interactionCrossPx = $derived(
+        orientation === "horizontal" ? targetHeightPx : targetWidthPx
+    );
+    const interactionMarginPx = $derived((containerCrossPx - interactionCrossPx) / 2);
 
-    const pctMin = $derived(max > min ? Math.min(100, Math.max(0, ((valMin - min) / (max - min)) * 100)) : 0);
-    const pctMax = $derived(max > min ? Math.min(100, Math.max(0, ((valMax - min) / (max - min)) * 100)) : 0);
+    const pctMin = $derived(
+        max > min ? Math.min(100, Math.max(0, ((valMin - min) / (max - min)) * 100)) : 0
+    );
+    const pctMax = $derived(
+        max > min ? Math.min(100, Math.max(0, ((valMax - min) / (max - min)) * 100)) : 0
+    );
 
     const midpoint = $derived(isRange ? (pctMin + pctMax) / 2 : 50);
 
@@ -133,16 +148,16 @@
         return `bottom: 0; height: ${posMin}; left: 0; right: 0;`;
     });
 
-    const thumbMinStyle = $derived(
+    const targetMinStyle = $derived(
         orientation === "horizontal"
-            ? `left: calc(${posMin} - ${thumbAxisPx / 2}px); top: 50%; translate: 0 -50%;`
-            : `bottom: calc(${posMin} - ${thumbAxisPx / 2}px); left: 50%; translate: -50% 0;`
+            ? `left: calc(${posMin} - ${targetWidthPx / 2}px); top: 50%; translate: 0 -50%;`
+            : `bottom: calc(${posMin} - ${targetHeightPx / 2}px); left: 50%; translate: -50% 0;`
     );
 
-    const thumbMaxStyle = $derived(
+    const targetMaxStyle = $derived(
         orientation === "horizontal"
-            ? `left: calc(${posMax} - ${thumbAxisPx / 2}px); top: 50%; translate: 0 -50%;`
-            : `bottom: calc(${posMax} - ${thumbAxisPx / 2}px); left: 50%; translate: -50% 0;`
+            ? `left: calc(${posMax} - ${targetWidthPx / 2}px); top: 50%; translate: 0 -50%;`
+            : `bottom: calc(${posMax} - ${targetHeightPx / 2}px); left: 50%; translate: -50% 0;`
     );
 
     const containerComputedClass = $derived(
@@ -256,25 +271,102 @@
         }
     }
 
-    function handlePointerDown(target: "min" | "max"): void {
-        if (disabled) return;
-        if (target === "min") {
-            isMinActive = true;
-            activeInput = "min";
+    let isDragging = $state(false);
+    let dragStartValue = 0;
+    let dragStartPos = 0;
+    let dragCaptureElement: HTMLElement | null = null;
+
+    function handlePointerDown(e: PointerEvent): void {
+        if (disabled || e.button !== 0 || !element) return;
+
+        e.preventDefault();
+
+        updateActiveInput(e.clientX, e.clientY);
+
+        const targetEl = e.target as HTMLElement | null;
+        const thumbTarget = targetEl?.closest<HTMLElement>("[data-slider-thumb]") ?? null;
+        const hitMinThumb = thumbTarget?.dataset.sliderThumb === "min";
+        const hitMaxThumb = isRange && thumbTarget?.dataset.sliderThumb === "max";
+
+        if (isRange) {
+            if (hitMaxThumb || isMaxHovered) {
+                activeInput = "max";
+            } else if (hitMinThumb || isMinHovered) {
+                activeInput = "min";
+            } else {
+                const rect = element.getBoundingClientRect();
+                const pct =
+                    orientation === "horizontal"
+                        ? (e.clientX - rect.left) / rect.width
+                        : (rect.bottom - e.clientY) / rect.height;
+                const clickVal = min + Math.min(1, Math.max(0, pct)) * (max - min);
+                activeInput =
+                    Math.abs(clickVal - valMin) <= Math.abs(clickVal - valMax) ? "min" : "max";
+            }
         } else {
-            isMaxActive = true;
-            activeInput = "max";
+            activeInput = "min";
         }
 
-        const handlePointerUp = (): void => {
-            isMinActive = false;
-            isMaxActive = false;
-            window.removeEventListener("pointerup", handlePointerUp);
-            window.removeEventListener("pointercancel", handlePointerUp);
-        };
+        isMinActive = activeInput === "min";
+        isMaxActive = activeInput === "max";
+        isDragging = true;
 
-        window.addEventListener("pointerup", handlePointerUp);
-        window.addEventListener("pointercancel", handlePointerUp);
+        const isHoveringThumb =
+            hitMinThumb ||
+            hitMaxThumb ||
+            (isRange && activeInput === "max" ? isMaxHovered : isMinHovered);
+
+        const rect = element.getBoundingClientRect();
+        const totalPx = orientation === "horizontal" ? rect.width : rect.height;
+
+        if (!isHoveringThumb) {
+            const offset =
+                orientation === "horizontal" ? e.clientX - rect.left : rect.bottom - e.clientY;
+            const pct = offset / totalPx;
+            const clampedPct = Math.min(1, Math.max(0, pct));
+            const jumpedValue = roundToStep(min + clampedPct * (max - min));
+            setValue(activeInput, jumpedValue);
+            dragStartValue = jumpedValue;
+        } else {
+            dragStartValue = activeInput === "min" ? valMin : valMax;
+        }
+
+        dragStartPos = orientation === "horizontal" ? e.clientX : e.clientY;
+
+        dragCaptureElement = thumbTarget ?? element;
+        try {
+            dragCaptureElement.setPointerCapture(e.pointerId);
+        } catch {
+            // ignore in environments without pointer capture
+        }
+
+        const handleWindowPointerUp = (upEvent: PointerEvent): void => {
+            if (upEvent.pointerId !== e.pointerId) return;
+            handlePointerUp(upEvent);
+            window.removeEventListener("pointerup", handleWindowPointerUp);
+            window.removeEventListener("pointercancel", handleWindowPointerUp);
+        };
+        window.addEventListener("pointerup", handleWindowPointerUp);
+        window.addEventListener("pointercancel", handleWindowPointerUp);
+    }
+
+    function handlePointerUp(e: PointerEvent): void {
+        if (!isDragging) return;
+
+        isDragging = false;
+        isMinActive = false;
+        isMaxActive = false;
+
+        if (dragCaptureElement?.hasPointerCapture(e.pointerId)) {
+            try {
+                dragCaptureElement.releasePointerCapture(e.pointerId);
+            } catch {
+                // ignore
+            }
+        }
+        dragCaptureElement = null;
+
+        updateActiveInput(e.clientX, e.clientY);
     }
 
     function updateActiveInput(clientX: number, clientY: number): void {
@@ -305,10 +397,26 @@
     }
 
     function handlePointerMove(e: PointerEvent): void {
+        if (isDragging && element) {
+            const rect = element.getBoundingClientRect();
+            const totalPx = (orientation === "horizontal" ? rect.width : rect.height) || 1;
+            const currentPos = orientation === "horizontal" ? e.clientX : e.clientY;
+            const deltaPx =
+                orientation === "horizontal"
+                    ? currentPos - dragStartPos
+                    : dragStartPos - currentPos;
+            const deltaValue = (deltaPx / totalPx) * (max - min);
+            const nextValue = Math.min(
+                max,
+                Math.max(min, roundToStep(dragStartValue + deltaValue))
+            );
+            setValue(activeInput, nextValue);
+        }
         updateActiveInput(e.clientX, e.clientY);
     }
 
     function handlePointerLeave(): void {
+        if (isDragging) return;
         isMinHovered = false;
         isMaxHovered = false;
     }
@@ -317,12 +425,26 @@
 <div
     bind:this={element}
     class={containerComputedClass}
+    class:cursor-grab={(isMinHovered || isMaxHovered) && !isMinActive && !isMaxActive}
     class:cursor-grabbing={isMinActive || isMaxActive}
     class:cursor-not-allowed={disabled}
-    style:cursor={disabled ? "not-allowed" : (isMinActive || isMaxActive) ? "grabbing" : undefined}
+    style:cursor={disabled
+        ? "not-allowed"
+        : isMinActive || isMaxActive
+          ? "grabbing"
+          : isMinHovered || isMaxHovered
+            ? "grab"
+            : undefined}
+    onpointerdown={handlePointerDown}
     onpointermove={handlePointerMove}
+    onpointerup={handlePointerUp}
+    onpointercancel={handlePointerUp}
     onpointerleave={handlePointerLeave}
     {@attach disableInteraction({ enabled: disabled })}
+    style:width={orientation === "vertical" ? `${interactionCrossPx}px` : undefined}
+    style:height={orientation === "horizontal" ? `${interactionCrossPx}px` : undefined}
+    style:margin-inline={orientation === "vertical" ? `${interactionMarginPx}px` : undefined}
+    style:margin-block={orientation === "horizontal" ? `${interactionMarginPx}px` : undefined}
     style:--slider-touch-size="{touchTargetPx}px"
     style:--slider-thumb-width="{thumbWidthPx}px"
     style:--slider-thumb-height="{thumbHeightPx}px"
@@ -338,7 +460,6 @@
             {disabled}
             bind:value={valMin}
             onkeydown={(e) => handleKeyDown(e, "min")}
-            onpointerdown={() => handlePointerDown("min")}
             oninput={() => {
                 if (isRange) {
                     valMin = Math.min(valMin, valMax);
@@ -347,6 +468,7 @@
             }}
             class="slider-input slider-input-min"
             class:is-vertical={orientation === "vertical"}
+            class:cursor-grab={(isMinHovered || isMaxHovered) && !isMinActive && !isMaxActive}
             class:cursor-grabbing={isMinActive || isMaxActive}
             class:pointer-events-none={disabled}
             style:cursor={disabled ? "not-allowed" : undefined}
@@ -375,13 +497,13 @@
             {disabled}
             bind:value={valMax}
             onkeydown={(e) => handleKeyDown(e, "max")}
-            onpointerdown={() => handlePointerDown("max")}
             oninput={() => {
                 valMax = Math.max(valMin, valMax);
                 updateValue();
             }}
             class="slider-input slider-input-max"
             class:is-vertical={orientation === "vertical"}
+            class:cursor-grab={(isMinHovered || isMaxHovered) && !isMinActive && !isMaxActive}
             class:cursor-grabbing={isMinActive || isMaxActive}
             class:pointer-events-none={disabled}
             style:cursor={disabled ? "not-allowed" : undefined}
@@ -414,39 +536,59 @@
         <div class={fillComputedClass} style={rangeStyle}></div>
     </div>
 
-    <!-- Visual Thumbs -->
+    <!-- Interactive thumb targets with centered visual thumbs -->
     <div
-        id={thumbIdMin}
-        class={thumbComputedClass}
-        style={thumbMinStyle}
-        style:scale={isMinActive ? "1.15" : isMinHovered ? "1.08" : "1"}
+        class="slider-thumb-target slider-thumb-target-min"
+        data-slider-thumb="min"
+        style={targetMinStyle}
+        style:width="{targetWidthPx}px"
+        style:height="{targetHeightPx}px"
+        style:z-index={activeInput === "min" ? 21 : 20}
     >
-        {#if resolvedHitAreaSize !== false}
-            <HitArea size={resolvedHitAreaSize} class="pointer-events-none" />
-        {/if}
+        <div
+            id={thumbIdMin}
+            class="{thumbComputedClass} slider-thumb slider-thumb-min"
+            style:scale={isMinActive ? "1.15" : isMinHovered ? "1.08" : "1"}
+        ></div>
     </div>
 
     {#if isRange}
         <div
-            id={thumbIdMax}
-            class={thumbComputedClass}
-            style={thumbMaxStyle}
-            style:scale={isMaxActive ? "1.15" : isMaxHovered ? "1.08" : "1"}
+            class="slider-thumb-target slider-thumb-target-max"
+            data-slider-thumb="max"
+            style={targetMaxStyle}
+            style:width="{targetWidthPx}px"
+            style:height="{targetHeightPx}px"
+            style:z-index={activeInput === "max" ? 21 : 20}
         >
-            {#if resolvedHitAreaSize !== false}
-                <HitArea size={resolvedHitAreaSize} class="pointer-events-none" />
-            {/if}
+            <div
+                id={thumbIdMax}
+                class="{thumbComputedClass} slider-thumb slider-thumb-max"
+                style:scale={isMaxActive ? "1.15" : isMaxHovered ? "1.08" : "1"}
+            ></div>
         </div>
     {/if}
 </div>
 
 <style>
+    .slider-thumb-target {
+        position: absolute;
+        touch-action: none;
+    }
+
+    .slider-thumb {
+        top: 50%;
+        left: 50%;
+        translate: -50% -50%;
+        pointer-events: none;
+    }
+
     .slider-input {
         position: absolute;
         inset: 0;
+        margin: 0;
         width: 100%;
         height: 100%;
-        margin: 0;
         padding: 0;
         appearance: none;
         -webkit-appearance: none;
@@ -455,7 +597,24 @@
         outline: none;
         box-shadow: none;
         cursor: pointer;
+        touch-action: none;
         user-select: none;
+    }
+
+    .slider-input.cursor-grab,
+    .slider-input.cursor-grab::-webkit-slider-runnable-track,
+    .slider-input.cursor-grab::-webkit-slider-thumb,
+    .slider-input.cursor-grab::-moz-range-track,
+    .slider-input.cursor-grab::-moz-range-thumb {
+        cursor: grab !important;
+    }
+
+    .slider-input.cursor-grabbing,
+    .slider-input.cursor-grabbing::-webkit-slider-runnable-track,
+    .slider-input.cursor-grabbing::-webkit-slider-thumb,
+    .slider-input.cursor-grabbing::-moz-range-track,
+    .slider-input.cursor-grabbing::-moz-range-thumb {
+        cursor: grabbing !important;
     }
 
     .slider-input:disabled {
@@ -480,12 +639,12 @@
     }
 
     .slider-input::-webkit-slider-thumb {
+        width: var(--slider-thumb-width);
+        height: var(--slider-thumb-height);
         appearance: none;
         -webkit-appearance: none;
         background: transparent;
         border: none;
-        width: var(--slider-thumb-width);
-        height: var(--slider-thumb-height);
         cursor: grab;
     }
 
@@ -495,11 +654,11 @@
     }
 
     .slider-input::-moz-range-thumb {
+        width: var(--slider-thumb-width);
+        height: var(--slider-thumb-height);
         appearance: none;
         background: transparent;
         border: none;
-        width: var(--slider-thumb-width);
-        height: var(--slider-thumb-height);
         cursor: grab;
     }
 
@@ -518,4 +677,3 @@
         cursor: not-allowed;
     }
 </style>
-

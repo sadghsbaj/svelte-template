@@ -53,8 +53,8 @@
 <div class="mx-auto px-6 pt-6 pb-40 md:px-10 md:pt-10 md:pb-40 scroll-pb-40 flex flex-col gap-8 max-w-3xl">
     <!-- Header -->
     <header class="flex flex-col gap-1">
-        <h1 class="text-3xl text-strong tracking-tight font-700">{viewState.activeLabel}</h1>
-        <p class="text-sm text-weak">Manage your visual interface and animation preferences.</p>
+        <h1 class="title-3xl">{viewState.activeLabel}</h1>
+        <p class="subtitle-md">Manage your visual interface and animation preferences.</p>
     </header>
 
     <div class="flex flex-col gap-6">
@@ -65,8 +65,8 @@
             <div class="flex items-center gap-2.5">
                 <Palette size={18} class="text-weak shrink-0" />
                 <div>
-                    <h2 class="text-base text-strong font-600">Appearance</h2>
-                    <p class="text-xs text-weak">Select your preferred color mode</p>
+                    <h2 class="title-md">Appearance</h2>
+                    <p class="subtitle-sm">Select your preferred color mode</p>
                 </div>
             </div>
 
@@ -85,7 +85,7 @@
                             size={20}
                             class="t-colors {theme.mode === item.id ? 'text-strong' : 'text-weak'}"
                         />
-                        <span class="text-sm font-500">{item.label}</span>
+                        <span class="label-md text-inherit">{item.label}</span>
                     </button>
                 {/each}
             </div>
@@ -98,8 +98,8 @@
             <div class="flex items-center gap-2.5">
                 <Zap size={18} class="text-weak shrink-0" />
                 <div>
-                    <h2 class="text-base text-strong font-600">Animations</h2>
-                    <p class="text-xs text-weak">Configure interface motion and transitions</p>
+                    <h2 class="title-md">Animations</h2>
+                    <p class="subtitle-sm">Configure interface motion and transitions</p>
                 </div>
             </div>
 
@@ -120,7 +120,7 @@
                                 ? 'text-strong'
                                 : 'text-weak'}"
                         />
-                        <span class="text-sm font-500">{item.label}</span>
+                        <span class="label-md text-inherit">{item.label}</span>
                     </button>
                 {/each}
             </div>

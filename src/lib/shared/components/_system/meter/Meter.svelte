@@ -70,15 +70,3 @@
         style:width="{percentage}%"
     ></div>
 </div>
-
-<style>
-    .meter-fill {
-        transition: width 300ms var(--ease-cubic-out);
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-        .meter-fill {
-            transition: none !important;
-        }
-    }
-</style>

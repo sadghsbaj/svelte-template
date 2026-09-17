@@ -158,4 +158,18 @@ export {
     type MeterTrackStyleProps,
 } from "./meter/meter.styles";
 
+export {
+    default as ProgressBar,
+    type ProgressBarColor,
+    type ProgressBarProps,
+    type ProgressBarSize,
+} from "./progress-bar/ProgressBar.svelte";
+export {
+    progressBarFillStyles,
+    progressBarTrackStyles,
+    type ProgressBarFillStyleProps,
+    type ProgressBarTrackStyleProps,
+} from "./progress-bar/progress-bar.styles";
+
+
 

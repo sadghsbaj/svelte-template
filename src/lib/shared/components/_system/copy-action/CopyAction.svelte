@@ -461,17 +461,4 @@
             opacity: 0;
         }
     }
-
-    @media (prefers-reduced-motion: reduce) {
-        .copy-icon,
-        .status-icon,
-        .particle {
-            animation: none !important;
-            transition: none !important;
-        }
-
-        .copy-icon.is-pending {
-            opacity: 0.6;
-        }
-    }
 </style>

@@ -23,7 +23,7 @@ export const meterTrackStyles = cva({
 export const meterFillStyles = cva({
     base: {
         layout: "h-full rounded-full squircle-soft",
-        misc: "will-change-[width]",
+        motion: "will-change-[width] t:(width-300-cubic-out)",
     },
 
     options: {

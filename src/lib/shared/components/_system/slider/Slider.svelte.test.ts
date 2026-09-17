@@ -96,7 +96,7 @@ describe("Slider", () => {
         expect(el.classList).toContain("justify-center");
 
         const input = el.querySelector("input[type='range']") as HTMLInputElement;
-        expect(input.classList).toContain("rotate-180");
+        expect(input.classList).toContain("is-vertical");
     });
 
     test("renders hit-area touch targets on thumbs by default", () => {
@@ -128,7 +128,7 @@ describe("Slider", () => {
         expect(el.classList).toContain("cursor-pointer");
 
         const input = el.querySelector("input[type='range']") as HTMLInputElement;
-        expect(input.classList).toContain("cursor-pointer");
+        expect(input.classList).toContain("slider-input");
     });
 
     test("renders max input before min input when vertical orientation for top-to-bottom tab order", () => {

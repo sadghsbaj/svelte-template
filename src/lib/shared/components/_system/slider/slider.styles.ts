@@ -140,7 +140,7 @@ export const sliderThumbStyles = cva({
         },
         color: {
             accent: "bg-white",
-            base: "bg-white dark:bg-base-800 shadow-md",
+            base: "bg-white dark:ring-1 dark:ring-base-950/25 dark:shadow-md",
             invalid: "bg-white",
         },
     },
@@ -150,32 +150,7 @@ export const sliderThumbStyles = cva({
     },
 });
 
-export const sliderInputStyles = cva({
-    base: {
-        layout: "absolute inset-0 size-full m-0 p-0",
-        appearance:
-            "appearance-none bg-transparent border-none outline-none ring-0 shadow-none cursor-pointer select-none disabled:cursor-not-allowed",
-        interaction:
-            "[&::-webkit-slider-runnable-track]:(bg-transparent border-none cursor-pointer) " +
-            "[&::-moz-range-track]:(bg-transparent border-none cursor-pointer) " +
-            "[&::-webkit-slider-thumb]:(appearance-none bg-transparent border-none w-[var(--slider-touch-size)] h-[var(--slider-touch-size)]) " +
-            "[&::-moz-range-thumb]:(appearance-none bg-transparent border-none w-[var(--slider-touch-size)] h-[var(--slider-touch-size)]) " +
-            "[&::-webkit-slider-thumb]:cursor-grab [&::-webkit-slider-thumb]:active:cursor-grabbing " +
-            "[&::-moz-range-thumb]:cursor-grab [&::-moz-range-thumb]:active:cursor-grabbing",
-    },
-    options: {
-        orientation: {
-            horizontal: "",
-            vertical: "[writing-mode:vertical-lr] rotate-180",
-        },
-    },
-    defaults: {
-        orientation: "horizontal",
-    },
-});
-
 export type SliderContainerStyleProps = VariantProps<typeof sliderContainerStyles>;
 export type SliderTrackStyleProps = VariantProps<typeof sliderTrackStyles>;
 export type SliderFillStyleProps = VariantProps<typeof sliderFillStyles>;
 export type SliderThumbStyleProps = VariantProps<typeof sliderThumbStyles>;
-export type SliderInputStyleProps = VariantProps<typeof sliderInputStyles>;

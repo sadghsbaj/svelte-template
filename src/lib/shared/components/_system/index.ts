@@ -189,12 +189,10 @@ export type {
 export {
     sliderContainerStyles,
     sliderFillStyles,
-    sliderInputStyles,
     sliderThumbStyles,
     sliderTrackStyles,
     type SliderContainerStyleProps,
     type SliderFillStyleProps,
-    type SliderInputStyleProps,
     type SliderThumbStyleProps,
     type SliderTrackStyleProps,
 } from "./slider/slider.styles";

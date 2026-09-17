@@ -8,7 +8,6 @@
     import {
         sliderContainerStyles,
         sliderFillStyles,
-        sliderInputStyles,
         sliderThumbStyles,
         sliderTrackStyles,
     } from "./slider.styles";
@@ -152,12 +151,6 @@
             size,
             color,
             class: thumbClass,
-        })
-    );
-
-    const inputComputedClass = $derived(
-        sliderInputStyles({
-            orientation,
         })
     );
 
@@ -326,7 +319,8 @@
                 }
                 updateValue();
             }}
-            class="{inputComputedClass} slider-input-min"
+            class="slider-input slider-input-min"
+            class:is-vertical={orientation === "vertical"}
             class:cursor-grabbing={isMinActive || isMaxActive}
             class:pointer-events-none={disabled}
             style:cursor={disabled ? "not-allowed" : undefined}
@@ -360,7 +354,8 @@
                 valMax = Math.max(valMin, valMax);
                 updateValue();
             }}
-            class="{inputComputedClass} slider-input-max"
+            class="slider-input slider-input-max"
+            class:is-vertical={orientation === "vertical"}
             class:cursor-grabbing={isMinActive || isMaxActive}
             class:pointer-events-none={disabled}
             style:cursor={disabled ? "not-allowed" : undefined}
@@ -418,3 +413,83 @@
         </div>
     {/if}
 </div>
+
+<style>
+    .slider-input {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        appearance: none;
+        -webkit-appearance: none;
+        background: transparent;
+        border: none;
+        outline: none;
+        box-shadow: none;
+        cursor: pointer;
+        user-select: none;
+    }
+
+    .slider-input:disabled {
+        cursor: not-allowed;
+    }
+
+    .slider-input.is-vertical {
+        writing-mode: vertical-lr;
+        transform: rotate(180deg);
+    }
+
+    .slider-input::-webkit-slider-runnable-track {
+        background: transparent;
+        border: none;
+        cursor: pointer;
+    }
+
+    .slider-input::-moz-range-track {
+        background: transparent;
+        border: none;
+        cursor: pointer;
+    }
+
+    .slider-input::-webkit-slider-thumb {
+        appearance: none;
+        -webkit-appearance: none;
+        background: transparent;
+        border: none;
+        width: var(--slider-touch-size);
+        height: var(--slider-touch-size);
+        cursor: grab;
+    }
+
+    .slider-input:active:not(:disabled)::-webkit-slider-thumb,
+    .slider-input.cursor-grabbing::-webkit-slider-thumb {
+        cursor: grabbing;
+    }
+
+    .slider-input::-moz-range-thumb {
+        appearance: none;
+        background: transparent;
+        border: none;
+        width: var(--slider-touch-size);
+        height: var(--slider-touch-size);
+        cursor: grab;
+    }
+
+    .slider-input:active:not(:disabled)::-moz-range-thumb,
+    .slider-input.cursor-grabbing::-moz-range-thumb {
+        cursor: grabbing;
+    }
+
+    .slider-input:disabled::-webkit-slider-runnable-track,
+    .slider-input:disabled::-webkit-slider-thumb {
+        cursor: not-allowed;
+    }
+
+    .slider-input:disabled::-moz-range-track,
+    .slider-input:disabled::-moz-range-thumb {
+        cursor: not-allowed;
+    }
+</style>
+

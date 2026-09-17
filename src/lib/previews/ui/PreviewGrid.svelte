@@ -3,7 +3,7 @@
     import { cn } from "$utils";
 
     interface Props {
-        cols?: 1 | 2 | 3 | 4 | "auto";
+        cols?: 1 | 2 | 3 | 4 | 5 | "auto";
         children?: Snippet;
         class?: string;
     }
@@ -15,6 +15,7 @@
         2: "grid-cols-1 sm:grid-cols-2",
         3: "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3",
         4: "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4",
+        5: "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5",
         auto: "grid-cols-[repeat(auto-fit,minmax(220px,1fr))]",
     };
 </script>

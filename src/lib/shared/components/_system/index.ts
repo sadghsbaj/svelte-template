@@ -209,3 +209,15 @@ export {
     separatorStyles,
     type SeparatorStyleProps,
 } from "./separator/separator.styles";
+
+export { default as Badge } from "./badge/Badge.svelte";
+export type {
+    BadgeColor,
+    BadgeProps,
+    BadgeSize,
+    BadgeVariant,
+} from "./badge/Badge.svelte";
+export {
+    badgeStyles,
+    type BadgeStyleProps,
+} from "./badge/badge.styles";

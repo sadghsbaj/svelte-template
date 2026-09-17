@@ -30,11 +30,18 @@
         title="Interactive Controls"
         description="Adjust the progress value or choose presets to preview progress animations."
     >
-        <div class="flex flex-wrap items-center gap-5 p-4 rounded-2xl bg-elevation-1 shadow-sm w-fit mb-6">
+        <div
+            class="flex flex-wrap items-center gap-5 p-4 rounded-2xl bg-elevation-1 shadow-sm w-fit mb-6"
+        >
             <div class="flex items-center gap-3">
                 <span class="label-md">Value</span>
                 <div class="w-40">
-                    <Slider bind:value={progressValue} min={0} max={100} ariaLabel="Progress value slider" />
+                    <Slider
+                        bind:value={progressValue}
+                        min={0}
+                        max={100}
+                        ariaLabel="Progress value slider"
+                    />
                 </div>
                 <Badge variant="soft" color="base" class="tabular-nums min-w-60px">
                     {progressValue}%

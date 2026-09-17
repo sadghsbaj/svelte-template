@@ -1,5 +1,6 @@
 <script lang="ts">
     import type { Snippet } from "svelte";
+    import { Badge } from "$components";
     import { cn } from "$utils";
 
     interface Props {
@@ -40,11 +41,14 @@
     )}
 >
     {#if label}
-        <span
-            class="px-2.5 py-1.5 rounded-full squircle-smooth bg-base-soft-1 text-weak text-[11px] font-600 tracking-wide uppercase text-trim absolute top-3 left-3 select-none pointer-events-none z-10"
+        <Badge
+            variant="soft"
+            color="base"
+            size="sm"
+            class="absolute top-3 left-3 pointer-events-none z-10"
         >
             {label}
-        </span>
+        </Badge>
     {/if}
 
     {#if children}

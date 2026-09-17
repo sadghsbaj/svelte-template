@@ -23,13 +23,13 @@
             </div>
         {/if}
 
-        <h1 class="text-2xl md:text-3xl font-700 text-strong tracking-tight">
+        <h1 class="title-2xl md:title-3xl">
             {title}
         </h1>
     </div>
 
     {#if description}
-        <p class="text-sm text-weak font-400 max-w-2xl leading-relaxed">
+        <p class="subtitle-md max-w-2xl">
             {description}
         </p>
     {/if}

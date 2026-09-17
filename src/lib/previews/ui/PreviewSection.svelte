@@ -16,12 +16,12 @@
     {#if title || description}
         <div class="flex flex-col gap-0.5 select-none">
             {#if title}
-                <h2 class="text-base font-600 text-strong tracking-tight">
+                <h2 class="title-md">
                     {title}
                 </h2>
             {/if}
             {#if description}
-                <p class="text-xs text-weak font-400">
+                <p class="subtitle-sm">
                     {description}
                 </p>
             {/if}

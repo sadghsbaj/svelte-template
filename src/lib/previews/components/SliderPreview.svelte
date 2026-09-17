@@ -56,7 +56,7 @@
         description="Switch the thumb shape to dynamically see circular, mixer bar, and tactile pill profiles across all configurations."
     >
         <div class="flex flex-wrap items-center gap-4 p-4 rounded-2xl bg-elevation-1 shadow-sm w-fit mb-6">
-            <span class="text-sm font-500 text-main select-none">Thumb Shape</span>
+            <span class="label-md">Thumb Shape</span>
             <div class="flex items-center gap-1.5">
                 {#each shapes as s (s.value)}
                     <Button

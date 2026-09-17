@@ -59,7 +59,7 @@
 </script>
 
 {#snippet phaseLabel(context: PopoverContentContext)}
-    <div class="text-[11px] text-weak mt-2">
+    <div class="description-xs mt-2">
         {context.phase} / {context.placement}
     </div>
 {/snippet}
@@ -85,8 +85,8 @@
 
                 {#snippet children(context)}
                     <div class={surfaceClass}>
-                        <div class="text-sm font-700">Default popover</div>
-                        <p class="text-xs text-weak mt-1">
+                        <div class="title-sm">Default popover</div>
+                        <p class="description-sm mt-1">
                             Outside pointer and Escape are enabled. The trigger owns the ARIA state.
                         </p>
                         <div class="flex gap-2 mt-3">
@@ -121,8 +121,8 @@
                             <div
                                 class="border border-accent-500 bg-elevation-0 text-strong p-3 w-44"
                             >
-                                <div class="text-xs font-700">Requested: {placement}</div>
-                                <div class="text-[11px] text-weak">
+                                <div class="title-xs">Requested: {placement}</div>
+                                <div class="description-xs">
                                     Resolved: {context.placement}
                                 </div>
                             </div>
@@ -147,7 +147,7 @@
                 >
                     {controlledOpen ? "Close externally" : "Open externally"}
                 </button>
-                <span class="text-[11px] text-weak">last reason: {controlledReason}</span>
+                <span class="description-xs">last reason: {controlledReason}</span>
             </div>
 
             <Popover
@@ -160,8 +160,8 @@
             >
                 {#snippet children(context)}
                     <div class={surfaceClass}>
-                        <div class="text-sm font-700">Externally controlled</div>
-                        <p class="text-xs text-weak mt-1">
+                        <div class="title-sm">Externally controlled</div>
+                        <p class="description-sm mt-1">
                             This instance has no automatic trigger attachment.
                         </p>
                         <button
@@ -194,7 +194,7 @@
                 {/snippet}
                 {#snippet children(context)}
                     <div class={`${surfaceClass} w-72`}>
-                        <label class="text-xs font-600" for="preview-modal-name">Display name</label
+                        <label class="label-sm" for="preview-modal-name">Display name</label
                         >
                         <input
                             id="preview-modal-name"
@@ -227,8 +227,8 @@
                 {/snippet}
                 {#snippet children(parentContext)}
                     <div class={surfaceClass}>
-                        <div class="text-sm font-700">Parent layer</div>
-                        <p class="text-xs text-weak mt-1">
+                        <div class="title-sm">Parent layer</div>
+                        <p class="description-sm mt-1">
                             Opening the child keeps this branch active.
                         </p>
 
@@ -248,8 +248,8 @@
                                 <div
                                     class="border border-accent-500 bg-elevation-0 text-strong p-3 w-48"
                                 >
-                                    <div class="text-xs font-700">Nested child</div>
-                                    <p class="text-[11px] text-weak mt-1">
+                                    <div class="title-xs">Nested child</div>
+                                    <p class="description-xs mt-1">
                                         Escape closes this child before the parent.
                                     </p>
                                     <button
@@ -287,7 +287,7 @@
                     {/snippet}
                     {#snippet children(context)}
                         <div class="border border-base-300 bg-elevation-0 text-strong p-3 w-44">
-                            <div class="text-xs font-700">No animation</div>
+                            <div class="title-xs">No animation</div>
                             {@render phaseLabel(context)}
                         </div>
                     {/snippet}
@@ -303,8 +303,8 @@
                     {/snippet}
                     {#snippet children(context)}
                         <div class="border border-accent-500 bg-elevation-0 text-strong p-3 w-48">
-                            <div class="text-xs font-700">Custom WAAPI</div>
-                            <p class="text-[11px] text-weak mt-1">
+                            <div class="title-xs">Custom WAAPI</div>
+                            <p class="description-xs mt-1">
                                 A specialized clip reveal supplied by the consumer.
                             </p>
                             {@render phaseLabel(context)}

@@ -79,7 +79,7 @@
                         aria-label="Fruit"
                         class="w-full"
                     />
-                    <span class="text-xs text-weak">
+                    <span class="description-sm">
                         value: {value ?? "undefined"}, query: {query ?? ""}
                     </span>
                 </div>

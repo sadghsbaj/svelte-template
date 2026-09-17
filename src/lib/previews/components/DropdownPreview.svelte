@@ -226,7 +226,7 @@
                             </Button>
                         {/snippet}
                     </Dropdown>
-                    <span class="text-xs text-weak">Last action: {lastAction}</span>
+                    <span class="description-sm">Last action: {lastAction}</span>
                 </div>
             </PreviewCard>
 

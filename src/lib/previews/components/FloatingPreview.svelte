@@ -52,8 +52,8 @@
 
 {#snippet floatingSurface(title: string, detail: string)}
     <div class="border border-accent-500 bg-elevation-0 text-strong px-3 py-2 min-w-36">
-        <div class="text-xs font-700">{title}</div>
-        <div class="text-[11px] text-weak mt-0.5">{detail}</div>
+        <div class="title-xs">{title}</div>
+        <div class="description-xs mt-0.5">{detail}</div>
     </div>
 {/snippet}
 
@@ -70,7 +70,7 @@
     >
         <PreviewCard label="HTMLElement anchor" bg="elevation-1" class="h-64">
             <div class="flex flex-col items-center gap-4">
-                <label class="flex items-center gap-2 text-xs text-weak">
+                <label class="flex items-center gap-2 description-sm">
                     Placement
                     <select
                         bind:value={placement}
@@ -113,7 +113,7 @@
                             </Button>
                         </span>
                     </div>
-                    <p class="text-xs text-weak absolute bottom-4 left-4">End of scroll area</p>
+                    <p class="description-sm absolute bottom-4 left-4">End of scroll area</p>
                 </div>
             </div>
         </PreviewCard>
@@ -136,7 +136,7 @@
                 bind:this={boundaryElement}
                 class=" bg-elevation-0/40 w-full max-w-xl h-40 relative"
             >
-                <span class="text-[11px] text-weak absolute top-2 left-2">position boundary</span>
+                <span class="description-xs absolute top-2 left-2">position boundary</span>
                 <div class="absolute right-2 bottom-2">
                     <span bind:this={boundaryAnchor} class="inline-flex">
                         <Button size="sm" onclick={() => (boundaryOpen = !boundaryOpen)}>
@@ -173,7 +173,7 @@
             <button
                 type="button"
                 bind:this={pointArea}
-                class="w-full h-full flex-center text-xs text-weak select-none cursor-crosshair"
+                class="w-full h-full flex-center description-sm select-none cursor-crosshair"
                 onclick={placeAtPointer}
                 oncontextmenu={placeAtPointer}
             >
@@ -186,8 +186,8 @@
             <Floating anchor={activePoint} placement="right-start" offset={6}>
                 {#snippet children(context)}
                     <div class="border border-accent-500 bg-elevation-0 text-strong px-3 py-2">
-                        <div class="text-xs font-700">Point anchor</div>
-                        <div class="text-[11px] text-weak">
+                        <div class="title-xs">Point anchor</div>
+                        <div class="description-xs">
                             {Math.round(activePoint.x)}, {Math.round(activePoint.y)} / {context.placement}
                         </div>
                         <button
@@ -225,14 +225,14 @@
                             ? 'w-72'
                             : 'w-44'}"
                     >
-                        <div class="text-xs font-700">Dynamic content</div>
+                        <div class="title-xs">Dynamic content</div>
                         {#if expanded}
-                            <p class="text-[11px] text-weak mt-1">
+                            <p class="description-xs mt-1">
                                 This wider content changes the measured surface without changing the
                                 anchor.
                             </p>
                         {/if}
-                        <div class="text-[11px] text-weak mt-1">resolved: {context.placement}</div>
+                        <div class="description-xs mt-1">resolved: {context.placement}</div>
                         <button
                             type="button"
                             class="border border-base-300 px-2 py-1 text-[11px] mt-2 cursor-pointer"

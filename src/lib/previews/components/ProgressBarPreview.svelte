@@ -32,11 +32,11 @@
     >
         <div class="flex flex-wrap items-center gap-5 p-4 rounded-2xl bg-elevation-1 shadow-sm w-fit mb-6">
             <div class="flex items-center gap-3">
-                <span class="text-sm font-500 text-main select-none">Value</span>
+                <span class="label-md">Value</span>
                 <div class="w-40">
                     <Slider bind:value={progressValue} min={0} max={100} ariaLabel="Progress value slider" />
                 </div>
-                <span class="tabular-nums font-600 text-xs px-2.5 py-1 rounded-full bg-base-soft-1 text-main select-none">
+                <span class="label-sm tabular-nums px-2.5 py-1 rounded-full bg-base-soft-1">
                     {progressValue}%
                 </span>
             </div>

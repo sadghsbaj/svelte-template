@@ -60,7 +60,7 @@
                     class="w-24 h-12 rounded-2xl bg-elevation-2 flex-center shadow-xs squircle-smooth select-none cursor-wait"
                     {@attach pending({ active: true, color: "accent" })}
                 >
-                    <span class="text-xs font-600 text-strong">Accent</span>
+                    <span class="title-xs">Accent</span>
                 </div>
             </PreviewCard>
 
@@ -69,7 +69,7 @@
                     class="w-24 h-12 rounded-2xl bg-elevation-2 flex-center shadow-xs squircle-smooth select-none cursor-wait"
                     {@attach pending({ active: true, color: "base" })}
                 >
-                    <span class="text-xs font-600 text-strong">Base</span>
+                    <span class="title-xs">Base</span>
                 </div>
             </PreviewCard>
 
@@ -78,7 +78,7 @@
                     class="w-24 h-12 rounded-2xl bg-elevation-2 flex-center shadow-xs squircle-smooth select-none cursor-wait"
                     {@attach pending({ active: true, color: "success" })}
                 >
-                    <span class="text-xs font-600 text-strong">Success</span>
+                    <span class="title-xs">Success</span>
                 </div>
             </PreviewCard>
 
@@ -87,7 +87,7 @@
                     class="w-24 h-12 rounded-2xl bg-elevation-2 flex-center shadow-xs squircle-smooth select-none cursor-wait"
                     {@attach pending({ active: true, color: "danger" })}
                 >
-                    <span class="text-xs font-600 text-strong">Danger</span>
+                    <span class="title-xs">Danger</span>
                 </div>
             </PreviewCard>
         </PreviewGrid>
@@ -104,7 +104,7 @@
                     class="w-28 h-12 rounded-2xl bg-elevation-2 flex-center shadow-xs squircle-smooth select-none cursor-wait"
                     {@attach pending({ active: true, color: "accent" })}
                 >
-                    <span class="text-xs font-600 text-strong">Squircle</span>
+                    <span class="title-xs">Squircle</span>
                 </div>
             </PreviewCard>
 
@@ -113,7 +113,7 @@
                     class="px-5 py-2 rounded-full bg-elevation-2 flex-center shadow-xs select-none cursor-wait"
                     {@attach pending({ active: true, color: "accent" })}
                 >
-                    <span class="text-xs font-600 text-strong">Capsule</span>
+                    <span class="title-xs">Capsule</span>
                 </div>
             </PreviewCard>
 
@@ -122,7 +122,7 @@
                     class="size-12 rounded-full bg-elevation-2 flex-center shadow-xs select-none cursor-wait"
                     {@attach pending({ active: true, color: "accent" })}
                 >
-                    <span class="text-xs font-600 text-strong">Circle</span>
+                    <span class="title-xs">Circle</span>
                 </div>
             </PreviewCard>
         </PreviewGrid>
@@ -137,7 +137,7 @@
             <div
                 role="button"
                 tabindex="0"
-                class="w-36 h-11 flex-center rounded-2xl bg-elevation-2 hover:bg-elevation-3 text-strong text-xs font-600 shadow-xs squircle-smooth select-none active:scale-97 t-colors cursor-pointer text-center"
+                class="w-36 h-11 flex-center rounded-2xl bg-elevation-2 hover:bg-elevation-3 title-xs shadow-xs squircle-smooth select-none active:scale-97 t-colors cursor-pointer text-center"
                 onclick={runFlow}
                 onkeydown={handleKeydown}
                 {@attach pending({ active: isFlowActive, color: flowColor })}
@@ -158,7 +158,7 @@
                     class="w-32 h-12 rounded-2xl bg-elevation-2 flex-center shadow-xs squircle-smooth select-none cursor-wait"
                     {@attach pending({ active: true, ring: true })}
                 >
-                    <span class="text-xs font-600 text-strong">Visual Ring</span>
+                    <span class="title-xs">Visual Ring</span>
                 </div>
             </PreviewCard>
 
@@ -167,7 +167,7 @@
                     class="w-32 h-12 rounded-2xl bg-elevation-2 flex-center shadow-xs squircle-smooth select-none cursor-wait"
                     {@attach pending({ active: true, ring: false })}
                 >
-                    <span class="text-xs font-600 text-strong">Headless</span>
+                    <span class="title-xs">Headless</span>
                 </div>
             </PreviewCard>
         </PreviewGrid>

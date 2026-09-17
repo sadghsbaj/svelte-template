@@ -85,7 +85,7 @@
             <PreviewCard label="Placeholder" bg="elevation-1" class="h-36">
                 <div class="flex flex-col items-center gap-3">
                     <Select options={basicOptions} bind:value={basicValue} class="w-52" />
-                    <span class="text-xs text-weak">value: {basicValue ?? "undefined"}</span>
+                    <span class="description-sm">value: {basicValue ?? "undefined"}</span>
                 </div>
             </PreviewCard>
             <PreviewCard label="Icons + selected value" bg="elevation-1" class="h-36">

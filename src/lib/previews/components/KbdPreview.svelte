@@ -53,28 +53,28 @@
             <PreviewCard label="Command Palette" bg="elevation-1" class="h-32">
                 <div class="flex-center flex-col gap-2">
                     <Kbd combo="Mod+Shift+P" format={activeFormat} size="lg" />
-                    <span class="text-xs text-weak font-sans">Mod+Shift+P</span>
+                    <span class="description-sm font-sans">Mod+Shift+P</span>
                 </div>
             </PreviewCard>
 
             <PreviewCard label="Quick Search" bg="elevation-1" class="h-32">
                 <div class="flex-center flex-col gap-2">
                     <Kbd combo="Mod+K" format={activeFormat} size="lg" />
-                    <span class="text-xs text-weak font-sans">Mod+K</span>
+                    <span class="description-sm font-sans">Mod+K</span>
                 </div>
             </PreviewCard>
 
             <PreviewCard label="Multi-Modifier" bg="elevation-1" class="h-32">
                 <div class="flex-center flex-col gap-2">
                     <Kbd combo="Mod+Alt+Del" format={activeFormat} size="lg" />
-                    <span class="text-xs text-weak font-sans">Mod+Alt+Del</span>
+                    <span class="description-sm font-sans">Mod+Alt+Del</span>
                 </div>
             </PreviewCard>
 
             <PreviewCard label="Action Combo" bg="elevation-1" class="h-32">
                 <div class="flex-center flex-col gap-2">
                     <Kbd combo="Mod+Enter" format={activeFormat} size="lg" />
-                    <span class="text-xs text-weak font-sans">Mod+Enter</span>
+                    <span class="description-sm font-sans">Mod+Enter</span>
                 </div>
             </PreviewCard>
         </PreviewGrid>

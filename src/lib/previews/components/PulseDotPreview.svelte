@@ -32,12 +32,12 @@
         <div class="flex flex-wrap items-center gap-6 p-4 rounded-xl bg-elevation-1 shadow-sm w-fit mb-6">
             <label class="flex items-center gap-3 cursor-pointer select-none">
                 <Switch bind:checked={isPulsing} size="sm" />
-                <span class="text-sm text-main font-500">Pulsing Wave</span>
+                <span class="label-md">Pulsing Wave</span>
             </label>
 
             <label class="flex items-center gap-3 cursor-pointer select-none">
                 <Switch bind:checked={hasGlow} size="sm" />
-                <span class="text-sm text-main font-500">Ambient Glow</span>
+                <span class="label-md">Ambient Glow</span>
             </label>
         </div>
     </PreviewSection>

@@ -19,20 +19,20 @@ export const typographyShortcuts: Record<string, string> = {
     "title-3xl": "text-3xl font-700 leading-none tracking-tight text-strong",
 
     // --- Subtitles ---
-    "subtitle-xs": "text-[11px] font-400 leading-normal text-weaker",
+    "subtitle-xs": "text-[11px] font-400 leading-normal text-weak",
     "subtitle-sm": "text-xs font-400 leading-normal text-weak",
     "subtitle-md": "text-sm font-400 leading-normal text-weak",
     "subtitle-lg": "text-base font-400 leading-relaxed text-weak",
     "subtitle-xl": "text-lg font-400 leading-relaxed text-weak",
 
     // --- Labels (Form Controls, Interactive Elements) ---
-    "label-xs": "text-[11px] font-500 leading-none select-none text-main",
+    "label-xs": "text-[11px] font-500 leading-none select-none text-strong",
     "label-sm": "text-xs font-500 leading-none select-none text-strong",
     "label-md": "text-sm font-500 leading-none select-none text-strong",
     "label-lg": "text-base font-500 leading-none select-none text-strong",
 
     // --- Descriptions / Hints ---
-    "description-xs": "text-[11px] font-400 leading-normal text-weaker",
+    "description-xs": "text-[11px] font-400 leading-normal text-weak",
     "description-sm": "text-xs font-400 leading-normal text-weak",
     "description-md": "text-sm font-400 leading-relaxed text-weak",
     "description-lg": "text-base font-400 leading-relaxed text-weak",

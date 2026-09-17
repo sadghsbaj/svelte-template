@@ -124,6 +124,20 @@ describe("CopyAction", () => {
         expect(el.querySelector(".particles")?.classList).toContain("is-error");
     });
 
+    test("prevents spam clicks during feedback when preventSpam is true", () => {
+        const onclick = vi.fn();
+        const el = render({ onclick });
+
+        el.click();
+        flushSync();
+        expect(onclick).toHaveBeenCalledTimes(1);
+        expect(el.classList).toContain("pointer-events-none");
+
+        el.click();
+        el.click();
+        expect(onclick).toHaveBeenCalledTimes(1);
+    });
+
     test("allows overriding size and custom classes", () => {
         const el = render({ class: "size-5 text-weak" });
         expect(el.classList).toContain("size-5");

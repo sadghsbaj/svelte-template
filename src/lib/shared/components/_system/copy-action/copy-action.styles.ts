@@ -19,9 +19,14 @@ export const copyActionStyles = cva({
         },
     },
 
+    modifiers: {
+        locked: "pointer-events-none",
+    },
+
     defaults: {
         as: "button",
         status: "idle",
+        locked: false,
     },
 });
 

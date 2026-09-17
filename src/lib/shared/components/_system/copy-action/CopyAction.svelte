@@ -12,6 +12,7 @@
         status?: CopyActionStatus;
         duration?: number;
         strokeWidth?: number;
+        preventSpam?: boolean;
         class?: string;
         element?: HTMLElement | null;
         icon?: Snippet<[{ status: CopyActionStatus; copied: boolean; error: boolean }]>;
@@ -24,6 +25,7 @@
         status = $bindable(),
         duration = 2000,
         strokeWidth = 2,
+        preventSpam = true,
         class: className = "",
         element = $bindable(null),
         icon,
@@ -70,6 +72,7 @@
 
     async function handleClick(event: MouseEvent): Promise<void> {
         if (event.defaultPrevented) return;
+        if (preventSpam && isTriggered) return;
 
         if (timerId !== null) clearTimeout(timerId);
 
@@ -95,6 +98,7 @@
         copyActionStyles({
             as,
             status: activeStatus,
+            locked: preventSpam && isTriggered,
             class: className,
         })
     );

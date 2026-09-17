@@ -12,15 +12,16 @@ export const copyActionStyles = cva({
             button: "cursor-pointer p-0 bg-transparent border-0 active:scale-90 t:(scale-200-cubic-out text-200-quad-out)",
             span: "pointer-events-none",
         },
-    },
-
-    modifiers: {
-        copied: "text-success-500",
+        status: {
+            idle: "",
+            copied: "text-success-500",
+            error: "text-danger-500",
+        },
     },
 
     defaults: {
         as: "button",
-        copied: false,
+        status: "idle",
     },
 });
 

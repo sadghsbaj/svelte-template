@@ -97,6 +97,33 @@ describe("CopyAction", () => {
         expect(el.querySelector(".particles")).not.toBeNull();
     });
 
+    test("respects controlled status='error' prop", () => {
+        const el = render({ status: "error" });
+        expect(el.classList).toContain("text-danger-500");
+        expect(el.getAttribute("aria-label")).toBe("Failed to copy");
+        expect(el.querySelector(".x-icon")?.classList).toContain("is-active");
+        expect(el.querySelector(".check-icon")?.classList).not.toContain("is-active");
+        expect(el.querySelector(".copy-icon")?.classList).toContain("is-hidden");
+        expect(el.querySelector(".particles")?.classList).toContain("is-error");
+    });
+
+    test("handles rejected promise in onclick by switching to error state", async () => {
+        const el = render({
+            onclick: () => Promise.reject(new Error("Network Error")),
+        });
+
+        el.click();
+        await flushSync();
+        // Wait microtask for promise resolution
+        await new Promise((resolve) => setTimeout(resolve, 10));
+        flushSync();
+
+        expect(el.classList).toContain("text-danger-500");
+        expect(el.getAttribute("aria-label")).toBe("Failed to copy");
+        expect(el.querySelector(".x-icon")?.classList).toContain("is-active");
+        expect(el.querySelector(".particles")?.classList).toContain("is-error");
+    });
+
     test("allows overriding size and custom classes", () => {
         const el = render({ class: "size-5 text-weak" });
         expect(el.classList).toContain("size-5");

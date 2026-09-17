@@ -4,20 +4,24 @@
 
     import { copyActionStyles } from "./copy-action.styles";
 
+    export type CopyActionStatus = "idle" | "copied" | "error";
+
     interface Props extends Omit<HTMLButtonAttributes, "children"> {
         as?: "button" | "span";
         copied?: boolean;
+        status?: CopyActionStatus;
         duration?: number;
         strokeWidth?: number;
         class?: string;
         element?: HTMLElement | null;
-        icon?: Snippet<[{ copied: boolean }]>;
-        children?: Snippet<[{ copied: boolean }]>;
+        icon?: Snippet<[{ status: CopyActionStatus; copied: boolean; error: boolean }]>;
+        children?: Snippet<[{ status: CopyActionStatus; copied: boolean; error: boolean }]>;
     }
 
     let {
         as = "button",
         copied = $bindable(),
+        status = $bindable(),
         duration = 2000,
         strokeWidth = 2,
         class: className = "",
@@ -28,31 +32,59 @@
         ...restProps
     }: Props = $props();
 
-    let isInternalCopied = $state(false);
+    let internalStatus = $state<CopyActionStatus>("idle");
     let timerId: ReturnType<typeof setTimeout> | null = null;
 
-    const activeCopied = $derived(copied !== undefined ? copied : isInternalCopied);
+    const activeStatus = $derived.by<CopyActionStatus>(() => {
+        if (status !== undefined) return status;
+        if (copied !== undefined) return copied ? "copied" : "idle";
+        return internalStatus;
+    });
 
-    function handleClick(event: MouseEvent): void {
-        onclick?.(event as never);
+    const isCopied = $derived(activeStatus === "copied");
+    const isError = $derived(activeStatus === "error");
+    const isTriggered = $derived(activeStatus !== "idle");
+
+    function setStatus(newStatus: CopyActionStatus): void {
+        if (status !== undefined) {
+            status = newStatus;
+        }
+        if (copied !== undefined) {
+            copied = newStatus === "copied";
+        }
+        internalStatus = newStatus;
+
+        if (newStatus !== "idle") {
+            timerId = setTimeout(() => {
+                if (status !== undefined) {
+                    status = "idle";
+                }
+                if (copied !== undefined) {
+                    copied = false;
+                }
+                internalStatus = "idle";
+                timerId = null;
+            }, duration);
+        }
+    }
+
+    async function handleClick(event: MouseEvent): Promise<void> {
         if (event.defaultPrevented) return;
 
         if (timerId !== null) clearTimeout(timerId);
 
-        if (copied !== undefined) {
-            copied = true;
-        } else {
-            isInternalCopied = true;
-        }
+        const result = onclick?.(event as never);
 
-        timerId = setTimeout(() => {
-            if (copied !== undefined) {
-                copied = false;
-            } else {
-                isInternalCopied = false;
+        if (result instanceof Promise) {
+            try {
+                await result;
+                setStatus("copied");
+            } catch {
+                setStatus("error");
             }
-            timerId = null;
-        }, duration);
+        } else {
+            setStatus("copied");
+        }
     }
 
     onDestroy(() => {
@@ -62,7 +94,7 @@
     const computedClass = $derived(
         copyActionStyles({
             as,
-            copied: activeCopied,
+            status: activeStatus,
             class: className,
         })
     );
@@ -74,13 +106,14 @@
     type={as === "button" ? "button" : undefined}
     class={computedClass}
     onclick={handleClick}
-    aria-label={restProps["aria-label"] ?? (activeCopied ? "Copied" : "Copy to clipboard")}
+    aria-label={restProps["aria-label"] ??
+        (isCopied ? "Copied" : isError ? "Failed to copy" : "Copy to clipboard")}
     {...restProps}
 >
     {#if icon}
-        {@render icon({ copied: activeCopied })}
+        {@render icon({ status: activeStatus, copied: isCopied, error: isError })}
     {:else if children}
-        {@render children({ copied: activeCopied })}
+        {@render children({ status: activeStatus, copied: isCopied, error: isError })}
     {:else}
         <!-- Copy Icon -->
         <svg
@@ -92,7 +125,7 @@
             stroke-linecap="round"
             stroke-linejoin="round"
             class="copy-icon"
-            class:is-hidden={activeCopied}
+            class:is-hidden={isTriggered}
             aria-hidden="true"
         >
             <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
@@ -108,16 +141,33 @@
             stroke-width={strokeWidth}
             stroke-linecap="round"
             stroke-linejoin="round"
-            class="check-icon"
-            class:is-active={activeCopied}
+            class="status-icon check-icon"
+            class:is-active={isCopied}
             aria-hidden="true"
         >
             <polyline points="20 6 9 17 4 12" />
         </svg>
 
-        <!-- Celebration Micro-Sparkles Burst -->
-        {#if activeCopied}
-            <span class="particles" aria-hidden="true">
+        <!-- X (Error) Icon -->
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width={strokeWidth}
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="status-icon x-icon"
+            class:is-active={isError}
+            aria-hidden="true"
+        >
+            <path d="M18 6 6 18" />
+            <path d="m6 6 12 12" />
+        </svg>
+
+        <!-- Celebration / Feedback Micro-Sparkles Burst -->
+        {#if isTriggered}
+            <span class="particles" class:is-error={isError} aria-hidden="true">
                 <!-- 4-point micro-stars -->
                 <svg viewBox="0 0 16 16" class="particle star star-1">
                     <path d="M8 0C8 4.4 11.6 8 16 8C11.6 8 8 11.6 8 16C8 11.6 4.4 8 0 8C4.4 8 8 4.4 8 0Z" />
@@ -157,23 +207,21 @@
             opacity 150ms var(--ease-sine-out);
     }
 
-    .check-icon {
+    .status-icon {
         position: absolute;
         inset: 0;
         width: 100%;
         height: 100%;
         display: block;
-        color: var(--copy-action-check-color, var(--color-success-500));
         transform: scale(0.5) rotate(-15deg);
         opacity: 0;
         pointer-events: none;
-        filter: drop-shadow(0 0 4px color-mix(in srgb, var(--color-success-500) 40%, transparent));
         transition:
             transform 200ms var(--ease-cubic-out),
             opacity 150ms var(--ease-sine-out);
     }
 
-    .check-icon.is-active {
+    .status-icon.is-active {
         transform: scale(1) rotate(0deg);
         opacity: 1;
         transition:
@@ -181,11 +229,26 @@
             opacity 180ms var(--ease-sine-out);
     }
 
-    /* Celebration Micro-Sparkles */
+    .check-icon {
+        color: var(--copy-action-check-color, var(--color-success-500));
+        filter: drop-shadow(0 0 4px color-mix(in srgb, var(--color-success-500) 40%, transparent));
+    }
+
+    .x-icon {
+        color: var(--copy-action-error-color, var(--color-danger-500));
+        filter: drop-shadow(0 0 4px color-mix(in srgb, var(--color-danger-500) 40%, transparent));
+    }
+
+    /* Celebration / Feedback Micro-Sparkles */
     .particles {
         position: absolute;
         inset: 0;
         pointer-events: none;
+        --sparkle-color: var(--copy-action-check-color, var(--color-success-500));
+    }
+
+    .particles.is-error {
+        --sparkle-color: var(--copy-action-error-color, var(--color-danger-500));
     }
 
     .particle {
@@ -198,12 +261,12 @@
 
     .particle.star {
         fill: currentColor;
-        color: var(--copy-action-check-color, var(--color-success-500));
+        color: var(--sparkle-color);
     }
 
     .particle.dot {
         border-radius: 9999px;
-        background-color: var(--copy-action-check-color, var(--color-success-500));
+        background-color: var(--sparkle-color);
     }
 
     /* Star 1: Primary top-right sparkle above checkmark peak */
@@ -348,7 +411,7 @@
 
     @media (prefers-reduced-motion: reduce) {
         .copy-icon,
-        .check-icon,
+        .status-icon,
         .particle {
             animation: none !important;
             transition: none !important;

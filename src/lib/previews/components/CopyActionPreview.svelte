@@ -17,18 +17,28 @@
 <PreviewPage>
     <PreviewHeader
         title="Copy Action"
-        description="A lightweight interactive copy indicator with an energetic checkmark pop and celebration micro-ripple shockwave."
+        description="A lightweight interactive copy indicator with an energetic checkmark pop, failure fallback, and celebration micro-sparkles."
         icon={Copy}
     />
 
     <PreviewSection
         title="Variants"
-        description="Click any card to preview the spring checkmark and celebration ripple."
+        description="Click any card to preview the spring checkmark, failure fallback, and celebration sparkles."
     >
-        <PreviewGrid cols={3}>
-            <PreviewCard label="Default" bg="elevation-1" class="h-32">
+        <PreviewGrid cols={4}>
+            <PreviewCard label="Success" bg="elevation-1" class="h-32">
                 <div class="flex-center size-full">
                     <CopyAction />
+                </div>
+            </PreviewCard>
+
+            <PreviewCard label="Error" bg="elevation-1" class="h-32">
+                <div class="flex-center size-full">
+                    <CopyAction
+                        onclick={async () => {
+                            throw new Error("Failed");
+                        }}
+                    />
                 </div>
             </PreviewCard>
 

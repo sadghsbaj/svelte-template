@@ -163,6 +163,7 @@
         width: 100%;
         height: 100%;
         display: block;
+        color: var(--copy-action-check-color, var(--color-success-500));
         transform: scale(0.5) rotate(-15deg);
         opacity: 0;
         pointer-events: none;
@@ -197,12 +198,12 @@
 
     .particle.star {
         fill: currentColor;
-        color: var(--color-success-500);
+        color: var(--copy-action-check-color, var(--color-success-500));
     }
 
     .particle.dot {
         border-radius: 9999px;
-        background-color: var(--color-success-500);
+        background-color: var(--copy-action-check-color, var(--color-success-500));
     }
 
     /* Star 1: Primary top-right sparkle above checkmark peak */

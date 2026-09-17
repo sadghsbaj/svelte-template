@@ -9,7 +9,7 @@ export const copyActionStyles = cva({
 
     options: {
         as: {
-            button: "cursor-pointer p-0 bg-transparent border-0 active:scale-97 t:(scale-200-cubic-out text-200-quad-out)",
+            button: "cursor-pointer p-0 bg-transparent border-0 active:scale-95 t:(scale-200-cubic-out text-200-quad-out)",
             span: "pointer-events-none",
         },
     },

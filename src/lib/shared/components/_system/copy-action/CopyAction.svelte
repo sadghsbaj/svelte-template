@@ -115,15 +115,22 @@
             <polyline points="20 6 9 17 4 12" />
         </svg>
 
-        <!-- Green Micro-Confetti / Sparkle Burst -->
+        <!-- Celebration Micro-Sparkles Burst -->
         {#if activeCopied}
             <span class="particles" aria-hidden="true">
-                <span class="particle particle-0"></span>
-                <span class="particle particle-1"></span>
-                <span class="particle particle-2"></span>
-                <span class="particle particle-3"></span>
-                <span class="particle particle-4"></span>
-                <span class="particle particle-5"></span>
+                <!-- 4-point micro-stars -->
+                <svg viewBox="0 0 16 16" class="particle star star-1">
+                    <path d="M8 0C8 4.4 11.6 8 16 8C11.6 8 8 11.6 8 16C8 11.6 4.4 8 0 8C4.4 8 8 4.4 8 0Z" />
+                </svg>
+                <svg viewBox="0 0 16 16" class="particle star star-2">
+                    <path d="M8 0C8 4.4 11.6 8 16 8C11.6 8 8 11.6 8 16C8 11.6 4.4 8 0 8C4.4 8 8 4.4 8 0Z" />
+                </svg>
+
+                <!-- Dynamic micro-accent sparks -->
+                <span class="particle dot dot-1"></span>
+                <span class="particle dot dot-2"></span>
+                <span class="particle dot dot-3"></span>
+                <span class="particle dot dot-4"></span>
             </span>
         {/if}
     {/if}
@@ -173,7 +180,7 @@
             opacity 180ms var(--ease-sine-out);
     }
 
-    /* Green Micro-Sparkle Particles */
+    /* Celebration Micro-Sparkles */
     .particles {
         position: absolute;
         inset: 0;
@@ -184,118 +191,156 @@
         position: absolute;
         top: 50%;
         left: 50%;
-        width: 2.5px;
-        height: 2.5px;
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .particle.star {
+        fill: currentColor;
+        color: var(--color-success-500);
+    }
+
+    .particle.dot {
         border-radius: 9999px;
         background-color: var(--color-success-500);
-        opacity: 0;
     }
 
-    .particle-0 {
-        animation: burst-0 420ms var(--ease-quart-out) forwards;
-    }
-    .particle-1 {
-        animation: burst-1 420ms var(--ease-quart-out) forwards;
-    }
-    .particle-2 {
-        animation: burst-2 420ms var(--ease-quart-out) forwards;
-    }
-    .particle-3 {
-        animation: burst-3 420ms var(--ease-quart-out) forwards;
-    }
-    .particle-4 {
-        animation: burst-4 420ms var(--ease-quart-out) forwards;
-    }
-    .particle-5 {
-        animation: burst-5 420ms var(--ease-quart-out) forwards;
+    /* Star 1: Primary top-right sparkle above checkmark peak */
+    .star-1 {
+        width: 6.5px;
+        height: 6.5px;
+        animation: star-burst-1 460ms var(--ease-quart-out) forwards;
     }
 
-    @keyframes burst-0 {
+    /* Star 2: Accent bottom-left starlet */
+    .star-2 {
+        width: 5px;
+        height: 5px;
+        animation: star-burst-2 420ms var(--ease-quart-out) 35ms forwards;
+    }
+
+    /* Dot 1: Satellite spark shooting up-left */
+    .dot-1 {
+        width: 2.2px;
+        height: 2.2px;
+        animation: dot-burst-1 380ms var(--ease-quart-out) 15ms forwards;
+    }
+
+    /* Dot 2: High top-right spark */
+    .dot-2 {
+        width: 2px;
+        height: 2px;
+        animation: dot-burst-2 400ms var(--ease-quart-out) 40ms forwards;
+    }
+
+    /* Dot 3: Dynamic right spark */
+    .dot-3 {
+        width: 1.8px;
+        height: 1.8px;
+        animation: dot-burst-3 360ms var(--ease-quart-out) 20ms forwards;
+    }
+
+    /* Dot 4: Bottom-right spark */
+    .dot-4 {
+        width: 2.2px;
+        height: 2.2px;
+        animation: dot-burst-4 410ms var(--ease-quart-out) 50ms forwards;
+    }
+
+    @keyframes star-burst-1 {
         0% {
-            transform: translate(-50%, -50%) scale(0);
+            transform: translate(-50%, -50%) scale(0) rotate(0deg);
+            opacity: 0;
+        }
+        25% {
+            transform: translate(calc(-50% + 9px), calc(-50% - 8px)) scale(1.3) rotate(45deg);
             opacity: 1;
         }
-        40% {
-            transform: translate(calc(-50% + 12px), calc(-50% - 3px)) scale(1.1);
-            opacity: 1;
+        60% {
+            transform: translate(calc(-50% + 12px), calc(-50% - 10px)) scale(0.9) rotate(70deg);
+            opacity: 0.9;
         }
         100% {
-            transform: translate(calc(-50% + 15px), calc(-50% - 4px)) scale(0);
+            transform: translate(calc(-50% + 14px), calc(-50% - 11px)) scale(0) rotate(90deg);
             opacity: 0;
         }
     }
 
-    @keyframes burst-1 {
+    @keyframes star-burst-2 {
         0% {
-            transform: translate(-50%, -50%) scale(0);
+            transform: translate(-50%, -50%) scale(0) rotate(0deg);
+            opacity: 0;
+        }
+        30% {
+            transform: translate(calc(-50% - 8px), calc(-50% + 5px)) scale(1.15) rotate(-30deg);
             opacity: 1;
         }
-        40% {
-            transform: translate(calc(-50% + 7px), calc(-50% - 13px)) scale(1.1);
-            opacity: 1;
+        65% {
+            transform: translate(calc(-50% - 11px), calc(-50% + 7px)) scale(0.85) rotate(-50deg);
+            opacity: 0.8;
         }
         100% {
-            transform: translate(calc(-50% + 9px), calc(-50% - 16px)) scale(0);
+            transform: translate(calc(-50% - 12px), calc(-50% + 8px)) scale(0) rotate(-65deg);
             opacity: 0;
         }
     }
 
-    @keyframes burst-2 {
+    @keyframes dot-burst-1 {
         0% {
             transform: translate(-50%, -50%) scale(0);
             opacity: 1;
         }
-        40% {
-            transform: translate(calc(-50% - 7px), calc(-50% - 13px)) scale(1.1);
+        45% {
+            transform: translate(calc(-50% - 7px), calc(-50% - 10px)) scale(1.1);
             opacity: 1;
         }
         100% {
-            transform: translate(calc(-50% - 9px), calc(-50% - 16px)) scale(0);
+            transform: translate(calc(-50% - 9px), calc(-50% - 12px)) scale(0);
             opacity: 0;
         }
     }
 
-    @keyframes burst-3 {
+    @keyframes dot-burst-2 {
         0% {
             transform: translate(-50%, -50%) scale(0);
             opacity: 1;
         }
-        40% {
-            transform: translate(calc(-50% - 12px), calc(-50% - 2px)) scale(1.1);
+        45% {
+            transform: translate(calc(-50% + 5px), calc(-50% - 12px)) scale(1.1);
             opacity: 1;
         }
         100% {
-            transform: translate(calc(-50% - 15px), calc(-50% - 3px)) scale(0);
+            transform: translate(calc(-50% + 7px), calc(-50% - 15px)) scale(0);
             opacity: 0;
         }
     }
 
-    @keyframes burst-4 {
+    @keyframes dot-burst-3 {
         0% {
             transform: translate(-50%, -50%) scale(0);
             opacity: 1;
         }
-        40% {
-            transform: translate(calc(-50% - 7px), calc(-50% + 11px)) scale(1.1);
+        45% {
+            transform: translate(calc(-50% + 11px), calc(-50% + 1px)) scale(1.1);
             opacity: 1;
         }
         100% {
-            transform: translate(calc(-50% - 9px), calc(-50% + 14px)) scale(0);
+            transform: translate(calc(-50% + 14px), calc(-50% + 2px)) scale(0);
             opacity: 0;
         }
     }
 
-    @keyframes burst-5 {
+    @keyframes dot-burst-4 {
         0% {
             transform: translate(-50%, -50%) scale(0);
             opacity: 1;
         }
-        40% {
-            transform: translate(calc(-50% + 7px), calc(-50% + 11px)) scale(1.1);
+        45% {
+            transform: translate(calc(-50% + 7px), calc(-50% + 9px)) scale(1.1);
             opacity: 1;
         }
         100% {
-            transform: translate(calc(-50% + 9px), calc(-50% + 14px)) scale(0);
+            transform: translate(calc(-50% + 9px), calc(-50% + 12px)) scale(0);
             opacity: 0;
         }
     }
@@ -303,7 +348,7 @@
     @media (prefers-reduced-motion: reduce) {
         .copy-icon,
         .check-icon,
-        .particles {
+        .particle {
             animation: none !important;
             transition: none !important;
         }

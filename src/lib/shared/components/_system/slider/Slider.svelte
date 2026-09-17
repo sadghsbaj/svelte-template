@@ -11,12 +11,27 @@
         sliderThumbStyles,
         sliderTrackStyles,
     } from "./slider.styles";
-    import type { SliderProps, SliderSize } from "./slider.types";
+    import type { SliderProps, SliderSize, SliderThumbShape } from "./slider.types";
 
-    const THUMB_SIZES: Record<SliderSize, number> = {
-        sm: 16,
-        md: 20,
-        lg: 24,
+    const THUMB_DIMENSIONS: Record<
+        SliderThumbShape,
+        Record<SliderSize, { axis: number; cross: number }>
+    > = {
+        circle: {
+            sm: { axis: 16, cross: 16 },
+            md: { axis: 20, cross: 20 },
+            lg: { axis: 24, cross: 24 },
+        },
+        bar: {
+            sm: { axis: 6, cross: 18 },
+            md: { axis: 8, cross: 24 },
+            lg: { axis: 10, cross: 28 },
+        },
+        pill: {
+            sm: { axis: 24, cross: 16 },
+            md: { axis: 28, cross: 20 },
+            lg: { axis: 34, cross: 24 },
+        },
     };
 
     let {
@@ -29,6 +44,7 @@
         color = "accent",
         orientation = "horizontal",
         origin = "start",
+        thumbShape = "circle",
         disabled = false,
         hitArea = true,
         class: className = "",
@@ -72,10 +88,14 @@
         value = Array.isArray(value) ? [valMin, valMax] : valMin;
     }
 
-    const thumbSizePx = $derived(THUMB_SIZES[size]);
+    const thumbConfig = $derived(THUMB_DIMENSIONS[thumbShape][size]);
+    const thumbAxisPx = $derived(thumbConfig.axis);
+    const thumbCrossPx = $derived(thumbConfig.cross);
     const resolvedHitAreaSize = $derived(resolveHitArea(hitArea, size));
     const touchTargetPx = $derived(
-        resolvedHitAreaSize === false ? thumbSizePx : resolveHitAreaPx(resolvedHitAreaSize)
+        resolvedHitAreaSize === false
+            ? Math.max(thumbAxisPx, thumbCrossPx)
+            : resolveHitAreaPx(resolvedHitAreaSize)
     );
 
     const pctMin = $derived(max > min ? Math.min(100, Math.max(0, ((valMin - min) / (max - min)) * 100)) : 0);
@@ -83,8 +103,8 @@
 
     const midpoint = $derived(isRange ? (pctMin + pctMax) / 2 : 50);
 
-    const posMin = $derived(`calc(${pctMin}% + (0.5 - ${pctMin / 100}) * ${thumbSizePx}px)`);
-    const posMax = $derived(`calc(${pctMax}% + (0.5 - ${pctMax / 100}) * ${thumbSizePx}px)`);
+    const posMin = $derived(`calc(${pctMin}% + (0.5 - ${pctMin / 100}) * ${thumbAxisPx}px)`);
+    const posMax = $derived(`calc(${pctMax}% + (0.5 - ${pctMax / 100}) * ${thumbAxisPx}px)`);
 
     const rangeStyle = $derived.by(() => {
         if (orientation === "horizontal") {
@@ -113,14 +133,14 @@
 
     const thumbMinStyle = $derived(
         orientation === "horizontal"
-            ? `left: calc(${posMin} - ${thumbSizePx / 2}px); top: 50%; translate: 0 -50%;`
-            : `bottom: calc(${posMin} - ${thumbSizePx / 2}px); left: 50%; translate: -50% 0;`
+            ? `left: calc(${posMin} - ${thumbAxisPx / 2}px); top: 50%; translate: 0 -50%;`
+            : `bottom: calc(${posMin} - ${thumbAxisPx / 2}px); left: 50%; translate: -50% 0;`
     );
 
     const thumbMaxStyle = $derived(
         orientation === "horizontal"
-            ? `left: calc(${posMax} - ${thumbSizePx / 2}px); top: 50%; translate: 0 -50%;`
-            : `bottom: calc(${posMax} - ${thumbSizePx / 2}px); left: 50%; translate: -50% 0;`
+            ? `left: calc(${posMax} - ${thumbAxisPx / 2}px); top: 50%; translate: 0 -50%;`
+            : `bottom: calc(${posMax} - ${thumbAxisPx / 2}px); left: 50%; translate: -50% 0;`
     );
 
     const containerComputedClass = $derived(
@@ -148,7 +168,9 @@
 
     const thumbComputedClass = $derived(
         sliderThumbStyles({
+            shape: thumbShape,
             size,
+            orientation,
             color,
             class: thumbClass,
         })

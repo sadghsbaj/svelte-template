@@ -5,6 +5,7 @@ export type SliderSize = "sm" | "md" | "lg";
 export type SliderColor = "accent" | "base" | "invalid";
 export type SliderOrientation = "horizontal" | "vertical";
 export type SliderOrigin = "start" | "center";
+export type SliderThumbShape = "circle" | "bar" | "pill";
 export type SliderValue = number | [number, number];
 
 export interface SliderProps extends Omit<HTMLAttributes<HTMLDivElement>, "color"> {
@@ -17,6 +18,7 @@ export interface SliderProps extends Omit<HTMLAttributes<HTMLDivElement>, "color
     color?: SliderColor;
     orientation?: SliderOrientation;
     origin?: SliderOrigin;
+    thumbShape?: SliderThumbShape;
     disabled?: boolean;
     hitArea?: HitAreaConfig;
     class?: string;

@@ -184,6 +184,7 @@ export type {
     SliderOrigin,
     SliderProps,
     SliderSize,
+    SliderThumbShape,
     SliderValue,
 } from "./slider/slider.types";
 export {

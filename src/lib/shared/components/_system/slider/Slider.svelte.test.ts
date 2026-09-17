@@ -99,6 +99,27 @@ describe("Slider", () => {
         expect(input.classList).toContain("is-vertical");
     });
 
+    test("supports thumbShape variants (circle, bar, pill)", () => {
+        const circle = render({ thumbShape: "circle", size: "md" });
+        const circleThumb = circle.querySelector("[id^='slider-thumb-min-']");
+        expect(circleThumb?.classList).toContain("size-20px");
+
+        const bar = render({ thumbShape: "bar", size: "md", orientation: "horizontal" });
+        const barThumb = bar.querySelector("[id^='slider-thumb-min-']");
+        expect(barThumb?.classList).toContain("w-8px");
+        expect(barThumb?.classList).toContain("h-24px");
+
+        const pill = render({ thumbShape: "pill", size: "md", orientation: "horizontal" });
+        const pillThumb = pill.querySelector("[id^='slider-thumb-min-']");
+        expect(pillThumb?.classList).toContain("w-28px");
+        expect(pillThumb?.classList).toContain("h-20px");
+
+        const vertBar = render({ thumbShape: "bar", size: "md", orientation: "vertical" });
+        const vertBarThumb = vertBar.querySelector("[id^='slider-thumb-min-']");
+        expect(vertBarThumb?.classList).toContain("w-24px");
+        expect(vertBarThumb?.classList).toContain("h-8px");
+    });
+
     test("renders hit-area touch targets on thumbs by default", () => {
         const el = render({ hitArea: true });
         const hitArea = el.querySelector(".hit-area");

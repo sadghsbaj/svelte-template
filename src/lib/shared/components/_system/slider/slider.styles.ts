@@ -133,10 +133,19 @@ export const sliderThumbStyles = cva({
         motion: "will-change-transform transform-gpu backface-hidden t:(scale-200-cubic-out bg-200-quad-out shadow-200-quad-out)",
     },
     options: {
+        shape: {
+            circle: "rounded-full",
+            bar: "rounded-full",
+            pill: "rounded-full",
+        },
         size: {
-            sm: "size-16px",
-            md: "size-20px",
-            lg: "size-24px",
+            sm: "",
+            md: "",
+            lg: "",
+        },
+        orientation: {
+            horizontal: "",
+            vertical: "",
         },
         color: {
             accent: "bg-white",
@@ -144,8 +153,36 @@ export const sliderThumbStyles = cva({
             invalid: "bg-white",
         },
     },
+    compounds: [
+        // circle (orientation agnostic)
+        { shape: "circle", size: "sm", class: "size-16px" },
+        { shape: "circle", size: "md", class: "size-20px" },
+        { shape: "circle", size: "lg", class: "size-24px" },
+
+        // bar - horizontal (narrow width, tall height)
+        { shape: "bar", orientation: "horizontal", size: "sm", class: "w-6px h-18px" },
+        { shape: "bar", orientation: "horizontal", size: "md", class: "w-8px h-24px" },
+        { shape: "bar", orientation: "horizontal", size: "lg", class: "w-10px h-28px" },
+
+        // bar - vertical (wide width, flat height)
+        { shape: "bar", orientation: "vertical", size: "sm", class: "w-18px h-6px" },
+        { shape: "bar", orientation: "vertical", size: "md", class: "w-24px h-8px" },
+        { shape: "bar", orientation: "vertical", size: "lg", class: "w-28px h-10px" },
+
+        // pill - horizontal (wide width, compact height)
+        { shape: "pill", orientation: "horizontal", size: "sm", class: "w-24px h-16px" },
+        { shape: "pill", orientation: "horizontal", size: "md", class: "w-28px h-20px" },
+        { shape: "pill", orientation: "horizontal", size: "lg", class: "w-34px h-24px" },
+
+        // pill - vertical (compact width, tall height)
+        { shape: "pill", orientation: "vertical", size: "sm", class: "w-16px h-24px" },
+        { shape: "pill", orientation: "vertical", size: "md", class: "w-20px h-28px" },
+        { shape: "pill", orientation: "vertical", size: "lg", class: "w-24px h-34px" },
+    ],
     defaults: {
+        shape: "circle",
         size: "md",
+        orientation: "horizontal",
         color: "accent",
     },
 });

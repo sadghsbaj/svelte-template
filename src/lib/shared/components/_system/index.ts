@@ -171,5 +171,28 @@ export {
     type ProgressBarTrackStyleProps,
 } from "./progress-bar/progress-bar.styles";
 
+export { default as Slider } from "./slider/Slider.svelte";
+export type {
+    SliderColor,
+    SliderOrientation,
+    SliderOrigin,
+    SliderProps,
+    SliderSize,
+    SliderValue,
+} from "./slider/slider.types";
+export {
+    sliderContainerStyles,
+    sliderFillStyles,
+    sliderInputStyles,
+    sliderThumbStyles,
+    sliderTrackStyles,
+    type SliderContainerStyleProps,
+    type SliderFillStyleProps,
+    type SliderInputStyleProps,
+    type SliderThumbStyleProps,
+    type SliderTrackStyleProps,
+} from "./slider/slider.styles";
+
+
 
 

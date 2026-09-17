@@ -3,7 +3,7 @@ import { cva, type VariantProps } from "$utils";
 export const sliderContainerStyles = cva({
     base: {
         layout: "relative flex items-center select-none touch-none",
-        misc: "isolate cursor-grab active:cursor-grabbing",
+        misc: "isolate cursor-pointer",
     },
     options: {
         orientation: {
@@ -130,7 +130,7 @@ export const sliderThumbStyles = cva({
     base: {
         layout: "absolute flex-center rounded-full squircle-soft pointer-events-none select-none",
         frame: "border-none shadow-sm",
-        motion: "will-change-transform transform-gpu backface-hidden t:(scale-150-cubic-out bg-200-quad-out shadow-200-quad-out)",
+        motion: "will-change-transform transform-gpu backface-hidden t:(scale-200-cubic-out bg-200-quad-out shadow-200-quad-out)",
     },
     options: {
         size: {
@@ -154,9 +154,14 @@ export const sliderInputStyles = cva({
     base: {
         layout: "absolute inset-0 size-full m-0 p-0",
         appearance:
-            "appearance-none bg-transparent bor^er-none outline-none ring-0 shadow-none cursor-grab active:cursor-grabbing select-none",
+            "appearance-none bg-transparent border-none outline-none ring-0 shadow-none cursor-pointer select-none disabled:cursor-not-allowed",
         interaction:
-            "[&::-webkit-slider-runnable-track]:(bg-transparent border-none cursor-grab active:cursor-grabbing) [&::-moz-range-track]:(bg-transparent border-none cursor-grab active:cursor-grabbing) [&::-webkit-slider-thumb]:(appearance-none bg-transparent border-none cursor-grab active:cursor-grabbing w-[var(--slider-touch-size)] h-[var(--slider-touch-size)]) [&::-moz-range-thumb]:(appearance-none bg-transparent border-none cursor-grab active:cursor-grabbing w-[var(--slider-touch-size)] h-[var(--slider-touch-size)])",
+            "[&::-webkit-slider-runnable-track]:(bg-transparent border-none cursor-pointer) " +
+            "[&::-moz-range-track]:(bg-transparent border-none cursor-pointer) " +
+            "[&::-webkit-slider-thumb]:(appearance-none bg-transparent border-none w-[var(--slider-touch-size)] h-[var(--slider-touch-size)]) " +
+            "[&::-moz-range-thumb]:(appearance-none bg-transparent border-none w-[var(--slider-touch-size)] h-[var(--slider-touch-size)]) " +
+            "[&::-webkit-slider-thumb]:cursor-grab [&::-webkit-slider-thumb]:active:cursor-grabbing " +
+            "[&::-moz-range-thumb]:cursor-grab [&::-moz-range-thumb]:active:cursor-grabbing",
     },
     options: {
         orientation: {

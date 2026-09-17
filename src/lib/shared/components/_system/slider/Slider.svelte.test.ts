@@ -114,9 +114,21 @@ describe("Slider", () => {
     test("handles disabled state via disableInteraction", () => {
         const el = render({ disabled: true });
         expect(el.getAttribute("aria-disabled")).toBe("true");
+        expect(el.classList).toContain("cursor-not-allowed");
+        expect(el.style.cursor).toBe("not-allowed");
 
         const input = el.querySelector("input[type='range']") as HTMLInputElement;
         expect(input.disabled).toBe(true);
+        expect(input.classList).toContain("pointer-events-none");
+        expect(input.style.cursor).toBe("not-allowed");
+    });
+
+    test("sets default pointer cursor on container and track", () => {
+        const el = render();
+        expect(el.classList).toContain("cursor-pointer");
+
+        const input = el.querySelector("input[type='range']") as HTMLInputElement;
+        expect(input.classList).toContain("cursor-pointer");
     });
 
     test("renders max input before min input when vertical orientation for top-to-bottom tab order", () => {

@@ -310,6 +310,9 @@
 <div
     bind:this={element}
     class={containerComputedClass}
+    class:cursor-grabbing={isMinActive || isMaxActive}
+    class:cursor-not-allowed={disabled}
+    style:cursor={disabled ? "not-allowed" : (isMinActive || isMaxActive) ? "grabbing" : undefined}
     onpointermove={handlePointerMove}
     onpointerleave={handlePointerLeave}
     {@attach disableInteraction({ enabled: disabled })}
@@ -334,6 +337,9 @@
                 updateValue();
             }}
             class="{inputComputedClass} slider-input-min"
+            class:cursor-grabbing={isMinActive || isMaxActive}
+            class:pointer-events-none={disabled}
+            style:cursor={disabled ? "not-allowed" : undefined}
             style:z-index={activeInput === "min" ? 12 : 11}
             style:clip-path={isRange
                 ? orientation === "horizontal"
@@ -365,6 +371,9 @@
                 updateValue();
             }}
             class="{inputComputedClass} slider-input-max"
+            class:cursor-grabbing={isMinActive || isMaxActive}
+            class:pointer-events-none={disabled}
+            style:cursor={disabled ? "not-allowed" : undefined}
             style:z-index={activeInput === "max" ? 12 : 11}
             style:clip-path={orientation === "horizontal"
                 ? `inset(0 0 0 ${midpoint}%)`

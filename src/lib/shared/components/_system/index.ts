@@ -198,6 +198,14 @@ export {
     type SliderTrackStyleProps,
 } from "./slider/slider.styles";
 
-
-
-
+export { default as Separator } from "./separator/Separator.svelte";
+export type {
+    SeparatorColor,
+    SeparatorOrientation,
+    SeparatorProps,
+    SeparatorThickness,
+} from "./separator/Separator.svelte";
+export {
+    separatorStyles,
+    type SeparatorStyleProps,
+} from "./separator/separator.styles";

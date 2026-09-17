@@ -2,7 +2,7 @@
     import type { HTMLAttributes } from "svelte/elements";
     import { cn } from "$utils";
 
-    import type { HitAreaSize } from "./hit-area";
+    import { resolveHitAreaPx, type HitAreaSize } from "./hit-area";
 
     interface Props extends HTMLAttributes<HTMLSpanElement> {
         size?: HitAreaSize;
@@ -11,13 +11,7 @@
 
     let { size = "md", class: className, ...restProps }: Props = $props();
 
-    const PRESETS: Record<"sm" | "md" | "lg", number> = {
-        sm: 40,
-        md: 44,
-        lg: 48,
-    };
-
-    let resolvedSize = $derived(typeof size === "number" ? size : (PRESETS[size] ?? 44));
+    let resolvedSize = $derived(resolveHitAreaPx(size));
 </script>
 
 <span

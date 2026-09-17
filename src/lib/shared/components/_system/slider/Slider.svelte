@@ -1,6 +1,6 @@
 <script lang="ts">
     import { disableInteraction } from "$attachments";
-    import { HitArea, resolveHitArea } from "$components";
+    import { HitArea, resolveHitArea, resolveHitAreaPx } from "$components";
     import { uuid } from "$utils";
 
     import { focusAttach } from "$core/_system/focus/focus.attach";
@@ -18,12 +18,6 @@
         sm: 16,
         md: 20,
         lg: 24,
-    };
-
-    const HIT_AREA_SIZES: Record<SliderSize, number> = {
-        sm: 40,
-        md: 44,
-        lg: 48,
     };
 
     let {
@@ -82,11 +76,7 @@
     const thumbSizePx = $derived(THUMB_SIZES[size]);
     const resolvedHitAreaSize = $derived(resolveHitArea(hitArea, size));
     const touchTargetPx = $derived(
-        resolvedHitAreaSize === false
-            ? thumbSizePx
-            : typeof resolvedHitAreaSize === "number"
-              ? resolvedHitAreaSize
-              : HIT_AREA_SIZES[resolvedHitAreaSize]
+        resolvedHitAreaSize === false ? thumbSizePx : resolveHitAreaPx(resolvedHitAreaSize)
     );
 
     const pctMin = $derived(max > min ? Math.min(100, Math.max(0, ((valMin - min) / (max - min)) * 100)) : 0);

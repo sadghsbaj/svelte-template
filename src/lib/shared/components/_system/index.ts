@@ -5,7 +5,13 @@ export type {
 } from "./background-pattern/pattern-variants.snippets.svelte";
 
 export { default as HitArea } from "./hit-area/HitArea.svelte";
-export { resolveHitArea, type HitAreaConfig, type HitAreaSize } from "./hit-area/hit-area";
+export {
+    HIT_AREA_SIZES,
+    resolveHitArea,
+    resolveHitAreaPx,
+    type HitAreaConfig,
+    type HitAreaSize,
+} from "./hit-area/hit-area";
 
 export { default as Button } from "./button/Button.svelte";
 export type { ButtonStyleProps } from "./button/button.styles";

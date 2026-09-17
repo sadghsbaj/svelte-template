@@ -145,3 +145,17 @@ export {
 export { default as CopyAction, type CopyActionStatus } from "./copy-action/CopyAction.svelte";
 export { copyActionStyles, type CopyActionStyleProps } from "./copy-action/copy-action.styles";
 
+export {
+    default as Meter,
+    type MeterColor,
+    type MeterProps,
+    type MeterSize,
+} from "./meter/Meter.svelte";
+export {
+    meterFillStyles,
+    meterTrackStyles,
+    type MeterFillStyleProps,
+    type MeterTrackStyleProps,
+} from "./meter/meter.styles";
+
+

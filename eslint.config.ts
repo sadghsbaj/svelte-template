@@ -18,6 +18,7 @@ import { restrictedImportsConfig } from "./eslint/imports.ts";
 import { shortcutsConfig } from "./eslint/shortcuts.ts";
 import { svelteConfig } from "./eslint/svelte.ts";
 import { forbiddenTransitionsConfig } from "./eslint/transitions.ts";
+import { unicodeDotsConfig } from "./eslint/unicode-dots.ts";
 import { unicornConfig } from "./eslint/unicorn.ts";
 import { unocssConfig } from "./eslint/unocss.ts";
 import { blocklistConfig } from "./uno/blocklist.ts";
@@ -32,6 +33,7 @@ export default defineConfig([
     forbiddenTransitionsConfig,
     shortcutsConfig,
     createCvaBlocklistConfig(blocklistConfig),
+    unicodeDotsConfig,
     ...unicornConfig,
     ...unocssConfig,
 

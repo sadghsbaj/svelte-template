@@ -138,6 +138,7 @@ export default defineConfig({
                         "scripts/**/*.{test,spec}.{js,ts}",
                         "plugins/**/*.{test,spec}.{js,ts}",
                         "uno/**/*.{test,spec}.{js,ts}",
+                        "eslint/**/*.{test,spec}.{js,ts}",
                     ],
                     exclude: ["src/**/*.svelte.{test,spec}.{js,ts}"],
                 },

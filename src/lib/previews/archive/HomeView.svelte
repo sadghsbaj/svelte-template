@@ -52,7 +52,7 @@
         {
             id: 1,
             title: "Deployment v2.4.0 erfolgreich",
-            subtitle: "Vor 12 Minuten • Production Cluster",
+            subtitle: "Vor 12 Minuten / Production Cluster",
             status: "Erfolgreich",
             icon: CheckCircle2,
             badgeClass: "bg-success-500/15 text-success-600 dark:text-success-400",
@@ -60,7 +60,7 @@
         {
             id: 2,
             title: "Neues Teammitglied hinzugefügt",
-            subtitle: "Vor 45 Minuten • Sarah Connor (Design Lead)",
+            subtitle: "Vor 45 Minuten / Sarah Connor (Design Lead)",
             status: "Aktiv",
             icon: Users,
             badgeClass: "bg-accent-500/15 text-accent-600 dark:text-accent-400",
@@ -68,7 +68,7 @@
         {
             id: 3,
             title: "Automatisches Backup abgeschlossen",
-            subtitle: "Vor 2 Stunden • Datenbank & Storage",
+            subtitle: "Vor 2 Stunden / Datenbank & Storage",
             status: "Gesichert",
             icon: Clock,
             badgeClass: "bg-info-500/15 text-info-600 dark:text-info-400",
@@ -86,7 +86,10 @@
                 >
                     Pro Workspace
                 </span>
-                <span class="text-xs text-weak">• Live Overview</span>
+                <span class="text-xs text-weak flex items-center gap-1.5">
+                    <span class="dot-sm"></span>
+                    Live Overview
+                </span>
             </div>
             <h1 class="text-3xl text-strong tracking-tight font-700">Willkommen zurück, Alex</h1>
         </div>

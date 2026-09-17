@@ -14,7 +14,10 @@
                 >
                     Realtime Analytics
                 </span>
-                <span class="text-xs text-weak">• Performance Hub</span>
+                <span class="text-xs text-weak flex items-center gap-1.5">
+                    <span class="dot-sm"></span>
+                    Performance Hub
+                </span>
             </div>
             <h1 class="text-3xl text-strong tracking-tight font-700">Statistiken & Analysen</h1>
         </div>

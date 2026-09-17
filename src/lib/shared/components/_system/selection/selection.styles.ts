@@ -39,7 +39,7 @@ export const selectionOptionStyles = cva({
 
 export const selectionSectionStyles = cva({
     modifiers: {
-        separated: "mt-4px border-t border-base-soft-2 pt-4px",
+        separated: "mt-4px border-t border-base-soft-1 pt-4px",
     },
 });
 

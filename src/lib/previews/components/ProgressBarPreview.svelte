@@ -5,7 +5,7 @@
 </script>
 
 <script lang="ts">
-    import { Button, ProgressBar, Slider } from "$components";
+    import { Badge, Button, ProgressBar, Separator, Slider } from "$components";
 
     import PreviewCard from "$lib/previews/ui/PreviewCard.svelte";
     import PreviewGrid from "$lib/previews/ui/PreviewGrid.svelte";
@@ -36,12 +36,12 @@
                 <div class="w-40">
                     <Slider bind:value={progressValue} min={0} max={100} ariaLabel="Progress value slider" />
                 </div>
-                <span class="label-sm tabular-nums px-2.5 py-1 rounded-full bg-base-soft-1">
+                <Badge variant="soft" color="base" class="tabular-nums min-w-60px">
                     {progressValue}%
-                </span>
+                </Badge>
             </div>
 
-            <div class="h-5 w-1px bg-base-soft-2 hidden sm:block"></div>
+            <Separator orientation="vertical" class="h-5! my-auto self-center! hidden sm:block" />
 
             <div class="flex items-center gap-1.5">
                 {#each presets as preset (preset)}

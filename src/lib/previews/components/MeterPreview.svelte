@@ -5,7 +5,7 @@
 </script>
 
 <script lang="ts">
-    import { Button, Meter, Slider } from "$components";
+    import { Badge, Button, Meter, Separator, Slider } from "$components";
 
     import PreviewCard from "$lib/previews/ui/PreviewCard.svelte";
     import PreviewGrid from "$lib/previews/ui/PreviewGrid.svelte";
@@ -30,18 +30,25 @@
         title="Interactive Controls"
         description="Adjust the meter value or select presets to preview smooth width transitions across all components."
     >
-        <div class="flex flex-wrap items-center gap-5 p-4 rounded-2xl bg-elevation-1 shadow-sm w-fit mb-6">
+        <div
+            class="flex flex-wrap items-center gap-5 p-4 rounded-2xl bg-elevation-1 shadow-sm w-fit mb-6"
+        >
             <div class="flex items-center gap-3">
                 <span class="label-md">Value</span>
                 <div class="w-40">
-                    <Slider bind:value={meterValue} min={0} max={100} ariaLabel="Meter value slider" />
+                    <Slider
+                        bind:value={meterValue}
+                        min={0}
+                        max={100}
+                        ariaLabel="Meter value slider"
+                    />
                 </div>
-                <span class="label-sm tabular-nums px-2.5 py-1 rounded-full bg-base-soft-1">
+                <Badge variant="soft" color="base" class="tabular-nums min-w-60px">
                     {meterValue}%
-                </span>
+                </Badge>
             </div>
 
-            <div class="h-5 w-1px bg-base-soft-2 hidden sm:block"></div>
+            <Separator orientation="vertical" class="h-5! my-auto self-center! hidden sm:block" />
 
             <div class="flex items-center gap-1.5">
                 {#each presets as preset (preset)}

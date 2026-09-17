@@ -2,7 +2,7 @@ import { cva, type VariantProps } from "$utils";
 
 export const meterTrackStyles = cva({
     base: {
-        layout: "relative w-full overflow-hidden rounded-full select-none",
+        layout: "relative w-full overflow-hidden rounded-full squircle-soft select-none",
         color: "bg-base-soft-1",
         misc: "isolate",
     },
@@ -22,7 +22,7 @@ export const meterTrackStyles = cva({
 
 export const meterFillStyles = cva({
     base: {
-        layout: "h-full rounded-full",
+        layout: "h-full rounded-full squircle-soft",
         misc: "will-change-[width]",
     },
 

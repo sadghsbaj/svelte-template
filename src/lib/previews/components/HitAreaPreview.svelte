@@ -53,7 +53,7 @@
                     <HitArea
                         size="sm"
                         class={showBounds
-                            ? "!border !border-dashed !border-accent-500/60 !bg-accent-500/10 rounded-xl"
+                            ? "bg-accent-500/8 ring-1 ring-inset ring-accent-500/30 rounded-xl"
                             : ""}
                     />
                     <X size={14} />
@@ -65,7 +65,7 @@
                     <HitArea
                         size="md"
                         class={showBounds
-                            ? "!border !border-dashed !border-accent-500/60 !bg-accent-500/10 rounded-xl"
+                            ? "bg-accent-500/8 ring-1 ring-inset ring-accent-500/30 rounded-xl"
                             : ""}
                     />
                     <Plus size={14} />
@@ -77,7 +77,7 @@
                     <HitArea
                         size="lg"
                         class={showBounds
-                            ? "!border !border-dashed !border-accent-500/60 !bg-accent-500/10 rounded-xl"
+                            ? "bg-accent-500/8 ring-1 ring-inset ring-accent-500/30 rounded-xl"
                             : ""}
                     />
                     <MoreHorizontal size={14} />
@@ -99,7 +99,7 @@
                     <HitArea
                         size="md"
                         class={showBounds
-                            ? "!border !border-dashed !border-accent-500/60 !bg-accent-500/10 rounded-full"
+                            ? "bg-accent-500/8 ring-1 ring-inset ring-accent-500/30 rounded-full"
                             : ""}
                     />
                     <span>Active Tag</span>
@@ -112,7 +112,7 @@
                     <HitArea
                         size={56}
                         class={showBounds
-                            ? "!border !border-dashed !border-accent-500/60 !bg-accent-500/10 rounded-2xl"
+                            ? "bg-accent-500/8 ring-1 ring-inset ring-accent-500/30 rounded-2xl"
                             : ""}
                     />
                     <Target size={16} />

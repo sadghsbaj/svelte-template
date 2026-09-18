@@ -24,6 +24,7 @@ describe("debugGuardPlugin", () => {
 
         expect(transform.call({}, "", "node_modules/some-lib/index.js")).toBeNull();
         expect(transform.call({}, "", "uno.config.ts")).toBeNull();
+        expect(transform.call({}, "", "uno/rules.ts")).toBeNull();
         expect(transform.call({}, "", "plugins/debug-guard.ts")).toBeNull();
         expect(transform.call({}, "", "plugins/debug-guard.test.ts")).toBeNull();
     });

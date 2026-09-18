@@ -18,7 +18,8 @@ export interface DebugGuardOptions {
 export function debugGuardPlugin(options: DebugGuardOptions = {}): Plugin {
     const defaultExcludes = [
         /[/\\]node_modules[/\\]/,
-        /[/\\]uno\.config\.ts$/, // Ignore the config where the class is defined
+        /(?:^|[/\\])uno\.config\.ts$/, // Ignore the config where the class is defined
+        /(?:^|[/\\])uno[/\\]rules\.ts$/, // Ignore UnoCSS rules where the class is defined
         /[/\\]debug-guard(\.test)?\.ts$/, // Ignore this plugin itself and its test file
     ];
 

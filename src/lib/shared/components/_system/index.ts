@@ -17,6 +17,12 @@ export { default as Button } from "./button/Button.svelte";
 export type { ButtonStyleProps } from "./button/button.styles";
 
 export {
+    default as ToggleButton,
+    type ToggleButtonProps,
+} from "./toggle-button/ToggleButton.svelte";
+export type { ToggleButtonStyleProps } from "./toggle-button/toggle-button.styles";
+
+export {
     default as ButtonGroup,
     type ButtonGroupOrientation,
     type ButtonGroupProps,

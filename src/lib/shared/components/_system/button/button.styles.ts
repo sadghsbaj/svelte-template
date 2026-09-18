@@ -29,9 +29,9 @@ export const buttonStyles = cva({
         },
 
         size: {
-            sm: "h-36px px-12px text-xs gap-4px [&_svg]:(size-14px stroke-2.5)",
-            md: "h-40px px-16px text-sm gap-6px [&_svg]:(size-16px stroke-2.5)",
-            lg: "h-44px px-20px  text-base gap-8px [&_svg]:(size-18px stroke-2.5)",
+            sm: "h-32px px-10px text-xs gap-4px [&_svg]:(size-14px stroke-2.5)",
+            md: "h-36px px-14px text-sm gap-6px [&_svg]:(size-16px stroke-2.5)",
+            lg: "h-40px px-18px  text-base gap-8px [&_svg]:(size-18px stroke-2.5)",
         },
 
         align: {
@@ -50,7 +50,7 @@ export const buttonStyles = cva({
     compounds: [
         {
             iconOnly: false,
-            class: "squircle",
+            class: "squircle-smooth",
         },
 
         // --- SOLID ---

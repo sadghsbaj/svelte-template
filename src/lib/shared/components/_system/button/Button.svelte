@@ -77,9 +77,13 @@
         {@render iconLeft()}
     {/if}
 
-    <span class="text-trim-truncate">
+    {#if iconOnly}
         {@render children?.()}
-    </span>
+    {:else}
+        <span class="text-trim-truncate">
+            {@render children?.()}
+        </span>
+    {/if}
 
     {#if iconRight}
         {@render iconRight()}

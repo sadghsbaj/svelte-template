@@ -5,8 +5,8 @@
 </script>
 
 <script lang="ts">
-    import { Bell, Eye, EyeOff, Heart, MoreHorizontal, Plus, Trash2, X } from "@lucide/svelte";
-    import { HitArea, ToggleButton } from "$components";
+    import { Eye, EyeOff, MoreHorizontal, Plus, X } from "@lucide/svelte";
+    import { Button, HitArea, ToggleButton } from "$components";
 
     import PreviewCard from "$lib/previews/ui/PreviewCard.svelte";
     import PreviewControlCard from "$lib/previews/ui/PreviewControlCard.svelte";
@@ -49,9 +49,7 @@
     >
         <PreviewGrid cols={3}>
             <PreviewCard label="Compact" bg="elevation-1" class="h-36">
-                <button
-                    class="w-6 h-6 rounded-lg bg-elevation-2 hover:bg-elevation-3 text-weak hover:text-strong flex-center t-colors shadow-2xs cursor-pointer"
-                >
+                <Button variant="soft" color="base" size="sm" iconOnly aria-label="Close">
                     <HitArea
                         size="sm"
                         class={showBounds
@@ -59,13 +57,11 @@
                             : ""}
                     />
                     <X size={14} />
-                </button>
+                </Button>
             </PreviewCard>
 
             <PreviewCard label="Standard" bg="elevation-1" class="h-36">
-                <button
-                    class="w-6 h-6 rounded-lg bg-elevation-2 hover:bg-elevation-3 text-weak hover:text-strong flex-center t-colors shadow-2xs cursor-pointer"
-                >
+                <Button variant="soft" color="base" size="sm" iconOnly aria-label="Add">
                     <HitArea
                         size="md"
                         class={showBounds
@@ -73,13 +69,11 @@
                             : ""}
                     />
                     <Plus size={14} />
-                </button>
+                </Button>
             </PreviewCard>
 
             <PreviewCard label="Material" bg="elevation-1" class="h-36">
-                <button
-                    class="w-6 h-6 rounded-lg bg-elevation-2 hover:bg-elevation-3 text-weak hover:text-strong flex-center t-colors shadow-2xs cursor-pointer"
-                >
+                <Button variant="soft" color="base" size="sm" iconOnly aria-label="More options">
                     <HitArea
                         size="lg"
                         class={showBounds
@@ -87,55 +81,9 @@
                             : ""}
                     />
                     <MoreHorizontal size={14} />
-                </button>
+                </Button>
             </PreviewCard>
         </PreviewGrid>
-    </PreviewSection>
-
-    <!-- Component Composition -->
-    <PreviewSection
-        title="Micro-Button Row"
-        description="Multiple adjacent actions without layout collisions or negative margins."
-    >
-        <PreviewCard label="Action Toolbar" bg="elevation-1" class="h-40">
-            <div class="flex items-center gap-6 p-4 rounded-2xl bg-elevation-2/60">
-                <button
-                    class="w-7 h-7 rounded-lg bg-elevation-1 hover:bg-elevation-3 text-weak hover:text-strong flex-center t-colors shadow-xs cursor-pointer"
-                >
-                    <HitArea
-                        size="md"
-                        class={showBounds
-                            ? "!border !border-dashed !border-accent-500/60 !bg-accent-500/10 rounded-xl"
-                            : ""}
-                    />
-                    <Heart size={15} />
-                </button>
-
-                <button
-                    class="w-7 h-7 rounded-lg bg-elevation-1 hover:bg-elevation-3 text-weak hover:text-strong flex-center t-colors shadow-xs cursor-pointer"
-                >
-                    <HitArea
-                        size="md"
-                        class={showBounds
-                            ? "!border !border-dashed !border-accent-500/60 !bg-accent-500/10 rounded-xl"
-                            : ""}
-                    />
-                    <Bell size={15} />
-                </button>
-
-                <button
-                    class="w-7 h-7 rounded-lg bg-elevation-1 hover:bg-elevation-3 text-weak hover:text-strong flex-center t-colors shadow-xs cursor-pointer"
-                >
-                    <HitArea
-                        size="md"
-                        class={showBounds
-                            ? "!border !border-dashed !border-accent-500/60 !bg-accent-500/10 rounded-xl"
-                            : ""}
-                    />
-                    <Trash2 size={15} />
-                </button>
-            </div>
-        </PreviewCard>
     </PreviewSection>
 
     <!-- Wide Element Behavior -->
@@ -160,9 +108,7 @@
             </PreviewCard>
 
             <PreviewCard label="Custom" bg="elevation-1" class="h-40">
-                <button
-                    class="w-8 h-8 rounded-xl bg-elevation-2 hover:bg-elevation-3 text-strong flex-center t-colors shadow-xs cursor-pointer"
-                >
+                <Button variant="soft" color="base" size="sm" iconOnly aria-label="Custom target">
                     <HitArea
                         size={56}
                         class={showBounds
@@ -170,7 +116,7 @@
                             : ""}
                     />
                     <Target size={16} />
-                </button>
+                </Button>
             </PreviewCard>
         </PreviewGrid>
     </PreviewSection>

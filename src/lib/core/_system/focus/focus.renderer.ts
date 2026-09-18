@@ -1,4 +1,10 @@
-import type { ClipBox, FocusBox, FocusOverrides, FocusPaintState } from "./focus.types.js";
+import type {
+    ClipBox,
+    CornerRadii,
+    FocusBox,
+    FocusOverrides,
+    FocusPaintState,
+} from "./focus.types.js";
 
 let cachedAccentColor: string | null = null;
 const resolvedColorCache = new Map<string, string>();
@@ -147,6 +153,11 @@ function drawSuperellipseCorner(
     exponent: number,
     corner: Corner
 ): void {
+    if (r === 0) {
+        ctx.lineTo(cx, cy);
+        return;
+    }
+
     const points = getSuperellipsePoints(exponent);
 
     for (const { cos, sin } of points) {
@@ -165,43 +176,61 @@ export function drawSquirclePath(
     y: number,
     w: number,
     h: number,
-    r: number,
+    radii: CornerRadii,
     exponent: number
 ): void {
-    const clampedR = Math.max(0, Math.min(r, Math.min(w, h) / 2));
-    if (clampedR === 0) {
+    const clamped = clampCornerRadii(radii, w, h);
+    const { topLeft, topRight, bottomRight, bottomLeft } = clamped;
+    if (topLeft === 0 && topRight === 0 && bottomRight === 0 && bottomLeft === 0) {
         ctx.rect(x, y, w, h);
         return;
     }
 
     // Path goes clockwise: top edge → right edge → bottom edge → left edge
 
-    ctx.moveTo(x + clampedR, y);
+    ctx.moveTo(x + topLeft, y);
 
     // Top edge → top-right corner
-    ctx.lineTo(x + w - clampedR, y);
-    drawSuperellipseCorner(ctx, x + w - clampedR, y + clampedR, clampedR, exponent, "top-right");
+    ctx.lineTo(x + w - topRight, y);
+    drawSuperellipseCorner(ctx, x + w - topRight, y + topRight, topRight, exponent, "top-right");
 
     // Right edge → bottom-right corner
-    ctx.lineTo(x + w, y + h - clampedR);
+    ctx.lineTo(x + w, y + h - bottomRight);
     drawSuperellipseCorner(
         ctx,
-        x + w - clampedR,
-        y + h - clampedR,
-        clampedR,
+        x + w - bottomRight,
+        y + h - bottomRight,
+        bottomRight,
         exponent,
         "bottom-right"
     );
 
     // Bottom edge → bottom-left corner
-    ctx.lineTo(x + clampedR, y + h);
-    drawSuperellipseCorner(ctx, x + clampedR, y + h - clampedR, clampedR, exponent, "bottom-left");
+    ctx.lineTo(x + bottomLeft, y + h);
+    drawSuperellipseCorner(
+        ctx,
+        x + bottomLeft,
+        y + h - bottomLeft,
+        bottomLeft,
+        exponent,
+        "bottom-left"
+    );
 
     // Left edge → top-left corner
-    ctx.lineTo(x, y + clampedR);
-    drawSuperellipseCorner(ctx, x + clampedR, y + clampedR, clampedR, exponent, "top-left");
+    ctx.lineTo(x, y + topLeft);
+    drawSuperellipseCorner(ctx, x + topLeft, y + topLeft, topLeft, exponent, "top-left");
 
     ctx.closePath();
+}
+
+function clampCornerRadii(radii: CornerRadii, width: number, height: number): CornerRadii {
+    const maxRadius = Math.min(width, height) / 2;
+    return {
+        topLeft: Math.max(0, Math.min(radii.topLeft, maxRadius)),
+        topRight: Math.max(0, Math.min(radii.topRight, maxRadius)),
+        bottomRight: Math.max(0, Math.min(radii.bottomRight, maxRadius)),
+        bottomLeft: Math.max(0, Math.min(radii.bottomLeft, maxRadius)),
+    };
 }
 
 /**
@@ -246,7 +275,16 @@ export function drawFocusRing(
 
     const drawX = currentBox.x - offsetDelta;
     const drawY = currentBox.y - offsetDelta;
-    const drawR = Math.max(0, currentBox.r + offsetDelta);
+    const drawRadii = clampCornerRadii(
+        {
+            topLeft: currentBox.radii.topLeft + offsetDelta,
+            topRight: currentBox.radii.topRight + offsetDelta,
+            bottomRight: currentBox.radii.bottomRight + offsetDelta,
+            bottomLeft: currentBox.radii.bottomLeft + offsetDelta,
+        },
+        drawW,
+        drawH
+    );
 
     ctx.save();
 
@@ -258,10 +296,23 @@ export function drawFocusRing(
     // Draw main focus ring outline
     ctx.globalAlpha = opacity;
     ctx.beginPath();
-    if (currentBox.cornerShape?.type === "squircle" && drawR > 0) {
-        drawSquirclePath(ctx, drawX, drawY, drawW, drawH, drawR, currentBox.cornerShape.exponent);
+    if (currentBox.cornerShape?.type === "squircle") {
+        drawSquirclePath(
+            ctx,
+            drawX,
+            drawY,
+            drawW,
+            drawH,
+            drawRadii,
+            currentBox.cornerShape.exponent
+        );
     } else if (typeof ctx.roundRect === "function") {
-        ctx.roundRect(drawX, drawY, drawW, drawH, drawR);
+        ctx.roundRect(drawX, drawY, drawW, drawH, [
+            drawRadii.topLeft,
+            drawRadii.topRight,
+            drawRadii.bottomRight,
+            drawRadii.bottomLeft,
+        ]);
     } else {
         ctx.rect(drawX, drawY, drawW, drawH);
     }

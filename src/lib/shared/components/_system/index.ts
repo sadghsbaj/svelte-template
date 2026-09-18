@@ -16,6 +16,13 @@ export {
 export { default as Button } from "./button/Button.svelte";
 export type { ButtonStyleProps } from "./button/button.styles";
 
+export {
+    default as ButtonGroup,
+    type ButtonGroupOrientation,
+    type ButtonGroupProps,
+} from "./button-group/ButtonGroup.svelte";
+export type { ButtonGroupStyleProps } from "./button-group/button-group.styles";
+
 export { default as CloseButton } from "./close-button/CloseButton.svelte";
 export type { CloseButtonStyleProps } from "./close-button/close-button.styles";
 

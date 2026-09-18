@@ -34,6 +34,19 @@ describe("Button", () => {
         expect(button).not.toBeNull();
         expect(button.className).toContain("justify-center");
         expect(button.className).toContain("text-center");
+        expect(button.dataset.slot).toBe("button");
+        expect(button.dataset.buttonVariant).toBe("solid");
+        expect(button.dataset.buttonBordered).toBeUndefined();
+    });
+
+    test("marks variants with visible borders for parent layouts", () => {
+        const outline = render({ variant: "outline" });
+        const softOutline = render({ variant: "soft-outline" });
+        const solid = render({ variant: "solid" });
+
+        expect(outline.dataset.buttonBordered).toBe("");
+        expect(softOutline.dataset.buttonBordered).toBe("");
+        expect(solid.dataset.buttonBordered).toBeUndefined();
     });
 
     test("supports align='start'", () => {
@@ -94,7 +107,7 @@ describe("Button", () => {
         const md = render({ iconOnly: true, size: "md" });
         const lg = render({ iconOnly: true, size: "lg" });
 
-        expect(regular.classList).toContain("squircle");
+        expect(regular.classList).toContain("squircle-smooth");
         expect(regular.classList).not.toContain("squircle-soft");
         expect(md.classList).toContain("squircle-soft");
         expect(md.classList).not.toContain("squircle");

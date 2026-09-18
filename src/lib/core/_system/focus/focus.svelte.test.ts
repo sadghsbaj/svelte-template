@@ -19,8 +19,15 @@ import {
     drawSquirclePath,
     resolveAccentColor,
 } from "./focus.renderer.js";
-import type { ClipBox, FocusBox, FocusPaintState } from "./focus.types.js";
+import type { ClipBox, CornerRadii, FocusBox, FocusPaintState } from "./focus.types.js";
 import { isTextEntryControl } from "./focus.visibility.js";
+
+const uniformRadii = (radius: number): CornerRadii => ({
+    topLeft: radius,
+    topRight: radius,
+    bottomRight: radius,
+    bottomLeft: radius,
+});
 
 describe("focus.renderer", () => {
     it("resolveAccentColor returns a non-empty string", () => {
@@ -39,7 +46,7 @@ describe("focus.renderer", () => {
     it("drawFocusRing does not throw without paint state (defaults to ring)", () => {
         const ctx = makeMockCtx();
         const canvas = {} as HTMLCanvasElement;
-        const box: FocusBox = { x: 0, y: 0, w: 10, h: 10, r: 0 };
+        const box: FocusBox = { x: 0, y: 0, w: 10, h: 10, radii: uniformRadii(0) };
         const clip: ClipBox = { x: 0, y: 0, w: 10, h: 10 };
 
         expect(() => drawFocusRing(ctx, canvas, box, clip)).not.toThrow();
@@ -48,19 +55,36 @@ describe("focus.renderer", () => {
     it("drawFocusRing clamps negative radius to 0", () => {
         const ctx = makeMockCtx();
         const canvas = {} as HTMLCanvasElement;
-        const box: FocusBox = { x: 10, y: 10, w: 100, h: 100, r: -4 };
+        const box: FocusBox = { x: 10, y: 10, w: 100, h: 100, radii: uniformRadii(-4) };
         const clip: ClipBox = { x: 0, y: 0, w: 1000, h: 1000 };
 
         drawFocusRing(ctx, canvas, box, clip);
         const args = (ctx.roundRect as ReturnType<typeof vi.fn>).mock.calls[0];
-        expect(args[4]).toBe(0);
+        expect(args[4]).toEqual([0, 0, 0, 0]);
+    });
+
+    it("drawFocusRing passes independent corner radii to roundRect", () => {
+        const ctx = makeMockCtx();
+        const canvas = {} as HTMLCanvasElement;
+        const box: FocusBox = {
+            x: 10,
+            y: 10,
+            w: 100,
+            h: 40,
+            radii: { topLeft: 20, topRight: 0, bottomRight: 0, bottomLeft: 20 },
+        };
+        const clip: ClipBox = { x: 0, y: 0, w: 1000, h: 1000 };
+
+        drawFocusRing(ctx, canvas, box, clip);
+
+        expect(ctx.roundRect).toHaveBeenCalledWith(10, 10, 100, 40, [20, 0, 0, 20]);
     });
 
     it("drawFocusRing falls back to ctx.rect when ctx.roundRect is not available", () => {
         const ctx = makeMockCtx();
         delete (ctx as unknown as Record<string, unknown>).roundRect;
         const canvas = {} as HTMLCanvasElement;
-        const box: FocusBox = { x: 10, y: 10, w: 100, h: 100, r: 4 };
+        const box: FocusBox = { x: 10, y: 10, w: 100, h: 100, radii: uniformRadii(4) };
         const clip: ClipBox = { x: 0, y: 0, w: 1000, h: 1000 };
 
         expect(() => drawFocusRing(ctx, canvas, box, clip)).not.toThrow();
@@ -76,7 +100,7 @@ describe("focus.renderer", () => {
             },
         } as unknown as CanvasRenderingContext2D;
         const canvas = {} as HTMLCanvasElement;
-        const box: FocusBox = { x: 0, y: 0, w: 10, h: 10, r: 0 };
+        const box: FocusBox = { x: 0, y: 0, w: 10, h: 10, radii: uniformRadii(0) };
         const clip: ClipBox = { x: 0, y: 0, w: 10, h: 10 };
 
         drawFocusRing(ctx, canvas, box, clip, { color: "red" });
@@ -139,7 +163,7 @@ describe("focus.geometry DOM functions", () => {
         expect(result?.box.h).toBe(108);
     });
 
-    it("computeTargetBox reads borderRadius via parseBorderRadius (fixes '8px' returning 0)", () => {
+    it("computeTargetBox reads a uniform border radius", () => {
         const el = document.createElement("div");
         vi.spyOn(el, "getBoundingClientRect").mockReturnValue({
             width: 100,
@@ -161,7 +185,7 @@ describe("focus.geometry DOM functions", () => {
 
         const result = computeTargetBox(el, 4);
         expect(result).not.toBeNull();
-        expect(result?.box.r).toBeGreaterThan(0);
+        expect(result?.box.radii).toEqual(uniformRadii(12));
     });
 
     it("computeTargetBox handles percentage border-radius correctly", () => {
@@ -186,7 +210,44 @@ describe("focus.geometry DOM functions", () => {
 
         const result = computeTargetBox(el, 0);
         expect(result).not.toBeNull();
-        expect(result?.box.r).toBe(50);
+        expect(result?.box.radii).toEqual(uniformRadii(50));
+    });
+
+    it("computeTargetBox preserves independent corner radii", () => {
+        const el = document.createElement("button");
+        vi.spyOn(el, "getBoundingClientRect").mockReturnValue({
+            width: 100,
+            height: 40,
+            x: 0,
+            y: 0,
+            top: 0,
+            left: 0,
+            bottom: 40,
+            right: 100,
+            toJSON: () => {},
+        } as DOMRect);
+        vi.spyOn(window, "getComputedStyle").mockReturnValue({
+            borderRadius: "9999px 0 0 9999px",
+            borderTopLeftRadius: "9999px",
+            borderTopRightRadius: "0px",
+            borderBottomRightRadius: "0px",
+            borderBottomLeftRadius: "9999px",
+            overflow: "",
+            overflowX: "",
+            overflowY: "",
+            getPropertyValue: (property: string) =>
+                property === "corner-shape" ? "superellipse(1.6)" : "",
+        } as unknown as CSSStyleDeclaration);
+
+        const result = computeTargetBox(el, 4);
+
+        expect(result?.box.radii).toEqual({
+            topLeft: 24,
+            topRight: 4,
+            bottomRight: 4,
+            bottomLeft: 24,
+        });
+        expect(result?.box.cornerShape).toEqual({ type: "squircle", exponent: 1.6 });
     });
 
     it("resolveFocusTarget returns the element itself when no focusTarget is set", () => {
@@ -400,7 +461,7 @@ describe("focus.visibility", () => {
 
 describe("FocusAnimationController (Houdini Pulse & Same-Element Handling)", () => {
     let controller: FocusAnimationController;
-    const targetBox: FocusBox = { x: 100, y: 100, w: 50, h: 50, r: 5 };
+    const targetBox: FocusBox = { x: 100, y: 100, w: 50, h: 50, radii: uniformRadii(5) };
     const targetClip: ClipBox = { x: 0, y: 0, w: 1000, h: 1000 };
 
     beforeEach(() => {
@@ -413,7 +474,7 @@ describe("FocusAnimationController (Houdini Pulse & Same-Element Handling)", () 
         const frames: FocusPaintState[] = [];
         const onDone = vi.fn();
 
-        const initialBox: FocusBox = { x: 0, y: 0, w: 10, h: 10, r: 0 };
+        const initialBox: FocusBox = { x: 0, y: 0, w: 10, h: 10, radii: uniformRadii(0) };
         const initialClip: ClipBox = { x: 0, y: 0, w: 1000, h: 1000 };
 
         controller.start(
@@ -438,7 +499,13 @@ describe("FocusAnimationController (Houdini Pulse & Same-Element Handling)", () 
         const onDone = vi.fn();
 
         // Far distance box, but isSameElement = true!
-        const initialBox: FocusBox = { x: 0, y: 0, w: 1000, h: 1000, r: 0 };
+        const initialBox: FocusBox = {
+            x: 0,
+            y: 0,
+            w: 1000,
+            h: 1000,
+            radii: uniformRadii(0),
+        };
         const initialClip: ClipBox = { x: 0, y: 0, w: 1000, h: 1000 };
 
         controller.start(
@@ -463,7 +530,7 @@ describe("FocusAnimationController (Houdini Pulse & Same-Element Handling)", () 
         vi.spyOn(motionPreference, "resolved", "get").mockReturnValue("no-preference");
         const onDone = vi.fn();
 
-        const initialBox: FocusBox = { x: 0, y: 0, w: 10, h: 10, r: 0 };
+        const initialBox: FocusBox = { x: 0, y: 0, w: 10, h: 10, radii: uniformRadii(0) };
         const initialClip: ClipBox = { x: 0, y: 0, w: 1000, h: 1000 };
 
         controller.start(targetBox, targetClip, initialBox, initialClip, () => {}, onDone);
@@ -477,7 +544,7 @@ describe("FocusAnimationController (Houdini Pulse & Same-Element Handling)", () 
         const paintStates: FocusPaintState[] = [];
         const onDone = vi.fn();
 
-        const initialBox: FocusBox = { x: 90, y: 90, w: 40, h: 40, r: 4 };
+        const initialBox: FocusBox = { x: 90, y: 90, w: 40, h: 40, radii: uniformRadii(4) };
         const initialClip: ClipBox = { x: 0, y: 0, w: 1000, h: 1000 };
 
         controller.start(
@@ -497,14 +564,70 @@ describe("FocusAnimationController (Houdini Pulse & Same-Element Handling)", () 
         expect(paintStates.every((p) => p.opacity === 1)).toBe(true);
     });
 
+    it("morphs each corner radius without mutating source boxes", async () => {
+        vi.spyOn(motionPreference, "resolved", "get").mockReturnValue("no-preference");
+        const initialBox: FocusBox = {
+            x: 90,
+            y: 90,
+            w: 100,
+            h: 40,
+            radii: { topLeft: 20, topRight: 0, bottomRight: 0, bottomLeft: 20 },
+        };
+        const nextBox: FocusBox = {
+            x: 100,
+            y: 90,
+            w: 100,
+            h: 40,
+            radii: { topLeft: 0, topRight: 20, bottomRight: 20, bottomLeft: 0 },
+        };
+        const clip: ClipBox = { x: 0, y: 0, w: 1000, h: 1000 };
+        const frames: FocusBox[] = [];
+        const onDone = vi.fn();
+
+        controller.start(
+            nextBox,
+            clip,
+            initialBox,
+            clip,
+            (box) => {
+                frames.push({ ...box, radii: { ...box.radii } });
+            },
+            onDone
+        );
+
+        await new Promise((resolve) => setTimeout(resolve, 400));
+
+        expect(onDone).toHaveBeenCalled();
+        expect(frames.some((box) => box.radii.topLeft < 20 && box.radii.topLeft > 0)).toBe(true);
+        expect(frames.some((box) => box.radii.topRight > 0 && box.radii.topRight < 20)).toBe(true);
+        expect(initialBox.radii).toEqual({
+            topLeft: 20,
+            topRight: 0,
+            bottomRight: 0,
+            bottomLeft: 20,
+        });
+        expect(nextBox.radii).toEqual({
+            topLeft: 0,
+            topRight: 20,
+            bottomRight: 20,
+            bottomLeft: 0,
+        });
+    });
+
     it("medium distance (120-240px): now uses morph instead of teleport", async () => {
         vi.spyOn(motionPreference, "resolved", "get").mockReturnValue("no-preference");
         const paintStates: FocusPaintState[] = [];
         const onDone = vi.fn();
 
         // ~200px distance — was teleport with 120px threshold, now morph with 240px
-        const initialBox: FocusBox = { x: 0, y: 0, w: 50, h: 30, r: 4 };
-        const targetBox200: FocusBox = { x: 180, y: 100, w: 50, h: 30, r: 4 };
+        const initialBox: FocusBox = { x: 0, y: 0, w: 50, h: 30, radii: uniformRadii(4) };
+        const targetBox200: FocusBox = {
+            x: 180,
+            y: 100,
+            w: 50,
+            h: 30,
+            radii: uniformRadii(4),
+        };
         const initialClip: ClipBox = { x: 0, y: 0, w: 1000, h: 1000 };
 
         controller.start(
@@ -529,9 +652,9 @@ describe("FocusAnimationController (Houdini Pulse & Same-Element Handling)", () 
 
         const ctrl = new FocusAnimationController();
         const clip: ClipBox = { x: 0, y: 0, w: 1000, h: 1000 };
-        const boxA: FocusBox = { x: 0, y: 0, w: 50, h: 30, r: 4 };
-        const boxB: FocusBox = { x: 500, y: 400, w: 50, h: 30, r: 4 };
-        const boxC: FocusBox = { x: 0, y: 0, w: 50, h: 30, r: 4 };
+        const boxA: FocusBox = { x: 0, y: 0, w: 50, h: 30, radii: uniformRadii(4) };
+        const boxB: FocusBox = { x: 500, y: 400, w: 50, h: 30, radii: uniformRadii(4) };
+        const boxC: FocusBox = { x: 0, y: 0, w: 50, h: 30, radii: uniformRadii(4) };
 
         // First start — teleport (long distance, no rapid tab)
         const firstPaints: FocusPaintState[] = [];
@@ -587,8 +710,8 @@ describe("FocusAnimationController (Houdini Pulse & Same-Element Handling)", () 
     it("long distance (>= 240px): Houdini pulse runs Phase 1 dissolve-out then Phase 2 pulse-in", async () => {
         const paintStates: FocusPaintState[] = [];
 
-        const farBox: FocusBox = { x: 0, y: 0, w: 50, h: 30, r: 4 };
-        const nearBox: FocusBox = { x: 500, y: 400, w: 50, h: 30, r: 4 };
+        const farBox: FocusBox = { x: 0, y: 0, w: 50, h: 30, radii: uniformRadii(4) };
+        const nearBox: FocusBox = { x: 500, y: 400, w: 50, h: 30, radii: uniformRadii(4) };
         const clip: ClipBox = { x: 0, y: 0, w: 1000, h: 1000 };
 
         await new Promise<void>((resolve) => {
@@ -617,8 +740,8 @@ describe("FocusAnimationController (Houdini Pulse & Same-Element Handling)", () 
         vi.spyOn(motionPreference, "resolved", "get").mockReturnValue("no-preference");
         const onTeleport = vi.fn();
         const clip: ClipBox = { x: 0, y: 0, w: 1000, h: 1000 };
-        const boxA: FocusBox = { x: 0, y: 0, w: 50, h: 30, r: 4 };
-        const boxB: FocusBox = { x: 20, y: 20, w: 50, h: 30, r: 4 };
+        const boxA: FocusBox = { x: 0, y: 0, w: 50, h: 30, radii: uniformRadii(4) };
+        const boxB: FocusBox = { x: 20, y: 20, w: 50, h: 30, radii: uniformRadii(4) };
 
         await new Promise<void>((resolve) => {
             const ctrl = new FocusAnimationController();
@@ -724,7 +847,7 @@ describe("focus.geometry corner-shape parsing", () => {
 describe("focus.renderer squircle path drawing", () => {
     it("drawSquirclePath samples exact superellipse curve via lineTo (no bezierCurveTo)", () => {
         const ctx = makeMockCtx();
-        drawSquirclePath(ctx, 10, 10, 100, 100, 10, 2);
+        drawSquirclePath(ctx, 10, 10, 100, 100, uniformRadii(10), 2);
 
         expect(ctx.moveTo).toHaveBeenCalled();
         expect(ctx.lineTo).toHaveBeenCalled();
@@ -741,7 +864,7 @@ describe("focus.renderer squircle path drawing", () => {
             h = 60,
             r = 8;
 
-        drawSquirclePath(ctx, x, y, w, h, r, 2);
+        drawSquirclePath(ctx, x, y, w, h, uniformRadii(r), 2);
 
         const lineCalls = (ctx.lineTo as ReturnType<typeof vi.fn>).mock.calls;
         const moveCall = (ctx.moveTo as ReturnType<typeof vi.fn>).mock.calls[0];
@@ -768,6 +891,24 @@ describe("focus.renderer squircle path drawing", () => {
         expect(cornerPoints[16][1]).toBeCloseTo(y + r, 5);
     });
 
+    it("drawSquirclePath preserves asymmetric corner radii", () => {
+        const ctx = makeMockCtx();
+
+        drawSquirclePath(
+            ctx,
+            0,
+            0,
+            100,
+            40,
+            { topLeft: 20, topRight: 0, bottomRight: 0, bottomLeft: 20 },
+            1.6
+        );
+
+        expect(ctx.moveTo).toHaveBeenCalledWith(20, 0);
+        expect(ctx.lineTo).toHaveBeenNthCalledWith(1, 100, 0);
+        expect(ctx.closePath).toHaveBeenCalledOnce();
+    });
+
     it("drawSquirclePath round exponent=1 produces circular corner points", () => {
         const ctx = makeMockCtx();
         const x = 0,
@@ -776,7 +917,7 @@ describe("focus.renderer squircle path drawing", () => {
             h = 100,
             r = 10;
 
-        drawSquirclePath(ctx, x, y, w, h, r, 1);
+        drawSquirclePath(ctx, x, y, w, h, uniformRadii(r), 1);
 
         const lineCalls = (ctx.lineTo as ReturnType<typeof vi.fn>).mock.calls;
         // Top-right corner: center at (x+w-r, y+r) = (90, 10)
@@ -801,8 +942,8 @@ describe("focus.renderer squircle path drawing", () => {
             h = 100,
             r = 10;
 
-        drawSquirclePath(ctxCircle, x, y, w, h, r, 1);
-        drawSquirclePath(ctxSquircle, x, y, w, h, r, 2);
+        drawSquirclePath(ctxCircle, x, y, w, h, uniformRadii(r), 1);
+        drawSquirclePath(ctxSquircle, x, y, w, h, uniformRadii(r), 2);
 
         const circleCalls = (ctxCircle.lineTo as ReturnType<typeof vi.fn>).mock.calls;
         const squircleCalls = (ctxSquircle.lineTo as ReturnType<typeof vi.fn>).mock.calls;
@@ -827,7 +968,7 @@ describe("focus.renderer squircle path drawing", () => {
             y: 10,
             w: 100,
             h: 100,
-            r: 10,
+            radii: uniformRadii(10),
             cornerShape: { type: "squircle", exponent: 2 },
         };
         const clip: ClipBox = { x: 0, y: 0, w: 1000, h: 1000 };

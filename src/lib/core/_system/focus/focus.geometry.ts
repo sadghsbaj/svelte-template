@@ -1,4 +1,4 @@
-import type { ClipBox, CornerShape, FocusBox } from "./focus.types.js";
+import type { ClipBox, CornerRadii, CornerShape, FocusBox } from "./focus.types.js";
 
 export function lerp(start: number, end: number, factor = 0.25): number {
     return start + (end - start) * factor;
@@ -22,7 +22,10 @@ export function focusBoxChanged(a: FocusBox, b: FocusBox, epsilon = 0.1): boolea
         Math.abs(a.y - b.y) > epsilon ||
         Math.abs(a.w - b.w) > epsilon ||
         Math.abs(a.h - b.h) > epsilon ||
-        Math.abs(a.r - b.r) > epsilon ||
+        Math.abs(a.radii.topLeft - b.radii.topLeft) > epsilon ||
+        Math.abs(a.radii.topRight - b.radii.topRight) > epsilon ||
+        Math.abs(a.radii.bottomRight - b.radii.bottomRight) > epsilon ||
+        Math.abs(a.radii.bottomLeft - b.radii.bottomLeft) > epsilon ||
         Math.abs(exponentA - exponentB) > epsilon
     );
 }
@@ -117,23 +120,62 @@ export function parseCornerShape(computedStyle: CSSStyleDeclaration): CornerShap
     return { type: "round" };
 }
 
-function parseBorderRadius(
-    computedStyle: CSSStyleDeclaration,
-    rectWidth: number,
-    rectHeight: number
-): number {
-    const raw = (computedStyle.borderRadius || computedStyle.borderTopLeftRadius || "").trim();
-    if (!raw) return 0;
-
-    const token = raw.split(/\s+/, 1)[0];
-    if (token.endsWith("%")) {
+function parseRadiusComponent(value: string, percentageBasis: number): number {
+    if (!value.endsWith("%")) {
         // eslint-disable-next-line unicorn/prefer-number-coercion
-        const pct = Number.parseFloat(token) || 0;
-        return (pct / 100) * Math.min(rectWidth, rectHeight);
+        return Number.parseFloat(value) || 0;
     }
 
     // eslint-disable-next-line unicorn/prefer-number-coercion
-    return Number.parseFloat(token) || 0;
+    const percentage = Number.parseFloat(value) || 0;
+    return (percentage / 100) * percentageBasis;
+}
+
+function parseRadiusToken(token: string, rectWidth: number, rectHeight: number): number {
+    const [horizontalToken = "0", verticalToken = horizontalToken] = token.trim().split(/\s+/, 2);
+
+    return Math.min(
+        parseRadiusComponent(horizontalToken, rectWidth),
+        parseRadiusComponent(verticalToken, rectHeight)
+    );
+}
+
+function expandRadiusShorthand(raw: string): [string, string, string, string] {
+    const tokens = raw.split("/", 1)[0].trim().split(/\s+/).filter(Boolean);
+    const first = tokens[0] ?? "0";
+    const second = tokens[1] ?? first;
+    const third = tokens[2] ?? first;
+    const fourth = tokens[3] ?? second;
+
+    return [first, second, third, fourth];
+}
+
+function parseBorderRadii(
+    computedStyle: CSSStyleDeclaration,
+    rectWidth: number,
+    rectHeight: number
+): CornerRadii {
+    const individual = [
+        computedStyle.borderTopLeftRadius,
+        computedStyle.borderTopRightRadius,
+        computedStyle.borderBottomRightRadius,
+        computedStyle.borderBottomLeftRadius,
+    ].map((value) => value?.trim() ?? "");
+
+    const tokens = individual.some(Boolean)
+        ? individual.map((value) => value || "0")
+        : expandRadiusShorthand(computedStyle.borderRadius?.trim() ?? "");
+
+    const maxRadius = Math.min(rectWidth, rectHeight) / 2;
+    const parse = (token: string): number =>
+        Math.min(parseRadiusToken(token, rectWidth, rectHeight), maxRadius);
+
+    return {
+        topLeft: parse(tokens[0]),
+        topRight: parse(tokens[1]),
+        bottomRight: parse(tokens[2]),
+        bottomLeft: parse(tokens[3]),
+    };
 }
 
 /**
@@ -152,11 +194,11 @@ export function resolveFocusTarget(el: HTMLElement, overrideTarget?: string): HT
 // ── Geometry Caching ─────────────────────────────────────────────────────────
 
 interface StaticParams {
-    borderRadius: number;
+    borderRadii: CornerRadii;
     cornerShape: CornerShape;
 }
 
-/** Cache for borderRadius + cornerShape per element (avoids repeated getComputedStyle). */
+/** Cache for border radii + corner shape per element (avoids repeated getComputedStyle). */
 const staticParamsCache = new WeakMap<HTMLElement, StaticParams>();
 
 /** Cache for scrollable parent list per element (avoids repeated getComputedStyle on ancestors). */
@@ -171,18 +213,16 @@ export function invalidateGeometryCache(el: HTMLElement): void {
     scrollableParentsCache.delete(el);
 }
 
-/** Returns cached static params (borderRadius, cornerShape) or computes them once. */
+/** Returns cached static params (border radii, corner shape) or computes them once. */
 function getStaticParams(el: HTMLElement, rectWidth: number, rectHeight: number): StaticParams {
     const cached = staticParamsCache.get(el);
     if (cached) return cached;
 
     const computedStyle = window.getComputedStyle(el);
-    let borderRadius = parseBorderRadius(computedStyle, rectWidth, rectHeight);
-    const maxRadius = Math.min(rectWidth, rectHeight) / 2;
-    borderRadius = Math.min(borderRadius, maxRadius);
+    const borderRadii = parseBorderRadii(computedStyle, rectWidth, rectHeight);
     const cornerShape = parseCornerShape(computedStyle);
 
-    const params: StaticParams = { borderRadius, cornerShape };
+    const params: StaticParams = { borderRadii, cornerShape };
     staticParamsCache.set(el, params);
     return params;
 }
@@ -281,14 +321,19 @@ export function computeTargetBox(
         return null;
     }
 
-    const { borderRadius, cornerShape } = getStaticParams(el, rect.width, rect.height);
+    const { borderRadii, cornerShape } = getStaticParams(el, rect.width, rect.height);
 
     const box: FocusBox = {
         x: rect.x - offset,
         y: rect.y - offset,
         w: rect.width + offset * 2,
         h: rect.height + offset * 2,
-        r: Math.max(0, borderRadius + offset),
+        radii: {
+            topLeft: Math.max(0, borderRadii.topLeft + offset),
+            topRight: Math.max(0, borderRadii.topRight + offset),
+            bottomRight: Math.max(0, borderRadii.bottomRight + offset),
+            bottomLeft: Math.max(0, borderRadii.bottomLeft + offset),
+        },
         cornerShape,
     };
 

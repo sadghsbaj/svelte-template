@@ -84,7 +84,7 @@ export const rulesConfig: Rule[] = [
 
             return {
                 [symbols.parent]: "@supports (corner-shape: squircle)",
-                "corner-shape": shapeValue,
+                "corner-shape": `var(--squircle-shape, ${shapeValue})`,
             };
         },
         { autocomplete: ["squircle", "squircle-smooth", "squircle-soft"] },

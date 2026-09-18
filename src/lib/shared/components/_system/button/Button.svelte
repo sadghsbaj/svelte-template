@@ -65,6 +65,9 @@
     bind:this={element}
     type={as === "button" ? "button" : undefined}
     {...restProps}
+    data-slot="button"
+    data-button-variant={variant}
+    data-button-bordered={variant === "outline" || variant === "soft-outline" ? "" : undefined}
     class={computedClass}
     {@attach disableInteraction({ enabled: disabled })}
     {@attach pending({ active: loading })}

@@ -1,11 +1,18 @@
 export type CornerShape = { type: "round" } | { type: "squircle"; exponent: number };
 
+export interface CornerRadii {
+    topLeft: number;
+    topRight: number;
+    bottomRight: number;
+    bottomLeft: number;
+}
+
 export interface FocusBox {
     x: number;
     y: number;
     w: number;
     h: number;
-    r: number;
+    radii: CornerRadii;
     cornerShape?: CornerShape;
 }
 
@@ -34,7 +41,7 @@ export interface FocusOverrides {
  *                         `0` is the resting position. Deliberately px-based rather than a
  *                         multiplicative scale: every edge travels the same distance, so a
  *                         40px button and a 900px card animate identically. The corner radius
- *                         travels with the offset, matching `computeTargetBox`.
+ *                         radii travel with the offset, matching `computeTargetBox`.
  * - `lineWidthOverride` – stroke width override in px (0 to targetLineWidth)
  */
 export interface FocusPaintState {

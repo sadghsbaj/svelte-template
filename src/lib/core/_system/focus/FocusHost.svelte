@@ -34,8 +34,20 @@
     let canvas: HTMLCanvasElement | undefined = $state();
     let ctx: CanvasRenderingContext2D | null = null;
 
-    let targetBox: FocusBox = { x: 0, y: 0, w: 0, h: 0, r: 0 };
-    let currentBox: FocusBox = { x: 0, y: 0, w: 0, h: 0, r: 0 };
+    let targetBox: FocusBox = {
+        x: 0,
+        y: 0,
+        w: 0,
+        h: 0,
+        radii: { topLeft: 0, topRight: 0, bottomRight: 0, bottomLeft: 0 },
+    };
+    let currentBox: FocusBox = {
+        x: 0,
+        y: 0,
+        w: 0,
+        h: 0,
+        radii: { topLeft: 0, topRight: 0, bottomRight: 0, bottomLeft: 0 },
+    };
 
     let targetClip: ClipBox = { x: 0, y: 0, w: 0, h: 0 };
     let currentClip: ClipBox = { x: 0, y: 0, w: 0, h: 0 };

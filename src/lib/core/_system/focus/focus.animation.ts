@@ -1,6 +1,6 @@
 import { motionPreference } from "$core/_system/motion/motion.svelte.js";
 
-import { boxDistance, lerp } from "./focus.geometry.js";
+import { boxDistance, focusBoxChanged, lerp } from "./focus.geometry.js";
 import type { ClipBox, FocusBox, FocusPaintState } from "./focus.types.js";
 
 /** Distance threshold (in px). Short distance (< 240px) morph glides. Long distance (>= 240px) teleports with reveal. */
@@ -39,6 +39,10 @@ const clamp01 = (t: number): number => Math.min(1, Math.max(0, t));
 
 /** Resting paint state. Fresh object per call so callers can never alias `lastPaint`. */
 const steadyPaint = (): FocusPaintState => ({ opacity: 1, offsetDelta: 0 });
+
+function cloneFocusBox(box: FocusBox): FocusBox {
+    return { ...box, radii: { ...box.radii } };
+}
 
 /**
  * Paint state for a reveal at progress `t`.
@@ -158,7 +162,7 @@ export class FocusAnimationController {
     ): void {
         this.stop();
 
-        this.currentTargetBox = { ...targetBox };
+        this.currentTargetBox = cloneFocusBox(targetBox);
         this.currentTargetClip = { ...targetClip };
 
         const prefersReduced = motionPreference.resolved === "reduce";
@@ -170,7 +174,7 @@ export class FocusAnimationController {
             return;
         }
 
-        const cur = { ...targetBox };
+        const cur = cloneFocusBox(targetBox);
         const curClip = { ...targetClip };
 
         // Synchronous frame 0 render: clears any stale ring before the reveal begins
@@ -232,7 +236,7 @@ export class FocusAnimationController {
             return;
         }
 
-        const cur = { ...currentBox };
+        const cur = cloneFocusBox(currentBox);
         const curClip = { ...currentClip };
         const startTime = performance.now();
 
@@ -284,7 +288,7 @@ export class FocusAnimationController {
 
         this.stop();
 
-        this.currentTargetBox = { ...targetBox };
+        this.currentTargetBox = cloneFocusBox(targetBox);
         this.currentTargetClip = { ...targetClip };
 
         const dist = boxDistance(initialBox, targetBox);
@@ -311,7 +315,7 @@ export class FocusAnimationController {
         // animation was interrupted mid-flight; in steady state they stay at 1 / 0 / target
         // (no-op), so the glide itself is driven purely by the box lerp below.
         if (!forceTeleport && (isSameElement || dist < TELEPORT_THRESHOLD || isRapidTab)) {
-            const cur = { ...initialBox };
+            const cur = cloneFocusBox(initialBox);
             const curClip = { ...initialClip };
 
             let opacity = from.opacity;
@@ -326,7 +330,10 @@ export class FocusAnimationController {
                 cur.y = lerp(cur.y, tBox.y, 0.22);
                 cur.w = lerp(cur.w, tBox.w, 0.22);
                 cur.h = lerp(cur.h, tBox.h, 0.22);
-                cur.r = lerp(cur.r, tBox.r, 0.22);
+                cur.radii.topLeft = lerp(cur.radii.topLeft, tBox.radii.topLeft, 0.22);
+                cur.radii.topRight = lerp(cur.radii.topRight, tBox.radii.topRight, 0.22);
+                cur.radii.bottomRight = lerp(cur.radii.bottomRight, tBox.radii.bottomRight, 0.22);
+                cur.radii.bottomLeft = lerp(cur.radii.bottomLeft, tBox.radii.bottomLeft, 0.22);
 
                 const curExp = cur.cornerShape?.type === "squircle" ? cur.cornerShape.exponent : 1;
                 const targetExp =
@@ -355,13 +362,7 @@ export class FocusAnimationController {
                 this.lastPaint = paint;
                 onFrame(cur, curClip, paint);
 
-                if (
-                    Math.abs(cur.x - tBox.x) > 0.5 ||
-                    Math.abs(cur.y - tBox.y) > 0.5 ||
-                    Math.abs(cur.w - tBox.w) > 0.5 ||
-                    Math.abs(cur.h - tBox.h) > 0.5 ||
-                    Math.abs(cur.r - tBox.r) > 0.5
-                ) {
+                if (focusBoxChanged(cur, tBox, 0.5)) {
                     this.animFrame = requestAnimationFrame(loop);
                 } else {
                     this.animFrame = 0;
@@ -378,13 +379,13 @@ export class FocusAnimationController {
 
         // Long distance (>= 240px) with deliberate (non-rapid) focus change:
         // single timeline — the ring retracts into the origin element, then grows out of the target
-        const cur = { ...initialBox };
+        const cur = cloneFocusBox(initialBox);
         const curClip = { ...initialClip };
         const startTime = performance.now();
 
         // Opt into live origin tracking for the exit phase (see updateOrigin). Only set here,
         // so updateOrigin() stays a no-op for every other animation kind.
-        this.currentOriginBox = { ...initialBox };
+        this.currentOriginBox = cloneFocusBox(initialBox);
         this.currentOriginClip = { ...initialClip };
         let hasTeleported = false;
 

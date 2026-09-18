@@ -9,8 +9,11 @@
         AlignCenter,
         AlignLeft,
         AlignRight,
+        ArrowUpDown,
         ChevronDown,
         ChevronUp,
+        Download,
+        ListFilter,
         Minus,
         Plus,
         RotateCcw,
@@ -23,6 +26,18 @@
     import PreviewPage from "$lib/previews/ui/PreviewPage.svelte";
     import PreviewSection from "$lib/previews/ui/PreviewSection.svelte";
 </script>
+
+{#snippet filterIcon()}
+    <ListFilter />
+{/snippet}
+
+{#snippet sortIcon()}
+    <ArrowUpDown />
+{/snippet}
+
+{#snippet exportIcon()}
+    <Download />
+{/snippet}
 
 <PreviewPage>
     <PreviewHeader
@@ -52,6 +67,28 @@
                     <Button variant="outline" color="base" iconOnly aria-label="Move down">
                         <ChevronDown />
                     </Button>
+                </ButtonGroup>
+            </PreviewCard>
+        </PreviewGrid>
+    </PreviewSection>
+
+    <PreviewSection title="Layout">
+        <PreviewGrid cols={2}>
+            <PreviewCard label="Equal Width" bg="elevation-1" class="h-32">
+                <div class="w-full max-w-lg">
+                    <ButtonGroup fullWidth aria-label="View range">
+                        <Button variant="soft" color="base">Day</Button>
+                        <Button variant="soft" color="base">Week</Button>
+                        <Button variant="soft" color="base">Month</Button>
+                    </ButtonGroup>
+                </div>
+            </PreviewCard>
+
+            <PreviewCard label="Icon + Text" bg="elevation-1" class="h-32">
+                <ButtonGroup separators aria-label="Data actions">
+                    <Button variant="soft" color="base" iconLeft={filterIcon}>Filter</Button>
+                    <Button variant="soft" color="base" iconLeft={sortIcon}>Sort</Button>
+                    <Button variant="soft" color="base" iconLeft={exportIcon}>Export</Button>
                 </ButtonGroup>
             </PreviewCard>
         </PreviewGrid>

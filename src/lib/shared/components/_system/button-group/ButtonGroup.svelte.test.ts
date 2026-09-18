@@ -102,6 +102,20 @@ describe("ButtonGroup", () => {
         );
     });
 
+    test("distributes horizontal buttons equally with fullWidth", () => {
+        const group = render({ fullWidth: true, variant: "soft" });
+        const buttons = group.querySelectorAll<HTMLButtonElement>('[data-slot="button"]');
+        const widths = [...buttons].map((button) => getComputedStyle(button).width);
+        const middleStyle = getComputedStyle(buttons[1]);
+
+        expect(group.dataset.fullWidth).toBe("");
+        expect(group.classList).toContain("w-full!");
+        expect(new Set(widths).size).toBe(1);
+        expect(middleStyle.flexGrow).toBe("1");
+        expect(middleStyle.flexBasis).toBe("0%");
+        expect(middleStyle.minWidth).toBe("0px");
+    });
+
     test("renders optional separators instead of internal outline borders", () => {
         const group = render({ separators: true });
         const buttons = group.querySelectorAll<HTMLButtonElement>('[data-slot="button"]');

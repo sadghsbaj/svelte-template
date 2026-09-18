@@ -12,8 +12,13 @@ export const buttonGroupStyles = cva({
         },
     },
 
+    modifiers: {
+        fullWidth: "w-full!",
+    },
+
     defaults: {
         orientation: "horizontal",
+        fullWidth: false,
     },
 });
 

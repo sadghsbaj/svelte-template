@@ -7,16 +7,18 @@
         orientation = "horizontal",
         variant = "outline",
         separators = false,
+        fullWidth = false,
         class: className = "",
     }: {
         orientation?: ButtonGroupOrientation;
         variant?: "elevated" | "outline" | "soft";
         separators?: boolean;
+        fullWidth?: boolean;
         class?: string;
     } = $props();
 </script>
 
-<ButtonGroup {orientation} {separators} class={className} aria-label="History">
+<ButtonGroup {orientation} {separators} {fullWidth} class={className} aria-label="History">
     <Button {variant} color="base">First</Button>
     <Button {variant} color="base">Middle</Button>
     <Button {variant} color="base">Last</Button>

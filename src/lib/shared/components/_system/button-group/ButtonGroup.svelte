@@ -9,6 +9,7 @@
     export interface ButtonGroupProps extends HTMLAttributes<HTMLDivElement> {
         orientation?: ButtonGroupOrientation;
         separators?: boolean;
+        fullWidth?: boolean;
         children?: Snippet;
         class?: string;
         element?: HTMLDivElement | null;
@@ -17,6 +18,7 @@
     let {
         orientation = "horizontal",
         separators = false,
+        fullWidth = false,
         role = "group",
         children,
         class: className = "",
@@ -27,6 +29,7 @@
     const computedClass = $derived(
         buttonGroupStyles({
             orientation,
+            fullWidth,
             class: className,
         })
     );
@@ -39,6 +42,7 @@
     data-slot="button-group"
     data-orientation={orientation}
     data-separators={separators ? "" : undefined}
+    data-full-width={fullWidth ? "" : undefined}
     class={computedClass}
 >
     {@render children?.()}
@@ -67,6 +71,15 @@
 
     :global([data-slot="button-group"] > [data-slot="button"]:focus-visible) {
         z-index: 2;
+    }
+
+    :global(
+        [data-slot="button-group"][data-orientation="horizontal"][data-full-width]
+            > [data-slot="button"]
+    ) {
+        flex: 1 1 0% !important;
+        width: 0 !important;
+        min-width: 0;
     }
 
     :global(

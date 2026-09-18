@@ -23,6 +23,15 @@ export {
 export type { ToggleButtonStyleProps } from "./toggle-button/toggle-button.styles";
 
 export {
+    default as ToggleButtonGroup,
+    type ToggleButtonGroupOrientation,
+    type ToggleButtonGroupProps,
+    type ToggleButtonGroupType,
+    type ToggleButtonGroupValue,
+} from "./toggle-button-group/ToggleButtonGroup.svelte";
+export type { ToggleButtonGroupStyleProps } from "./toggle-button-group/toggle-button-group.styles";
+
+export {
     default as ButtonGroup,
     type ButtonGroupOrientation,
     type ButtonGroupProps,

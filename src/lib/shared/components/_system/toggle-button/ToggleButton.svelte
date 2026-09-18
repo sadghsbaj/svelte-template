@@ -3,16 +3,17 @@
     import type { HTMLButtonAttributes } from "svelte/elements";
     import { disableInteraction } from "$attachments";
 
-    import { focusAttach } from "$core/_system/focus/focus.attach";
+    import { getOptionalToggleButtonGroupContext } from "$components/_system/toggle-button-group/toggle-button-group.context";
 
     import { toggleButtonStyles, type ToggleButtonStyleProps } from "./toggle-button.styles";
 
     export type ToggleButtonProps = ToggleButtonStyleProps &
         Omit<
             HTMLButtonAttributes,
-            "aria-pressed" | "class" | "color" | "disabled" | "size" | "type"
+            "aria-pressed" | "class" | "color" | "disabled" | "size" | "type" | "value"
         > & {
             pressed?: boolean;
+            value?: string;
             disabled?: boolean;
             iconLeft?: Snippet;
             iconRight?: Snippet;
@@ -23,6 +24,7 @@
 
     let {
         pressed = $bindable(false),
+        value,
         variant = "soft",
         size = "md",
         align = "center",
@@ -38,25 +40,43 @@
         ...restProps
     }: ToggleButtonProps = $props();
 
+    const group = getOptionalToggleButtonGroupContext();
+
+    function validateGroupValue(): void {
+        if (group && value === undefined) {
+            throw new Error("ToggleButton requires a value inside ToggleButtonGroup");
+        }
+    }
+    validateGroupValue();
+
+    function resolvePressed(): boolean {
+        return group && value !== undefined ? group.isPressed(value) : pressed;
+    }
+
+    const effectivePressed = $derived(resolvePressed());
+
     const computedClass = $derived(
         toggleButtonStyles({
             variant,
             size,
             align,
-            pressed,
+            pressed: effectivePressed,
             fullWidth,
             iconOnly,
             class: className,
         })
     );
 
-    const focusColor = $derived(pressed ? "var(--color-accent-300)" : undefined);
-
     function handleClick(
         event: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement }
     ): void {
         onclick?.(event);
-        if (!event.defaultPrevented) pressed = !pressed;
+        if (event.defaultPrevented) return;
+        if (group && value !== undefined) {
+            group.toggle(value);
+        } else {
+            pressed = !pressed;
+        }
     }
 </script>
 
@@ -64,13 +84,13 @@
     bind:this={element}
     {...restProps}
     type="button"
-    aria-pressed={pressed}
+    {value}
+    aria-pressed={effectivePressed}
     data-slot="toggle-button"
-    data-state={pressed ? "on" : "off"}
+    data-state={effectivePressed ? "on" : "off"}
     class={computedClass}
     onclick={handleClick}
     {@attach disableInteraction({ enabled: disabled })}
-    {@attach focusAttach({ color: focusColor })}
 >
     {#if iconLeft}
         {@render iconLeft()}

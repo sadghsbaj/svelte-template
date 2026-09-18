@@ -16,9 +16,9 @@ export const switchTrackStyles = cva({
         },
 
         size: {
-            sm: "w-36px h-20px p-2px",
-            md: "w-44px h-24px p-2px",
-            lg: "w-52px h-28px p-2px",
+            sm: "w-34px h-16px p-2px",
+            md: "w-42px h-20px p-2px",
+            lg: "w-50px h-24px p-2px",
         },
     },
 
@@ -64,9 +64,9 @@ export const switchThumbStyles = cva({
         },
 
         size: {
-            sm: "w-24px h-16px",
-            md: "w-28px h-20px",
-            lg: "w-32px h-24px",
+            sm: "w-22px h-12px",
+            md: "w-26px h-16px",
+            lg: "w-30px h-20px",
         },
     },
 

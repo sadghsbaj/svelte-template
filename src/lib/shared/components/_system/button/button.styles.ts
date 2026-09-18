@@ -17,7 +17,7 @@ export const buttonStyles = cva({
             soft: "",
             outline: "bg-transparent border-2",
             elevated:
-                "bg-white dark:bg-base-900 shadow-sm hover:(shadow-md dark:bg-base-800) active:shadow-sm!",
+                "bg-white dark:bg-base-900 shadow-sm hover:(shadow-md dark:bg-base-800) active:(shadow-sm! dark:bg-base-800)",
             ghost: "bg-transparent",
             plain: "bg-transparent h-fit! p-0!",
         },
@@ -47,6 +47,7 @@ export const buttonStyles = cva({
         iconOnly: "p-0! aspect-square squircle-soft",
     },
 
+    // Active colors mirror fine-pointer hover states for touch feedback, especially in groups where scale is disabled.
     compounds: [
         {
             iconOnly: false,
@@ -57,68 +58,68 @@ export const buttonStyles = cva({
         {
             variant: "solid",
             color: "accent",
-            class: "bg-accent-solid-1 text-white hover:bg-accent-solid-2",
+            class: "bg-accent-solid-1 text-white hover:bg-accent-solid-2 active:bg-accent-solid-2",
         },
         {
             variant: "solid",
             color: "danger",
-            class: "bg-danger-solid-1 text-white hover:bg-danger-solid-2",
+            class: "bg-danger-solid-1 text-white hover:bg-danger-solid-2 active:bg-danger-solid-2",
         },
         {
             variant: "solid",
             color: "base",
-            class: "bg-base-solid-1 text-base-50 dark:text-base-950 hover:bg-base-solid-2",
+            class: "bg-base-solid-1 text-base-50 dark:text-base-950 hover:bg-base-solid-2 active:bg-base-solid-2",
         },
 
         // --- SOFT-OUTLINE ---
         {
             variant: "soft-outline",
             color: "accent",
-            class: "bg-accent-soft-1 border-accent-soft-2 text-accent-solid-1 hover:bg-accent-soft-2",
+            class: "bg-accent-soft-1 border-accent-soft-2 text-accent-solid-1 hover:bg-accent-soft-2 active:bg-accent-soft-2",
         },
         {
             variant: "soft-outline",
             color: "danger",
-            class: "bg-danger-soft-1 border-danger-soft-2  text-danger-solid-1 hover:bg-danger-soft-2",
+            class: "bg-danger-soft-1 border-danger-soft-2 text-danger-solid-1 hover:bg-danger-soft-2 active:bg-danger-soft-2",
         },
         {
             variant: "soft-outline",
             color: "base",
-            class: "bg-base-soft-1 border-base-soft-2 text-main hover:(bg-base-soft-2 text-strong)",
+            class: "bg-base-soft-1 border-base-soft-2 text-main hover:(bg-base-soft-2 text-strong) active:(bg-base-soft-2 text-strong)",
         },
 
         // --- SOFT ---
         {
             variant: "soft",
             color: "accent",
-            class: "bg-accent-soft-1 text-accent-solid-1 hover:bg-accent-soft-2",
+            class: "bg-accent-soft-1 text-accent-solid-1 hover:bg-accent-soft-2 active:bg-accent-soft-2",
         },
         {
             variant: "soft",
             color: "danger",
-            class: "bg-danger-soft-1 text-danger-solid-1 hover:bg-danger-soft-2",
+            class: "bg-danger-soft-1 text-danger-solid-1 hover:bg-danger-soft-2 active:bg-danger-soft-2",
         },
         {
             variant: "soft",
             color: "base",
-            class: "bg-base-soft-1 text-main hover:(bg-base-soft-2 text-strong) ",
+            class: "bg-base-soft-1 text-main hover:(bg-base-soft-2 text-strong) active:(bg-base-soft-2 text-strong)",
         },
 
         // --- Outline ---
         {
             variant: "outline",
             color: "accent",
-            class: "text-accent-solid-1 border-accent-soft-2 hover:(bg-accent-soft-1)",
+            class: "text-accent-solid-1 border-accent-soft-2 hover:bg-accent-soft-1 active:bg-accent-soft-1",
         },
         {
             variant: "outline",
             color: "danger",
-            class: "text-danger-solid-1 border-danger-soft-2 hover:(bg-danger-soft-1)",
+            class: "text-danger-solid-1 border-danger-soft-2 hover:bg-danger-soft-1 active:bg-danger-soft-1",
         },
         {
             variant: "outline",
             color: "base",
-            class: "text-main border-base-soft-2 hover:(bg-base-soft-1 text-strong)",
+            class: "text-main border-base-soft-2 hover:(bg-base-soft-1 text-strong) active:(bg-base-soft-1 text-strong)",
         },
 
         // --- Elevated ---
@@ -136,41 +137,41 @@ export const buttonStyles = cva({
         {
             variant: "elevated",
             color: "base",
-            class: "text-main hover:(text-strong)",
+            class: "text-main hover:text-strong active:text-strong",
         },
 
         // --- Ghost ---
         {
             variant: "ghost",
             color: "accent",
-            class: "text-accent-solid-1 hover:(bg-accent-soft-1)",
+            class: "text-accent-solid-1 hover:bg-accent-soft-1 active:bg-accent-soft-1",
         },
         {
             variant: "ghost",
             color: "danger",
-            class: "text-danger-solid-1 hover:(bg-danger-soft-1)",
+            class: "text-danger-solid-1 hover:bg-danger-soft-1 active:bg-danger-soft-1",
         },
         {
             variant: "ghost",
             color: "base",
-            class: "text-main hover:(bg-base-soft-1 text-strong)",
+            class: "text-main hover:(bg-base-soft-1 text-strong) active:(bg-base-soft-1 text-strong)",
         },
 
         // --- Plain ---
         {
             variant: "plain",
             color: "accent",
-            class: "text-accent-solid-1 hover:(text-accent-solid-2)",
+            class: "text-accent-solid-1 hover:text-accent-solid-2 active:text-accent-solid-2",
         },
         {
             variant: "plain",
             color: "danger",
-            class: "text-danger-solid-1 hover:(text-danger-solid-2)",
+            class: "text-danger-solid-1 hover:text-danger-solid-2 active:text-danger-solid-2",
         },
         {
             variant: "plain",
             color: "base",
-            class: "text-main hover:(text-strong)",
+            class: "text-main hover:text-strong active:text-strong",
         },
 
         // --- ICON ONLY OPTICAL SCALING ---

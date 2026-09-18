@@ -44,16 +44,16 @@ export const toggleButtonStyles = cva({
         {
             variant: "soft",
             pressed: false,
-            class: "bg-base-soft-1 text-main hover:(bg-base-soft-2 text-strong)",
+            class: "bg-base-soft-1 text-main hover:(bg-base-soft-2 text-strong) active:(bg-base-soft-2 text-strong)",
         },
         {
             variant: "ghost",
             pressed: false,
-            class: "bg-transparent text-main hover:(bg-base-soft-1 text-strong)",
+            class: "bg-transparent text-main hover:(bg-base-soft-1 text-strong) active:(bg-base-soft-1 text-strong)",
         },
         {
             pressed: true,
-            class: "bg-accent-soft-1 text-accent-solid-1 hover:bg-accent-soft-2",
+            class: "bg-accent-soft-1 text-accent-solid-1 hover:bg-accent-soft-2 active:bg-accent-soft-2",
         },
         {
             iconOnly: true,

@@ -5,9 +5,11 @@
 </script>
 
 <script lang="ts">
-    import { Badge, Button, ProgressBar, Separator, Slider } from "$components";
+    import { untrack } from "svelte";
+    import { Badge, ProgressBar, Separator, Slider, ToggleButton, ToggleButtonGroup } from "$components";
 
     import PreviewCard from "$lib/previews/ui/PreviewCard.svelte";
+    import PreviewControlCard from "$lib/previews/ui/PreviewControlCard.svelte";
     import PreviewGrid from "$lib/previews/ui/PreviewGrid.svelte";
     import PreviewHeader from "$lib/previews/ui/PreviewHeader.svelte";
     import PreviewPage from "$lib/previews/ui/PreviewPage.svelte";
@@ -16,6 +18,34 @@
     let progressValue = $state<number>(65);
 
     const presets = [0, 25, 50, 75, 100];
+
+    let selectedPreset = $state<string | undefined>();
+
+    $effect(() => {
+        const match = presets.includes(progressValue) ? String(progressValue) : undefined;
+        untrack(() => {
+            if (selectedPreset !== match) {
+                selectedPreset = match;
+            }
+        });
+    });
+
+    $effect(() => {
+        if (selectedPreset === undefined) {
+            const match = presets.includes(progressValue) ? String(progressValue) : undefined;
+            if (match !== undefined) {
+                selectedPreset = match;
+            }
+            return;
+        }
+
+        const num = Number(selectedPreset);
+        untrack(() => {
+            if (progressValue !== num) {
+                progressValue = num;
+            }
+        });
+    });
 </script>
 
 <PreviewPage>
@@ -26,45 +56,45 @@
     />
 
     <!-- Interactive Controls -->
-    <PreviewSection
-        title="Interactive Controls"
+    <PreviewControlCard
         description="Adjust the progress value or choose presets to preview progress animations."
     >
-        <div
-            class="flex flex-wrap items-center gap-5 p-4 rounded-2xl bg-elevation-1 shadow-sm w-fit mb-6"
-        >
-            <div class="flex items-center gap-3">
-                <span class="label-md">Value</span>
-                <div class="w-40">
-                    <Slider
-                        bind:value={progressValue}
-                        min={0}
-                        max={100}
-                        ariaLabel="Progress value slider"
-                    />
-                </div>
-                <Badge variant="soft" color="base" class="tabular-nums min-w-60px">
-                    {progressValue}%
-                </Badge>
+        <div class="flex items-center gap-3">
+            <span class="label-md">Value</span>
+            <div class="w-40">
+                <Slider
+                    bind:value={progressValue}
+                    min={0}
+                    max={100}
+                    ariaLabel="Progress value slider"
+                />
             </div>
-
-            <Separator orientation="vertical" class="h-5! my-auto self-center! hidden sm:block" />
-
-            <div class="flex items-center gap-1.5">
-                {#each presets as preset (preset)}
-                    <Button
-                        size="sm"
-                        variant={progressValue === preset ? "solid" : "soft"}
-                        color={progressValue === preset ? "accent" : "base"}
-                        onclick={() => (progressValue = preset)}
-                        class="h-7! px-2.5! text-xs font-500 rounded-lg!"
-                    >
-                        {preset}%
-                    </Button>
-                {/each}
-            </div>
+            <Badge variant="soft" color="base" class="tabular-nums min-w-60px">
+                {progressValue}%
+            </Badge>
         </div>
-    </PreviewSection>
+
+        <Separator orientation="vertical" class="h-5! my-auto self-center! hidden sm:block" />
+
+        <ToggleButtonGroup
+            type="single"
+            bind:value={selectedPreset}
+            separators
+            aria-label="Preset percentages"
+        >
+            {#each presets as preset (preset)}
+                <ToggleButton
+                    value={String(preset)}
+                    size="sm"
+                    onclick={() => {
+                        progressValue = preset;
+                    }}
+                >
+                    {preset}%
+                </ToggleButton>
+            {/each}
+        </ToggleButtonGroup>
+    </PreviewControlCard>
 
     <!-- Semantic Colors -->
     <PreviewSection

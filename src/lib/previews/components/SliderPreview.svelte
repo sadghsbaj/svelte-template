@@ -5,9 +5,10 @@
 </script>
 
 <script lang="ts">
-    import { Button, Slider, type SliderThumbShape } from "$components";
+    import { Slider, ToggleButton, ToggleButtonGroup, type SliderThumbShape } from "$components";
 
     import PreviewCard from "$lib/previews/ui/PreviewCard.svelte";
+    import PreviewControlCard from "$lib/previews/ui/PreviewControlCard.svelte";
     import PreviewGrid from "$lib/previews/ui/PreviewGrid.svelte";
     import PreviewHeader from "$lib/previews/ui/PreviewHeader.svelte";
     import PreviewPage from "$lib/previews/ui/PreviewPage.svelte";
@@ -18,7 +19,8 @@
         { value: "bar", label: "Bar" },
         { value: "pill", label: "Pill" },
     ];
-    let selectedShape = $state<SliderThumbShape>("circle");
+    let shapeValue = $state<string | undefined>("circle");
+    const selectedShape = $derived((shapeValue as SliderThumbShape) ?? "circle");
 
     let singleValue = $state<number>(50);
     let rangeValue = $state<[number, number]>([25, 75]);
@@ -51,27 +53,22 @@
     />
 
     <!-- Interactive Controls -->
-    <PreviewSection
-        title="Interactive Controls"
+    <PreviewControlCard
         description="Switch the thumb shape to dynamically see circular, mixer bar, and tactile pill profiles across all configurations."
     >
-        <div class="flex flex-wrap items-center gap-4 p-4 rounded-2xl bg-elevation-1 shadow-sm w-fit mb-6">
-            <span class="label-md">Thumb Shape</span>
-            <div class="flex items-center gap-1.5">
-                {#each shapes as s (s.value)}
-                    <Button
-                        size="sm"
-                        variant={selectedShape === s.value ? "solid" : "soft"}
-                        color={selectedShape === s.value ? "accent" : "base"}
-                        onclick={() => (selectedShape = s.value)}
-                        class="h-7! px-3! text-xs font-500 rounded-lg!"
-                    >
-                        {s.label}
-                    </Button>
-                {/each}
-            </div>
-        </div>
-    </PreviewSection>
+        <ToggleButtonGroup
+            type="single"
+            bind:value={shapeValue}
+            separators
+            aria-label="Thumb shape"
+        >
+            {#each shapes as s (s.value)}
+                <ToggleButton value={s.value}>
+                    {s.label}
+                </ToggleButton>
+            {/each}
+        </ToggleButtonGroup>
+    </PreviewControlCard>
 
     <!-- Variants -->
     <PreviewSection

@@ -5,15 +5,17 @@
 </script>
 
 <script lang="ts">
-    import { Button, Kbd, type KbdFormat } from "$components";
+    import { Kbd, ToggleButton, ToggleButtonGroup, type KbdFormat } from "$components";
 
     import PreviewCard from "$lib/previews/ui/PreviewCard.svelte";
+    import PreviewControlCard from "$lib/previews/ui/PreviewControlCard.svelte";
     import PreviewGrid from "$lib/previews/ui/PreviewGrid.svelte";
     import PreviewHeader from "$lib/previews/ui/PreviewHeader.svelte";
     import PreviewPage from "$lib/previews/ui/PreviewPage.svelte";
     import PreviewSection from "$lib/previews/ui/PreviewSection.svelte";
 
-    let activeFormat = $state<KbdFormat>("symbols");
+    let selectedFormat = $state<string | undefined>("symbols");
+    const activeFormat = $derived((selectedFormat as KbdFormat) ?? "symbols");
 </script>
 
 <PreviewPage>
@@ -23,31 +25,26 @@
         icon={Command}
     />
 
+    <!-- Interactive Controls -->
+    <PreviewControlCard
+        description="Switch between universal symbol glyphs and localized text legends."
+    >
+        <ToggleButtonGroup
+            type="single"
+            bind:value={selectedFormat}
+            separators
+            aria-label="Rendering format"
+        >
+            <ToggleButton value="symbols">Symbols</ToggleButton>
+            <ToggleButton value="text">Text Labels</ToggleButton>
+        </ToggleButtonGroup>
+    </PreviewControlCard>
+
     <!-- Format Switcher Section -->
     <PreviewSection
         title="Rendering Format"
         description="Universal symbol-first display vs. optional localized text format."
     >
-        <div class="flex items-center gap-2 mb-4">
-            <Button
-                variant={activeFormat === "symbols" ? "solid" : "soft"}
-                color={activeFormat === "symbols" ? "accent" : "base"}
-                size="sm"
-                class="text-sm! rounded-full squircle-smooth"
-                onclick={() => (activeFormat = "symbols")}
-            >
-                <span class="text-trim">Symbols</span>
-            </Button>
-            <Button
-                variant={activeFormat === "text" ? "solid" : "soft"}
-                color={activeFormat === "text" ? "accent" : "base"}
-                size="sm"
-                class="text-sm! rounded-full squircle-smooth"
-                onclick={() => (activeFormat = "text")}
-            >
-                <span class="text-trim">Text Labels</span>
-            </Button>
-        </div>
 
         <PreviewGrid cols={4}>
             <PreviewCard label="Command Palette" bg="elevation-1" class="h-32">

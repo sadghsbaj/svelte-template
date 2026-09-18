@@ -6,9 +6,10 @@
 
 <script lang="ts">
     import { Bell, Eye, EyeOff, Heart, MoreHorizontal, Plus, Trash2, X } from "@lucide/svelte";
-    import { HitArea } from "$components";
+    import { HitArea, ToggleButton } from "$components";
 
     import PreviewCard from "$lib/previews/ui/PreviewCard.svelte";
+    import PreviewControlCard from "$lib/previews/ui/PreviewControlCard.svelte";
     import PreviewGrid from "$lib/previews/ui/PreviewGrid.svelte";
     import PreviewHeader from "$lib/previews/ui/PreviewHeader.svelte";
     import PreviewPage from "$lib/previews/ui/PreviewPage.svelte";
@@ -17,25 +18,29 @@
     let showBounds = $state(true);
 </script>
 
+{#snippet boundsIcon()}
+    {#if showBounds}
+        <EyeOff />
+    {:else}
+        <Eye />
+    {/if}
+{/snippet}
+
 <PreviewPage>
     <PreviewHeader
         title="Hit Area"
         description="Zero-layout-shift touch target expander for micro-elements like icons, close buttons, and toggles."
         icon={Target}
+    />
+
+    <!-- Interactive Controls -->
+    <PreviewControlCard
+        description="Toggle touch target boundaries visualization across all examples."
     >
-        <button
-            class="px-3 py-1.5 rounded-xl bg-elevation-2 hover:bg-elevation-3 text-xs font-500 text-strong flex items-center gap-2 t-colors active:scale-98"
-            onclick={() => (showBounds = !showBounds)}
-        >
-            {#if showBounds}
-                <EyeOff size={14} />
-                <span>Hide Bounds</span>
-            {:else}
-                <Eye size={14} />
-                <span>Show Bounds</span>
-            {/if}
-        </button>
-    </PreviewHeader>
+        <ToggleButton bind:pressed={showBounds} size="md" iconLeft={boundsIcon}>
+            Touch Bounds
+        </ToggleButton>
+    </PreviewControlCard>
 
     <!-- Size Presets -->
     <PreviewSection

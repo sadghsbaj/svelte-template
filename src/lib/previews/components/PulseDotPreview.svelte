@@ -8,6 +8,7 @@
     import { PulseDot, Switch } from "$components";
 
     import PreviewCard from "$lib/previews/ui/PreviewCard.svelte";
+    import PreviewControlCard from "$lib/previews/ui/PreviewControlCard.svelte";
     import PreviewGrid from "$lib/previews/ui/PreviewGrid.svelte";
     import PreviewHeader from "$lib/previews/ui/PreviewHeader.svelte";
     import PreviewPage from "$lib/previews/ui/PreviewPage.svelte";
@@ -25,24 +26,19 @@
     />
 
     <!-- Controls -->
-    <PreviewSection
-        title="Interactive Controls"
+    <PreviewControlCard
         description="Toggle pulse animations and ambient glow halo."
     >
-        <div
-            class="flex flex-wrap items-center gap-6 p-4 rounded-xl bg-elevation-1 shadow-sm w-fit mb-6"
-        >
-            <label class="flex items-center gap-3 cursor-pointer select-none">
-                <Switch bind:checked={isPulsing} size="md" />
-                <span class="label-md text-trim">Pulsing Wave</span>
-            </label>
+        <label class="flex items-center gap-3 cursor-pointer select-none">
+            <Switch bind:checked={isPulsing} size="md" />
+            <span class="label-md text-trim">Pulsing Wave</span>
+        </label>
 
-            <label class="flex items-center gap-3 cursor-pointer select-none">
-                <Switch bind:checked={hasGlow} size="md" />
-                <span class="label-md text-trim">Ambient Glow</span>
-            </label>
-        </div>
-    </PreviewSection>
+        <label class="flex items-center gap-3 cursor-pointer select-none">
+            <Switch bind:checked={hasGlow} size="md" />
+            <span class="label-md text-trim">Ambient Glow</span>
+        </label>
+    </PreviewControlCard>
 
     <!-- Semantic Colors Grid -->
     <PreviewSection

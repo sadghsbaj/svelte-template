@@ -5,9 +5,11 @@
 </script>
 
 <script lang="ts">
-    import { Badge, Button, Meter, Separator, Slider } from "$components";
+    import { untrack } from "svelte";
+    import { Badge, Meter, Separator, Slider, ToggleButton, ToggleButtonGroup } from "$components";
 
     import PreviewCard from "$lib/previews/ui/PreviewCard.svelte";
+    import PreviewControlCard from "$lib/previews/ui/PreviewControlCard.svelte";
     import PreviewGrid from "$lib/previews/ui/PreviewGrid.svelte";
     import PreviewHeader from "$lib/previews/ui/PreviewHeader.svelte";
     import PreviewPage from "$lib/previews/ui/PreviewPage.svelte";
@@ -16,6 +18,34 @@
     let meterValue = $state<number>(65);
 
     const presets = [0, 25, 50, 75, 100];
+
+    let selectedPreset = $state<string | undefined>();
+
+    $effect(() => {
+        const match = presets.includes(meterValue) ? String(meterValue) : undefined;
+        untrack(() => {
+            if (selectedPreset !== match) {
+                selectedPreset = match;
+            }
+        });
+    });
+
+    $effect(() => {
+        if (selectedPreset === undefined) {
+            const match = presets.includes(meterValue) ? String(meterValue) : undefined;
+            if (match !== undefined) {
+                selectedPreset = match;
+            }
+            return;
+        }
+
+        const num = Number(selectedPreset);
+        untrack(() => {
+            if (meterValue !== num) {
+                meterValue = num;
+            }
+        });
+    });
 </script>
 
 <PreviewPage>
@@ -26,45 +56,45 @@
     />
 
     <!-- Interactive Controls -->
-    <PreviewSection
-        title="Interactive Controls"
+    <PreviewControlCard
         description="Adjust the meter value or select presets to preview smooth width transitions across all components."
     >
-        <div
-            class="flex flex-wrap items-center gap-5 p-4 rounded-2xl bg-elevation-1 shadow-sm w-fit mb-6"
-        >
-            <div class="flex items-center gap-3">
-                <span class="label-md">Value</span>
-                <div class="w-40">
-                    <Slider
-                        bind:value={meterValue}
-                        min={0}
-                        max={100}
-                        ariaLabel="Meter value slider"
-                    />
-                </div>
-                <Badge variant="soft" color="base" class="tabular-nums min-w-60px">
-                    {meterValue}%
-                </Badge>
+        <div class="flex items-center gap-3">
+            <span class="label-md">Value</span>
+            <div class="w-40">
+                <Slider
+                    bind:value={meterValue}
+                    min={0}
+                    max={100}
+                    ariaLabel="Meter value slider"
+                />
             </div>
-
-            <Separator orientation="vertical" class="h-5! my-auto self-center! hidden sm:block" />
-
-            <div class="flex items-center gap-1.5">
-                {#each presets as preset (preset)}
-                    <Button
-                        size="sm"
-                        variant={meterValue === preset ? "solid" : "soft"}
-                        color={meterValue === preset ? "accent" : "base"}
-                        onclick={() => (meterValue = preset)}
-                        class="h-7! px-2.5! text-xs font-500 rounded-lg!"
-                    >
-                        {preset}%
-                    </Button>
-                {/each}
-            </div>
+            <Badge variant="soft" color="base" class="tabular-nums min-w-60px">
+                {meterValue}%
+            </Badge>
         </div>
-    </PreviewSection>
+
+        <Separator orientation="vertical" class="h-5! my-auto self-center! hidden sm:block" />
+
+        <ToggleButtonGroup
+            type="single"
+            bind:value={selectedPreset}
+            separators
+            aria-label="Preset percentages"
+        >
+            {#each presets as preset (preset)}
+                <ToggleButton
+                    value={String(preset)}
+                    size="sm"
+                    onclick={() => {
+                        meterValue = preset;
+                    }}
+                >
+                    {preset}%
+                </ToggleButton>
+            {/each}
+        </ToggleButtonGroup>
+    </PreviewControlCard>
 
     <!-- Semantic Colors -->
     <PreviewSection

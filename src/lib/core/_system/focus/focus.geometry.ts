@@ -39,6 +39,48 @@ export function focusClipChanged(a: ClipBox, b: ClipBox, epsilon = 0.1): boolean
     );
 }
 
+/** Scales circular corner radii together using the CSS border-radius overlap algorithm. */
+export function normalizeCornerRadii(
+    radii: CornerRadii,
+    width: number,
+    height: number
+): CornerRadii {
+    const topLeft = Math.max(0, radii.topLeft);
+    const topRight = Math.max(0, radii.topRight);
+    const bottomRight = Math.max(0, radii.bottomRight);
+    const bottomLeft = Math.max(0, radii.bottomLeft);
+    const safeWidth = Math.max(0, width);
+    const safeHeight = Math.max(0, height);
+    let scale = 1;
+
+    const top = topLeft + topRight;
+    const bottom = bottomLeft + bottomRight;
+    const left = topLeft + bottomLeft;
+    const right = topRight + bottomRight;
+
+    if (top > safeWidth) scale = Math.min(scale, safeWidth / top);
+    if (bottom > safeWidth) scale = Math.min(scale, safeWidth / bottom);
+    if (left > safeHeight) scale = Math.min(scale, safeHeight / left);
+    if (right > safeHeight) scale = Math.min(scale, safeHeight / right);
+
+    if (
+        scale === 1 &&
+        topLeft === radii.topLeft &&
+        topRight === radii.topRight &&
+        bottomRight === radii.bottomRight &&
+        bottomLeft === radii.bottomLeft
+    ) {
+        return radii;
+    }
+
+    return {
+        topLeft: topLeft * scale,
+        topRight: topRight * scale,
+        bottomRight: bottomRight * scale,
+        bottomLeft: bottomLeft * scale,
+    };
+}
+
 export function getParentElement(el: Element): HTMLElement | null {
     if (el.parentElement) return el.parentElement as HTMLElement;
     const root = el.getRootNode?.();
@@ -166,16 +208,16 @@ function parseBorderRadii(
         ? individual.map((value) => value || "0")
         : expandRadiusShorthand(computedStyle.borderRadius?.trim() ?? "");
 
-    const maxRadius = Math.min(rectWidth, rectHeight) / 2;
-    const parse = (token: string): number =>
-        Math.min(parseRadiusToken(token, rectWidth, rectHeight), maxRadius);
-
-    return {
-        topLeft: parse(tokens[0]),
-        topRight: parse(tokens[1]),
-        bottomRight: parse(tokens[2]),
-        bottomLeft: parse(tokens[3]),
-    };
+    return normalizeCornerRadii(
+        {
+            topLeft: parseRadiusToken(tokens[0], rectWidth, rectHeight),
+            topRight: parseRadiusToken(tokens[1], rectWidth, rectHeight),
+            bottomRight: parseRadiusToken(tokens[2], rectWidth, rectHeight),
+            bottomLeft: parseRadiusToken(tokens[3], rectWidth, rectHeight),
+        },
+        rectWidth,
+        rectHeight
+    );
 }
 
 /**
@@ -323,17 +365,25 @@ export function computeTargetBox(
 
     const { borderRadii, cornerShape } = getStaticParams(el, rect.width, rect.height);
 
+    const width = rect.width + offset * 2;
+    const height = rect.height + offset * 2;
+    const radii = normalizeCornerRadii(
+        {
+            topLeft: borderRadii.topLeft + offset,
+            topRight: borderRadii.topRight + offset,
+            bottomRight: borderRadii.bottomRight + offset,
+            bottomLeft: borderRadii.bottomLeft + offset,
+        },
+        width,
+        height
+    );
+
     const box: FocusBox = {
         x: rect.x - offset,
         y: rect.y - offset,
-        w: rect.width + offset * 2,
-        h: rect.height + offset * 2,
-        radii: {
-            topLeft: Math.max(0, borderRadii.topLeft + offset),
-            topRight: Math.max(0, borderRadii.topRight + offset),
-            bottomRight: Math.max(0, borderRadii.bottomRight + offset),
-            bottomLeft: Math.max(0, borderRadii.bottomLeft + offset),
-        },
+        w: width,
+        h: height,
+        radii,
         cornerShape,
     };
 

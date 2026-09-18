@@ -1,3 +1,4 @@
+import { normalizeCornerRadii } from "./focus.geometry.js";
 import type {
     ClipBox,
     CornerRadii,
@@ -179,8 +180,8 @@ export function drawSquirclePath(
     radii: CornerRadii,
     exponent: number
 ): void {
-    const clamped = clampCornerRadii(radii, w, h);
-    const { topLeft, topRight, bottomRight, bottomLeft } = clamped;
+    const normalized = normalizeCornerRadii(radii, w, h);
+    const { topLeft, topRight, bottomRight, bottomLeft } = normalized;
     if (topLeft === 0 && topRight === 0 && bottomRight === 0 && bottomLeft === 0) {
         ctx.rect(x, y, w, h);
         return;
@@ -221,16 +222,6 @@ export function drawSquirclePath(
     drawSuperellipseCorner(ctx, x + topLeft, y + topLeft, topLeft, exponent, "top-left");
 
     ctx.closePath();
-}
-
-function clampCornerRadii(radii: CornerRadii, width: number, height: number): CornerRadii {
-    const maxRadius = Math.min(width, height) / 2;
-    return {
-        topLeft: Math.max(0, Math.min(radii.topLeft, maxRadius)),
-        topRight: Math.max(0, Math.min(radii.topRight, maxRadius)),
-        bottomRight: Math.max(0, Math.min(radii.bottomRight, maxRadius)),
-        bottomLeft: Math.max(0, Math.min(radii.bottomLeft, maxRadius)),
-    };
 }
 
 /**
@@ -275,7 +266,7 @@ export function drawFocusRing(
 
     const drawX = currentBox.x - offsetDelta;
     const drawY = currentBox.y - offsetDelta;
-    const drawRadii = clampCornerRadii(
+    const drawRadii = normalizeCornerRadii(
         {
             topLeft: currentBox.radii.topLeft + offsetDelta,
             topRight: currentBox.radii.topRight + offsetDelta,

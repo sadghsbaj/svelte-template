@@ -1,6 +1,12 @@
 import { describe, expect, it } from "vitest";
 
-import { boxDistance, focusBoxChanged, focusClipChanged, lerp } from "./focus.geometry.js";
+import {
+    boxDistance,
+    focusBoxChanged,
+    focusClipChanged,
+    lerp,
+    normalizeCornerRadii,
+} from "./focus.geometry.js";
 import type { ClipBox, CornerRadii, FocusBox } from "./focus.types.js";
 
 const uniformRadii = (radius: number): CornerRadii => ({
@@ -55,5 +61,36 @@ describe("focus.geometry pure functions", () => {
 
         expect(focusClipChanged(before, { ...before, w: 399 })).toBe(true);
         expect(focusClipChanged(before, { ...before, y: 0.05 })).toBe(false);
+    });
+
+    it("normalizes pill and asymmetric group radii using shared edge space", () => {
+        expect(normalizeCornerRadii(uniformRadii(9999), 100, 40)).toEqual(uniformRadii(20));
+        expect(
+            normalizeCornerRadii(
+                { topLeft: 9999, topRight: 0, bottomRight: 0, bottomLeft: 9999 },
+                100,
+                40
+            )
+        ).toEqual({ topLeft: 20, topRight: 0, bottomRight: 0, bottomLeft: 20 });
+        expect(
+            normalizeCornerRadii(
+                { topLeft: 9999, topRight: 9999, bottomRight: 0, bottomLeft: 0 },
+                100,
+                40
+            )
+        ).toEqual({ topLeft: 40, topRight: 40, bottomRight: 0, bottomLeft: 0 });
+        expect(
+            normalizeCornerRadii(
+                { topLeft: 0, topRight: 0, bottomRight: 9999, bottomLeft: 9999 },
+                100,
+                40
+            )
+        ).toEqual({ topLeft: 0, topRight: 0, bottomRight: 40, bottomLeft: 40 });
+    });
+
+    it("returns valid radii unchanged without allocating", () => {
+        const radii = { topLeft: 12, topRight: 8, bottomRight: 4, bottomLeft: 6 };
+
+        expect(normalizeCornerRadii(radii, 100, 40)).toBe(radii);
     });
 });

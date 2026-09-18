@@ -80,6 +80,23 @@ describe("focus.renderer", () => {
         expect(ctx.roundRect).toHaveBeenCalledWith(10, 10, 100, 40, [20, 0, 0, 20]);
     });
 
+    it("drawFocusRing preserves full-height vertical group corners", () => {
+        const ctx = makeMockCtx();
+        const canvas = {} as HTMLCanvasElement;
+        const box: FocusBox = {
+            x: 10,
+            y: 10,
+            w: 108,
+            h: 48,
+            radii: { topLeft: 44, topRight: 44, bottomRight: 4, bottomLeft: 4 },
+        };
+        const clip: ClipBox = { x: 0, y: 0, w: 1000, h: 1000 };
+
+        drawFocusRing(ctx, canvas, box, clip);
+
+        expect(ctx.roundRect).toHaveBeenCalledWith(10, 10, 108, 48, [44, 44, 4, 4]);
+    });
+
     it("drawFocusRing falls back to ctx.rect when ctx.roundRect is not available", () => {
         const ctx = makeMockCtx();
         delete (ctx as unknown as Record<string, unknown>).roundRect;
@@ -246,6 +263,43 @@ describe("focus.geometry DOM functions", () => {
             topRight: 4,
             bottomRight: 4,
             bottomLeft: 24,
+        });
+        expect(result?.box.cornerShape).toEqual({ type: "squircle", exponent: 1.6 });
+    });
+
+    it("computeTargetBox preserves full-height top corners for vertical groups", () => {
+        const el = document.createElement("button");
+        vi.spyOn(el, "getBoundingClientRect").mockReturnValue({
+            width: 100,
+            height: 40,
+            x: 0,
+            y: 0,
+            top: 0,
+            left: 0,
+            bottom: 40,
+            right: 100,
+            toJSON: () => {},
+        } as DOMRect);
+        vi.spyOn(window, "getComputedStyle").mockReturnValue({
+            borderRadius: "9999px 9999px 0 0",
+            borderTopLeftRadius: "9999px",
+            borderTopRightRadius: "9999px",
+            borderBottomRightRadius: "0px",
+            borderBottomLeftRadius: "0px",
+            overflow: "",
+            overflowX: "",
+            overflowY: "",
+            getPropertyValue: (property: string) =>
+                property === "corner-shape" ? "superellipse(1.6)" : "",
+        } as unknown as CSSStyleDeclaration);
+
+        const result = computeTargetBox(el, 4);
+
+        expect(result?.box.radii).toEqual({
+            topLeft: 44,
+            topRight: 44,
+            bottomRight: 4,
+            bottomLeft: 4,
         });
         expect(result?.box.cornerShape).toEqual({ type: "squircle", exponent: 1.6 });
     });
@@ -906,6 +960,24 @@ describe("focus.renderer squircle path drawing", () => {
 
         expect(ctx.moveTo).toHaveBeenCalledWith(20, 0);
         expect(ctx.lineTo).toHaveBeenNthCalledWith(1, 100, 0);
+        expect(ctx.closePath).toHaveBeenCalledOnce();
+    });
+
+    it("drawSquirclePath preserves full-height top corners for vertical groups", () => {
+        const ctx = makeMockCtx();
+
+        drawSquirclePath(
+            ctx,
+            0,
+            0,
+            100,
+            40,
+            { topLeft: 9999, topRight: 9999, bottomRight: 0, bottomLeft: 0 },
+            1.6
+        );
+
+        expect(ctx.moveTo).toHaveBeenCalledWith(40, 0);
+        expect(ctx.lineTo).toHaveBeenNthCalledWith(1, 60, 0);
         expect(ctx.closePath).toHaveBeenCalledOnce();
     });
 

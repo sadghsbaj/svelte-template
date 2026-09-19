@@ -30,11 +30,11 @@
 {/snippet}
 
 {#snippet commandShortcut()}
-    <Kbd combo="Mod+K" size="sm" variant="soft" title="" class="text-inherit! bg-current/8!" />
+    <Kbd combo="Mod+K" size="sm" variant="soft" title="" />
 {/snippet}
 
 {#snippet escapeShortcut()}
-    <Kbd key="Escape" size="sm" variant="soft" title="" class="text-inherit! bg-current/8!" />
+    <Kbd key="Escape" size="sm" variant="soft" title="" />
 {/snippet}
 
 <PreviewPage>

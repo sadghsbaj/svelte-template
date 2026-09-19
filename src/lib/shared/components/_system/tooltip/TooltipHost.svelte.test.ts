@@ -98,7 +98,8 @@ describe("TooltipHost", () => {
         const content = document.querySelector<HTMLElement>("[role='tooltip']");
         expect(content?.textContent).toContain("Connection lost");
         expect(content?.textContent).toContain("Changes remain on this device.");
-        expect(content?.classList).toContain("bg-base-solid-1");
+        expect(content?.classList).toContain("bg-elevation-1");
+        expect(content?.classList).toContain("text-strong");
         expect(content?.dataset.placement).toBe("right");
     });
 

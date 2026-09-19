@@ -220,8 +220,6 @@
                             </span>
                         {/if}
                         {#if current.options.trailing}
-                            <!-- Theme-relative soft colors blend into this inverted surface.
-                                 Use `bg-current/8! text-inherit!` on embedded UI for local contrast. -->
                             <span
                                 class="{trailingClass} {current.options.leading
                                     ? 'col-start-3'

@@ -194,6 +194,24 @@ export type {
     PopoverTriggerContext,
 } from "./popover/popover.types";
 
+export { default as TooltipHost } from "./tooltip/TooltipHost.svelte";
+export { tooltip } from "./tooltip/tooltip.attach";
+export {
+    tooltipLeadingStyles,
+    tooltipStyles,
+    type TooltipStyleProps,
+} from "./tooltip/tooltip.styles";
+export type {
+    TooltipAnimation,
+    TooltipAnimationContext,
+    TooltipCloseReason,
+    TooltipInput,
+    TooltipOpenReason,
+    TooltipOptions,
+    TooltipPhase,
+    TooltipReason,
+} from "./tooltip/tooltip.types";
+
 export { default as PulseDot } from "./pulse-dot/PulseDot.svelte";
 export {
     pulseDotCoreStyles,

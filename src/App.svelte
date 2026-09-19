@@ -9,6 +9,7 @@
     import AppViews from "$core/_system/layout/app-views/AppViews.svelte";
     import PerformanceHost from "$core/_system/performance/PerformanceHost.svelte";
     import BottomNavbar from "$components/_system/bottom-navbar/BottomNavbar.svelte";
+    import TooltipHost from "$components/_system/tooltip/TooltipHost.svelte";
     import { viewState } from "$views/view.svelte";
 
     // @template-remove-start
@@ -36,6 +37,8 @@
     </AppView>
     <!-- @template-remove-end -->
 </AppViews>
+
+<TooltipHost />
 
 <!-- AppLayers -->
 <AppLayer z="top-layer" layer="focus">

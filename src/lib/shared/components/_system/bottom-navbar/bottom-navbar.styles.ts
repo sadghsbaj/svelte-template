@@ -3,7 +3,7 @@ import { cva, type VariantProps } from "$utils";
 export const bottomNavbarStyles = cva({
     base: {
         layout: "relative flex w-full min-w-0 items-center",
-        frame: "bg-elevation-1 rounded-full squircle-smooth shadow-lg",
+        frame: "bg-elevation-1 rounded-full squircle-smooth",
         motion: "transform-gpu backface-hidden",
         misc: "isolate pointer-events-auto",
     },

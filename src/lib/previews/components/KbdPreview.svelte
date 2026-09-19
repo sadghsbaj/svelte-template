@@ -5,7 +5,7 @@
 </script>
 
 <script lang="ts">
-    import { Kbd, ToggleButton, ToggleButtonGroup, type KbdFormat } from "$components";
+    import { Kbd, SegmentedControl, SegmentedControlItem, type KbdFormat } from "$components";
 
     import PreviewCard from "$lib/previews/ui/PreviewCard.svelte";
     import PreviewControlCard from "$lib/previews/ui/PreviewControlCard.svelte";
@@ -14,8 +14,8 @@
     import PreviewPage from "$lib/previews/ui/PreviewPage.svelte";
     import PreviewSection from "$lib/previews/ui/PreviewSection.svelte";
 
-    let selectedFormat = $state<string | undefined>("symbols");
-    const activeFormat = $derived((selectedFormat as KbdFormat) ?? "symbols");
+    let selectedFormat = $state("symbols");
+    const activeFormat = $derived(selectedFormat as KbdFormat);
 </script>
 
 <PreviewPage>
@@ -29,15 +29,12 @@
     <PreviewControlCard
         description="Switch between universal symbol glyphs and localized text legends."
     >
-        <ToggleButtonGroup
-            type="single"
-            bind:value={selectedFormat}
-            separators
-            aria-label="Rendering format"
-        >
-            <ToggleButton value="symbols">Symbols</ToggleButton>
-            <ToggleButton value="text">Text Labels</ToggleButton>
-        </ToggleButtonGroup>
+        <div class="w-64 max-w-full">
+            <SegmentedControl bind:value={selectedFormat} aria-label="Rendering format">
+                <SegmentedControlItem value="symbols">Symbols</SegmentedControlItem>
+                <SegmentedControlItem value="text">Text Labels</SegmentedControlItem>
+            </SegmentedControl>
+        </div>
     </PreviewControlCard>
 
     <!-- Format Switcher Section -->
@@ -45,7 +42,6 @@
         title="Rendering Format"
         description="Universal symbol-first display vs. optional localized text format."
     >
-
         <PreviewGrid cols={4}>
             <PreviewCard label="Command Palette" bg="elevation-1" class="h-32">
                 <div class="flex-center flex-col gap-2">

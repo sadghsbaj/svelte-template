@@ -5,7 +5,12 @@
 </script>
 
 <script lang="ts">
-    import { Slider, ToggleButton, ToggleButtonGroup, type SliderThumbShape } from "$components";
+    import {
+        SegmentedControl,
+        SegmentedControlItem,
+        Slider,
+        type SliderThumbShape,
+    } from "$components";
 
     import PreviewCard from "$lib/previews/ui/PreviewCard.svelte";
     import PreviewControlCard from "$lib/previews/ui/PreviewControlCard.svelte";
@@ -19,8 +24,8 @@
         { value: "bar", label: "Bar" },
         { value: "pill", label: "Pill" },
     ];
-    let shapeValue = $state<string | undefined>("circle");
-    const selectedShape = $derived((shapeValue as SliderThumbShape) ?? "circle");
+    let shapeValue = $state("circle");
+    const selectedShape = $derived(shapeValue as SliderThumbShape);
 
     let singleValue = $state<number>(50);
     let rangeValue = $state<[number, number]>([25, 75]);
@@ -56,18 +61,15 @@
     <PreviewControlCard
         description="Switch the thumb shape to dynamically see circular, mixer bar, and tactile pill profiles across all configurations."
     >
-        <ToggleButtonGroup
-            type="single"
-            bind:value={shapeValue}
-            separators
-            aria-label="Thumb shape"
-        >
-            {#each shapes as s (s.value)}
-                <ToggleButton value={s.value}>
-                    {s.label}
-                </ToggleButton>
-            {/each}
-        </ToggleButtonGroup>
+        <div class="w-64 max-w-full">
+            <SegmentedControl bind:value={shapeValue} aria-label="Thumb shape">
+                {#each shapes as s (s.value)}
+                    <SegmentedControlItem value={s.value}>
+                        {s.label}
+                    </SegmentedControlItem>
+                {/each}
+            </SegmentedControl>
+        </div>
     </PreviewControlCard>
 
     <!-- Variants -->
@@ -78,13 +80,21 @@
         <PreviewGrid cols={3}>
             <PreviewCard label="Single" bg="elevation-1" class="h-32">
                 <div class="w-full px-6">
-                    <Slider thumbShape={selectedShape} bind:value={singleValue} ariaLabel="Single slider" />
+                    <Slider
+                        thumbShape={selectedShape}
+                        bind:value={singleValue}
+                        ariaLabel="Single slider"
+                    />
                 </div>
             </PreviewCard>
 
             <PreviewCard label="Range" bg="elevation-1" class="h-32">
                 <div class="w-full px-6">
-                    <Slider thumbShape={selectedShape} bind:value={rangeValue} ariaLabel="Range slider" />
+                    <Slider
+                        thumbShape={selectedShape}
+                        bind:value={rangeValue}
+                        ariaLabel="Range slider"
+                    />
                 </div>
             </PreviewCard>
 
@@ -236,7 +246,12 @@
         <PreviewGrid cols={2}>
             <PreviewCard label="Disabled" bg="elevation-1" class="h-32">
                 <div class="w-full px-6">
-                    <Slider thumbShape={selectedShape} value={35} disabled ariaLabel="Disabled slider" />
+                    <Slider
+                        thumbShape={selectedShape}
+                        value={35}
+                        disabled
+                        ariaLabel="Disabled slider"
+                    />
                 </div>
             </PreviewCard>
 

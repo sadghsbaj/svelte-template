@@ -383,7 +383,7 @@
                     class="cursor-pointer p-1 rounded-full flex-center t-bg-150-sine-out t-text-150-sine-out squircle-smooth {isHeatmapActive
                         ? 'text-warning-500 border border-warning-500/30 bg-warning-500/15 dark:text-warning-400'
                         : 'text-weak hover:text-strong hover:bg-elevation-1'}"
-                    title={isHeatmapActive
+                    aria-label={isHeatmapActive
                         ? "Disable DOM Heatmap (Alt+H)"
                         : "Enable DOM Heatmap Canvas Overlay (Alt+H)"}
                 >
@@ -396,7 +396,7 @@
                     class="cursor-pointer p-1 rounded-full flex-center t-bg-150-sine-out t-text-150-sine-out squircle-smooth {isInspectorActive
                         ? 'text-cyan-500 border border-cyan-500/30 bg-cyan-500/15 dark:text-cyan-400'
                         : 'text-weak hover:text-strong hover:bg-elevation-1'}"
-                    title={isInspectorActive
+                    aria-label={isInspectorActive
                         ? "Disable DOM Inspector (Alt+I)"
                         : "Inspect DOM Element Hierarchy (Alt+I)"}
                 >

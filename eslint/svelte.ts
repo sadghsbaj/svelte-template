@@ -2,6 +2,7 @@ import type { Linter } from "eslint";
 import svelte from "eslint-plugin-svelte";
 import ts from "typescript-eslint";
 
+import { forbiddenTitleAttributeSelector } from "./title-attribute.ts";
 import { forbiddenTransitionSelector } from "./transitions.ts";
 
 export const svelteConfig: Linter.Config[] = [
@@ -23,6 +24,7 @@ export const svelteConfig: Linter.Config[] = [
             "no-restricted-syntax": [
                 "error",
                 forbiddenTransitionSelector,
+                forbiddenTitleAttributeSelector,
                 {
                     selector: "SvelteDirective[kind='Action']",
                     message:

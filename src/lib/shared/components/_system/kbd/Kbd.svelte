@@ -55,6 +55,7 @@
     const sequenceSepClass = $derived(kbdSequenceSeparatorStyles({ size }));
 </script>
 
+<!-- eslint-disable no-restricted-syntax -- Kbd provides fallback native title for accessible shortcut description when no custom tooltip is bound -->
 <kbd
     class={computedClass}
     aria-label={resolvedAriaLabel}
@@ -62,6 +63,7 @@
     title={resolvedTitle}
     {...restProps}
 >
+    <!-- eslint-enable no-restricted-syntax -->
     {#if hasStructuredKeys}
         {#each shortcut.steps as step, stepIndex (stepIndex)}
             {#if stepIndex > 0}

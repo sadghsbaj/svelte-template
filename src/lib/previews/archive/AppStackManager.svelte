@@ -374,7 +374,7 @@
                         <Terminal size={16} class="accent-icon" />
                         <h3>Stack Action Log</h3>
                     </div>
-                    <button class="icon-btn" onclick={clearLogs} title="Clear Log">
+                    <button class="icon-btn" onclick={clearLogs} aria-label="Clear Log">
                         <Trash2 size={14} />
                     </button>
                 </div>

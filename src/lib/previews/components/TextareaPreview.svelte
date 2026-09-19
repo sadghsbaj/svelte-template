@@ -68,7 +68,6 @@
         class="size-24px rounded-full squircle-soft flex-center shrink-0 text-weak hover:text-strong hover:bg-base-soft-2 active:scale-93 cursor-pointer select-none t:(bg-150-quad-out scale-150-quad-out)"
         onclick={handleCopy}
         aria-label="Copy text"
-        title="Copy"
     >
         {#if copied}
             <Check class="size-14px text-success-500" />
@@ -85,7 +84,6 @@
                 type="button"
                 class="size-28px rounded-full squircle-soft flex-center text-weak hover:text-strong hover:bg-base-soft-2 active:scale-93 cursor-pointer select-none t:(bg-150-quad-out scale-150-quad-out)"
                 aria-label="Attach file"
-                title="Attach file"
             >
                 <Paperclip class="size-16px" />
             </button>
@@ -93,7 +91,6 @@
                 type="button"
                 class="size-28px rounded-full squircle-soft flex-center text-weak hover:text-strong hover:bg-base-soft-2 active:scale-93 cursor-pointer select-none t:(bg-150-quad-out scale-150-quad-out)"
                 aria-label="Voice input"
-                title="Voice input"
             >
                 <Mic class="size-16px" />
             </button>
@@ -108,7 +105,6 @@
                 class="size-28px rounded-full squircle-soft flex-center bg-accent-solid-1 text-white hover:bg-accent-solid-2 active:scale-93 t:(bg-150-quad-out scale-150-quad-out opacity-150-quad-out) disabled:opacity-40"
                 disabled={!promptVal.trim()}
                 aria-label="Send prompt"
-                title="Send"
             >
                 <CornerDownLeft class="size-14px stroke-[2.25px]" />
             </button>

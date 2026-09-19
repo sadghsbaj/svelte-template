@@ -186,6 +186,7 @@
                     <div
                         id={TOOLTIP_CONTENT_ID}
                         role="tooltip"
+                        data-slot="tooltip"
                         class={tooltipStyles({
                             hasLeading: !!current.options.leading,
                             hasTrailing: !!current.options.trailing,
@@ -234,3 +235,12 @@
         </Floating>
     {/key}
 {/if}
+
+<style>
+    [data-slot="tooltip"] {
+        box-shadow:
+            0 12px 28px -10px light-dark(rgb(0 0 0 / 16%), rgb(0 0 0 / 42%)),
+            0 4px 12px -6px light-dark(rgb(0 0 0 / 10%), rgb(0 0 0 / 28%)),
+            0 0 20px 1px light-dark(transparent, rgb(255 255 255 / 5%));
+    }
+</style>

@@ -13,9 +13,9 @@ const PROPERTY_MAP: Record<string, string> = {
 };
 
 const SCROLLBAR_SIZE_MAP = {
-    sm: { size: "8px", border: "2px", firefoxWidth: "thin" },
-    md: { size: "10px", border: "2px", firefoxWidth: "auto" },
-    lg: { size: "12px", border: "2px", firefoxWidth: "auto" },
+    sm: { size: "8px", firefoxWidth: "thin" },
+    md: { size: "10px", firefoxWidth: "auto" },
+    lg: { size: "12px", firefoxWidth: "auto" },
 } as const;
 
 export const rulesConfig: Rule[] = [
@@ -45,11 +45,17 @@ export const rulesConfig: Rule[] = [
         /^scrollbar-(sm|md|lg)$/,
         ([, size]) => {
             const values = SCROLLBAR_SIZE_MAP[size as keyof typeof SCROLLBAR_SIZE_MAP];
-            return {
-                "--scrollbar-size": values.size,
-                "--scrollbar-thumb-border": values.border,
-                "--scrollbar-firefox-width": values.firefoxWidth,
-            };
+            return `
+@supports (-moz-appearance: none) {
+    .scrollbar-${size} {
+        scrollbar-width: ${values.firefoxWidth};
+    }
+}
+.scrollbar-${size}::-webkit-scrollbar {
+    width: ${values.size};
+    height: ${values.size};
+}
+`;
         },
         { autocomplete: "scrollbar-(sm|md|lg)" },
     ],

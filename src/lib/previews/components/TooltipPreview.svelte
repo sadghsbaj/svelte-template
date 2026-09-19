@@ -5,13 +5,8 @@
 </script>
 
 <script lang="ts">
-    import { BadgeInfo, Bell, CircleAlert, Cloud, Settings, Wifi } from "@lucide/svelte";
-    import {
-        Button,
-        PulseDot,
-        tooltip,
-        type FloatingPlacement,
-    } from "$components";
+    import { BadgeInfo, Bell, CircleAlert, Cloud, Search, Settings, Wifi, X } from "@lucide/svelte";
+    import { Button, Kbd, PulseDot, tooltip, type FloatingPlacement } from "$components";
 
     import PreviewCard from "$lib/previews/ui/PreviewCard.svelte";
     import PreviewGrid from "$lib/previews/ui/PreviewGrid.svelte";
@@ -32,6 +27,14 @@
 
 {#snippet liveDot()}
     <PulseDot color="success" size="sm" />
+{/snippet}
+
+{#snippet commandShortcut()}
+    <Kbd combo="Mod+K" size="sm" variant="soft" title="" class="text-inherit! bg-current/8!" />
+{/snippet}
+
+{#snippet escapeShortcut()}
+    <Kbd key="Escape" size="sm" variant="soft" title="" class="text-inherit! bg-current/8!" />
 {/snippet}
 
 <PreviewPage>
@@ -161,6 +164,47 @@
                     </Button>
                 </PreviewCard>
             {/each}
+        </PreviewGrid>
+    </PreviewSection>
+
+    <PreviewSection
+        title="Keyboard Shortcuts"
+        description="A flexible trailing slot keeps compact Kbd hints aligned with the title while descriptions remain in their own row."
+    >
+        <PreviewGrid cols={2}>
+            <PreviewCard label="Trailing shortcut" bg="elevation-1" class="h-36">
+                <Button
+                    iconOnly
+                    color="base"
+                    variant="soft"
+                    aria-label="Open command palette"
+                    {@attach tooltip({
+                        content: "Open command palette",
+                        trailing: commandShortcut,
+                        openDelay: 0,
+                    })}
+                >
+                    <Search />
+                </Button>
+            </PreviewCard>
+
+            <PreviewCard label="Leading + trailing" bg="elevation-1" class="h-36">
+                <Button
+                    iconOnly
+                    color="base"
+                    variant="soft"
+                    aria-label="Close current panel"
+                    {@attach tooltip({
+                        title: "Close panel",
+                        description: "Returns to the previous workspace.",
+                        leading: infoIcon,
+                        trailing: escapeShortcut,
+                        openDelay: 0,
+                    })}
+                >
+                    <X />
+                </Button>
+            </PreviewCard>
         </PreviewGrid>
     </PreviewSection>
 </PreviewPage>

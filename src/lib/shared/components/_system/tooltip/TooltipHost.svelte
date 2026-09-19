@@ -9,7 +9,11 @@
 
     import { runTooltipAnimation, waitForTooltipAnimation } from "./tooltip.animation";
     import { TOOLTIP_CONTENT_ID, tooltipState } from "./tooltip.svelte";
-    import { tooltipLeadingStyles, tooltipStyles } from "./tooltip.styles";
+    import {
+        tooltipLeadingStyles,
+        tooltipStyles,
+        tooltipTrailingStyles,
+    } from "./tooltip.styles";
     import type { ActiveTooltip, TooltipPhase } from "./tooltip.types";
 
     let phase = $state<TooltipPhase>("closed");
@@ -21,6 +25,7 @@
 
     const active = $derived(tooltipState.active);
     const leadingClass = tooltipLeadingStyles();
+    const trailingClass = tooltipTrailingStyles();
 
     function cancelAnimation(): void {
         activeAnimation?.cancel();
@@ -181,7 +186,10 @@
                     <div
                         id={TOOLTIP_CONTENT_ID}
                         role="tooltip"
-                        class={tooltipStyles({ hasLeading: !!current.options.leading })}
+                        class={tooltipStyles({
+                            hasLeading: !!current.options.leading,
+                            hasTrailing: !!current.options.trailing,
+                        })}
                         data-tooltip-phase={phase}
                         data-placement={floating.placement}
                         onpointerenter={handlePointerEnter}
@@ -209,6 +217,17 @@
                                     : 'col-start-1'}"
                             >
                                 {current.options.description}
+                            </span>
+                        {/if}
+                        {#if current.options.trailing}
+                            <!-- Theme-relative soft colors blend into this inverted surface.
+                                 Use `bg-current/8! text-inherit!` on embedded UI for local contrast. -->
+                            <span
+                                class="{trailingClass} {current.options.leading
+                                    ? 'col-start-3'
+                                    : 'col-start-2'}"
+                            >
+                                {@render current.options.trailing()}
                             </span>
                         {/if}
                     </div>

@@ -8,10 +8,35 @@ export const tooltipStyles = cva({
         misc: "isolate select-none",
     },
     modifiers: {
-        hasLeading: "grid-cols-[14px_minmax(0,1fr)]",
+        hasLeading: "",
+        hasTrailing: "",
     },
+    compounds: [
+        {
+            hasLeading: true,
+            hasTrailing: false,
+            class: "grid-cols-[14px_minmax(0,1fr)]",
+        },
+        {
+            hasLeading: false,
+            hasTrailing: true,
+            class: "grid-cols-[minmax(0,1fr)_auto]",
+        },
+        {
+            hasLeading: true,
+            hasTrailing: true,
+            class: "grid-cols-[14px_minmax(0,1fr)_auto]",
+        },
+    ],
     defaults: {
         hasLeading: false,
+        hasTrailing: false,
+    },
+});
+
+export const tooltipTrailingStyles = cva({
+    base: {
+        layout: "inline-flex items-center justify-center shrink-0 row-start-1 self-center",
     },
 });
 

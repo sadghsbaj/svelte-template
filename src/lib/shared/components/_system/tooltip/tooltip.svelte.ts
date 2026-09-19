@@ -31,6 +31,7 @@ export function resolveTooltipOptions(input: TooltipInput): ResolvedTooltipOptio
         title,
         description: options.description,
         leading: options.leading,
+        trailing: options.trailing,
         placement: options.placement ?? "top",
         offset: options.offset ?? 8,
         padding: options.padding ?? 8,

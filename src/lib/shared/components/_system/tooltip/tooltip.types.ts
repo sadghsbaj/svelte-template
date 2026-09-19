@@ -33,6 +33,7 @@ export interface TooltipOptions {
     title?: string;
     description?: string;
     leading?: Snippet;
+    trailing?: Snippet;
     placement?: FloatingPlacement;
     offset?: number | FloatingOffset;
     padding?: number | FloatingPadding;
@@ -50,6 +51,7 @@ export interface ResolvedTooltipOptions {
     title: string;
     description?: string;
     leading?: Snippet;
+    trailing?: Snippet;
     placement: FloatingPlacement;
     offset: number | FloatingOffset;
     padding: number | FloatingPadding;

@@ -199,6 +199,7 @@ export { tooltip } from "./tooltip/tooltip.attach";
 export {
     tooltipLeadingStyles,
     tooltipStyles,
+    tooltipTrailingStyles,
     type TooltipStyleProps,
 } from "./tooltip/tooltip.styles";
 export type {

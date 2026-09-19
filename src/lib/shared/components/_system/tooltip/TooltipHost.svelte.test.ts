@@ -164,9 +164,12 @@ describe("TooltipHost", () => {
         expect(content?.textContent).toContain("Second tooltip");
         expect(content?.textContent).toContain("Second description");
         expect(content?.classList).toContain("py-8px");
-        expect(content?.classList).toContain("grid-cols-[14px_minmax(0,1fr)]");
+        expect(content?.classList).toContain("grid-cols-[14px_minmax(0,1fr)_auto]");
         expect(content?.querySelector("[data-leading]")?.parentElement?.classList).toContain(
             "self-center"
+        );
+        expect(content?.querySelector("[data-trailing]")?.parentElement?.classList).toContain(
+            "col-start-3"
         );
     });
 });

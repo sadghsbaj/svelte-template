@@ -21,6 +21,10 @@
     <svg data-leading viewBox="0 0 14 14" aria-hidden="true"></svg>
 {/snippet}
 
+{#snippet secondTrailing()}
+    <span data-trailing>⌘K</span>
+{/snippet}
+
 <button id="tooltip-trigger" aria-describedby="existing-description" {@attach tooltip(input)}>
     Trigger
 </button>
@@ -30,6 +34,7 @@
         title: "Second tooltip",
         description: "Second description",
         leading: secondLeading,
+        trailing: secondTrailing,
         openDelay: 0,
         closeDelay: 0,
         animation: "none",

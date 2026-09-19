@@ -76,7 +76,6 @@ export type { CloseButtonStyleProps } from "./close-button/close-button.styles";
 export { default as FeedbackHost } from "./feedback/FeedbackHost.svelte";
 export type { FeedbackHostProps } from "./feedback/FeedbackHost.svelte";
 export type {
-    FeedbackAction,
     FeedbackDescription,
     FeedbackDismissDetail,
     FeedbackDismissReason,
@@ -107,9 +106,13 @@ export type {
 
 export { default as Toast } from "./toast/Toast.svelte";
 export { toast } from "./toast/toastState.svelte";
+export {
+    toastIconStyles,
+    toastStyles,
+    toastTitleStyles,
+    type ToastStyleProps,
+} from "./toast/toast.styles";
 export type {
-    ToastAction,
-    ToastDescription,
     ToastDismissDetail,
     ToastIcon,
     ToastInput,

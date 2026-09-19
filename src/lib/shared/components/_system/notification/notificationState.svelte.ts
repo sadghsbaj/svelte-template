@@ -15,7 +15,6 @@ class NotificationState {
     #state = new FeedbackState<"notification">({
         defaultDuration: 6500,
         defaultPosition: "notification",
-        defaultCloseButton: false,
         limit: 4,
     });
 
@@ -32,11 +31,11 @@ class NotificationState {
     }
 
     show(input: NotificationInput): string {
-        return this.#state.show({ ...input, closeButton: false });
+        return this.#state.show(input);
     }
 
     update(id: string, patch: NotificationUpdate): void {
-        this.#state.update(id, { ...patch, closeButton: false });
+        this.#state.update(id, patch);
     }
 
     markEntered(id: string): void {

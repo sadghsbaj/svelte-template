@@ -8,10 +8,7 @@ import type {
     FeedbackStatus,
 } from "$components/_system/feedback/feedback.types";
 
-export type NotificationInput = Omit<
-    FeedbackInput<"notification">,
-    "position" | "action" | "closeButton"
->;
+export type NotificationInput = Omit<FeedbackInput<"notification">, "position">;
 
 export interface NotificationProps extends Omit<HTMLAttributes<HTMLDivElement>, "title"> {
     status?: FeedbackStatus;

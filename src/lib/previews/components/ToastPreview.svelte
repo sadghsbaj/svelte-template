@@ -44,12 +44,7 @@
     function showSaved(): void {
         toast.success("Changes saved", {
             description: "The toast defaults to bottom-end.",
-            action: {
-                label: "Undo",
-                onSelect: () => {
-                    toast.info("Changes restored");
-                },
-            },
+            trailing: undoAction,
         });
     }
 
@@ -72,6 +67,17 @@
     <Button size="sm" variant="soft" color="base">Later</Button>
 {/snippet}
 
+{#snippet undoAction()}
+    <Button
+        size="sm"
+        variant="plain"
+        color="base"
+        onclick={() => toast.info("Changes restored")}
+    >
+        Undo
+    </Button>
+{/snippet}
+
 <PreviewPage>
     <PreviewHeader
         title="Toast"
@@ -82,15 +88,14 @@
     <PreviewSection title="Surfaces" description="Status affects the icon and title while body text remains deliberately quiet.">
         <PreviewGrid cols={2}>
             <PreviewCard label="Single line" bg="elevation-0" class="min-h-28">
-                <Toast status="success" title="Project synchronized" dismissible={false} />
+                <Toast status="success" title="Project synchronized" />
             </PreviewCard>
-            <PreviewCard label="With action" bg="elevation-0" class="min-h-36">
+            <PreviewCard label="With trailing" bg="elevation-0" class="min-h-36">
                 <Toast
                     status="info"
                     title="Update available"
                     description="Restart when it is convenient."
                     trailing={laterAction}
-                    dismissible={false}
                 />
             </PreviewCard>
         </PreviewGrid>

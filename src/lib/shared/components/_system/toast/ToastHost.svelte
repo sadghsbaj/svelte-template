@@ -48,11 +48,6 @@
                         description={item.description}
                         icon={item.icon}
                         trailing={item.trailing}
-                        action={item.action}
-                        dismissible={item.dismissible}
-                        closeButton={item.closeButton}
-                        onDismiss={() => toast.requestDismiss(item.id, "close-button", true)}
-                        onAction={() => void toast.runAction(item.id)}
                     />
                 </FeedbackItem>
             </div>

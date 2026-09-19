@@ -23,7 +23,6 @@ describe("FeedbackState", () => {
             position: "bottom",
             duration: 4000,
             dismissible: true,
-            closeButton: true,
         });
     });
 

@@ -1,15 +1,83 @@
 import { FeedbackState } from "$components/_system/feedback/feedbackState.svelte";
+import type {
+    FeedbackAnnouncement,
+    FeedbackDismissReason,
+    FeedbackPauseReason,
+    FeedbackRecord,
+} from "$components/_system/feedback/feedback.types";
 
 import type { ToastInput, ToastPosition } from "./toast.types";
 
-class ToastState extends FeedbackState<ToastPosition> {
-    constructor() {
-        super({
-            defaultDuration: 4000,
-            defaultPosition: "bottom-end",
-            defaultCloseButton: false,
-            limit: 4,
-        });
+type ToastUpdate = Partial<Omit<ToastInput, "id">>;
+type ToastRecord = Omit<FeedbackRecord<ToastPosition>, "description" | "items"> & {
+    description?: string;
+};
+
+class ToastState {
+    #state = new FeedbackState<ToastPosition>({
+        defaultDuration: 4000,
+        defaultPosition: "bottom-end",
+        limit: 4,
+    });
+
+    get records(): readonly ToastRecord[] {
+        return this.#state.records as readonly ToastRecord[];
+    }
+
+    get announcement(): FeedbackAnnouncement | null {
+        return this.#state.announcement;
+    }
+
+    setLimit(limit: number): void {
+        this.#state.setLimit(limit);
+    }
+
+    show(input: ToastInput): string {
+        return this.#state.show(input);
+    }
+
+    update(id: string, patch: ToastUpdate): void {
+        this.#state.update(id, patch);
+    }
+
+    markEntered(id: string): void {
+        this.#state.markEntered(id);
+    }
+
+    requestDismiss(id: string, reason: FeedbackDismissReason, fromUser = false): void {
+        this.#state.requestDismiss(id, reason, fromUser);
+    }
+
+    dismiss(id: string): void {
+        this.#state.dismiss(id);
+    }
+
+    completeDismiss(id: string): void {
+        this.#state.completeDismiss(id);
+    }
+
+    clear(): void {
+        this.#state.clear();
+    }
+
+    pause(id: string, reason: FeedbackPauseReason): void {
+        this.#state.pause(id, reason);
+    }
+
+    resume(id: string, reason: FeedbackPauseReason): void {
+        this.#state.resume(id, reason);
+    }
+
+    pauseAll(reason: FeedbackPauseReason): void {
+        this.#state.pauseAll(reason);
+    }
+
+    resumeAll(reason: FeedbackPauseReason): void {
+        this.#state.resumeAll(reason);
+    }
+
+    reset(): void {
+        this.#state.reset();
     }
 
     success(title: string, options: Omit<ToastInput, "title" | "status"> = {}): string {

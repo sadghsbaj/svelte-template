@@ -14,7 +14,6 @@ import type {
 interface FeedbackStateOptions<P extends string> {
     defaultDuration: number;
     defaultPosition: P;
-    defaultCloseButton?: boolean;
     limit: number;
 }
 
@@ -40,7 +39,6 @@ function announcementText(record: FeedbackRecord<string>): string {
 export class FeedbackState<P extends string> {
     #defaultDuration: number;
     #defaultPosition: P;
-    #defaultCloseButton: boolean;
     #limit: number;
     #announcementToken = 0;
     #records = $state<FeedbackRecord<P>[]>([]);
@@ -53,7 +51,6 @@ export class FeedbackState<P extends string> {
     constructor(options: FeedbackStateOptions<P>) {
         this.#defaultDuration = options.defaultDuration;
         this.#defaultPosition = options.defaultPosition;
-        this.#defaultCloseButton = options.defaultCloseButton ?? true;
         this.#limit = options.limit;
     }
 
@@ -82,10 +79,8 @@ export class FeedbackState<P extends string> {
             items: input.items,
             icon: input.icon,
             trailing: input.trailing,
-            action: input.action,
             duration: duration === null || duration <= 0 ? null : duration,
             dismissible: input.dismissible ?? true,
-            closeButton: input.closeButton ?? this.#defaultCloseButton,
             pauseOnInteraction: input.pauseOnInteraction ?? true,
             priority: resolvePriority(status, input.priority),
             onDismiss: input.onDismiss,
@@ -118,9 +113,7 @@ export class FeedbackState<P extends string> {
         if (patch.items !== undefined) record.items = patch.items;
         if (patch.icon !== undefined) record.icon = patch.icon;
         if (patch.trailing !== undefined) record.trailing = patch.trailing;
-        if (patch.action !== undefined) record.action = patch.action;
         if (patch.dismissible !== undefined) record.dismissible = patch.dismissible;
-        if (patch.closeButton !== undefined) record.closeButton = patch.closeButton;
         if (patch.pauseOnInteraction !== undefined) {
             record.pauseOnInteraction = patch.pauseOnInteraction;
         }
@@ -215,15 +208,6 @@ export class FeedbackState<P extends string> {
 
     resumeAll(reason: FeedbackPauseReason): void {
         for (const record of this.#records) this.resume(record.id, reason);
-    }
-
-    async runAction(id: string): Promise<void> {
-        const record = this.#records.find((item) => item.id === id);
-        if (!record?.action) return;
-        await record.action.onSelect();
-        if (record.action.dismissOnSelect ?? true) {
-            this.requestDismiss(id, "action", true);
-        }
     }
 
     reset(): void {

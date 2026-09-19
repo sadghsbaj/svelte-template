@@ -6,22 +6,14 @@ export type FeedbackPhase = "queued" | "entering" | "visible" | "exiting";
 export type FeedbackPauseReason = "hover" | "focus" | "press" | "drag" | "document-hidden";
 export type FeedbackDismissReason =
     | "timeout"
-    | "close-button"
     | "middle-click"
     | "swipe"
-    | "action"
     | "escape"
     | "programmatic"
     | "clear";
 
 export type FeedbackIcon = Component<{ size?: number; class?: string }>;
 export type FeedbackDescription = string | readonly string[];
-
-export interface FeedbackAction {
-    label: string;
-    onSelect: () => void | Promise<void>;
-    dismissOnSelect?: boolean;
-}
 
 export interface FeedbackDismissDetail {
     id: string;
@@ -37,10 +29,8 @@ export interface FeedbackInput<P extends string> {
     items?: readonly string[];
     icon?: FeedbackIcon;
     trailing?: Snippet;
-    action?: FeedbackAction;
     duration?: number | null;
     dismissible?: boolean;
-    closeButton?: boolean;
     pauseOnInteraction?: boolean;
     priority?: FeedbackPriority;
     onDismiss?: (detail: FeedbackDismissDetail) => void;
@@ -55,10 +45,8 @@ export interface FeedbackRecord<P extends string> {
     items?: readonly string[];
     icon?: FeedbackIcon;
     trailing?: Snippet;
-    action?: FeedbackAction;
     duration: number | null;
     dismissible: boolean;
-    closeButton: boolean;
     pauseOnInteraction: boolean;
     priority: FeedbackPriority;
     onDismiss?: (detail: FeedbackDismissDetail) => void;

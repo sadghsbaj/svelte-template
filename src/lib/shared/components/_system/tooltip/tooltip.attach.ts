@@ -12,12 +12,18 @@ export function tooltip(input: TooltipInput): Attachment<HTMLElement> {
         const onPointerEnter = (event: PointerEvent): void => {
             if (event.pointerType === "touch") return;
             pointerInside = true;
+            if (focusInside && !suppressPointerFocus) {
+                tooltipState.keepOpen(element);
+                return;
+            }
             tooltipState.requestOpen(element, input, "pointer");
         };
         const onPointerLeave = (event: PointerEvent): void => {
             if (event.pointerType === "touch") return;
             pointerInside = false;
-            if (!focusInside) tooltipState.requestClose(element, "pointer");
+            if (!focusInside || suppressPointerFocus) {
+                tooltipState.requestClose(element, "pointer");
+            }
         };
         const onFocusIn = (): void => {
             focusInside = true;

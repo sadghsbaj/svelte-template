@@ -118,7 +118,9 @@ class TooltipState {
 
     requestCloseFromContent(trigger: HTMLElement): void {
         const activeElement = trigger.ownerDocument.activeElement;
-        if (trigger.matches(":hover") || (activeElement && trigger.contains(activeElement))) return;
+        const hasKeyboardFocus =
+            this.active?.reason === "focus" && activeElement && trigger.contains(activeElement);
+        if (trigger.matches(":hover") || hasKeyboardFocus) return;
         this.requestClose(trigger, "pointer");
     }
 

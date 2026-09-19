@@ -137,6 +137,17 @@ describe("TooltipHost", () => {
         expect(document.querySelector("[role='tooltip']")).toBeNull();
 
         trigger.dispatchEvent(new PointerEvent("pointerleave", { pointerType: "mouse" }));
+        trigger.dispatchEvent(new PointerEvent("pointerenter", { pointerType: "mouse" }));
+        flushSync();
+        await nextFrame();
+        expect(document.querySelector("[role='tooltip']")).not.toBeNull();
+
+        trigger.dispatchEvent(new PointerEvent("pointerleave", { pointerType: "mouse" }));
+        flushSync();
+        await Promise.resolve();
+        flushSync();
+        expect(document.querySelector("[role='tooltip']")).toBeNull();
+
         trigger.dispatchEvent(new FocusEvent("focusout", { bubbles: true }));
         trigger.dispatchEvent(new FocusEvent("focusin", { bubbles: true }));
         flushSync();

@@ -238,7 +238,7 @@
     onpointercancel={cancelPointer}
 />
 
-<div bind:this={motionElement} data-slot="feedback-motion" data-phase={phase}>
+<div bind:this={motionElement} data-slot="feedback-motion">
     <!-- Interaction semantics are provided by the rendered notification/toast card. -->
     <!-- svelte-ignore a11y_no_static_element_interactions -->
     <div

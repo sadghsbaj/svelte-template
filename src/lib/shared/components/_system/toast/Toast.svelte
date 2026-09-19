@@ -43,7 +43,6 @@
     aria-describedby={hasDescription ? descriptionId : undefined}
     data-slot="toast"
     data-status={status}
-    data-has-description={hasDescription ? "" : undefined}
     data-has-trailing={hasTrailing ? "" : undefined}
     class={computedClass}
 >

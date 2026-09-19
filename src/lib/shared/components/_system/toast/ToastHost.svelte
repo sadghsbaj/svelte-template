@@ -27,7 +27,7 @@
 </script>
 
 {#if items.length > 0}
-    <div data-slot="toast-stack" data-edge={edge} class="flex w-full flex-col gap-8px">
+    <div data-slot="toast-stack" class="flex w-full flex-col gap-8px">
         {#each items as item (item.id)}
             <div animate:flip={{ duration: 220 }} class="w-full">
                 <FeedbackItem

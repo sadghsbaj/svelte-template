@@ -8,7 +8,6 @@ export type FeedbackDismissReason =
     | "timeout"
     | "middle-click"
     | "swipe"
-    | "escape"
     | "programmatic"
     | "clear";
 

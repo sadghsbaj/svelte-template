@@ -5,7 +5,7 @@ export const tooltipStyles = cva({
         layout: "grid grid-cols-[minmax(0,1fr)] items-center gap-x-6px max-w-280px px-10px py-8px",
         typography: "text-xs leading-snug",
         frame: "rounded-2xl squircle-smooth shadow-md bg-base-solid-1 text-base-50 dark:text-base-950",
-        misc: "isolate",
+        misc: "isolate select-none",
     },
     modifiers: {
         hasLeading: "grid-cols-[14px_minmax(0,1fr)]",

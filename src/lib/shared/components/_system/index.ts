@@ -32,6 +32,20 @@ export {
 export type { ToggleButtonGroupStyleProps } from "./toggle-button-group/toggle-button-group.styles";
 
 export {
+    default as SegmentedControl,
+    type SegmentedControlLayout,
+    type SegmentedControlProps,
+} from "./segmented-control/SegmentedControl.svelte";
+export {
+    default as SegmentedControlItem,
+    type SegmentedControlItemProps,
+} from "./segmented-control/SegmentedControlItem.svelte";
+export type {
+    SegmentedControlItemStyleProps,
+    SegmentedControlStyleProps,
+} from "./segmented-control/segmented-control.styles";
+
+export {
     default as ButtonGroup,
     type ButtonGroupOrientation,
     type ButtonGroupProps,

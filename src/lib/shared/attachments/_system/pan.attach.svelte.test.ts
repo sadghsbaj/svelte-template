@@ -380,6 +380,58 @@ describe("pan Svelte 5 Element Attachment", () => {
     });
 
     describe("Live Pan Updates & Step Deltas", () => {
+        test("should keep an ambiguous touch gesture pending until it becomes horizontal", () => {
+            const el = document.createElement("div");
+            container.append(el);
+
+            const onPanStartSpy = vi.fn((_event: PanStartEvent) => {});
+            const attach = pan({
+                axis: "x",
+                threshold: 5,
+                axisLockRatio: 1.2,
+                onPanStart: onPanStartSpy,
+            });
+            const cleanup = attach(el);
+
+            el.dispatchEvent(
+                new PointerEvent("pointerdown", {
+                    pointerType: "touch",
+                    isPrimary: true,
+                    pointerId: 1,
+                    clientX: 100,
+                    clientY: 100,
+                    bubbles: true,
+                })
+            );
+            window.dispatchEvent(
+                new PointerEvent("pointermove", {
+                    pointerType: "touch",
+                    isPrimary: true,
+                    pointerId: 1,
+                    clientX: 106,
+                    clientY: 106,
+                    bubbles: true,
+                    cancelable: true,
+                })
+            );
+            expect(onPanStartSpy).not.toHaveBeenCalled();
+
+            window.dispatchEvent(
+                new PointerEvent("pointermove", {
+                    pointerType: "touch",
+                    isPrimary: true,
+                    pointerId: 1,
+                    clientX: 122,
+                    clientY: 108,
+                    bubbles: true,
+                    cancelable: true,
+                })
+            );
+
+            expect(onPanStartSpy).toHaveBeenCalledOnce();
+            cleanup?.();
+        });
+
         test("should fire onPan with continuous delta, stepDelta, and updated direction", () => {
             const el = document.createElement("div");
             container.append(el);

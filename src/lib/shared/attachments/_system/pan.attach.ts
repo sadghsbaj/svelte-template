@@ -504,8 +504,12 @@ export function pan<T extends HTMLElement = HTMLElement>(
                         if (absDx >= absDy * axisLockRatio) {
                             gestureState = "active";
                             lockedAxis = "x";
-                        } else {
+                        } else if (absDy >= absDx * axisLockRatio) {
                             resetGestureState();
+                            return;
+                        } else {
+                            // Direction is still ambiguous. Keep observing instead of dropping
+                            // a touch gesture because of normal initial finger jitter.
                             return;
                         }
                         break;
@@ -514,8 +518,10 @@ export function pan<T extends HTMLElement = HTMLElement>(
                         if (absDy >= absDx * axisLockRatio) {
                             gestureState = "active";
                             lockedAxis = "y";
-                        } else {
+                        } else if (absDx >= absDy * axisLockRatio) {
                             resetGestureState();
+                            return;
+                        } else {
                             return;
                         }
                         break;

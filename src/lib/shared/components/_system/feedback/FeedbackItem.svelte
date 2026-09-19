@@ -1,6 +1,6 @@
 <script lang="ts">
     import { onDestroy, onMount, type Snippet } from "svelte";
-    import { middleClick, pan, type PanEndEvent, type PanMoveEvent } from "$attachments";
+    import { middleClick } from "$attachments";
 
     import {
         runFeedbackAnimation,
@@ -52,6 +52,10 @@
     let lifecycle = 0;
     let exitStarted = false;
     let activePointerId: number | null = null;
+    let pointerStartX = 0;
+    let pointerStartY = 0;
+    let horizontalDrag = false;
+    let verticalGesture = false;
 
     function cancelAnimation(): void {
         activeAnimation?.cancel();
@@ -101,8 +105,8 @@
         onExited();
     }
 
-    function updateSwipe(event: PanMoveEvent): void {
-        swipeX = event.resistedDelta.x;
+    function updateSwipe(x: number): void {
+        swipeX = x;
         swipeDirection = swipeX < 0 ? -1 : 1;
         const width = Math.max(1, swipeElement.offsetWidth);
         swipeElement.style.transform = `translate3d(${swipeX}px, 0, 0)`;
@@ -117,17 +121,6 @@
         clearSwipeStyles();
     }
 
-    function handlePanEnd(event: PanEndEvent): void {
-        onResume("drag");
-        onResume("press");
-        if (event.isSwipe && dismissible) {
-            swipeDirection = event.delta.x < 0 ? -1 : 1;
-            onDismiss("swipe");
-            return;
-        }
-        void resetSwipe();
-    }
-
     function handlePointerEnter(event: PointerEvent): void {
         if (event.pointerType !== "touch") onPause("hover");
     }
@@ -137,15 +130,80 @@
     }
 
     function handlePointerDown(event: PointerEvent): void {
-        if (!pauseOnInteraction || event.button !== 0) return;
+        if (event.button !== 0 || activePointerId !== null) return;
         activePointerId = event.pointerId;
-        onPause("press");
+        pointerStartX = event.clientX;
+        pointerStartY = event.clientY;
+        horizontalDrag = false;
+        verticalGesture = false;
+        cancelSwipeAnimation();
+        clearSwipeStyles();
+        if (pauseOnInteraction) onPause("press");
+    }
+
+    function handlePointerMove(event: PointerEvent): void {
+        if (activePointerId !== event.pointerId) return;
+        if (!dismissible || verticalGesture) return;
+
+        const dx = event.clientX - pointerStartX;
+        const dy = event.clientY - pointerStartY;
+        const absX = Math.abs(dx);
+        const absY = Math.abs(dy);
+
+        if (!horizontalDrag && Math.hypot(dx, dy) >= 8) {
+            if (absY > absX * 1.2) {
+                verticalGesture = true;
+                clearSwipeStyles();
+                if (pauseOnInteraction) onResume("press");
+                return;
+            }
+            if (absX >= absY) {
+                horizontalDrag = true;
+                if (pauseOnInteraction) {
+                    onResume("press");
+                    onPause("drag");
+                }
+            }
+        }
+
+        // Follow horizontal finger movement immediately; the release threshold alone
+        // decides whether this becomes a dismiss or a snap-back.
+        updateSwipe(dx);
+        if (horizontalDrag && event.cancelable) event.preventDefault();
     }
 
     function releasePointer(event: PointerEvent): void {
         if (activePointerId !== event.pointerId) return;
+        const wasHorizontal = horizontalDrag;
+        const wasVertical = verticalGesture;
         activePointerId = null;
-        onResume("press");
+        horizontalDrag = false;
+        verticalGesture = false;
+        if (pauseOnInteraction) {
+            onResume("press");
+            onResume("drag");
+        }
+
+        const width = Math.max(1, swipeElement.offsetWidth);
+        const dismissThreshold = Math.min(44, Math.max(28, width * 0.18));
+        if (!wasVertical && wasHorizontal && Math.abs(swipeX) >= dismissThreshold) {
+            swipeDirection = swipeX < 0 ? -1 : 1;
+            onDismiss("swipe");
+            return;
+        }
+        if (swipeX !== 0) void resetSwipe();
+    }
+
+    function cancelPointer(event: PointerEvent): void {
+        if (activePointerId !== event.pointerId) return;
+        activePointerId = null;
+        horizontalDrag = false;
+        verticalGesture = false;
+        if (pauseOnInteraction) {
+            onResume("press");
+            onResume("drag");
+        }
+        if (swipeX !== 0) void resetSwipe();
     }
 
     function handleFocusOut(event: FocusEvent): void {
@@ -174,7 +232,11 @@
     });
 </script>
 
-<svelte:window onpointerup={releasePointer} onpointercancel={releasePointer} />
+<svelte:window
+    onpointermove={handlePointerMove}
+    onpointerup={releasePointer}
+    onpointercancel={cancelPointer}
+/>
 
 <div bind:this={motionElement} data-slot="feedback-motion" data-phase={phase}>
     <!-- Interaction semantics are provided by the rendered notification/toast card. -->
@@ -182,6 +244,7 @@
     <div
         bind:this={swipeElement}
         data-slot="feedback-swipe"
+        style:touch-action="pan-y"
         onpointerenter={handlePointerEnter}
         onpointerleave={handlePointerLeave}
         onpointerdown={handlePointerDown}
@@ -191,20 +254,6 @@
             enabled: dismissible,
             shouldHandle: shouldHandleMiddleClick,
             onMiddleClick: () => onDismiss("middle-click"),
-        })}
-        {@attach pan({
-            enabled: dismissible,
-            axis: "x",
-            swipeDistanceThreshold: 56,
-            swipeVelocityThreshold: 0.55,
-            onPanStart: () => onPause("drag"),
-            onPan: updateSwipe,
-            onPanEnd: handlePanEnd,
-            onCancel: () => {
-                onResume("drag");
-                onResume("press");
-                void resetSwipe();
-            },
         })}
     >
         {@render children?.()}

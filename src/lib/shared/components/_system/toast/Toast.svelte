@@ -12,7 +12,7 @@
         trailing,
         action,
         dismissible = true,
-        closeButton = true,
+        closeButton = false,
         closeLabel = "Dismiss toast",
         onDismiss,
         onAction,

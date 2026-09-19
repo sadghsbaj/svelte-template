@@ -68,6 +68,10 @@
     <MapPin />
 {/snippet}
 
+{#snippet laterAction()}
+    <Button size="sm" variant="soft" color="base">Later</Button>
+{/snippet}
+
 <PreviewPage>
     <PreviewHeader
         title="Toast"
@@ -85,7 +89,7 @@
                     status="info"
                     title="Update available"
                     description="Restart when it is convenient."
-                    action={{ label: "Later", onSelect: () => {} }}
+                    trailing={laterAction}
                     dismissible={false}
                 />
             </PreviewCard>

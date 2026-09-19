@@ -71,7 +71,26 @@
         (typeof description === "string" && description.length > 0) ||
             (Array.isArray(description) && description.length > 0)
     );
-    const computedClass = $derived(feedbackStyles({ kind, class: className }));
+    const hasTrailing = $derived(!!trailing || !!action);
+    const hasClose = $derived(dismissible && closeButton && !!onDismiss);
+    const computedClass = $derived(
+        feedbackStyles({ kind, hasTrailing, hasClose, class: className })
+    );
+    const trailingClass = $derived.by(() => {
+        const base =
+            "col-start-3 row-start-1 ml-2px flex h-16px min-h-0 shrink-0 overflow-visible";
+        if (!hasDescription) return `${base} items-center self-center`;
+        if (kind === "toast") return `${base} row-span-2 items-center self-center`;
+        return `${base} translate-y-4px items-start self-start`;
+    });
+    const closeClass = $derived.by(() => {
+        const column = hasTrailing ? "col-start-4" : "col-start-3";
+        const base = `${column} row-start-1 ml-1px flex h-16px min-h-0 items-center overflow-visible`;
+        if (kind === "notification" && hasDescription) {
+            return `${base} self-start translate-x-2px translate-y-4px`;
+        }
+        return `${base} self-center ${kind === "notification" ? "translate-x-2px" : ""}`;
+    });
 
     function handleAction(): void {
         if (onAction) {
@@ -101,11 +120,12 @@
     </span>
 
     <div
-        id={titleId}
-        data-slot="feedback-title"
-        class="col-start-2 row-start-1 self-start {feedbackTitleStyles({ status })}"
+        data-slot="feedback-title-row"
+        class="col-start-2 row-start-1 flex h-16px min-w-0 items-center self-start"
     >
-        {title}
+        <span id={titleId} data-slot="feedback-title" class={feedbackTitleStyles({ status })}>
+            {title}
+        </span>
     </div>
 
     {#if typeof description === "string" && description}
@@ -135,10 +155,10 @@
         </ul>
     {/if}
 
-    {#if trailing || action}
+    {#if hasTrailing}
         <div
             data-slot="feedback-trailing"
-            class="col-start-3 row-start-1 ml-2px flex h-20px min-h-0 shrink-0 items-center self-start overflow-visible"
+            class={trailingClass}
         >
             {#if trailing}
                 {@render trailing()}
@@ -155,14 +175,8 @@
         </div>
     {/if}
 
-    {#if dismissible && closeButton && onDismiss}
-        <div
-            data-slot="feedback-close"
-            class="col-start-4 row-start-1 ml-1px flex h-20px min-h-0 items-center self-start overflow-visible {kind ===
-            'notification'
-                ? 'translate-x-2px'
-                : ''}"
-        >
+    {#if hasClose}
+        <div data-slot="feedback-close" class={closeClass}>
             <CloseButton
                 size={kind === "notification" ? "md" : "sm"}
                 variant="soft"
@@ -209,7 +223,7 @@
 
     [data-slot="feedback-description"],
     [data-slot="feedback-list"] {
-        margin: 0;
+        margin: 2px 0 0;
     }
 
     [data-slot="feedback-list"] {

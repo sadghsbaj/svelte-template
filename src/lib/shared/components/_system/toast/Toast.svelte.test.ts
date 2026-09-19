@@ -38,14 +38,31 @@ describe("Toast", () => {
         const onSelect = vi.fn();
         const element = render({
             title: "Update ready",
+            description: "Restart when convenient",
             dismissible: false,
             action: { label: "Later", onSelect },
         });
+        const trailing = element.querySelector<HTMLElement>('[data-slot="feedback-trailing"]');
         const action = [...element.querySelectorAll("button")].find(
             (button) => button.textContent?.trim() === "Later"
         );
 
+        expect(trailing?.classList).toContain("row-span-2");
+        expect(trailing?.classList).toContain("self-center");
         (action as HTMLButtonElement | undefined)?.click();
         expect(onSelect).toHaveBeenCalledOnce();
+    });
+
+    test("keeps the close button opt-in", async () => {
+        const onDismiss = vi.fn();
+        const defaultElement = render({ title: "No close by default", onDismiss });
+        expect(defaultElement.querySelector("button")).toBeNull();
+        if (component) await unmount(component);
+        component = null;
+
+        const element = render({ title: "Closable", closeButton: true, onDismiss });
+        const close = element.querySelector<HTMLButtonElement>('button[aria-label="Dismiss toast"]');
+        close?.click();
+        expect(onDismiss).toHaveBeenCalledOnce();
     });
 });

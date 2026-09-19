@@ -47,6 +47,7 @@
                         title={item.title}
                         description={item.description}
                         icon={item.icon}
+                        trailing={item.trailing}
                         action={item.action}
                         dismissible={item.dismissible}
                         closeButton={item.closeButton}

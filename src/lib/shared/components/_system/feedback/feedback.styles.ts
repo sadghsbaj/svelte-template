@@ -2,7 +2,7 @@ import { cva, type VariantProps } from "$utils";
 
 export const feedbackStyles = cva({
     base: {
-        layout: "grid grid-cols-[auto_minmax(0,1fr)_auto_auto] items-start gap-x-8px w-full min-w-0",
+        layout: "grid grid-cols-[auto_minmax(0,1fr)] items-start gap-x-8px w-full min-w-0",
         frame: "bg-elevation-1 rounded-4xl squircle-smooth",
         misc: "isolate pointer-events-auto select-none",
     },
@@ -12,14 +12,37 @@ export const feedbackStyles = cva({
             toast: "max-w-384px px-11px py-8px sm:(px-12px py-9px)",
         },
     },
+    modifiers: {
+        hasTrailing: "",
+        hasClose: "",
+    },
+    compounds: [
+        {
+            hasTrailing: true,
+            hasClose: false,
+            class: "grid-cols-[auto_minmax(0,1fr)_auto]",
+        },
+        {
+            hasTrailing: false,
+            hasClose: true,
+            class: "grid-cols-[auto_minmax(0,1fr)_auto]",
+        },
+        {
+            hasTrailing: true,
+            hasClose: true,
+            class: "grid-cols-[auto_minmax(0,1fr)_auto_auto]",
+        },
+    ],
     defaults: {
         kind: "toast",
+        hasTrailing: false,
+        hasClose: false,
     },
 });
 
 export const feedbackIconStyles = cva({
     base: {
-        layout: "flex-center col-start-1 row-start-1 size-20px shrink-0 self-start",
+        layout: "flex-center col-start-1 row-start-1 size-16px shrink-0 self-start",
         misc: "[&>svg]:size-16px [&>svg]:stroke-[2.35px]",
     },
     options: {
@@ -38,7 +61,7 @@ export const feedbackIconStyles = cva({
 });
 
 export const feedbackTitleStyles = cva({
-    base: "title-sm flex min-h-20px min-w-0 items-center text-trim-truncate",
+    base: "title-sm block w-full min-w-0 text-trim-truncate",
     options: {
         status: {
             base: "text-strong",

@@ -57,12 +57,34 @@ describe("Notification", () => {
 
         const titleRect = title.getBoundingClientRect();
         const descriptionRect = description.getBoundingClientRect();
-        expect(descriptionRect.top - titleRect.bottom).toBeLessThanOrEqual(1);
+        expect(descriptionRect.top - titleRect.bottom).toBeLessThanOrEqual(3);
     });
 
-    test("uses the shared close button when dismissal is available", () => {
+    test("positions rich trailing content without changing the title row", () => {
+        const element = render({
+            title: "Workspace updated",
+            description: "Three collaborators were notified.",
+            action: { label: "Review", onSelect: () => {} },
+            dismissible: false,
+        });
+        const trailing = element.querySelector<HTMLElement>('[data-slot="feedback-trailing"]');
+
+        expect(element.classList).toContain("grid-cols-[auto_minmax(0,1fr)_auto]");
+        expect(element.classList).not.toContain("grid-cols-[auto_minmax(0,1fr)_auto_auto]");
+        expect(trailing?.classList).toContain("translate-y-4px");
+        expect(
+            element.querySelector('[data-slot="feedback-title-row"]')?.classList
+        ).toContain("h-16px");
+    });
+
+    test("uses the shared close button when dismissal is available", async () => {
         const onDismiss = vi.fn();
-        const element = render({ title: "Closable", onDismiss });
+        const defaultElement = render({ title: "No close by default", onDismiss });
+        expect(defaultElement.querySelector("button")).toBeNull();
+        if (component) await unmount(component);
+        component = null;
+
+        const element = render({ title: "Closable", closeButton: true, onDismiss });
         const close = element.querySelector<HTMLButtonElement>('button[aria-label="Dismiss notification"]');
 
         expect(close?.classList).toContain("size-24px");

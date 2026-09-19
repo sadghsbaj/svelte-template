@@ -1,4 +1,4 @@
-import type { Component } from "svelte";
+import type { Component, Snippet } from "svelte";
 
 export type FeedbackStatus = "base" | "accent" | "info" | "success" | "warning" | "danger";
 export type FeedbackPriority = "polite" | "assertive" | "off";
@@ -35,6 +35,7 @@ export interface FeedbackInput<P extends string> {
     title: string;
     description?: FeedbackDescription;
     icon?: FeedbackIcon;
+    trailing?: Snippet;
     action?: FeedbackAction;
     duration?: number | null;
     dismissible?: boolean;
@@ -51,6 +52,7 @@ export interface FeedbackRecord<P extends string> {
     title: string;
     description?: FeedbackDescription;
     icon?: FeedbackIcon;
+    trailing?: Snippet;
     action?: FeedbackAction;
     duration: number | null;
     dismissible: boolean;

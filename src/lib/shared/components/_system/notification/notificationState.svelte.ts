@@ -5,7 +5,12 @@ import type { NotificationInput } from "./notification.types";
 
 class NotificationState extends FeedbackState<"notification"> {
     constructor() {
-        super({ defaultDuration: 6500, defaultPosition: "notification", limit: 4 });
+        super({
+            defaultDuration: 6500,
+            defaultPosition: "notification",
+            defaultCloseButton: false,
+            limit: 4,
+        });
     }
 
     success(title: string, options: Omit<NotificationInput, "title" | "status"> = {}): string {

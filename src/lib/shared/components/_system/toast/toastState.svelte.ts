@@ -4,7 +4,12 @@ import type { ToastInput, ToastPosition } from "./toast.types";
 
 class ToastState extends FeedbackState<ToastPosition> {
     constructor() {
-        super({ defaultDuration: 4000, defaultPosition: "bottom-end", limit: 4 });
+        super({
+            defaultDuration: 4000,
+            defaultPosition: "bottom-end",
+            defaultCloseButton: false,
+            limit: 4,
+        });
     }
 
     success(title: string, options: Omit<ToastInput, "title" | "status"> = {}): string {

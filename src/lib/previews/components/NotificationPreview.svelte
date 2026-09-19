@@ -7,7 +7,7 @@
 <script lang="ts">
     import { onDestroy } from "svelte";
     import { BellRing, CloudUpload, Sparkles } from "@lucide/svelte";
-    import { Button, Notification, notification, type NotificationStatus } from "$components";
+    import { Badge, Button, Notification, notification, type NotificationStatus } from "$components";
 
     import PreviewCard from "$lib/previews/ui/PreviewCard.svelte";
     import PreviewGrid from "$lib/previews/ui/PreviewGrid.svelte";
@@ -59,9 +59,7 @@
 {/snippet}
 
 {#snippet customTrailing()}
-    <span class="description-xs rounded-full squircle-soft bg-base-soft-1 px-8px py-4px text-main"
-        >Now</span
-    >
+    <Badge size="sm" color="base">Now</Badge>
 {/snippet}
 
 {#snippet bellIcon()}

@@ -14,6 +14,7 @@ import type {
 interface FeedbackStateOptions<P extends string> {
     defaultDuration: number;
     defaultPosition: P;
+    defaultCloseButton?: boolean;
     limit: number;
 }
 
@@ -39,6 +40,7 @@ function announcementText(record: FeedbackRecord<string>): string {
 export class FeedbackState<P extends string> {
     #defaultDuration: number;
     #defaultPosition: P;
+    #defaultCloseButton: boolean;
     #limit: number;
     #announcementToken = 0;
     #records = $state<FeedbackRecord<P>[]>([]);
@@ -51,6 +53,7 @@ export class FeedbackState<P extends string> {
     constructor(options: FeedbackStateOptions<P>) {
         this.#defaultDuration = options.defaultDuration;
         this.#defaultPosition = options.defaultPosition;
+        this.#defaultCloseButton = options.defaultCloseButton ?? true;
         this.#limit = options.limit;
     }
 
@@ -77,10 +80,11 @@ export class FeedbackState<P extends string> {
             title: input.title,
             description: input.description,
             icon: input.icon,
+            trailing: input.trailing,
             action: input.action,
             duration: duration === null || duration <= 0 ? null : duration,
             dismissible: input.dismissible ?? true,
-            closeButton: input.closeButton ?? true,
+            closeButton: input.closeButton ?? this.#defaultCloseButton,
             pauseOnInteraction: input.pauseOnInteraction ?? true,
             priority: resolvePriority(status, input.priority),
             onDismiss: input.onDismiss,
@@ -111,6 +115,7 @@ export class FeedbackState<P extends string> {
         if (patch.title !== undefined) record.title = patch.title;
         if (patch.description !== undefined) record.description = patch.description;
         if (patch.icon !== undefined) record.icon = patch.icon;
+        if (patch.trailing !== undefined) record.trailing = patch.trailing;
         if (patch.action !== undefined) record.action = patch.action;
         if (patch.dismissible !== undefined) record.dismissible = patch.dismissible;
         if (patch.closeButton !== undefined) record.closeButton = patch.closeButton;

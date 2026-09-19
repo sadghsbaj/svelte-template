@@ -7,7 +7,7 @@ export function tooltip(input: TooltipInput): Attachment<HTMLElement> {
     return (element) => {
         let pointerInside = false;
         let focusInside = false;
-        let ignoreNextFocus = false;
+        let suppressPointerFocus = false;
 
         const onPointerEnter = (event: PointerEvent): void => {
             if (event.pointerType === "touch") return;
@@ -21,18 +21,16 @@ export function tooltip(input: TooltipInput): Attachment<HTMLElement> {
         };
         const onFocusIn = (): void => {
             focusInside = true;
-            if (ignoreNextFocus) return;
+            if (suppressPointerFocus) return;
             tooltipState.requestOpen(element, input, "focus");
         };
         const onFocusOut = (): void => {
             focusInside = false;
+            suppressPointerFocus = false;
             if (!pointerInside) tooltipState.requestClose(element, "focus");
         };
         const onPointerDown = (): void => {
-            ignoreNextFocus = true;
-            queueMicrotask(() => {
-                ignoreNextFocus = false;
-            });
+            suppressPointerFocus = true;
             tooltipState.requestClose(element, "pointer-down", true);
         };
         const onKeyDown = (event: KeyboardEvent): void => {

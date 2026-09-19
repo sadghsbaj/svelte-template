@@ -128,12 +128,20 @@ describe("TooltipHost", () => {
         trigger.dispatchEvent(
             new PointerEvent("pointerdown", { pointerType: "mouse", bubbles: true })
         );
+        await Promise.resolve();
         trigger.dispatchEvent(new FocusEvent("focusin", { bubbles: true }));
         flushSync();
         await Promise.resolve();
         flushSync();
 
         expect(document.querySelector("[role='tooltip']")).toBeNull();
+
+        trigger.dispatchEvent(new PointerEvent("pointerleave", { pointerType: "mouse" }));
+        trigger.dispatchEvent(new FocusEvent("focusout", { bubbles: true }));
+        trigger.dispatchEvent(new FocusEvent("focusin", { bubbles: true }));
+        flushSync();
+        await nextFrame();
+        expect(document.querySelector("[role='tooltip']")).not.toBeNull();
     });
 
     test("switches content immediately while moving quickly between triggers", async () => {

@@ -30,14 +30,16 @@ describe("BottomNavbar", () => {
     });
 
     function render(props: Record<string, unknown> = {}): HTMLElement {
+        const target = document.createElement("div");
+        app.append(target);
         mounted.push(
             mount(BottomNavbar, {
-                target: app,
+                target,
                 props: { items, value: "home", position: "static", ...props },
             })
         );
         flushSync();
-        const navbar = app.querySelector<HTMLElement>('[data-slot="bottom-navbar"]');
+        const navbar = target.querySelector<HTMLElement>('[data-slot="bottom-navbar"]');
         if (!navbar) throw new Error("BottomNavbar did not render");
         return navbar;
     }
@@ -102,10 +104,7 @@ describe("BottomNavbar", () => {
             '[data-slot="bottom-navbar-item"]'
         );
 
-        expect([...buttons].map((button) => button.dataset.value)).toEqual([
-            "home",
-            "analytics",
-        ]);
+        expect([...buttons].map((button) => button.dataset.value)).toEqual(["home", "analytics"]);
         expect(buttons[1]?.getAttribute("aria-current")).toBe("page");
     });
 
@@ -113,5 +112,28 @@ describe("BottomNavbar", () => {
         const animate = vi.spyOn(HTMLElement.prototype, "animate");
         render();
         expect(animate).not.toHaveBeenCalled();
+    });
+
+    test("applies appropriate text and icon sizing based on size prop", () => {
+        const navbarSm = render({ size: "sm" });
+        const itemSm = navbarSm.querySelector<HTMLButtonElement>(
+            '[data-slot="bottom-navbar-item"]'
+        );
+        expect(itemSm?.className).toContain("text-sm");
+        expect(itemSm?.className).toContain("[&>svg]:size-16px");
+
+        const navbarMd = render({ size: "md" });
+        const itemMd = navbarMd.querySelector<HTMLButtonElement>(
+            '[data-slot="bottom-navbar-item"]'
+        );
+        expect(itemMd?.className).toContain("text-sm");
+        expect(itemMd?.className).toContain("[&>svg]:size-16px");
+
+        const navbarLg = render({ size: "lg" });
+        const itemLg = navbarLg.querySelector<HTMLButtonElement>(
+            '[data-slot="bottom-navbar-item"]'
+        );
+        expect(itemLg?.className).toContain("text-base");
+        expect(itemLg?.className).toContain("[&>svg]:size-18px");
     });
 });

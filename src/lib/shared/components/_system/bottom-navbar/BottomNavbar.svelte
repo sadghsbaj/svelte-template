@@ -243,7 +243,7 @@
                     data-slot="bottom-navbar-item"
                     data-state={item.value === activeValue ? "active" : "inactive"}
                     data-value={item.value}
-                    class={bottomNavbarItemStyles()}
+                    class={bottomNavbarItemStyles({ size })}
                     onclick={handleItemClick}
                     {@attach disableInteraction({ enabled: item.disabled ?? false })}
                 >
@@ -373,6 +373,11 @@
             :global([data-slot="bottom-navbar-item"]) {
             flex-direction: row;
             gap: 6px;
+        }
+
+        [data-slot="bottom-navbar-surface"][data-size="lg"][data-orientation="responsive"]
+            :global([data-slot="bottom-navbar-item"]) {
+            gap: 8px;
         }
     }
 

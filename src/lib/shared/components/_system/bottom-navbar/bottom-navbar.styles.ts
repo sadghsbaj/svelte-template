@@ -22,12 +22,24 @@ export const bottomNavbarStyles = cva({
 
 export const bottomNavbarItemStyles = cva({
     base: {
-        layout: "relative z-1 flex-center h-full w-0 min-w-0 flex-1 gap-6px px-8px",
-        typography: "text-sm font-500 leading-normal",
+        layout: "relative z-1 flex-center h-full w-0 min-w-0 flex-1 px-8px",
+        typography: "font-500 leading-normal",
         frame: "rounded-full squircle-smooth bg-transparent",
         interaction: "select-none",
         motion: "t:text-200-cubic-out",
-        misc: "[&>svg]:size-18px [&>svg]:shrink-0 [&>svg]:stroke-[2.25px]",
+        misc: "[&>svg]:shrink-0 [&>svg]:stroke-[2.25px]",
+    },
+    options: {
+        size: {
+            sm: "text-sm gap-6px [&>svg]:size-16px",
+            md: "text-sm gap-6px [&>svg]:size-16px",
+            lg: "text-base gap-8px [&>svg]:size-18px",
+            responsive:
+                "text-sm gap-6px [&>svg]:size-16px md:(text-base gap-8px [&>svg]:size-18px)",
+        },
+    },
+    defaults: {
+        size: "responsive",
     },
 });
 

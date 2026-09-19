@@ -34,6 +34,7 @@ export interface FeedbackInput<P extends string> {
     status?: FeedbackStatus;
     title: string;
     description?: FeedbackDescription;
+    items?: readonly string[];
     icon?: FeedbackIcon;
     trailing?: Snippet;
     action?: FeedbackAction;
@@ -51,6 +52,7 @@ export interface FeedbackRecord<P extends string> {
     status: FeedbackStatus;
     title: string;
     description?: FeedbackDescription;
+    items?: readonly string[];
     icon?: FeedbackIcon;
     trailing?: Snippet;
     action?: FeedbackAction;

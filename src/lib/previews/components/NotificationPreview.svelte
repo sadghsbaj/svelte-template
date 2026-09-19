@@ -23,6 +23,7 @@
         "warning",
         "danger",
     ];
+    let persistentNotificationId = $state<string | null>(null);
 
     function showNotification(status: NotificationStatus): void {
         notification.withStatus(
@@ -38,16 +39,20 @@
     }
 
     function showPersistent(): void {
-        const id = notification.show({
+        persistentNotificationId = notification.show({
             title: "Draft ready for review",
             status: "accent",
             description: "This notification stays visible until it is dismissed.",
             duration: null,
-            action: {
-                label: "Review",
-                onSelect: () =>
-                    notification.update(id, { title: "Review opened", status: "success" }),
-            },
+            trailing: reviewAction,
+        });
+    }
+
+    function handleReview(): void {
+        if (!persistentNotificationId) return;
+        notification.update(persistentNotificationId, {
+            title: "Review opened",
+            status: "success",
         });
     }
 
@@ -70,10 +75,18 @@
     <CloudUpload />
 {/snippet}
 
+{#snippet reviewAction()}
+    <Button size="sm" variant="plain" color="base" onclick={handleReview}>Review</Button>
+{/snippet}
+
+{#snippet accentAction()}
+    <Button size="sm" variant="solid" color="accent">Open details</Button>
+{/snippet}
+
 <PreviewPage>
     <PreviewHeader
         title="Notification"
-        description="Centered global feedback with richer content, semantic status styling, actions, queues, and pause-aware dismissal."
+        description="Centered global feedback with richer content, semantic status styling, flexible trailing content, queues, and pause-aware dismissal."
         icon={Bell}
     />
 
@@ -86,7 +99,6 @@
                 <Notification
                     status="success"
                     title="Changes published"
-                    dismissible={false}
                     class="max-w-480px"
                 />
             </PreviewCard>
@@ -101,8 +113,22 @@
                     ]}
                     leading={customLeading}
                     trailing={customTrailing}
-                    dismissible={false}
                     class="max-w-480px"
+                />
+            </PreviewCard>
+
+            <PreviewCard label="Description + list + action" bg="elevation-0" class="min-h-48">
+                <Notification
+                    status="accent"
+                    title="Workspace migration ready"
+                    description="Review the migration summary before continuing."
+                    items={[
+                        "Three projects are ready to move.",
+                        "Existing links will remain valid.",
+                        "You can revert the migration for 30 days.",
+                    ]}
+                    trailing={accentAction}
+                    class="max-w-520px"
                 />
             </PreviewCard>
         </PreviewGrid>
@@ -128,8 +154,8 @@
     </PreviewSection>
 
     <PreviewSection
-        title="Persistent & Actionable"
-        description="Auto-dismiss and manual dismissal are independent. Persistent items can still expose an action and a close button."
+        title="Persistent & Trailing"
+        description="Persistent items can expose custom trailing content while swipe, middle click, and the state API handle dismissal."
     >
         <div class="flex flex-wrap gap-3">
             <Button variant="soft" color="accent" iconLeft={uploadIcon} onclick={showPersistent}>

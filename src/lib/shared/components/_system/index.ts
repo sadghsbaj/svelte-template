@@ -89,8 +89,13 @@ export type {
 
 export { default as Notification } from "./notification/Notification.svelte";
 export { notification } from "./notification/notificationState.svelte";
+export {
+    notificationIconStyles,
+    notificationStyles,
+    notificationTitleStyles,
+    type NotificationStyleProps,
+} from "./notification/notification.styles";
 export type {
-    NotificationAction,
     NotificationDescription,
     NotificationDismissDetail,
     NotificationIcon,

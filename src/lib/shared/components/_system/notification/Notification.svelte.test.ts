@@ -1,8 +1,33 @@
 import { flushSync, mount, unmount } from "svelte";
-import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, test } from "vitest";
 
+import "$styles/index.css";
+import "virtual:uno.css";
+
+import NotificationFixture from "./__fixtures__/NotificationFixture.svelte";
 import Notification from "./Notification.svelte";
 import type { NotificationProps } from "./notification.types";
+
+interface Box {
+    top: number;
+    right: number;
+    bottom: number;
+    left: number;
+    width: number;
+    height: number;
+}
+
+function box(element: Element): Box {
+    const rect = element.getBoundingClientRect();
+    return {
+        top: rect.top,
+        right: rect.right,
+        bottom: rect.bottom,
+        left: rect.left,
+        width: rect.width,
+        height: rect.height,
+    };
+}
 
 describe("Notification", () => {
     let target: HTMLDivElement;
@@ -25,70 +50,118 @@ describe("Notification", () => {
         return target.firstElementChild as HTMLElement;
     }
 
-    test("renders semantic status, title, and list content", () => {
+    function renderFixture(
+        props: { trailing?: "none" | "badge" | "button"; body?: boolean } = {}
+    ): HTMLElement {
+        component = mount(NotificationFixture, { target, props });
+        flushSync();
+        return target.firstElementChild as HTMLElement;
+    }
+
+    test("renders semantic status and compact list content without a close control", () => {
         const element = render({
             status: "warning",
             title: "Review changes",
             description: ["First item", "Second item"],
-            dismissible: false,
         });
 
         expect(element.dataset.slot).toBe("notification");
         expect(element.dataset.status).toBe("warning");
-        expect(element.querySelector('[data-slot="feedback-title"]')?.textContent).toBe(
+        expect(element.querySelector('[data-slot="notification-title"]')?.textContent).toBe(
             "Review changes"
         );
-        expect(element.querySelectorAll("li")).toHaveLength(2);
-        const [firstItem, secondItem] = element.querySelectorAll("li");
-        if (!firstItem || !secondItem) throw new Error("Expected two list items");
-        expect(
-            secondItem.getBoundingClientRect().top - firstItem.getBoundingClientRect().bottom
-        ).toBeLessThanOrEqual(1);
+        const list = element.querySelector<HTMLElement>('[data-slot="notification-list"]');
+        const items = element.querySelectorAll("li");
+        expect(items).toHaveLength(2);
+        if (!list || !items[0] || !items[1]) throw new Error("Expected notification list");
+        expect(getComputedStyle(list).rowGap).toBe("4px");
+        expect(items[1].getBoundingClientRect().top - items[0].getBoundingClientRect().bottom).toBe(
+            4
+        );
         expect(element.querySelector("button")).toBeNull();
     });
 
-    test("keeps description close to the title", () => {
-        const element = render({ title: "Title", description: "Description", dismissible: false });
-        const title = element.querySelector<HTMLElement>('[data-slot="feedback-title"]');
-        const description = element.querySelector<HTMLElement>(
-            '[data-slot="feedback-description"]'
+    test("uses exact notification padding and typography geometry", () => {
+        const card = renderFixture({ trailing: "badge", body: true });
+        const message = card.querySelector<HTMLElement>('[data-slot="notification-message"]');
+        const icon = card.querySelector<HTMLElement>('[data-slot="notification-leading"]');
+        const titleRow = card.querySelector<HTMLElement>('[data-slot="notification-title-row"]');
+        const title = card.querySelector<HTMLElement>('[data-slot="notification-title"]');
+        const description = card.querySelector<HTMLElement>(
+            '[data-slot="notification-description"]'
         );
-        if (!title || !description) throw new Error("Expected title and description");
+        const trailing = card.querySelector<HTMLElement>('[data-slot="notification-trailing"]');
+        if (!message || !icon || !titleRow || !title || !description || !trailing) {
+            throw new Error("Expected complete notification geometry");
+        }
 
-        const titleRect = title.getBoundingClientRect();
-        const descriptionRect = description.getBoundingClientRect();
-        expect(descriptionRect.top - titleRect.bottom).toBeLessThanOrEqual(3);
+        const cardBox = box(card);
+        const iconBox = box(icon);
+        const titleRowBox = box(titleRow);
+        const titleBox = box(title);
+        const descriptionBox = box(description);
+        const trailingBox = box(trailing);
+        const cardStyle = getComputedStyle(card);
+        const titleStyle = getComputedStyle(title);
+        const descriptionStyle = getComputedStyle(description);
+
+        expect(cardStyle.paddingTop).toBe("14px");
+        expect(cardStyle.paddingRight).toBe("14px");
+        expect(cardStyle.paddingBottom).toBe("14px");
+        expect(cardStyle.paddingLeft).toBe("14px");
+        expect(iconBox.width).toBe(16);
+        expect(iconBox.height).toBe(16);
+        expect(iconBox.left - cardBox.left).toBe(14);
+        expect(titleBox.left - iconBox.right).toBe(10);
+        expect(titleRowBox.top - cardBox.top).toBe(14);
+        expect(titleRowBox.height).toBe(16);
+        expect(iconBox.top + iconBox.height / 2).toBeCloseTo(
+            titleBox.top + titleBox.height / 2,
+            1
+        );
+        expect(cardBox.right - trailingBox.right).toBe(14);
+        expect(trailingBox.top - cardBox.top).toBe(14);
+        expect(cardBox.bottom - descriptionBox.bottom).toBe(14);
+        expect(descriptionBox.top - titleRowBox.bottom).toBe(4);
+        expect(titleStyle.display).toBe("block");
+        expect(titleStyle.fontSize).toBe("14px");
+        expect(titleStyle.lineHeight).toBe("16px");
+        expect(titleStyle.textBoxTrim).toBe("trim-both");
+        expect(descriptionStyle.fontSize).toBe("12px");
+        expect(descriptionStyle.lineHeight).toBe("16px");
+        expect(descriptionStyle.marginTop).toBe("4px");
+        expect(getComputedStyle(trailing).transform).toBe("none");
     });
 
-    test("positions rich trailing content without changing the title row", () => {
-        const element = render({
-            title: "Workspace updated",
-            description: "Three collaborators were notified.",
-            action: { label: "Review", onSelect: () => {} },
-            dismissible: false,
-        });
-        const trailing = element.querySelector<HTMLElement>('[data-slot="feedback-trailing"]');
+    test("keeps title geometry stable with a tall trailing control", async () => {
+        const badgeCard = renderFixture({ trailing: "badge", body: true });
+        const badgeTitle = badgeCard.querySelector<HTMLElement>('[data-slot="notification-title"]');
+        if (!badgeTitle) throw new Error("Expected badge title");
+        const badgeOffset = box(badgeTitle).top - box(badgeCard).top;
 
-        expect(element.classList).toContain("grid-cols-[auto_minmax(0,1fr)_auto]");
-        expect(element.classList).not.toContain("grid-cols-[auto_minmax(0,1fr)_auto_auto]");
-        expect(trailing?.classList).not.toContain("translate-y-4px");
-        expect(
-            element.querySelector('[data-slot="feedback-title-row"]')?.classList
-        ).toContain("h-16px");
-    });
-
-    test("uses the shared close button when dismissal is available", async () => {
-        const onDismiss = vi.fn();
-        const defaultElement = render({ title: "No close by default", onDismiss });
-        expect(defaultElement.querySelector("button")).toBeNull();
         if (component) await unmount(component);
         component = null;
+        const buttonCard = renderFixture({ trailing: "button", body: true });
+        const buttonTitle = buttonCard.querySelector<HTMLElement>('[data-slot="notification-title"]');
+        const buttonTrailing = buttonCard.querySelector<HTMLElement>(
+            '[data-slot="notification-trailing"]'
+        );
+        if (!buttonTitle || !buttonTrailing) throw new Error("Expected button geometry");
 
-        const element = render({ title: "Closable", closeButton: true, onDismiss });
-        const close = element.querySelector<HTMLButtonElement>('button[aria-label="Dismiss notification"]');
+        expect(box(buttonTitle).top - box(buttonCard).top).toBe(badgeOffset);
+        expect(getComputedStyle(buttonTrailing).transform).toBe("none");
+    });
 
-        expect(close?.classList).toContain("size-24px");
-        close?.click();
-        expect(onDismiss).toHaveBeenCalledOnce();
+    test("centers title-only message against a taller trailing badge", () => {
+        const card = renderFixture({ trailing: "badge", body: false });
+        const message = card.querySelector<HTMLElement>('[data-slot="notification-message"]');
+        const trailing = card.querySelector<HTMLElement>('[data-slot="notification-trailing"]');
+        if (!message || !trailing) throw new Error("Expected title-only geometry");
+
+        const cardBox = box(card);
+        const messageBox = box(message);
+        const trailingBox = box(trailing);
+        expect(messageBox.top - cardBox.top).toBe(cardBox.bottom - messageBox.bottom);
+        expect(trailingBox.top - cardBox.top).toBe(cardBox.bottom - trailingBox.bottom);
     });
 });

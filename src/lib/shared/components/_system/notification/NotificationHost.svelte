@@ -36,14 +36,9 @@
                         status={item.status}
                         title={item.title}
                         description={item.description}
+                        items={item.items}
                         icon={item.icon}
                         trailing={item.trailing}
-                        action={item.action}
-                        dismissible={item.dismissible}
-                        closeButton={item.closeButton}
-                        onDismiss={() =>
-                            notification.requestDismiss(item.id, "close-button", true)}
-                        onAction={() => void notification.runAction(item.id)}
                     />
                 </FeedbackItem>
             </div>

@@ -17,7 +17,7 @@ export type ToastPosition =
     | "bottom-center"
     | "bottom-end";
 
-export type ToastInput = Omit<FeedbackInput<ToastPosition>, "position"> & {
+export type ToastInput = Omit<FeedbackInput<ToastPosition>, "position" | "items"> & {
     position?: ToastPosition;
 };
 

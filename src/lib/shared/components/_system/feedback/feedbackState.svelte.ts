@@ -34,7 +34,7 @@ function announcementText(record: FeedbackRecord<string>): string {
     const description = Array.isArray(record.description)
         ? record.description.join(". ")
         : record.description;
-    return [record.title, description].filter(Boolean).join(". ");
+    return [record.title, description, record.items?.join(". ")].filter(Boolean).join(". ");
 }
 
 export class FeedbackState<P extends string> {
@@ -79,6 +79,7 @@ export class FeedbackState<P extends string> {
             status,
             title: input.title,
             description: input.description,
+            items: input.items,
             icon: input.icon,
             trailing: input.trailing,
             action: input.action,
@@ -114,6 +115,7 @@ export class FeedbackState<P extends string> {
         if (patch.status !== undefined) record.status = patch.status;
         if (patch.title !== undefined) record.title = patch.title;
         if (patch.description !== undefined) record.description = patch.description;
+        if (patch.items !== undefined) record.items = patch.items;
         if (patch.icon !== undefined) record.icon = patch.icon;
         if (patch.trailing !== undefined) record.trailing = patch.trailing;
         if (patch.action !== undefined) record.action = patch.action;

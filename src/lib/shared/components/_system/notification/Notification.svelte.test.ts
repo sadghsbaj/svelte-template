@@ -71,7 +71,7 @@ describe("Notification", () => {
 
         expect(element.classList).toContain("grid-cols-[auto_minmax(0,1fr)_auto]");
         expect(element.classList).not.toContain("grid-cols-[auto_minmax(0,1fr)_auto_auto]");
-        expect(trailing?.classList).toContain("translate-y-4px");
+        expect(trailing?.classList).not.toContain("translate-y-4px");
         expect(
             element.querySelector('[data-slot="feedback-title-row"]')?.classList
         ).toContain("h-16px");

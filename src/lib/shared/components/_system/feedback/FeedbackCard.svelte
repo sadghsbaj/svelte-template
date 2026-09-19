@@ -81,6 +81,7 @@
             "col-start-3 row-start-1 ml-2px flex h-16px min-h-0 shrink-0 overflow-visible";
         if (!hasDescription) return `${base} items-center self-center`;
         if (kind === "toast") return `${base} row-span-2 items-center self-center`;
+        if (action && !trailing) return `${base} items-start self-start`;
         return `${base} translate-y-4px items-start self-start`;
     });
     const closeClass = $derived.by(() => {

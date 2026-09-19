@@ -1,3 +1,5 @@
+import { Component, FlaskConical, Settings } from "@lucide/svelte";
+
 import { createViewState } from "$core/_system/layout/app-views/view-state/viewState.svelte";
 
 export const viewState = createViewState({
@@ -7,16 +9,19 @@ export const viewState = createViewState({
         {
             view: "components",
             label: "Components",
+            icon: Component,
             parent: "root",
         },
         {
             view: "playground",
             label: "Playground",
+            icon: FlaskConical,
             parent: "root",
         },
         {
             view: "settings",
             label: "Settings",
+            icon: Settings,
             parent: "root",
         },
         // @template-remove-end

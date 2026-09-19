@@ -45,6 +45,24 @@ export type {
     SegmentedControlStyleProps,
 } from "./segmented-control/segmented-control.styles";
 
+export { default as BottomNavbar } from "./bottom-navbar/BottomNavbar.svelte";
+export type {
+    BottomNavbarAnimation,
+    BottomNavbarAnimationContext,
+    BottomNavbarItem,
+    BottomNavbarLabels,
+    BottomNavbarMode,
+    BottomNavbarOrientation,
+    BottomNavbarPosition,
+    BottomNavbarProps,
+    BottomNavbarSelectDetail,
+    BottomNavbarSize,
+} from "./bottom-navbar/bottom-navbar.types";
+export type {
+    BottomNavbarItemStyleProps,
+    BottomNavbarStyleProps,
+} from "./bottom-navbar/bottom-navbar.styles";
+
 export {
     default as ButtonGroup,
     type ButtonGroupOrientation,

@@ -8,11 +8,11 @@
     import AppView from "$core/_system/layout/app-views/AppView.svelte";
     import AppViews from "$core/_system/layout/app-views/AppViews.svelte";
     import PerformanceHost from "$core/_system/performance/PerformanceHost.svelte";
+    import BottomNavbar from "$components/_system/bottom-navbar/BottomNavbar.svelte";
     import { viewState } from "$views/view.svelte";
 
     // @template-remove-start
     import ComponentsView from "$lib/previews/ComponentsView.svelte";
-    import FloatingNavbar from "$lib/previews/FloatingNavbar.svelte";
     import PlaygroundView from "$lib/previews/PlaygroundView.svelte";
     import SettingsView from "$lib/previews/SettingsView.svelte";
 
@@ -50,7 +50,7 @@
 
 <!-- @template-remove-start -->
 <AppLayer z={100} layer="floating-bar">
-    <FloatingNavbar />
+    <BottomNavbar mode="views" {viewState} />
 </AppLayer>
 <!-- @template-remove-end -->
 

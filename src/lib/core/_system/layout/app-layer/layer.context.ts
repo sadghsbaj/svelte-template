@@ -8,4 +8,14 @@ export interface LayerContext {
 
 export const LAYER_CONTEXT_KEY = Symbol("layer");
 
-export const [getLayerContext, setLayerContext] = createContext<LayerContext>();
+const [getRequiredLayerContext, setLayerContext] = createContext<LayerContext>();
+
+export { setLayerContext };
+
+export function getLayerContext(): LayerContext | undefined {
+    try {
+        return getRequiredLayerContext();
+    } catch {
+        return undefined;
+    }
+}

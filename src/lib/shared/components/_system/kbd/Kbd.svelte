@@ -83,7 +83,7 @@
                     </span>
                 {:else}
                     <span
-                        class="inline-flex items-center justify-center"
+                        class="inline-block text-trim"
                         data-kbd-key={keyItem.type}
                         data-kbd-value={keyItem.value}
                         aria-hidden="true"

@@ -371,6 +371,31 @@ describe("middleClick Svelte 5 Element Attachment", () => {
 
             cleanup?.();
         });
+
+        test("should preserve native behavior when shouldHandle returns false", () => {
+            const wrapper = document.createElement("div");
+            const link = document.createElement("a");
+            wrapper.append(link);
+            container.append(wrapper);
+
+            const callback = vi.fn();
+            const attach = middleClick({
+                onMiddleClick: callback,
+                shouldHandle: (event) => event.target === wrapper,
+            });
+            const cleanup = attach(wrapper);
+            const event = new MouseEvent("auxclick", {
+                button: 1,
+                bubbles: true,
+                cancelable: true,
+            });
+
+            link.dispatchEvent(event);
+
+            expect(callback).not.toHaveBeenCalled();
+            expect(event.defaultPrevented).toBe(false);
+            cleanup?.();
+        });
     });
 
     describe("Teardown & Cleanup", () => {

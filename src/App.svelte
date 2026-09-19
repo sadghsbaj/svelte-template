@@ -9,6 +9,7 @@
     import AppViews from "$core/_system/layout/app-views/AppViews.svelte";
     import PerformanceHost from "$core/_system/performance/PerformanceHost.svelte";
     import BottomNavbar from "$components/_system/bottom-navbar/BottomNavbar.svelte";
+    import FeedbackHost from "$components/_system/feedback/FeedbackHost.svelte";
     import TooltipHost from "$components/_system/tooltip/TooltipHost.svelte";
     import { viewState } from "$views/view.svelte";
 
@@ -56,6 +57,10 @@
     <BottomNavbar mode="views" {viewState} />
 </AppLayer>
 <!-- @template-remove-end -->
+
+<AppLayer z={2000} layer="feedback">
+    <FeedbackHost />
+</AppLayer>
 
 <!-- Keep permanent hosts last so dynamic utility layers remain later in body paint order. -->
 <AppLayer z={1000} layer="floating">

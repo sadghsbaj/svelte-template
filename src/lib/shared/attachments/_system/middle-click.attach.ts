@@ -39,6 +39,11 @@ export interface MiddleClickOptions {
      * @default true
      */
     ignoreDisabled?: boolean;
+    /**
+     * Optional predicate evaluated before the browser event is intercepted.
+     * Return false to preserve the target's native middle-click behavior.
+     */
+    shouldHandle?: (event: MouseEvent) => boolean;
 }
 
 /**
@@ -83,6 +88,7 @@ export function middleClick<T extends HTMLElement | SVGElement = HTMLElement>(
         stopPropagation = false,
         capture = false,
         ignoreDisabled = true,
+        shouldHandle,
     } = options;
 
     if (!enabled || !onMiddleClick) {
@@ -101,6 +107,7 @@ export function middleClick<T extends HTMLElement | SVGElement = HTMLElement>(
             if (ignoreDisabled && (isElementDisabled(node) || isElementDisabled(target))) {
                 return;
             }
+            if (shouldHandle && !shouldHandle(e)) return;
 
             if (preventAutoscroll) {
                 e.preventDefault();
@@ -118,6 +125,7 @@ export function middleClick<T extends HTMLElement | SVGElement = HTMLElement>(
             if (ignoreDisabled && (isElementDisabled(node) || isElementDisabled(target))) {
                 return;
             }
+            if (shouldHandle && !shouldHandle(e)) return;
 
             if (preventDefault) {
                 e.preventDefault();

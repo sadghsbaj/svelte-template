@@ -73,6 +73,47 @@ export type { ButtonGroupStyleProps } from "./button-group/button-group.styles";
 export { default as CloseButton } from "./close-button/CloseButton.svelte";
 export type { CloseButtonStyleProps } from "./close-button/close-button.styles";
 
+export { default as FeedbackHost } from "./feedback/FeedbackHost.svelte";
+export type { FeedbackHostProps } from "./feedback/FeedbackHost.svelte";
+export type {
+    FeedbackAction,
+    FeedbackDescription,
+    FeedbackDismissDetail,
+    FeedbackDismissReason,
+    FeedbackIcon,
+    FeedbackPauseReason,
+    FeedbackPhase,
+    FeedbackPriority,
+    FeedbackStatus,
+} from "./feedback/feedback.types";
+
+export { default as Notification } from "./notification/Notification.svelte";
+export { notification } from "./notification/notificationState.svelte";
+export type {
+    NotificationAction,
+    NotificationDescription,
+    NotificationDismissDetail,
+    NotificationIcon,
+    NotificationInput,
+    NotificationPriority,
+    NotificationProps,
+    NotificationStatus,
+} from "./notification/notification.types";
+
+export { default as Toast } from "./toast/Toast.svelte";
+export { toast } from "./toast/toastState.svelte";
+export type {
+    ToastAction,
+    ToastDescription,
+    ToastDismissDetail,
+    ToastIcon,
+    ToastInput,
+    ToastPosition,
+    ToastPriority,
+    ToastProps,
+    ToastStatus,
+} from "./toast/toast.types";
+
 export { default as Kbd } from "./kbd/Kbd.svelte";
 export {
     kbdSeparatorStyles,
